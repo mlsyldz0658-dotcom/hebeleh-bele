@@ -134,11 +134,11 @@ DOKTOR = M("ust_sahip", "film düzeyi: yapimci·doktor yapısal tur", "yapimci",
 HEDEF_ALTI = M("hedef_alti", "kalan maddeler hedef_alti ve açık eksik raporuyla (FILM_SONU_RAPORU.md) sürer (§1.5 basamak 5)")
 
 
-def _seyirci_turu(kip, kapi, rapor_kok, grup0):
+def _seyirci_turu(kip, kapi, rapor_kok, grup0, seyirci_kip=None):
     """Kör paket → habersiz seyirci ×3 (aşamalı) + ilk 2 dk ×3 → özet eşleştirici ×3 → seyirci_topla (kapı)."""
     return (
         B("KP", "kor_paket.py", "--kip", kip, grup=grup0),
-        J("HS", "habersiz-seyirci", kip, grup=grup0 + 1, adet=3, persona=SEYIRCI, asamali=BOLUMLER,
+        J("HS", "habersiz-seyirci", seyirci_kip or kip, grup=grup0 + 1, adet=3, persona=SEYIRCI, asamali=BOLUMLER,
           cikti=("CIKTI/rapor.json",), tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/%s_t{tur}/s{i}_rapor.json" % kip),)),
         J("IK", "habersiz-seyirci", "ilk2dk", grup=grup0 + 1, adet=3, persona=SEYIRCI,
           tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/%s_ilk2dk_t{tur}/s{i}_rapor.json" % kip),)),
@@ -398,7 +398,7 @@ ASAMALAR = (
            B("SP", "seslendir.py", "--parti", "--kesit", grup=3, kredili=True),
            B("SM", "son_miks.py", "--kesit", grup=4),
            B("KR", "kurgu_render.py", "--kesit", grup=5, cikti=("KESIT/kesit_v{tur}.mp4",)))
-          + _seyirci_turu("kesit", "HS_KESIT", "_RAPOR/HS_KESIT_FILM_t{tur}.json", 6)
+          + _seyirci_turu("kesit", "HS_KESIT", "_RAPOR/HS_KESIT_FILM_t{tur}.json", 6, seyirci_kip="kurgu")
           + (J("DE", "ders-editoru", grup=10, persona="PILOT", tasima=(("CIKTI/rapor.json", "_RAPOR/PILOT_DERS.json"),)),
              B("PL", "blok_plani.py", "--pilot-karar", grup=11, cikti=("_RAPOR/PILOT_FILM.json",), kapi="PILOT"))),
     Asama("A14", "Video blokları", "blok_plani → Memmet (elle) → V1/SC1 → film.py bekle --blok → V2, V3, kare_zinciri + G1Z → kuyruk.py",

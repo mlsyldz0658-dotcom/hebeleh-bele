@@ -245,6 +245,22 @@ class Korkuluk(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()): m.gonderim_kaydet(); self.uykular.clear(); m.tempo_bekle()
         self.assertTrue(self.uykular and self.uykular[0] >= 5.5)
 
+    def test_gunluk_gorsel_tavani_ve_gorselden_videoya_bekleme(self):
+        m = self.memmet("elle")
+        with contextlib.redirect_stdout(io.StringIO()):
+            for _ in range(20): memmet.flow_yuk.gonderim_kaydet("gorsel", "elle", kok=memmet.HESAP, simdi=time.time() - 30)
+            with self.assertRaises(memmet.Durdur) as c: m.tempo_bekle("gorsel")
+        self.assertEqual(c.exception.kod, "yuk"); self.assertIn("tavan", str(c.exception))
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c: m.tempo_bekle("video")
+        self.assertIn("saat", str(c.exception))     # son görselden 12 saat geçmeden video yok
+        self.assertEqual(memmet.CIKIS["yuk"], 2)
+
+    def test_gonderim_yuk_defterine_yazilir(self):
+        m = self.memmet("elle")
+        with contextlib.redirect_stdout(io.StringIO()): m.gonderim_kaydet("video", 7)
+        satir = memmet.flow_yuk.yuk_oku(memmet.HESAP)[-1]
+        self.assertEqual((satir["tur"], satir["plan"], satir["mod"], satir["film"]), ("video", 7, "elle", "KORKULUK"))
+
     def test_kaynak_kodda_atlatma_yok(self):
         kaynak = open(os.path.join(ARACLAR, "memmet.py"), encoding="utf-8").read().lower()
         for yasak in ("pyautogui", "pynput", "sendkeys", "page.reload", "stealth", "undetected"):

@@ -38,6 +38,7 @@ AYARLAR = _Y["ayarlar"]
 AYAR_DOSYA = os.path.join(AYARLAR, "MEMMET_AYAR.json")
 FILM_AYAR = os.path.join(AYARLAR, "FILM_AYAR.json")
 HESAP = _Y["hesap"]                          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
+import flow_yuk                              # hesap düzeyi yük: FLOW_YUK.jsonl, FLOW_TEMPO, kilit, günlük tavanlar
 
 
 def chrome_bul():
@@ -86,7 +87,7 @@ HATA_KELIMELERI = ["politika", "ihlal", "uygunsuz", "güvenlik", "başarısız",
 DOGRULAMA_KELIMELERI = ["robot olmadığınızı", "not a robot", "kimliğinizi doğrulayın", "verify it's you"]
 KREDI_KELIMELERI = ["yetersiz kredi", "kredi yetersiz", "kredin bitti", "not enough credits", "out of credits", "insufficient credits"]
 CIKIS = {"tamam": 0, "beklenmeyen": 1, "dogrulama": 2, "giris": 2, "kredi": 2, "arayuz": 2, "genel": 2, "ortam": 4, "surum": 4,
-         "olagandisi": 7, "kilitli": 7}
+         "olagandisi": 7, "kilitli": 7, "yuk": 2}
 
 
 def _yavas(kod, gelen):
@@ -153,24 +154,8 @@ def cikis_yaz(root, kod, mesaj):
 
 
 def kilit_yaz(film, mesaj):
-    """Flow uyarısı → hesap düzeyinde kilit. Aynı takvim haftasında ikinci uyarı → en erken 7 gün sonra (tahmin)."""
-    os.makedirs(HESAP, exist_ok=True)
-    simdi = time.time(); y, h, _ = datetime.date.today().isocalendar(); hafta = f"{y}-{h:02d}"   # %G/%V Windows'ta yok
-    gecmis = os.path.join(HESAP, "FLOW_UYARILARI.jsonl")
-    onceki = 0
-    if os.path.exists(gecmis):
-        for l in open(gecmis, encoding="utf-8"):
-            try: onceki += json.loads(l).get("hafta") == hafta
-            except ValueError: pass
-    with open(gecmis, "a", encoding="utf-8") as f:
-        f.write(json.dumps({"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "hafta": hafta, "film": film}, ensure_ascii=False) + "\n")
-    if os.path.exists(kilit_yolu()): return            # var olan kilidin tarihi korunur
-    _atomik(kilit_yolu(), {
-        "_surum": 1, "neden": "olagandisi", "film": film, "mesaj": mesaj, "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "zaman_epoch": int(simdi), "haftanin_uyarisi": onceki + 1,
-        "en_erken": time.strftime("%Y-%m-%d %H:%M", time.localtime(simdi + (7 * 86400 if onceki else 1800))),
-        "nasil_kalkar": "GÖNDER'e basma, sayfayı yenileme. Bekle; en erken 'en_erken' zamanında Flow'da ELLE tek bir video dene. "
-                        "Sorunsuzsa Claude'a 'Flow uyarısı geçti' de; kilidi o kaldırır. Başka Google/Flow hesabıyla devam edilmez."})
+    """Flow uyarısı → hesap düzeyinde kilit (flow_yuk.uyari_kaydet). Aynı takvim haftasında ikinci uyarı → en erken 7 gün sonra."""
+    return flow_yuk.uyari_kaydet(film, mesaj, kok=HESAP)
 
 
 def norm(s): return re.sub(r"\s+", " ", (s or "")).strip().lower()
@@ -293,36 +278,33 @@ class Memmet:
         if any(k in t for k in KREDI_KELIMELERI): raise Durdur("Flow kredisi bitti.", kod="kredi")
 
     # ------------------------------------------------------------------ yük sınırı (tempo)
-    def tempo_oku(self):
-        try: return json.load(open(tempo_yolu(), encoding="utf-8"))
-        except (OSError, ValueError): return {"_surum": 1, "son_gonderim": 0, "sonraki_izin": 0, "mola_bitis": 0,
-                                              "gonderim_sayaci": 0, "parti_sayaci": 0}
+    def tempo_oku(self): return flow_yuk.tempo_oku(HESAP)
 
-    def tempo_bekle(self):
-        """Bir sonraki izinli zamana kadar bekler. Zaman dosyada; Memmet'i yeniden açmak molayı sıfırlamaz."""
-        T = self.tempo_oku(); hedef = max(T.get("sonraki_izin", 0), T.get("mola_bitis", 0)); kalan = hedef - time.time()
+    def tempo_bekle(self, tur=None):
+        """Bir sonraki izinli zamana kadar bekler (zaman dosyada; Memmet'i yeniden açmak molayı sıfırlamaz). tur verilirse
+        flow_yuk'un öteki kuralları da denetlenir: kilit (7), UYARI_GECTI sonrası ilk blok elle, günlük görsel tavanı ve
+        görselden videoya bekleme. Saatlerce sürecek bekleme beklenmez: Memmet durur, haber verir."""
+        d = flow_yuk.tempo_durumu(self.A["kip"], kok=HESAP); hedef = d["sonraki_izin"]; kalan = hedef - time.time()
         if kalan > 0:
             if kalan > 60: self.log(f"MOLA / yük sınırı: {int(kalan // 60)} dk {int(kalan % 60)} sn bekleniyor (sayfaya dokunulmuyor)")
             uyu(kalan)
+        if tur is None: return
+        iz = flow_yuk.izinli_mi(tur, self.A["kip"], kok=HESAP, simdi=max(time.time(), hedef))
+        if not iz["izinli"]:
+            raise Durdur("Flow yük sınırı: " + " ".join(iz["nedenler"]), kod={7: "kilitli", 5: "ortam"}.get(iz["kod"], "yuk"))
 
-    def gonderim_kaydet(self):
-        T = self.tempo_oku(); simdi = time.time(); A = self.A
-        T["son_gonderim"] = simdi; T["gonderim_sayaci"] = T.get("gonderim_sayaci", 0) + 1; T["kip"] = A["kip"]
-        T["sonraki_izin"] = simdi + random.uniform(*A["gonderim_arasi_sn"])
-        n = A.get("mola_kac_gonderimde", 0)
-        if n and T["gonderim_sayaci"] % n == 0:
-            T["mola_bitis"] = max(T.get("mola_bitis", 0), simdi + random.uniform(*A["gonderim_mola_dk"]) * 60)
-            self.log(f"{n} gönderim oldu → mola (bitiş {time.strftime('%H:%M', time.localtime(T['mola_bitis']))})")
-        _atomik(tempo_yolu(), T)
+    def tempo_ek(self): return {k: self.A[k] for k in TEMPO[self.A["kip"]] if k in self.A}   # MEMMET_AYAR'ın yavaşlattığı değerler
+
+    def gonderim_kaydet(self, tur="video", plan=None):
+        T = flow_yuk.gonderim_kaydet(tur, self.A["kip"], film=self.film, plan=plan, kok=HESAP, ek=self.tempo_ek())
+        if float(T.get("mola_bitis") or 0) > time.time() and T.get("gonderim_sayaci") and \
+                self.A.get("mola_kac_gonderimde") and T["gonderim_sayaci"] % self.A["mola_kac_gonderimde"] == 0:
+            self.log(f"{self.A['mola_kac_gonderimde']} gönderim oldu → mola (bitiş {time.strftime('%H:%M', time.localtime(T['mola_bitis']))})")
 
     def parti_bitti(self):
         """Parti sonu. Mola düştüyse True (mola sonrası proje sayfası yeniden açılır)."""
-        T = self.tempo_oku(); n = self.A.get("mola_kac_partide", 0); T["parti_sayaci"] = T.get("parti_sayaci", 0) + 1
-        mola = bool(n and T["parti_sayaci"] % n == 0)
-        if mola:
-            T["mola_bitis"] = max(T.get("mola_bitis", 0), time.time() + random.uniform(*self.A["parti_mola_dk"]) * 60)
-            self.log(f"{n} parti oldu → mola (bitiş {time.strftime('%H:%M', time.localtime(T['mola_bitis']))})")
-        _atomik(tempo_yolu(), T)
+        mola = flow_yuk.blok_bitti(self.A["kip"], kok=HESAP)
+        if mola: self.log("parti molası başladı (bitiş FLOW_TEMPO.json'da)")
         return mola
 
     def hata_kaydi(self, ad):
@@ -617,7 +599,7 @@ class Memmet:
                     st[tur + "_durum"] = "reddedildi"; self.save(); self.log(f"{s['no']:03d} {tur}: bütün denemeler bitti → reddedildi")
                     continue
                 metin = ist[deneme]
-                self.tempo_bekle(); self.kontrol_noktasi()
+                self.tempo_bekle(tur); self.kontrol_noktasi()
                 try:
                     self.mod_ayarla(tur); self.kutuyu_temizle()
                     if tur == "gorsel":
@@ -631,7 +613,7 @@ class Memmet:
                     self.hata_kaydi(f"{s['no']:03d}_{tur}"); self.log(f"{s['no']:03d} {tur}: gönderim hatası: {str(e)[:150]}")
                     ok = False
                 st[tur + "_deneme"] = deneme + 1; self.save()
-                if ok: self.gonderim_kaydet()
+                if ok: self.gonderim_kaydet(tur, s["no"])
                 if ok:
                     bekleyen[s["no"]] = {"istem": metin, "t": time.time(), "s": s}
                     self.log(f"{s['no']:03d} {tur}: gönderildi (deneme {deneme + 1}{', yedek istem' if deneme >= 2 else ''})")
@@ -673,11 +655,9 @@ class Memmet:
 
     def on_kosullar(self):
         """Chrome açılmadan önce: kilit ve izin. Sayfaya dokunmaz."""
-        if os.path.exists(kilit_yolu()):
-            k = {}
-            try: k = json.load(open(kilit_yolu(), encoding="utf-8"))
-            except (OSError, ValueError): pass
-            raise Durdur(f"Flow kilidi var ({k.get('zaman', '?')} uyarısı; en erken {k.get('en_erken', '?')}). Memmet açılmadı. "
+        k = flow_yuk.kilit_durumu(kok=HESAP)
+        if k["kilitli"]:
+            raise Durdur(f"Flow kilidi var ({k['neden']}; en erken {k['en_erken_metin']}). Memmet açılmadı. "
                          "GÖNDER'e basma; Claude'a haber ver.", kod="kilitli")
         if self.A["kip"] == "gece" and not gece_izni():
             raise Durdur("Gece kipi kapalı: AYARLAR/FILM_AYAR.json içinde izinler.gece_flow açık değil. Varsayılan kip: elle.", kod="ortam")

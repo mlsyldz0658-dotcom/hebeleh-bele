@@ -65,12 +65,12 @@ class Tempo(Taban):
         self.assertEqual(self.izin("video", "elle", T0 + 100)["kod"], fy.BEKLE)
         self.gonder("gorsel", "elle", T0 + 300)
         T = fy.tempo_oku(self.kok); self.assertEqual(T["gonderim_sayaci"], 9); self.assertIn("gunluk", T)
-        # PR-0 Memmet aynı dosyaya yazınca flow_yuk'un ek alanları kaybolmaz
-        sahte = mock.Mock(A=memmet.ayar("elle"), log=lambda *a: None)
-        sahte.tempo_oku = lambda: memmet.Memmet.tempo_oku(sahte)
-        with self.memmet_hesap(): memmet.Memmet.gonderim_kaydet(sahte)
+        # Memmet aynı dosyaya (flow_yuk üzerinden) yazınca ek alanlar kaybolmaz
+        sahte = mock.Mock(A=memmet.ayar("elle"), film="F_TEST", log=lambda *a: None)
+        sahte.tempo_ek = lambda: memmet.Memmet.tempo_ek(sahte)
+        with self.memmet_hesap(): memmet.Memmet.gonderim_kaydet(sahte, "video")
         T2 = fy.tempo_oku(self.kok)
-        self.assertEqual(T2["gonderim_sayaci"], 10); self.assertEqual(T2["gunluk"], T["gunluk"])
+        self.assertEqual(T2["gonderim_sayaci"], 10); self.assertEqual(T2["gunluk"]["video"], 1)   # Memmet artık günlük sayıyı da yazar
         self.assertEqual(T2["son_gorsel_gonderimi"], T["son_gorsel_gonderimi"])
 
     def test_ayar_yalniz_yavaslatir(self):
@@ -127,7 +127,8 @@ class Kilit(Taban):
         t = self.memmet_uyari()
         k = fy.kilit_durumu(self.kok, self.E, t + 10 * DK)
         self.assertTrue(k["kilitli"]); self.assertFalse(k["kalkabilir"])
-        self.assertAlmostEqual(k["en_erken"], t + 30 * DK, delta=2)
+        self.assertAlmostEqual(k["en_erken"], t + 30 * DK, delta=60)   # dakikaya yukarı yuvarlanır (yalnız uzar)
+        self.assertGreaterEqual(k["en_erken"], t + 30 * DK - 1)
         self.assertEqual(self.izin("video", "elle", t + 10 * DK)["kod"], fy.KILITLI)
         self.assertEqual(self.izin("gorsel", "elle", t + 40 * DK)["kod"], fy.KILITLI)   # süre geçse de kilit kendiliğinden kalkmaz
 
@@ -152,7 +153,8 @@ class Kilit(Taban):
         self.memmet_uyari()
         t = self.memmet_uyari()        # kilit varken ikinci uyarı: Memmet kilidi değiştirmez, flow_yuk geçmişten 7 gün sayar
         k = fy.kilit_durumu(self.kok, self.E, t)
-        self.assertEqual(k["haftanin_uyarisi"], 2); self.assertAlmostEqual(k["en_erken"], t + 7 * GUN, delta=2)
+        self.assertEqual(k["haftanin_uyarisi"], 2); self.assertAlmostEqual(k["en_erken"], t + 7 * GUN, delta=60)
+        self.assertGreaterEqual(k["en_erken"], t + 7 * GUN - 1)
 
 
 class UyariGecti(Taban):

@@ -17,6 +17,8 @@ BATS = {
     "CAPCUT_PROJESI_OLUSTUR.bat": HEAD + "echo CapCut'i kapat, sonra bir tusa bas.\r\npause >nul\r\npython " + PY.format("seslendir.py") +
         "\r\nif errorlevel 1 goto hata\r\npython " + PY.format("capcut_film.py") + "\r\nif errorlevel 1 goto hata\r\necho TAMAM. CapCut'i ac; proje en ustte.\r\npause\r\nexit /b\r\n:hata\r\necho HATA OLDU. Ekran goruntusunu Claude'a gonder.\r\npause\r\n",
     "NOTLARI_OKU.bat": HEAD + "python " + PY.format("notlari_oku.py") + "\r\npause\r\n",
+    "FILM_HATTI.bat": HEAD + "echo Film hatti calisiyor. Kredi harcayan asamadan once onay sorar.\r\npython " + PY.format("film.py") + "\r\npause\r\n",
+    "FILM_DENEME_SAHTE.bat": HEAD + "echo Kredisiz deneme: sahte gorsel/video/ses ile hatti dener.\r\npython " + PY.format("film.py") + " --saglayici sahte\r\npause\r\n",
 }
 SABLON = {
     "film": "", "baslik": "Kanca cümlesi | SERİ ADI | Full Movie 4K 2026", "altyazi_dili": None,

@@ -151,3 +151,15 @@ Bütün gizli bilgiler YZ_FILM\AYARLAR klasöründe durur. BU KLASÖRÜ KİMSEYL
     Bu klasörü paylaşma, zip'leme, kimseye gönderme.
   - Bu paket AYARLAR'ın İÇERİĞİ OLMADAN hazırlandı. Yeni bilgisayarda anahtarları kendin girersin.
   - Memmet reCAPTCHA'yı asla kendisi çözmez; doğrulama her zaman insan tarafından yapılır.
+
+
+──────────────────────────────────────────────────
+YENİ: FİLM HATTI (film.py) — tek düğmeyle aşama aşama
+──────────────────────────────────────────────────
+  Her film klasöründe iki yeni dosya var:
+    FILM_DENEME_SAHTE.bat → kredi harcamadan hattı dener (sahte görsel/video/ses). Önce bunu çalıştır.
+    FILM_HATTI.bat        → gerçek üretim. Sıra: senaryo → istem denetimi → görsel → video → ses → müzik → kurgu
+  - Kredi harcayan her aşamadan önce "Devam edilsin mi? (e/h)" diye sorar.
+  - Yarıda kalırsa tekrar çalıştır: biten aşamaları atlar, kaldığı yerden devam eder (FILM_DURUM.json).
+  - İstem denetimi HATA bulursa kredi harcamadan durur: _RAPOR\ISTEM_DENETIM.txt'ye bak.
+  - Flow uyarı verirse Memmet durur; hat da durur ve sebebini yazar (FILM_KAYIT.txt).

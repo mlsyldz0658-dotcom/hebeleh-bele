@@ -173,7 +173,7 @@
  "olcum0": ["Ö0-a", "Ö0-b", "Ö0-c", "Ö0-d", "Ö0-e", "Ö0-f", "Ö0-g", "Ö0-h", "Ö0-b·V3"],
  "sonuc_kodlari": {"kapi": ["GEC", "KISMI", "HATA", "BAYRAK", "OLCULEMEDI"], "seviye": ["KRITIK", "ORTA", "HATA", "BAYRAK"], "hat": ["GIT", "GITME"]},
  "kuyruk": {"dosyalar": ["KUYRUK/YENIDEN_URET.json", "KUYRUK/YENIDEN_YAZ.json"], "tur": ["gorsel", "video", "ses"],
-            "durum": ["bekliyor"], "cozum": ["yeniden_cek", "kirp"]},
+            "durum": ["bekliyor", "gonderildi", "tamam", "iptal"], "cozum": ["yeniden_cek", "bitis_sabit", "yeni_plan", "yeni_sahne", "kirp"]},
 
  "plan_alanlari": {
   "_aciklama": "SAHNELER.json v2 (§5.1). v1: eski alanlar (aynı adla kalır). Alt listeler o nesnenin anahtarlarıdır.",

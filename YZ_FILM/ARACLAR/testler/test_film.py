@@ -3,7 +3,8 @@
 """
 import os, sys, json, shutil, tempfile, unittest, io, contextlib
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE); ROOT = os.path.dirname(ARACLAR)
-sys.path.insert(0, ARACLAR)
+sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
+import _ortam  # noqa: F401  (geçici YOLLAR.json; araçlardan önce)
 import film, istem_denetim
 
 ORNEK = os.path.join(ROOT, "FILMLER", "ORNEK_3_SAHNE")

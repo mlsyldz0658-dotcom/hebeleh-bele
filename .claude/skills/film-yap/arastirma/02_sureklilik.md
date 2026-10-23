@@ -120,8 +120,8 @@ kurallarımızla yeniden yazmak daha temiz olur).
 ### 2.3 Zincirleme yöntemi (öneri)
 
 Her plan geçişi önceden üç türden birine ayrılır (plan alanı `gecis_turu`):
-1. **`devam`** (aynı eylem, aynı açı): önceki klibin son karesi (`ffmpeg -sseof -0.1 -i A.mp4 -frames:v 1`)
-   bir sonraki klibin **başlangıç karesi** olur, ya da Flow Extend kullanılır. Risk: her nesilde kalite düşer
+1. **`devam`** (aynı eylem, aynı açı): önceki klibin **kurguda kullanılan kesme anındaki karesi** (teknik son kare
+   `-sseof` kullanılmaz; TASARIM D-15) bir sonraki klibin **başlangıç karesi** olur, ya da Flow Extend kullanılır. Risk: her nesilde kalite düşer
    (720p sıkıştırma birikir). En çok 2 zincir, sonra temiz bir görselle "yeniden demirle".
 2. **`kesme_ayni_mekan`** (açı değişir): son kare **referans** olarak Gemini görsel ajanına verilir. Yeni açıdan
    başlangıç görseli üretilir (karakter kartı + mekân kartı + "önceki planın son karesi" = en çok 2 kart
@@ -217,6 +217,9 @@ B3'te 44 görselde 21 bozuk kare elle bulundu (yanlış kişi, ters el, yasak ı
 ## 6. Önerilen süreklilik sistemi
 
 ### 6.1 Plan başına süreklilik alanları (SAHNELER.json uyumlu)
+
+> **Tarihsel öneri; geçerli şema TASARIM §5.1** (`semalar/plan_v2.json`). Aşağıdaki `sureklilik` alt nesnesi, `plan_olcegi`, `kamera_konumu`
+> ve plan içi `denetim` v2'de başka yerdedir; alanların v2'deki yeri TASARIM §5.1 kural 8'deki eşleme tablosundadır.
 
 Mevcut alanlar (`no`, `parti`, `referans`, `gorsel_istem`, `hareket_istem`, `amac`, `duygu`, `replik`)
 **aynen kalır**. Her sahne nesnesine isteğe bağlı bir `sureklilik` alt nesnesi eklenir. Eski dosyalar bu alan

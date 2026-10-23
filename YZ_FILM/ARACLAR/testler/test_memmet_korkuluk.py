@@ -5,7 +5,8 @@ Gerçek tarayıcı yok: sahte bir Flow sayfası, Memmet'in sayfada yaptığı he
 import os, sys, json, time, shutil, tempfile, unittest, io, contextlib
 from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
-sys.path.insert(0, ARACLAR)
+sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
+import _ortam  # noqa: F401  (geçici YOLLAR.json; araçlardan önce)
 import memmet
 
 UYARI = "Olağan dışı etkinlik algıladık. Lütfen daha sonra tekrar deneyin."

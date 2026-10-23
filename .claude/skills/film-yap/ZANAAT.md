@@ -1,6 +1,6 @@
 # FİLM ZANAATI SİSTEMİ
 Hikâye odası, yönetmen ve kurgu ajanları için ortak kural kitabı. Hedef, filmi baştan planlı, ölçülebilir ve denetlenebilir yapmak.
-Makinenin denetleyeceği eşikler: `ritim_esikleri.json` (bu belgedeki her sayı orada bir anahtarla durur; çelişki olursa JSON geçerlidir).
+Makinenin denetleyeceği eşikler: `ritim_esikleri.json` (bu belgedeki her sayı orada bir anahtarla durur; çelişki olursa JSON geçerlidir: sayıda `ritim_esikleri.json`, **şemada `semalar/plan_v2.json` (TASARIM §5.1)** geçerlidir).
 
 **Okuma sırası:** §0 kısıtlar → §1 duygu haritası (hikâye odası) → §2–3 süre ve plan dili (yönetmen) → §4 bilgi yönetimi (hikâye odası ve yönetmen) → §5 ses (kurgu) → §6 denetim (bütün kapılar) → §7 8/10 planı.
 
@@ -172,7 +172,7 @@ sure_sn = 0,4 (giriş) + kelime / 2,5 + 0,25 × (cümle sayısı − 1) + 0,5 (�
 | P3 | 26:30–40:00 | 170 | 4,4 | 57 | 15–18 |
 
 **Klip ve kredi:** Klip bölme (§2.2) sayesinde ≈ %18 plan başka bir planın klibinden çıkar: **≈ 405 klip**. 720p Omni (12 kredi): ≈ 4.860 kredi + %20 yeniden deneme = **≈ 5.800 kredi**.
-Bütçe yetmezse planlar uzatılmaz, **film kısaltılır**: 30 dk ≈ 370 plan ≈ 305 klip ≈ 4.400 kredi.
+Bütçe yetmezse **süre hikâye yazılmadan önce seçilir; yazılmış film kısaltılmaz** (planlar da uzatılmaz). 30 dk seçeneği: ≈ 370 plan ≈ 305 klip ≈ 4.400 kredi.
 Toplam replik: ≈ 2.100–2.600 kelime (≈ 55–65 kelime/dk; anlatıcısız görsel film için uygun).
 
 ---
@@ -257,7 +257,7 @@ P041  kadraj: OG   hareket_tipi: sabit   sure_sn: 6.0   kesme: eylem@5.6
 baslangic_durumu: Mara stands at the doorway, left third, facing frame right; lit lantern in her
                   right hand at hip height; left hand empty; iron key lies on the table, right third.
 eylem_zinciri:
-  [0.0–3.0] Mara takes two slow steps forward toward the table.
+  [0.0–3.0] Mara walks two slow steps forward toward the table.
   [3.0–5.5] She stops at the table edge and extends her empty left arm toward the key.
 bitis_durumu:     Mara at the table edge, left arm extended, fingers 10 cm above the key; lantern
                   still in right hand; eyes on the key.
@@ -270,7 +270,7 @@ eylem_zinciri:
 bitis_durumu:     Key pinched between left thumb and index finger, 5 cm above the table.
 ```
 **Derlenen hareket_istem (EN, Flow'a giden):**
-`Static medium-wide shot. 0-3s: Mara takes two slow steps toward the table. 3-5.5s: she extends her empty left arm toward the iron key and stops, fingers just above it. She holds still. The lantern stays lit in her right hand. Sound: creaking floorboards, wind outside. No music.`
+`Static medium-wide shot. 0-3s: Mara walks two slow steps toward the table. 3-5.5s: she extends her empty left arm toward the iron key and stops, fingers just above it. She holds still. The lantern stays lit in her right hand. Sound: creaking floorboards, wind outside. No music.`
 
 **Konuşmalı plan örneği (tek adım + replik):**
 ```
@@ -347,7 +347,7 @@ Seyirci karakterden **fazla** bilir. Bu, gerilim üretir (Hitchcock'un masa alt�
 | Katman | Kaynak | Hedef seviye |
 |---|---|---|
 | Diyalog | TTS (AI84/ElevenLabs), whisper ile dudak anına oturtulur | fısıltı −24 · yumuşak −21,5 · normal −19,5 · bağırma −17 LUFS (replik başına) |
-| Ambiyans (ortam zemini) | Sahne başına **tek sürekli** dosya (CC0 banka ya da demucs ile ayrılmış Flow ortamı) | Diyalogdan 12–18 dB aşağı |
+| Ambiyans (ortam zemini) | Sahne başına **tek sürekli** dosya; yatak yalnız gerçek kayıttan (CC0 banka) | Diyalogdan 12–18 dB aşağı |
 | Efekt (adım, kapı, kanat) | Eylem zincirinin her adımına bir efekt | Diyalogdan 3–10 dB aşağı; şok anında diyalog seviyesine çıkabilir |
 | Müzik | Ayrı katman (Gemini/Lyria), leitmotifli | Diyalog altında: diyalogdan ≥ 12 dB aşağı (otomatik kısma). Diyalogsuz bölümde −20…−16 LUFS |
 | **Final karışım** | | Bütünleşik **−14 LUFS**, tepe ≤ −1 dBTP (YouTube ve Shorts) |
@@ -388,33 +388,31 @@ Seyirci karakterden **fazla** bilir. Bu, gerilim üretir (Hitchcock'un masa alt�
 ## 6. Ölçülebilir denetim listesi ve plan alanları
 
 ### 6.1 Önerilen plan alanları (SAHNELER.json; tümü isteğe bağlı, eski dosyalar çalışmaya devam eder)
-Mevcut alanlar (`no`, `parti`, `referans`, `gorsel_istem`, `hareket_istem`, `amac`, `duygu`, `replik`, `kullanim`) değişmez. Yeni alanlar `zanaat` alt nesnesine yazılır. Süreklilik alanları `sureklilik` alt nesnesinde kalır (`arastirma/02_sureklilik.md` §6.1). `hareket_istem` ve `gorsel_istem`, bu alanlardan **kodla derlenir**.
+> **Eski öneri; geçerli şema `semalar/plan_v2.json`** (TASARIM §5.1). Bu bölümün ilk sürümündeki alan tablosu kaldırıldı; aşağıdaki tablo o
+> alanların v2'deki yerini ve yazanını gösterir (TASARIM §5.1 kural 8, "v1/ZN/AR2 → v2 eşleme"). Çelişkide şema geçerlidir.
 
-| Alan | Tür / değerler | Doldurur | Ne için |
-|---|---|---|---|
-| `sahne_grubu` | `"S07"` | yönetmen | Sahne süresi, ambiyans, eksen |
-| `vurus` | `soguk_acilis` · `ilk_kanca` · `bag` · `tetikleyici` · `perde1_donus` · `orta_nokta` · `en_karanlik` · `perde3_karar` · `doruk` · `kapanis` · `seri_kancasi` · `parti_kancasi` · null | hikâye odası | Vuruş zamanlaması |
-| `plan_tipi` | §2.1 sözlüğü | yönetmen | Süre aralığı |
-| `hedef_duygu` | §1.1 sözlüğü, `a>b` | hikâye odası | Duygu türü eğrisi |
-| `yogunluk` | 1–10 | hikâye odası | Duygu haritası sapması |
-| `sure_sn` | sayı (kurguda kullanılan) | yönetmen | ASL, zaman çizelgesi |
-| `klip_sn` | 8 / 10 | yönetmen | Üretim süresi |
-| `kaynak_klip` | plan no ya da null | yönetmen | Klip bölme (§2.2) |
-| `kadraj` | §3.1 sözlüğü | yönetmen | Ölçek sıçraması |
-| `kamera_tarafi`, `eksen_gecis`, `bakis` | `A`/`B`, bool, `kadraj_sagi`… | yönetmen | 180°, bakış çizgisi |
-| `hareket_tipi` | §3.6 sözlüğü | yönetmen | Güvenilirlik, tek hareket |
-| `kesme` | `{tip, nokta_sn, ses_tasma_sn}` | yönetmen → kurgu | §3.4 kuralları; J/L oranı |
-| `baslangic_durumu` | `{tarif_en, konumlar{}, bakislar{}, nesneler[{ad,kimde,el,durum}]}` | yönetmen | Başlangıç karesiyle aynı |
-| `eylem_zinciri` | `[{bas, bit, ozne, fiil, hedef, govde}]` (≤ 3) | yönetmen | Atomik eylem |
-| `bitis_durumu` | `baslangic_durumu` ile aynı yapı | yönetmen | Sonraki planın başlangıcı |
-| `replik_zaman` | `{bas, bit}` | yönetmen | Dudak penceresi, süre hesabı |
-| `ekran_disi_ses` | `{karakter, metin}` ya da null | yönetmen | Tepki planı üstüne L kesme |
-| `merak_ac`, `merak_kapat` | `["m02"]` | hikâye odası | Merak defteri |
-| `kurulum`, `kullanim_bilgi` | `["kur_anahtar"]` | hikâye odası | Kurulum → kullanım (adı `kullanim_bilgi`; mevcut `kullanim {bas,sure}` kırpma alanıyla çakışmasın) |
-| `ironi` | `{id, rol: kur/surdur/coz}` | hikâye odası | Dramatik ironi |
-| `ekranda_bilgi` | Seyircinin bu planda öğrendiği tek cümle | yönetmen | Habersiz seyirci karşılaştırması |
-| `risk` | Kim, neyi kaybedebilir (bir cümle) | hikâye odası | "Neyi riske atıyor" |
-| `ses` | `{ambiyans, efektler[], muzik_ipucu, sessizlik_sn, diyalog_seviye}` | müzik süpervizörü | §5 |
+Mevcut alanlar (`no`, `parti`, `referans`, `gorsel_istem`, `hareket_istem`, `amac`, `duygu`, `replik`, `kullanim`) değişmez. `hareket_istem` ve `gorsel_istem`, plan alanlarından **kodla derlenir**.
+
+| ZN §6.1 / AR2 §6.1 alanı | v2'deki yeri | Yazan |
+|---|---|---|
+| `kadraj` | `zanaat.kamera.kadraj` | yönetmen |
+| `sure_sn` | `_derlenir.sure_sn` (`kullanim.sure`'den) | kod |
+| `kamera_tarafi` (`A`/`B`), `eksen_gecis` | sahne düzeyinde `sahne_gruplari.<S>.{eksen, kamera_tarafi}` (pusula yönü, harita); plan düzeyinde `_derlenir.kamera_tarafi` (`kroki.py`, kurulum konumundan); eksen geçişi kurulumun eksene göre yerinden | yönetmen (harita) / kod |
+| `bakis` | durum nesnesinde `bakis.hedef` (olgu); kadraja düşüşü `_derlenir.bakis_kadrajda` | yönetmen / kod |
+| `vurus`, `hedef_duygu`, `yogunluk`, `merak_ac/kapat`, `kurulum`, `kullanim_bilgi`, `ironi`, dramatik `risk` | `HIKAYE.json` (sahne ve olay düzeyi, R/olay kimliğiyle); `zaman_cizelgesi` T0'da plana `_derlenir.hikaye` olarak eşlenir | hikâye odası / kod |
+| `ekranda_bilgi` | `zanaat.ekranda_bilgi` | yönetmen |
+| `baslangic_durumu`, `bitis_durumu` | `zanaat.baslangic_durumu` (`miras` ya da olgu); `bitis_durumu` `derlenir` (dünya defteri) | yönetmen / kod |
+| `eylem_zinciri` | `zanaat.eylem_zinciri` (D-13 adım şeması; konuşma bir adımdır) | yönetmen |
+| `kesme`, `ekran_disi_ses` | `zanaat.kesme`, `zanaat.ekran_disi_ses` | yönetmen → kurgu |
+| `replik_zaman` | `_derlenir.replik_zaman` | kod |
+| `ses` | `zanaat.ses`, `sahne_gruplari.<S>.ses` | ses tasarımcısı |
+| AR2 `sureklilik.{gecis_turu, onceki_plan}` | `zanaat.zincir` | yönetmen |
+| AR2 `sureklilik.{kamera_konumu, plan_olcegi, kamera_acisi, kamera_hareketi}` | `zanaat.kamera.{kurulum, kadraj, aci, hareket_tipi}` | yönetmen |
+| AR2 `sureklilik.{kadrajdakiler, nesneler, kadraj_sirasi}` | `zanaat.kadrajdakiler`, durum nesnesi (kural 6), `_derlenir.kadraj_sirasi` | yönetmen / kod |
+| AR2 `sureklilik.{isik, isik_degisimi, yasaklar}` | `sahne_gruplari.<S>.isik`, `zanaat.yasaklar` | yönetmen |
+| AR2 `sureklilik.{uretim, denetim}` | plan kökünde `uretim`, `denetim` | betikler, kapılar |
+
+Tabloda olmayan eski alanlardan `sahne_grubu`, `plan_tipi`, `klip_sn` `zanaat` altında, `hareket_tipi` `zanaat.kamera` altında aynı adla durur; tam liste şemadadır.
 
 **Sahne düzeyi alanlar** (`sahne_gruplari.<id>`): `sahne_tipi` (§2.4), `sahne_degeri {bas, son}` (§7.2), `risk`, `eksen`, `ambiyans`.
 
@@ -430,7 +428,7 @@ Kodlar: **H** = HATA (geçmez, yeniden yazılır ya da üretilir), **B** = BAYRA
 | 2 | Parti süresi | 720–840 sn (40 dk film için); oranla | B |
 | 3 | Vuruş zamanı / film süresi | §1.2 oranı ±%4 | B |
 | 4 | Plan `sure_sn` / `plan_tipi` aralığı | §2.1 tablosu | H |
-| 5 | Diyalog süresi ≥ §2.3 formülü | eksikse | H |
+| 5 | Diyalog süresi ≥ §2.3 formülü; L/J taşması görünen süreden düşülür: `sure_sn ≥ formül − ses_tasma_sn` | eksikse | H |
 | 6 | Replik kelime sayısı | ≤ 16 (8 sn) / ≤ 20 (10 sn) | H |
 | 7 | ASL film / parti / ilk 120 sn / ilk 30 sn | 4,2–5,2 / §2.6 ±0,6 / ≤ 4,0 / ≤ 3,5 | B |
 | 8 | Sahne süresi | ≤ 180 sn | H |
@@ -439,10 +437,10 @@ Kodlar: **H** = HATA (geçmez, yeniden yazılır ya da üretilir), **B** = BAYRA
 | 11 | Aynı `plan_tipi` art arda | ≤ 4 | B |
 | 12 | Ardışık planlarda ölçek farkı (aynı açı) | ≥ 2 kademe | H |
 | 13 | `eylem_zinciri` adım sayısı / konuşmalı planda | ≤ 3 / ≤ 1 | H |
-| 14 | Adım süresi; örtüşme | ≥ 1,5 sn; örtüşme yok | H |
+| 14 | Adım süresi; örtüşme | fiziksel adım ≥ 1,5 sn; `mikro` ve `ses_vurusu` adımı ≥ `eylem_adim_mikro_min_sn`; örtüşme yok | H |
 | 15 | Yasak sonuç fiilleri `hareket_istem` içinde (§3.7) | 0 | H |
 | 16 | `bitis_durumu`[N] ≡ `baslangic_durumu`[N+1] (nesne kimde/el, konum, poz) | `yeni_sahne` dışında eşit | H |
-| 17 | 180°: aynı sahnede taraf değişimi `eksen_gecis` olmadan | 0 | H |
+| 17 | 180°: aynı sahnede taraf değişimi eksen geçişi olmadan. Kamera tarafı yönetmen yazmaz; `kroki.py` kurulum konumundan `_derlenir.kamera_tarafi`'na hesaplar, denetim bu değerle yapılır | 0 | H |
 | 18 | Karşılıklı planlarda bakışlar birbirine dönük | evet | H |
 | 19 | `referans` sayısı; aynı karede konuşan sayısı | ≤ 2; ≤ 1 | H |
 | 20 | Yasak kelimeler (filtre listesi, `03_DERSLER.md`) | 0 | H |
@@ -488,7 +486,7 @@ Kodlar: **H** = HATA (geçmez, yeniden yazılır ya da üretilir), **B** = BAYRA
 | 48 | Süreklilik kapıları G1/V1/V2/K1 | `arastirma/02_sureklilik.md` §6.2 eşikleri | — |
 | 49 | Kurgu izleme denetimi (habersiz seyirci, kare paketi) | §7.3 | H |
 
-Her kapı `RAPORLAR/<kapi>_<parti>.json` yazar: `{kapi, sonuc, hatalar:[{madde, plan, olcu, esik, oneri}]}`. HATA varsa `YENIDEN_YAZ.json` (kâğıt) ya da `YENIDEN_URET.json` (görsel/video) kuyruğu çıkar.
+Her kapı `_RAPOR/<KAPI>_<kapsam>[_t<tur>].json` yazar: `{kapi, sonuc, hatalar:[{madde, plan, olcu, esik, oneri}]}`. HATA varsa `YENIDEN_YAZ.json` (kâğıt) ya da `YENIDEN_URET.json` (görsel/video) kuyruğu çıkar.
 
 ---
 
@@ -513,11 +511,11 @@ Her kapı `RAPORLAR/<kapi>_<parti>.json` yazar: `{kapi, sonuc, hatalar:[{madde, 
 6. **Tepki ve ses köprüsü zorunluluğu.** Diyalog sahnelerinde tepki ≥ %25 ve J/L ≥ %30 değilse kurguya geçilmez.
 7. **Atomik eylem zinciri + durum zinciri.** Bütün planların başlangıç ve bitiş durumu makineyle karşılaştırılır (Z0 #16). Flow'un "kendi kafasına göre" eylemi azalır, kesmeler eylem üstüne oturur.
 8. **Kurgu izleme denetimi parti parti.** §7.3 yöntemi; KRİTİK kopukluk sıfırlanmadan sonraki partiye geçilmez.
-9. **Kesme turu.** Kurgu bitince tek bir "kesici" ajan yalnız şu soruyu cevaplar: "Hangi 10 planı ya da 2 sahneyi atarsak film daha iyi olur?" Önerilerin en az yarısı uygulanır. Her kesmeden sonra Z1 kurulum denetimi yeniden çalışır (kullanıcının kestiği planın bir bilgiyi de götürmesi dersi).
+9. **Kesme turu.** Kurgu bitince tek bir "kesici" ajan yalnız şu soruyu cevaplar: "Hangi 10 planı ya da 2 sahneyi atarsak film daha iyi olur?" Simülasyondan HATA'sız geçen önerilerin en az yarısı uygulanır. Her kesmeden sonra Z1 kurulum denetimi yeniden çalışır (kullanıcının kestiği planın bir bilgiyi de götürmesi dersi).
 10. **Puanlar gürültülüdür, eğilim önemlidir.** Karar 3 seyircinin **medyanıyla** verilir. Tek seyircinin 9'u başarı sayılmaz.
 
 ### 7.3 Habersiz seyirci yöntemi (kâğıt ve kurgu, aynı ölçüt)
-- **Girdi:** Önceki filmlerin izleyici özeti (varsa) + yalnız ekranda olanlar: `ekranda_bilgi`, replikler (EN), görsel tarifi, yer/zaman kartları. Kurgu aşamasında bunlara kare paketi eklenir: plan başına üçlü pencere (önceki son kare, bu planın 3 karesi, sonraki ilk kare) + replik metni + zaman kodu. `amac`, `risk`, `vurus` ve merak defteri **verilmez**.
+- **Girdi:** Yalnız ekranda olanlar: replikler (EN), görsel tarifi, yer/zaman kartları. Kurgu aşamasında bunlara izleme paketi eklenir ([KU2] §4.5.4): sayfa başına 6 plan × 3 kare (baş + 0,15 sn, orta, son − 0,15 sn; kırpılmış pencereden; animatikte plan başına 1 kare + eylem şeridi), her karede zaman kodu ve plan numarası, sayfanın üstünde önceki sayfanın son karesi; yanında `IZLE.md` işitsel dökümü (zaman kodu, plan no, süre, duyulan [konuşanın adı yok; ad sözle verilene kadar anonim etiket], efekt, müzik, sessizlik). `amac`, `risk`, `vurus`, `ekranda_bilgi`, önceki filmlerin özeti ve merak defteri **verilmez**.
 - **3 bağımsız seyirci** (Opus, birbirini okumaz). Her biri 6 ölçütü 1–10 puanlar:
 
 | Ölçüt | Soru | Hedef (medyan) |

@@ -1,15 +1,37 @@
-﻿"""AI84.pro (ElevenLabs aracısı) istemcisi. Anahtar dosyadan okunur, asla yazdırılmaz."""
+﻿"""AI84.pro (ElevenLabs aracısı) istemcisi. Anahtar dosyadan okunur, asla yazdırılmaz.
+Anahtar ilk istekte okunur (tembel): anahtarsız `import ai84` süreci öldürmez; istek anında anahtar yoksa AI84Error.
+Yer: AI84_KEY_FILE ortam değişkeni ya da <veri>/AYARLAR/ai84_anahtar.txt (ortak.yollar)."""
 import json, os, time, urllib.request, urllib.parse, uuid
+import ortak
 
 BASE = "https://api.ai84.pro"
-_AYARLAR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "AYARLAR")
-def _dolu(p): return os.path.exists(p) and bool(open(p, encoding="utf-8-sig").read().strip())
-KEY_FILE = os.environ.get("AI84_KEY_FILE") or next(
-    (p for p in (os.path.join(_AYARLAR, "ai84_anahtar.txt"), os.path.join(os.path.expanduser("~"), "Desktop", "ai84_anahtar.txt"))
-     if _dolu(p)), os.path.join(_AYARLAR, "ai84_anahtar.txt"))
-if not _dolu(KEY_FILE):
-    raise SystemExit(f"AI84 anahtarı yok. ai84.pro'daki API anahtarını şu dosyanın İLK SATIRINA yapıştırıp kaydet: {KEY_FILE}")
-_KEY = open(KEY_FILE, encoding="utf-8-sig").read().strip().splitlines()[0].strip()
+_KEY = None
+
+
+def _dolu(p):
+    try:
+        with open(p, encoding="utf-8-sig") as f: return bool(f.read().strip())
+    except OSError: return False
+
+
+def anahtar_dosyasi():
+    if os.environ.get("AI84_KEY_FILE"): return os.environ["AI84_KEY_FILE"]
+    p = os.path.join(ortak.yollar()["ayarlar"], "ai84_anahtar.txt")
+    yedek = os.path.join(os.path.expanduser("~"), "Desktop", "ai84_anahtar.txt")
+    return p if _dolu(p) or not _dolu(yedek) else yedek
+
+
+def _anahtar():
+    global _KEY
+    if _KEY is None:
+        try: p = anahtar_dosyasi()
+        except ortak.YolYok as e: raise AI84Error(str(e)) from None
+        if not _dolu(p):
+            raise AI84Error(f"AI84 anahtarı yok. ai84.pro'daki API anahtarını şu dosyanın İLK SATIRINA yapıştırıp kaydet: {p}")
+        with open(p, encoding="utf-8-sig") as f: _KEY = f.read().strip().splitlines()[0].strip()
+    return _KEY
+
+
 UA = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 
 
@@ -19,7 +41,7 @@ class AI84Error(Exception):
 
 def _req(method, path, body=None, params=None, headers=None, raw=False, timeout=120):
     url = BASE + path + ("?" + urllib.parse.urlencode(params, doseq=True) if params else "")
-    h = {"xi-api-key": _KEY, **UA, **(headers or {})}
+    h = {"xi-api-key": _anahtar(), **UA, **(headers or {})}
     data = None
     if body is not None and not isinstance(body, bytes):
         data = json.dumps(body).encode(); h["Content-Type"] = "application/json"

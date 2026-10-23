@@ -17,10 +17,11 @@ Kullanıcı Türkçe konuşur, samimi bir dil kullanır ("kanka"). Teknik bilgis
 Gizli bilgiler `AYARLAR/` klasöründe: `ai84_anahtar.txt`, `telegram_bot.txt`, `memmet_profil/`, `MEMMET_AYAR.json`. Anahtarları ASLA yazdırma; dosyayı okurken maskele.
 
 ## SAHNELER.json şeması
+Aşağıdaki v1 şemasıdır. v2 (`_surum: 2`) şeması `.claude/skills/film-yap/semalar/plan_v2.json`'dadır (TASARIM §5.1); v1 araçları `_surum ≥ 2` görünce 4 ile çıkar.
 ```json
 {
  "film": "EMBERFALL",
- "baslik": "She Raised the Dragon They Ordered Her to Kill | EMBERFALL | Full Movie 4K 2026",
+ "baslik": "EMBERFALL",
  "altyazi_dili": null,
  "karakterler": {
   "mara": {"ref": "01_KARAKTERLER/mara.jpg", "ses": "<elevenlabs voice_id>", "ses_adi": "Meaghan"}
@@ -37,9 +38,11 @@ Gizli bilgiler `AYARLAR/` klasöründe: `ai84_anahtar.txt`, `telegram_bot.txt`, 
  ]
 }
 ```
+- `baslik`: filmin ekran ya da seri adı (kartta görünen ad). YouTube başlığı burada değil, yalnız `YAYIN/PAKET.json`'da durur (v2'de de aynı).
 - `bitis_karesi`: isteğe bağlı. O sahnenin görseli bitiş karesi olur (yumuşak geçiş).
 - `motor`: isteğe bağlı. `flow` dışındaysa (`kling`, `seedance`) Memmet o sahneyi atlar.
-- `altyazi_dili`: `"tr"` ise CapCut'a Türkçe altyazı konur. Normal filmlerde `null`; İngilizce SRT her zaman KURGU'ya yazılır.
+- `altyazi_dili`: `"tr"` ise CapCut'a Türkçe altyazı konur. Normal filmde `altyazi_dili: null`; İngilizce SRT her zaman KURGU'ya yazılır.
+- **v2 karşılıkları:** `bitis_karesi`, `motor` ve `*_yedek` alanlarının v2'deki yeri TASARIM §5.1 kural 7'deki eşleme tablosundadır (`bitis_karesi` → `zanaat.zincir.bitis_sabitle` + `uretim.zincir`; `motor` → `uretim.saglayici`; `*_yedek` → `istem_derle --yedek` ile derlenen yedek istemler).
 
 ## Senaryo ve istem kuralları (deneyimle öğrenildi)
 1. **Referans:** Her sahneye YALNIZCA görünen karakterlerin referansı verilir. 3 referans birden verilince Flow yüzleri karıştırır. İki konuşan karakter aynı kareye konmaz; karşılıklı çekim kullanılır.

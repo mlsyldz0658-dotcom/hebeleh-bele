@@ -2,7 +2,8 @@
 yamasız Memmet'e giden giriş noktası 0 kalmalı, hiçbir dosya silinmemeli, OpenMontage'a dokunulmamalı."""
 import os, sys, json, shutil, tempfile, unittest, subprocess
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
-sys.path.insert(0, ARACLAR)
+sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
+import _ortam  # noqa: F401  (geçici YOLLAR.json; araçlardan önce)
 import veri_emniyet as ve
 
 ESKI_DOSYALAR = {

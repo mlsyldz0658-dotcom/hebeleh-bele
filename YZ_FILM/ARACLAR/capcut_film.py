@@ -24,7 +24,10 @@ import pycapcut as cc
 from kurgu_koprusu import load_video, load_audio, complete_metadata   # kullanıcının V5 köprüsünden, değiştirilmeden
 
 SEC, SR, W, H, BAR = 1_000_000, 44100, 1920, 1080, 96
-DRAFTS = Path(os.environ.get("LOCALAPPDATA", "")) / "CapCut" / "User Data" / "Projects" / "com.lveditor.draft"
+try: DRAFTS = Path(ortak.yollar()["capcut_taslak"])      # CapCut taslak klasörü YOLLAR.json'dan
+except ortak.YolYok as e:
+    if __name__ == "__main__": print("!!", e); sys.exit(4)
+    raise
 
 
 def run(*a): subprocess.run([str(x) for x in a], check=True)

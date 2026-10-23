@@ -2,7 +2,8 @@
 
 Kullanım: python puan_oku.py <rapor.md> [<rapor2.md> ...] [--esik 8]
 Rapor biçimi (son satırlardan biri):  OZET | anlasilirlik: 7 | merak: 8 | duygu: 6 | ORTALAMA: 7.0 | KRITIK: 2
-Birden çok rapor verilirse ORTALAMA'ların ortalaması alınır (seyirci puanları gürültülü, eğilim önemli).
+Birden çok rapor verilirse ORTALAMA'ların MEDYANI alınır (seyirci puanları gürültülü; tek uç puan sonucu çekmez).
+  ör. 6, 8, 9 → 8
 Çıkış kodu: 0 eşik geçildi ve KRITIK yok · 3 eşik altında ya da KRITIK var · 1 ÖZET satırı bulunamadı
 """
 import re, sys
@@ -25,6 +26,11 @@ def oku(yol):
     return alanlar
 
 
+def medyan(x):
+    x = sorted(x); n = len(x)
+    return x[n // 2] if n % 2 else (x[n // 2 - 1] + x[n // 2]) / 2
+
+
 def main(a):
     esik = float(a[a.index("--esik") + 1]) if "--esik" in a else 8.0
     yollar = [x for i, x in enumerate(a) if not x.startswith("--") and (i == 0 or a[i - 1] != "--esik")]
@@ -34,9 +40,9 @@ def main(a):
         r = oku(y)
         if r is None or "ortalama" not in r: print(f"ÖZET satırı yok: {y}"); return 1
         sonuc.append(r); print(f"{y}: ORTALAMA {r['ortalama']:.2f} · KRITIK {int(r.get('kritik', 0))}")
-    ort = sum(r["ortalama"] for r in sonuc) / len(sonuc); kritik = sum(int(r.get("kritik", 0)) for r in sonuc)
+    ort = medyan([r["ortalama"] for r in sonuc]); kritik = sum(int(r.get("kritik", 0)) for r in sonuc)
     gecti = ort >= esik and kritik == 0
-    print(f"GENEL: {ort:.2f} / eşik {esik} · KRITIK {kritik} → {'GEÇTİ' if gecti else 'GEÇMEDİ'}")
+    print(f"GENEL (medyan): {ort:.2f} / eşik {esik} · KRITIK {kritik} → {'GEÇTİ' if gecti else 'GEÇMEDİ'}")
     return 0 if gecti else 3
 
 

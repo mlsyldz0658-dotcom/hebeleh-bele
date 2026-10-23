@@ -258,6 +258,7 @@ Tek hit örnekleri: Cine Drop "Reborn Mech-Beasts" 14M; Epic AI Films AGE OF KIN
    - "Değiştirdim/kontrol et" denince `draft_content.json` salt okunur incelenir (Klipler kanalı: sıra, `source_timerange`, boşluklar).
    - Farklar plan listesine işlenir, kurulum ve boşluk kontrolü tekrarlanır.
    - Yalnız Klipler kanalı kayarsa diğer kanallar eski yerinde kalır ve boşluk oluşur. Kullanıcının kurgu kararı aynen uygulanır.
+   - *Uygulama notu (kural değişmez):* "Taslak yeniden kurulmaz" klonla uygulanır: kullanıcının taslağı klonlanır, klonda yalnız sistemin kanalları yamanır, kaynağa yazılmaz (TASARIM D-30).
 4. Yer tutucu (görsel + yavaş zoom) kalan sahneler çekilince klipler **yerinde** değişir (H/proje-b2).
 5. Yeni ya da yeniden adlandırılan planlar efektsiz kalır; her yeniden çekim turunda efekt yerleşimi güncellenir (H/proje-b2).
 6. **Kurgu izleme denetimi:** taslak kullanıcıya verilmeden önce yapılır (H/kurgu-izleme-denetimi).
@@ -293,6 +294,7 @@ Tek hit örnekleri: Cine Drop "Reborn Mech-Beasts" 14M; Epic AI Films AGE OF KIN
    - Parti içinde her 8 gönderimde 3–6 dk ara mola (`ara_mola_her`, `ara_mola_dk`).
 7. Yeni Ultra hesabı düşük güvenli; hızlı tempo uyarı getiriyor. Gündüz modunda 15–20 dk'da bir uyarı geldi (H/olagandisi-dur, H/proje-b2).
 8. Hesap işaretlenirse önce kullanıcı Flow'da ELLE 1 video denesin. O da işaretliyse sorun hesap düzeyindedir: bekle, ikinci hesap ya da kie.ai API (H/olagandisi-dur).
+   - *Uygulama notu (kural değişmez):* "ikinci hesap" ve kie.ai seçenekleri KK5 gereği kullanılmaz (TASARIM D-03); işaretli hesapta beklenir.
 9. Kullanıcının tek günlük kararı ("zorla bugün bitirek", 5 dk sonra yeniden başlat) **kalıcı değildir**; yeni günde tekrar sorulur (varsayılan 30 dk) (H/olagandisi-dur).
 10. Kredi ya da para harcatan onaylara (Approve, Generate) kullanıcı basar; Claude yalnız söyler. Fare ve klavye kontrolü yapılmaz (H/pencere-yakalama).
 

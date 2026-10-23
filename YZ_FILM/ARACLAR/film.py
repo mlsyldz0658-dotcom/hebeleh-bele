@@ -25,8 +25,10 @@ sys.path.insert(0, HERE)
 import saglayicilar as sg
 from saglayicilar import Kisitlandi
 import istem_denetim
+import ortak
 
-AYAR_DOSYA = os.path.join(ROOT, "AYARLAR", "FILM_AYAR.json")
+
+def ayar_dosyasi(): return os.path.join(ortak.yollar()["ayarlar"], "FILM_AYAR.json")   # <veri>/AYARLAR
 VARSAYILAN = {"saglayicilar": {"gorsel": ["flow"], "video": ["flow"], "ses": ["ai84"], "muzik": []}}
 
 
@@ -42,8 +44,9 @@ CIKIS = {"olagandisi": 7, "kilitli": 7, "ortam": 4, "surum": 4}
 
 def ayar():
     a = json.loads(json.dumps(VARSAYILAN))
-    if os.path.exists(AYAR_DOSYA):
-        a["saglayicilar"].update(json.load(open(AYAR_DOSYA, encoding="utf-8-sig")).get("saglayicilar", {}))
+    p = ayar_dosyasi()
+    if os.path.exists(p):
+        a["saglayicilar"].update(json.load(open(p, encoding="utf-8-sig")).get("saglayicilar", {}))
     return a
 
 
@@ -196,7 +199,7 @@ class Film:
     def a_kurgu(self):
         try:
             import pycapcut  # noqa: F401
-            capcut = os.path.isdir(os.path.join(os.environ.get("LOCALAPPDATA", ""), "CapCut", "User Data", "Projects", "com.lveditor.draft"))
+            capcut = os.path.isdir(ortak.yollar()["capcut_taslak"])
         except ImportError: capcut = False
         if capcut and not self.args.get("saglayici") == "sahte":
             r = subprocess.run([sys.executable, os.path.join(HERE, "capcut_film.py"), self.kok])
@@ -280,7 +283,8 @@ def argumanlar(a):
 def main(a=None):
     a = sys.argv[1:] if a is None else a
     if not a or a[0].startswith("-"): print(__doc__); return 0
-    f = Film(a[0], argumanlar(a))
+    try: f = Film(a[0], argumanlar(a))
+    except ortak.YolYok as e: print("!!", e); return 4
     if "--durum" in a: f.durum(); return 0
     if f.args.get("sifirla"): f.sifirla(f.args["sifirla"]); return 0
     try:

@@ -7,15 +7,16 @@ Sonunda zip'in içinde anahtarların geçmediğini tarar.
 """
 import os, sys, json, zipfile, time
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)   # ROOT: depodaki YZ_FILM (paketlenen)
 sys.path.insert(0, HERE)
-from yeni_film import BATS
+import ortak
+VERI = ortak.yollar()                  # örnek film ve gizli anahtar taraması veri kökünden (YOLLAR.json)
 
 KOK = ["BASLA_BURADAN.txt", "KURULUM.bat", "00_BENI_OKU.txt"]
 ATLA_KLASOR = {"__pycache__", "memmet_profil"}
 ATLA_ON = ("_",)                       # ARACLAR içindeki _deneme.png gibi geçici dosyalar
-ORNEK_KAYNAK = os.path.join(ROOT, "FILMLER", "MEMMET_TEST")
-PILOT = os.path.join(ROOT, "FILMLER", "EMBERFALL_PILOT", "SAHNELER.json")
+ORNEK_KAYNAK = os.path.join(VERI["filmler"], "MEMMET_TEST")
+PILOT = os.path.join(VERI["filmler"], "EMBERFALL_PILOT", "SAHNELER.json")
 AYAR_OKU = ("BU KLASÖR GİZLİDİR. Paylaşma.\n\n"
             "ai84_anahtar.txt   → AI84.pro API anahtarını İLK SATIRA yapıştır (seslendirme)\n"
             "telegram_bot.txt   → Telegram bot anahtarını İLK SATIRA yapıştır (isteğe bağlı). Sonra:\n"
@@ -48,14 +49,14 @@ def main(hedef):
             z.writestr(base + "SAHNELER.json", json.dumps(s, ensure_ascii=False, indent=1))
             for f in os.listdir(os.path.join(ORNEK_KAYNAK, "01_KARAKTERLER")):
                 z.write(os.path.join(ORNEK_KAYNAK, "01_KARAKTERLER", f), base + "01_KARAKTERLER/" + f)
-            for b, icerik in BATS.items(): z.writestr(base + b, icerik)
+            # film .bat'ları pakete girmez: mutlak yol içerirler, alan bilgisayarda yeni_film.batlar() ile yeniden yazılır
             z.writestr(base + "GELENLER/BURAYA_FLOW_ZIPLERI.txt", "Elle indirdiğin Flow zip'lerini buraya at, KONTROL.bat'a bas.\n")
             z.writestr(base + "DUZELT.txt", "")
         if os.path.exists(PILOT): z.write(PILOT, "YZ_FILM/BILGI/ORNEK_SAHNELER_EMBERFALL_PILOT_20sahne.json")
     # güvenlik taraması: anahtarlar zip'te geçiyor mu?
     gizli = []
-    for f in ("ai84_anahtar.txt", "telegram_bot.txt"):
-        p = os.path.join(ROOT, "AYARLAR", f)
+    for f in [os.path.join(k, a) for k in (os.path.join(ROOT, "AYARLAR"), VERI["ayarlar"]) for a in ("ai84_anahtar.txt", "telegram_bot.txt")]:
+        p = f
         if os.path.exists(p): gizli += [l.strip() for l in open(p, encoding="utf-8-sig") if len(l.strip()) >= 20]
     sizinti, profil = [], False
     with zipfile.ZipFile(zp) as z:

@@ -28,11 +28,16 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-VERI = os.environ.get("YZ_FILM_VERI") or os.path.dirname(HERE)   # veri kökü sarmalayıcısı verir (PR-1: ortak.yollar)
-AYARLAR = os.path.join(VERI, "AYARLAR")
+import ortak
+try: _Y = ortak.yollar()                     # yollar yalnız YOLLAR.json'dan (kurulum.py --yollar)
+except ortak.YolYok as e:
+    if __name__ == "__main__": print("!!", e); sys.exit(4)
+    raise
+VERI = _Y["veri_kok"]
+AYARLAR = _Y["ayarlar"]
 AYAR_DOSYA = os.path.join(AYARLAR, "MEMMET_AYAR.json")
 FILM_AYAR = os.path.join(AYARLAR, "FILM_AYAR.json")
-HESAP = os.path.join(VERI, "HESAP")          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
+HESAP = _Y["hesap"]                          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
 
 
 def chrome_bul():

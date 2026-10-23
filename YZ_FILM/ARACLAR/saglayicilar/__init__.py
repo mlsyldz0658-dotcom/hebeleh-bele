@@ -10,10 +10,14 @@ uyarıdan sonra başka servise ya da hesaba geçmek bot tespitini atlatmanın bi
 Bot tespitini atlatmaya çalışan sağlayıcı YAZILMAZ.
 Anahtarlar yalnız AYARLAR/ klasöründen ya da ortam değişkeninden okunur; asla yazdırılmaz.
 """
-import os, importlib
+import os, sys, importlib
 
 ARACLAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AYARLAR = os.path.join(os.path.dirname(ARACLAR), "AYARLAR")
+if ARACLAR not in sys.path: sys.path.insert(0, ARACLAR)
+import ortak
+
+
+def ayarlar_klasoru(): return ortak.yollar()["ayarlar"]     # <veri>/AYARLAR; YOLLAR.json yoksa ortak.YolYok
 TURLER = ("gorsel", "video", "ses", "muzik")
 # ad → modül.Sınıf. Yeni sağlayıcı (Veo/Kling/kie.ai API, müzik servisi) buraya bir satırla eklenir.
 KAYIT = {
@@ -48,7 +52,8 @@ class Saglayici:
     def anahtar(self, dosya, ortam):
         """Anahtarı ortam değişkeninden ya da AYARLAR/<dosya> ilk satırından okur. Yoksa None."""
         if os.environ.get(ortam): return os.environ[ortam].strip()
-        p = os.path.join(AYARLAR, dosya)
+        try: p = os.path.join(ayarlar_klasoru(), dosya)
+        except ortak.YolYok: return None
         if os.path.exists(p):
             s = open(p, encoding="utf-8-sig").read().strip()
             if s: return s.splitlines()[0].strip()

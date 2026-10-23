@@ -2,7 +2,7 @@
 Anahtar AYARLAR/ai84_anahtar.txt ya da AI84_KEY_FILE ortam değişkenindeki dosyada; burada okunmaz/yazdırılmaz.
 """
 import os, shutil, hashlib, subprocess
-from saglayicilar import Saglayici, Kisitlandi, AYARLAR
+from saglayicilar import Saglayici, Kisitlandi, ayarlar_klasoru
 
 
 class AI84Ses(Saglayici):
@@ -10,7 +10,8 @@ class AI84Ses(Saglayici):
     turler = ("ses",)
 
     def hazir(self):
-        p = os.environ.get("AI84_KEY_FILE") or os.path.join(AYARLAR, "ai84_anahtar.txt")
+        try: p = os.environ.get("AI84_KEY_FILE") or os.path.join(ayarlar_klasoru(), "ai84_anahtar.txt")
+        except Exception as e: return False, str(e)[:120]
         if not (os.path.exists(p) and open(p, encoding="utf-8-sig").read().strip()):
             return False, "AYARLAR/ai84_anahtar.txt boş"
         return True, ""

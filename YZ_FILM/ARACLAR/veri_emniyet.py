@@ -90,7 +90,11 @@ def _yerine_koy(yol, hedef_rel, depo_memmet, veri):
 
 def veri_emniyet(veri=None, depo_araclar=HERE, sessiz=False):
     """Veri kökünü emniyete alır ve raporu döndürür. durum: temiz | veri_yok | KALAN_VAR."""
-    veri = os.path.abspath(veri or os.environ.get("YZ_FILM_VERI") or varsayilan_veri())
+    if not veri:
+        try:
+            import ortak; veri = ortak.yollar()["veri_kok"]
+        except Exception: veri = os.environ.get("YZ_FILM_VERI") or varsayilan_veri()
+    veri = os.path.abspath(veri)
     yaz = (lambda *a: None) if sessiz else (lambda *a: print(*a, flush=True))
     rapor = {"veri": veri, "zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "tasinan": [], "konan": [], "kalan_giris_noktasi": []}
     if not os.path.isdir(veri):

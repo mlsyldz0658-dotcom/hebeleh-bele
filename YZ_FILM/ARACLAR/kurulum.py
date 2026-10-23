@@ -2,12 +2,14 @@
 KURULUM.bat çalıştırır. Birden fazla kez çalıştırmak güvenlidir (kurulu olanı atlar).
 
   python kurulum.py                                     kurulum (önce veri kökü emniyeti çalışır)
+  python kurulum.py --yollar [--veri <klasör>]          yalnız YOLLAR.json'u yazar (soru sormaz; varsayılan veri: Masaüstü\\YZ_FILM)
   python kurulum.py --veri-emniyet [--veri <klasör>]    yalnız veri kökü emniyeti (veri_emniyet.py; eski Memmet ve .bat'lar emekliye)
 """
 import os, sys, subprocess, shutil, glob, importlib.util, json
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-KD = os.path.join(HERE, "kurulum_dosyalari"); AYARLAR = os.path.join(ROOT, "AYARLAR")
+KD = os.path.join(HERE, "kurulum_dosyalari")
+AYARLAR = None   # <veri>/AYARLAR; main() YOLLAR.json'u yazdıktan sonra doldurur
 SONUC = []
 
 
@@ -30,15 +32,20 @@ def pip(*args):
 
 
 def main():
+    global AYARLAR
     sys.path.insert(0, HERE)
-    import veri_emniyet
-    if "--veri-emniyet" in sys.argv:
-        a = sys.argv; veri = a[a.index("--veri") + 1] if "--veri" in a else None
+    import ortak, veri_emniyet
+    a = sys.argv; veri = a[a.index("--veri") + 1] if "--veri" in a else None
+    if "--yollar" in a:
+        y = ortak.yollar_yaz(veri); print("YOLLAR.json yazıldı:", ortak.yollar_dosyasi(), "· veri kökü:", y["veri_kok"]); sys.exit(0)
+    if "--veri-emniyet" in a:
         baslik("Veri kökü emniyeti"); r = veri_emniyet.veri_emniyet(veri)
         sys.exit(0 if r["durum"] in ("temiz", "veri_yok") else 3)
-    baslik("0/7 Veri kökü emniyeti (eski Memmet ve .bat'lar emekliye; hiçbir şey silinmez)")
+    baslik("0/7 Yollar ve veri kökü emniyeti (eski Memmet ve .bat'lar emekliye; hiçbir şey silinmez)")
+    y = ortak.yollar_yaz(veri); AYARLAR = ortak.yollar()["ayarlar"]
+    ok(f"YOLLAR.json: veri kökü {y['veri_kok']}")
     try:
-        r = veri_emniyet.veri_emniyet()
+        r = veri_emniyet.veri_emniyet(y["veri_kok"])
         (ok if r["durum"] in ("temiz", "veri_yok") else hata)(f"veri kökü: {r['durum']} ({len(r['tasinan'])} dosya _ESKI'ye taşındı)")
     except BaseException as e: hata(f"veri kökü emniyeti çalışmadı: {str(e)[:120]}")
 

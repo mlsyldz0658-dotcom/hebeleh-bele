@@ -291,7 +291,7 @@ ASAMALAR = (
           (M("ayni_sahip", "S0 maddesi: ses-tasarimcisi·tasarim yeni örnek 1 kez", "ses-tasarimcisi", "tasarim"),
            M("hedef_alti", "kod varsayılanı (tek yatak, efektsiz) + BAYRAK")), None,
           (B("ST", "ses_plani.py", "--taslak", grup=0),
-           J("ST", "ses-tasarimcisi", "tasarim", grup=1, adet="sahne_grubu", cikti=("CIKTI/SES.json",),
+           J("SE", "ses-tasarimcisi", "tasarim", grup=1, adet="sahne_grubu", cikti=("CIKTI/SES.json",),
              tasima=(("CIKTI/SES.json", "_SES/SES_G{i}.json"),)),
            J("SM", "ses-tasarimcisi", "muzik", grup=1, cikti=("CIKTI/muzik_listesi.json",),
              tasima=(("CIKTI/muzik_listesi.json", "MUZIK/muzik_listesi.json"),)),

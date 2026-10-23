@@ -567,7 +567,7 @@ def _hucre(x): return str(x).replace("|", "\\|").replace("\n", " ")
 
 
 def markdown():
-    s = ["# Hat — aşama listesi (üretildi: `film.py asamalar --md`; elle düzenleme)", "",
+    s = ["# Hat — aşama listesi (üretildi: `film.py asamalar --md`; elle düzenlenmez)", "",
          "| No | Aşama | Kim | Girdi (üreten) | Çıktı | Kapı | Tur | Tavan sonrası | Kredi | Ortam |",
          "|---|---|---|---|---|---|---|---|---|---|"]
     for a in ASAMALAR:

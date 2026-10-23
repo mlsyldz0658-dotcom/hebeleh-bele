@@ -88,13 +88,28 @@ class FilmHatti(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as c: istem_denetim.rapor(self.kok)
         self.assertEqual(c.exception.code, 4)
 
-    def test_onay_verilmezse_durur(self):
-        f = film.Film(self.kok, {})
-        f.ayar["saglayicilar"]["gorsel"] = ["flow_yerine"]
+    def test_kredi_onayi_soru_sormaz_gorev_defterine_gider(self):
+        """§6.10: onay()/input() kalktı. Onay yoksa hat soru sormadan 5 BÜTÇE ile durur; --tam-otomatik ya da
+        FILM_AYAR "mod": "tam_otomatik" onaydır."""
         from saglayicilar.sahte import Sahte
         kredili = type("Kredili", (Sahte,), {"ad": "kredili", "kredili": True})()
-        with contextlib.redirect_stdout(io.StringIO()), unittest.mock.patch("builtins.input", return_value="h"):
-            with self.assertRaises(film.Durdur): f.onay("GÖRSEL", [kredili])
+        hic = unittest.mock.Mock(side_effect=AssertionError("input() çağrılmamalı"))
+        f = film.Film(self.kok, {})
+        with contextlib.redirect_stdout(io.StringIO()), unittest.mock.patch("builtins.input", hic):
+            with self.assertRaises(film.Durdur) as c: f.onay("GÖRSEL", [kredili])
+        self.assertEqual(c.exception.kod, "butce"); self.assertEqual(film.CIKIS[c.exception.kod], 5)
+        with unittest.mock.patch("builtins.input", hic):
+            film.Film(self.kok, {"tam_otomatik": True}).onay("GÖRSEL", [kredili])
+            ayar = film.ayar_dosyasi(); os.makedirs(os.path.dirname(ayar), exist_ok=True)
+            try:
+                json.dump({"mod": "tam_otomatik"}, open(ayar, "w", encoding="utf-8"))
+                film.Film(self.kok, {}).onay("GÖRSEL", [kredili])
+            finally: os.remove(ayar)
+        hic.assert_not_called()
+        import ast
+        agac = ast.parse(open(film.__file__, encoding="utf-8").read())
+        cagrilar = [n.func.id for n in ast.walk(agac) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)]
+        self.assertNotIn("input", cagrilar)
 
 
 class IstemDenetim(unittest.TestCase):

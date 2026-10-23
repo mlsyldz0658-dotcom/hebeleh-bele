@@ -1,0 +1,324 @@
+{
+ "film": "EMBERFALL_PILOT",
+ "baslik": "She Raised the Dragon They Ordered Her to Kill | EMBERFALL",
+ "karakterler": {
+  "mara": {
+   "ref": "01_KARAKTERLER/mara.jpg",
+   "ses": "mrmaApeLxpgZi4RK7oGq",
+   "ses_adi": "Meaghan"
+  },
+  "ember": {
+   "ref": "01_KARAKTERLER/ember.jpg",
+   "ses": null,
+   "ses_adi": null
+  },
+  "voss": {
+   "ref": "01_KARAKTERLER/voss.jpg",
+   "ses": "M5E055lOUxMi0kJpGyE9",
+   "ses_adi": "Gravel Midnight"
+  }
+ },
+ "sahneler": [
+  {
+   "no": 1,
+   "parti": 1,
+   "referans": [],
+   "gorsel_istem": "Wide establishing shot of a snowy mountain village at dusk, wooden houses with glowing windows, smoke from chimneys, dark pine forest behind, no people in focus, cinematic, photorealistic, anamorphic, 4K",
+   "hareket_istem": "Slow aerial push-in over the snowy village at dusk, snow falling, chimney smoke drifting. No dialogue. Ambient wind.",
+   "amac": "Dünyayı tanıt: yalnız, karlı köy",
+   "duygu": "huzur, ama soğuk"
+  },
+  {
+   "no": 2,
+   "parti": 1,
+   "referans": [
+    "voss"
+   ],
+   "gorsel_istem": "Captain Voss in dark iron armor stands in a snowy village square addressing a crowd of villagers holding torches, seen from behind the crowd, dusk, cinematic, photorealistic",
+   "hareket_istem": "Captain Voss raises his voice to the crowd, slow camera push-in. He says in a deep cold voice: \"The beast is dead. If anyone finds its young, you bring it to me. Or you burn with it.\"",
+   "replik": {
+    "karakter": "voss",
+    "metin": "The beast is dead. If anyone finds its young, you bring it to me. Or you burn with it.",
+    "cumleler": [
+     {
+      "en": "The beast is dead.",
+      "tr": "Canavar öldü."
+     },
+     {
+      "en": "If anyone finds its young, you bring it to me.",
+      "tr": "Yavrusunu bulan olursa bana getirecek."
+     },
+     {
+      "en": "Or you burn with it.",
+      "tr": "Yoksa onunla birlikte yanarsınız."
+     }
+    ]
+   },
+   "amac": "Kötü adam ve tehdit: yavruyu saklayan yanar",
+   "duygu": "korku, baskı"
+  },
+  {
+   "no": 3,
+   "parti": 1,
+   "referans": [],
+   "gorsel_istem": "A huge dead adult dragon with ash-gray scales and dim orange cracks lying in the snow at the forest edge, spears in its side, soldiers with torches around it, night, somber, cinematic, photorealistic",
+   "hareket_istem": "Slow dolly along the dead dragon, torches flickering, soldiers walking past. No dialogue. Low wind, crackling torches.",
+   "amac": "Neden: anne ejderha öldürüldü",
+   "duygu": "hüzün, vahşet"
+  },
+  {
+   "no": 4,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Close-up of Mara the huntress in her fur-lined leather coat watching from behind a pine tree, snow falling, torchlight on her face, cinematic, photorealistic",
+   "hareket_istem": "Mara's eyes narrow, she slowly steps back into the shadows. No dialogue. Snow falling.",
+   "amac": "Mara'yı tanıt: kalabalıktan ayrı, karar veriyor",
+   "duygu": "şüphe → kararlılık"
+  },
+  {
+   "no": 5,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Mara walking alone through a dark snowy forest at night with a lantern, following small glowing orange footprints in the snow, cinematic, photorealistic",
+   "hareket_istem": "Tracking shot behind Mara walking through the forest, lantern swaying. No dialogue. Crunching snow footsteps.",
+   "amac": "Macera başlıyor: izleri takip",
+   "duygu": "merak, gerilim"
+  },
+  {
+   "no": 6,
+   "parti": 1,
+   "referans": [
+    "ember"
+   ],
+   "gorsel_istem": "Inside a small snowy cave, the tiny baby dragon Ember curled up shivering, amber eyes looking at the camera, cinematic, photorealistic",
+   "hareket_istem": "The baby dragon shivers and lets out a tiny frightened chirp, slow push-in. No dialogue.",
+   "amac": "Yavruyu ilk kez gör: savunmasız",
+   "duygu": "acıma"
+  },
+  {
+   "no": 7,
+   "parti": 1,
+   "referans": [
+    "mara",
+    "ember"
+   ],
+   "gorsel_istem": "Mara kneeling at a snowy cave entrance holding a lantern, reaching her gloved hand slowly toward the baby dragon Ember, cinematic, photorealistic",
+   "hareket_istem": "Mara slowly extends her hand, calm and gentle. She whispers softly: \"Easy, little one. I won't hurt you.\"",
+   "replik": {
+    "karakter": "mara",
+    "metin": "Easy, little one. I won't hurt you.",
+    "cumleler": [
+     {
+      "en": "Easy, little one.",
+      "tr": "Sakin ol, küçüğüm."
+     },
+     {
+      "en": "I won't hurt you.",
+      "tr": "Sana zarar vermeyeceğim."
+     }
+    ]
+   },
+   "amac": "İlk temas: Mara güven veriyor",
+   "duygu": "korku → şefkat"
+  },
+  {
+   "no": 8,
+   "parti": 1,
+   "referans": [
+    "ember"
+   ],
+   "gorsel_istem": "Extreme close-up of the baby dragon Ember's amber eye reflecting lantern light, cinematic, photorealistic",
+   "hareket_istem": "The amber eye blinks slowly, pupil narrowing. No dialogue. Soft breathing.",
+   "amac": "Yavrunun gözünden: Mara'ya güveniyor",
+   "duygu": "masumiyet"
+  },
+  {
+   "no": 9,
+   "parti": 1,
+   "referans": [
+    "mara",
+    "ember"
+   ],
+   "gorsel_istem": "Mara wrapping the baby dragon Ember in her wool scarf and holding it against her chest, gentle expression, cave, lantern light, cinematic, photorealistic",
+   "hareket_istem": "Mara wraps the dragon in the scarf and holds it close. She whispers: \"They killed your mother. They will not kill you.\"",
+   "replik": {
+    "karakter": "mara",
+    "metin": "They killed your mother. They will not kill you.",
+    "cumleler": [
+     {
+      "en": "They killed your mother.",
+      "tr": "Anneni öldürdüler."
+     },
+     {
+      "en": "They will not kill you.",
+      "tr": "Seni öldürmeyecekler."
+     }
+    ]
+   },
+   "amac": "Söz anı: Mara onu koruyacak",
+   "duygu": "yemin, sıcaklık"
+  },
+  {
+   "no": 10,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Mara walking back through the snowy forest carrying a wrapped wool scarf bundle against her chest, glowing orange light leaking from the bundle, night, cinematic, photorealistic",
+   "hareket_istem": "Tracking shot of Mara walking fast through the forest, orange glow from the bundle. No dialogue. Wind, footsteps.",
+   "amac": "Risk: kucağında bir sır taşıyor",
+   "duygu": "acele, tedirginlik"
+  },
+  {
+   "no": 11,
+   "parti": 1,
+   "referans": [],
+   "gorsel_istem": "Interior of a small empty wooden cabin, fireplace burning, wooden table, hanging herbs and hunting bows on the wall, warm light, no people, cinematic, photorealistic",
+   "hareket_istem": "Slow pan across the warm cabin interior, fire crackling. No dialogue.",
+   "amac": "Sığınak: sıcak kulübe",
+   "duygu": "rahatlama"
+  },
+  {
+   "no": 12,
+   "parti": 1,
+   "referans": [
+    "mara",
+    "ember"
+   ],
+   "gorsel_istem": "Mara setting the baby dragon Ember down by a fireplace in a wooden cabin, the dragon sniffing the fire curiously, cinematic, photorealistic",
+   "hareket_istem": "The baby dragon waddles toward the fire, tilting its head curiously. No dialogue. Fire crackling, small chirps.",
+   "amac": "Yeni yuva: ejderha ateşi keşfediyor",
+   "duygu": "merak, sevimlilik"
+  },
+  {
+   "no": 13,
+   "parti": 1,
+   "referans": [
+    "mara",
+    "ember"
+   ],
+   "gorsel_istem": "The baby dragon Ember eating a piece of raw fish from Mara's hand by the fireplace, cozy, cinematic, photorealistic",
+   "hareket_istem": "The dragon snaps the fish and swallows it, Mara laughs quietly. No dialogue.",
+   "amac": "Bağ kuruluyor: beslenme",
+   "duygu": "neşe"
+  },
+  {
+   "no": 14,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Close-up of Mara smiling softly for the first time, firelight on her scarred cheek, inside a wooden cabin, cinematic, photorealistic",
+   "hareket_istem": "Mara looks down at the dragon, smiling softly. She says quietly: \"Ember. Your name is Ember.\"",
+   "replik": {
+    "karakter": "mara",
+    "metin": "Ember. Your name is Ember.",
+    "cumleler": [
+     {
+      "en": "Ember.",
+      "tr": "Ember."
+     },
+     {
+      "en": "Your name is Ember.",
+      "tr": "Senin adın Ember."
+     }
+    ]
+   },
+   "amac": "İsim verme: artık aile",
+   "duygu": "sevgi (filmin kalbi)"
+  },
+  {
+   "no": 15,
+   "parti": 1,
+   "referans": [],
+   "gorsel_istem": "Night exterior of a lonely wooden cabin in the snow, a line of soldiers with torches approaching on the path, seen from a distance, cinematic, photorealistic",
+   "hareket_istem": "Slow push-in on the line of torches approaching the cabin. No dialogue. Distant marching boots, wind.",
+   "amac": "Tehdit geri döndü: askerler geliyor",
+   "duygu": "gerilim yükseliyor"
+  },
+  {
+   "no": 16,
+   "parti": 1,
+   "referans": [
+    "voss"
+   ],
+   "gorsel_istem": "Captain Voss knocking on a wooden cabin door with an armored fist at night, soldiers with torches behind him, cinematic, photorealistic",
+   "hareket_istem": "Captain Voss pounds three times on the door. No dialogue. Heavy knocks.",
+   "amac": "Kapıya dayandılar",
+   "duygu": "dehşet"
+  },
+  {
+   "no": 17,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Mara opening a wooden cabin door halfway at night, blocking the view inside, torchlight on her face, tense expression, cinematic, photorealistic",
+   "hareket_istem": "Mara holds the door half open, voice steady. She says: \"It's late, Captain. What do you want?\"",
+   "replik": {
+    "karakter": "mara",
+    "metin": "It's late, Captain. What do you want?",
+    "cumleler": [
+     {
+      "en": "It's late, Captain.",
+      "tr": "Saat geç oldu, Kaptan."
+     },
+     {
+      "en": "What do you want?",
+      "tr": "Ne istiyorsun?"
+     }
+    ]
+   },
+   "amac": "Mara soğukkanlı rol yapıyor",
+   "duygu": "sakin yüz, içte panik"
+  },
+  {
+   "no": 18,
+   "parti": 1,
+   "referans": [
+    "voss"
+   ],
+   "gorsel_istem": "Close-up of Captain Voss standing at a cabin door at night, cold eyes, snow on his beard, torchlight, cinematic, photorealistic",
+   "hareket_istem": "Captain Voss leans closer, eyes scanning past her. He says coldly: \"Something is burning in your house, huntress.\"",
+   "replik": {
+    "karakter": "voss",
+    "metin": "Something is burning in your house, huntress.",
+    "cumleler": [
+     {
+      "en": "Something is burning in your house, huntress.",
+      "tr": "Evinde bir şey yanıyor, avcı."
+     }
+    ]
+   },
+   "amac": "Voss bir şeyler seziyor",
+   "duygu": "tehdit, soğukluk"
+  },
+  {
+   "no": 19,
+   "parti": 1,
+   "referans": [
+    "ember"
+   ],
+   "gorsel_istem": "The baby dragon Ember hiding under a wooden bed in a dark cabin, its orange cracks glowing faintly, cinematic, photorealistic",
+   "hareket_istem": "The dragon's glow pulses under the bed, it presses itself flat and still. No dialogue. Tense silence, fire crackling.",
+   "amac": "Yavru saklanıyor: ışığı onu ele verebilir",
+   "duygu": "nefes kesen gerilim"
+  },
+  {
+   "no": 20,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Close-up of Mara inside the cabin with her back pressed against the closed wooden door, breathing hard, firelight, cinematic, photorealistic",
+   "hareket_istem": "Mara closes her eyes, holding her breath, slow push-in. No dialogue. Muffled footsteps outside fade away.",
+   "amac": "Askerler gitti mi? Kapanış",
+   "duygu": "nefes, ama bitmedi"
+  }
+ ],
+ "altyazi_dili": "tr"
+}

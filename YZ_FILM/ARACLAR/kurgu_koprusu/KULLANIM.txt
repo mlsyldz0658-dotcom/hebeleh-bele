@@ -1,0 +1,82 @@
+KURGU KÖPRÜSÜ V5 — FOTOĞRAF HAREKETİ
+
+ZIP'i ayrı bir klasöre çıkarın. V4 klasörünü silmeniz gerekmiyor.
+
+1) YENİ PROJE
+Yeni_Kurgu_Olustur.bat dosyasına çift tıklayın. JSON planınızı seçin.
+Açılan pencerede hareket ve miktar seçin. Varsayılan: otomatik / %8 zoom / %2 yatay kayma.
+Varsayılan sıra: yakınlaş, uzaklaş, sağdan yaklaş, soldan yaklaş.
+Fotoğrafların süreleri değişmez. Video ve ses işlevleri V4 gibi çalışır.
+Öğe düzeyinde JSON hareket tercihi varsa genel pencere ayarından önceliklidir.
+
+2) CAPCUT'TA ZATEN DÜZENLENMİŞ PROJE
+CapCut'ı kapatın. Mevcut_Projeye_Hareket_Ekle.bat dosyasına çift tıklayın.
+İçinde draft_content.json bulunan PROJE klasörünü seçin.
+Pencerede fotoğraf kanalını/kanallarını ve hareket miktarını seçin.
+Sonra CapCut taslaklarının ANA klasörünü seçin (genellikle com.lveditor.draft).
+Yeni Hareketli ... projesi oluşur. Asıl proje değiştirilmez.
+CapCut'ı açıp bu yeni projeyi seçin. Kaynak görseller aynı yerlerinde kalmalı.
+
+KORUNANLAR
+Sesler, videolar, kesim sırası, süreler ve haber bantları değiştirilmez.
+Mevcut anahtar kareli/animasyonlu fotoğraflara tekrar hareket eklenmez.
+Özel kırpılmış, kaydırılmış, döndürülmüş fotoğraflar ve 1 saniyeden kısa kesimler atlanır.
+Farklı en-boy oranı büyük kırpma gerektiriyorsa mevcut kadraj korunur.
+Şeffaf logo gibi özel katmanların kanalını seçmeyin. Haber Bantları kanalı ayrıca hariç tutulur.
+Yüz/nesne takibi yoktur; hareketler geometriktir. Odak önemliyse JSON'da kapali seçin.
+Hareket hızı kesim süresine bağlıdır. 4 saniyeden kısalarda hareket miktarı azaltılır.
+
+SONUÇ VE SINIRLAR
+Taslak klasöründeki kurgu_hareket_raporu.json uygulananları/atlananları gösterir.
+Ana taslak ile Timelines kopyası beraber güncellenir. Birden fazla aktif zaman çizelgesi,
+uyuşmayan kopyalar veya okunamayan/şifreli taslaklarda işlem durur.
+Mevcut kaynak üzerinde hiçbir dosyaya yazılmaz. Üretilen kopya ayrı kimliklidir.
+Sağdan/soldan: görüntü hafif yatay ofsetten merkeze gelirken yakınlaşır.
+Testler: gerçek gönderilen taslak yapısı, eski ses/bant özellikleri, dört hareket,
+anahtar kare sınırları ve aynı taslağa yeniden uygulamada animasyonların korunması.
+Windows CapCut arayüzü bu ortamda çalıştırılmadı: ilk kullanımda yeni kopyayı açıp
+hareketleri ve medya bağlantılarını kontrol edin.
+
+GEREKSİNİMLER
+Mevcut projeye hareket aracı Python standart kütüphanesi + Tkinter kullanır.
+Yeni proje aracı V4'teki pycapcut==0.0.3 ve Pillow ortamını kullanır.
+V4 zaten çalışıyorsa ek paket kurulumu gerekmez. Python bulunamazsa hata ekranını paylaşın.
+
+V4'TEN DEVAM EDEN KULLANIM BİLGİLERİ
+----------------------------------
+KURGU KÖPRÜSÜ V5 — HABER BANTLARI VE ANLATICI ALTINDA GÖRÜNTÜ
+
+1. ZIP'i yeni bir klasöre çıkar; V3'ü değiştirmek gerekmez.
+2. Claude'a CLAUDE_JSON_TALIMATI.txt içeriğini ver. Kaynak dosya yollarını, anlatıcı metnini/SRT'yi ve kurgu zamanlarını paylaş. Hazırladığı JSON'u kaydet.
+3. CapCut'ı kapat. Yeni_Kurgu_Olustur.bat dosyasına çift tıkla; JSON'u seç.
+4. Tamamlandı mesajından sonra yeni “Kurgu Koprusu ...” projesini CapCut'ta aç.
+
+NE EKLENDİ?
+- İsteğe bağlı haber_bantlari: metin, cizelge ve isteğe bağlı etiket.
+- Başlık gerçek font genişliği/yüksekliği ölçülerek en fazla iki satıra sığdırılır. Çok uzunsa sessizce kesilmez; hata verir.
+- Beyaz bant, siyah kalın başlık, kırmızı küçük etiket. Logo eklenmez.
+- Bantlar ayrı üst görüntü kanalında, belirtilen zamanlarda görünür.
+- Bant görselleri projenin haber_bantlari klasörüne kaydedilir. CapCut içinde metin nesnesi değil şeffaf PNG'dir. Metni değiştirmek için JSON'u düzeltip yeniden proje oluştur; mevcut düzenlenmiş projeyi yerinde güncellemez.
+- 1920x1080 önerilir. Bant özelliği yatay, en az 640x360 görüntü içindir.
+
+ANLATICI BÖLÜMLERİ
+Yeni haber JSON'unda ayarlar.anlatici_goruntusu_zorunlu: true kullan.
+Bu, anlatıcının bütün zamanlarını video veya fotoğrafla kaplamanı zorunlu tutar. Altındaki videolarda orijinal_ses: false olmalı. Anlatıcı sesi yorum_kesimleri ile ayrı kanalda çalar.
+Program konuya uygun görüntüyü kendisi seçmez; eşleştirmeyi Claude'un JSON'u belirler. Eksik görüntüyü uzatmaz veya uydurmaz. Anlatıcıyla orijinal video sesi çakışırsa hata verir.
+Orijinal sesi dinletilen bölümlerde true kullanılabilir; o aralığa anlatıcı sesi koyma. Aynı video gerekirse farklı ses ayarlarıyla ayrı kesimlere bölünür.
+
+UYUMLULUK
+Uygulama V5; yeni JSON şeması surum:3. Önceki surum:1 ve surum:2 planları kabul edilir. Yeni anlatıcı-görüntü kontrolü eski planlarda varsayılan olarak kapalıdır; eski kasıtlı boşluklar reddedilmez. Fotoğraf, video, ses, sessize alma, zamanlar ve ana parça mıknatısının kapalı olması korunur.
+Her çalıştırma benzersiz yeni proje oluşturur; eski projeyi veya kaynakları silmez. Kaydetme hatası yeni, kısmi proje bırakabilir.
+
+PAKET
+CLAUDE_JSON_TALIMATI.txt: Claude'a verilecek tam tarif.
+ORNEK_V5_YOLLARI_DEGISTIR.json: 20 saniyelik biçim örneği; C:/ORNEK yolları gerçekte yoktur, doğrudan çalıştırma. Gerçek kaynaklarla değiştirilmelidir.
+WM_Video1_58_Gorsel.json ve test_v3.py: geriye uyumluluk testi için önceki fotoğraf planı. Yeni haber projen için bunları seçme.
+test_v4.py: haber bandı, zaman, ses ve kapsama testleri.
+BOS_ALAN.png: eski planlardaki sondaki açıkça istenen boşluğu koruyan şeffaf yer tutucu.
+
+GEREKSİNİMLER VE TEST DURUMU
+Mevcut pycapcut 0.0.3 kurulumu kullanılır. Haber bandı için Pillow ile Windows Arial Bold veya Segoe UI Bold gerekir. Pillow genellikle pycapcut'ın imageio bağımlılığıyla kuruludur. Modül/font hatası çıkarsa ekranı veya kurgu_koprusu_hata.txt dosyasını gönder.
+Gerçek pycapcut ile sentetik video/ses/fotoğraf kullanılarak eski ve yeni planlar üretildi; bandın üst katmanı, zamanları, dosyaları, video sesinin 0 ve anlatıcı sesinin 1 olması, görüntü kapsamı ve uzun metin reddi denetlendi. Örnek bant görsel olarak kontrol edildi. Gerçek Windows/CapCut açılışı burada test edilmedi. İlk projede bant konumu/boyutu, sesler ve yeniden açınca korunmasını kontrol et.
+Kaynak medya süreleri ve dosya varlığı program çalışırken kontrol edilir. Haber metninin doğruluğunu program denetlemez; Claude'a verilen kaynaklara göre ayrıca kontrol et.

@@ -1,0 +1,100 @@
+{
+  "surum": 3,
+  "kurgu_adi": "Haber Bandi Ornek",
+  "videolar": {
+    "V1": "C:/ORNEK/video.mp4"
+  },
+  "sesler": {
+    "S1": "C:/ORNEK/anlatici.mp3"
+  },
+  "fotograflar": {},
+  "video_kesimleri": [
+    {
+      "dosya": "V1",
+      "kaynak": [
+        "00:00:00.000",
+        "00:00:08.000"
+      ],
+      "cizelge": [
+        "00:00:00.000",
+        "00:00:08.000"
+      ],
+      "orijinal_ses": false
+    },
+    {
+      "dosya": "V1",
+      "kaynak": [
+        "00:00:20.000",
+        "00:00:24.000"
+      ],
+      "cizelge": [
+        "00:00:08.000",
+        "00:00:12.000"
+      ],
+      "orijinal_ses": true
+    },
+    {
+      "dosya": "V1",
+      "kaynak": [
+        "00:00:30.000",
+        "00:00:38.000"
+      ],
+      "cizelge": [
+        "00:00:12.000",
+        "00:00:20.000"
+      ],
+      "orijinal_ses": false
+    }
+  ],
+  "yorum_kesimleri": [
+    {
+      "dosya": "S1",
+      "kaynak": [
+        "00:00:00.000",
+        "00:00:08.000"
+      ],
+      "cizelge": [
+        "00:00:00.000",
+        "00:00:08.000"
+      ]
+    },
+    {
+      "dosya": "S1",
+      "kaynak": [
+        "00:00:08.000",
+        "00:00:16.000"
+      ],
+      "cizelge": [
+        "00:00:12.000",
+        "00:00:20.000"
+      ]
+    }
+  ],
+  "fotograf_kesimleri": [],
+  "haber_bantlari": [
+    {
+      "metin": "WHAT THE RECORDS SHOW",
+      "etiket": "ANALYSIS",
+      "cizelge": [
+        "00:00:00.000",
+        "00:00:12.000"
+      ]
+    },
+    {
+      "metin": "A CLOSER LOOK AT THE TESTIMONY",
+      "etiket": "",
+      "cizelge": [
+        "00:00:12.000",
+        "00:00:20.000"
+      ]
+    }
+  ],
+  "goruntu_bosluklari": [],
+  "ayarlar": {
+    "genislik": 1920,
+    "yukseklik": 1080,
+    "fps": 30,
+    "beklenen_sure": "00:00:20.000",
+    "anlatici_goruntusu_zorunlu": true
+  }
+}

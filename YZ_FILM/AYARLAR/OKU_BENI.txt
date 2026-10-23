@@ -1,0 +1,7 @@
+BU KLASÖR GİZLİDİR. Paylaşma.
+
+ai84_anahtar.txt   → AI84.pro API anahtarını İLK SATIRA yapıştır (seslendirme)
+telegram_bot.txt   → Telegram bot anahtarını İLK SATIRA yapıştır (isteğe bağlı). Sonra:
+                     python ARACLAR\memmet.py --telegram-test
+memmet_profil\     → MEMMET_GIRIS.bat ile Google'a girince kendiliğinden oluşur
+MEMMET_AYAR.json   → Memmet tempo ayarları (ilk çalıştırmada oluşur)

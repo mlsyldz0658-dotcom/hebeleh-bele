@@ -1,0 +1,105 @@
+KURGU KÖPRÜSÜ V5 İÇİN JSON HAZIRLAMA TALİMATI
+
+Kurgu Köprüsü V5 kullanıyorum. Bu araç yerel video, ses ve fotoğrafları JSON'daki zamanlara yerleştirerek yeni bir CapCut projesi oluşturuyor. Haber başlığı bantlarını da aynı JSON'dan üretiyor. Senden bu şemaya uygun plan istiyorum. Önce aşağıdakileri anla; bilgilerim eksikse JSON üretmeden yalnızca gerekli bilgileri iste.
+
+GÜNCEL KURGU TERCİHİ
+Anlatıcı bölümleri görüntüsüz kalmayacak. Anlatıcı konuşurken konuya uygun video veya verdiğim fotoğraf gösterilecek. Bu aralıklardaki videolarda “orijinal_ses”: false olmalı; anlatıcı sesi “yorum_kesimleri” ile ayrı kanalda çalmalı. Orijinal konuşması dinletilen haber kesimlerinde “orijinal_ses”: true kullanılabilir; bu aralıklar anlatıcı sesiyle çakışmamalı. Aynı kaynak videoda iki kullanım varsa ayrı kesimlere böl.
+
+TEMEL ŞEMA
+{
+  "surum": 3,
+  "kurgu_adi": "Proje Adi",
+  "videolar": {},
+  "sesler": {},
+  "fotograflar": {},
+  "video_kesimleri": [],
+  "yorum_kesimleri": [],
+  "fotograf_kesimleri": [],
+  "haber_bantlari": [],
+  "goruntu_bosluklari": [],
+  "ayarlar": {
+    "genislik": 1920,
+    "yukseklik": 1080,
+    "fps": 30,
+    "beklenen_sure": "00:00:00.000",
+    "anlatici_goruntusu_zorunlu": true
+  }
+}
+
+Alanları yalnızca bu şemaya göre yaz. Kullanılmayan sözlükler {}, listeler [] kalsın. Şema sürümü 3, uygulama adı V5'tür; karıştırma.
+
+DOSYALAR
+“videolar”, “sesler”, “fotograflar”: kimlik → tam dosya yolu eşleştirmesi.
+Örnek: "V1": "C:/Users/Soysal/Desktop/video.mp4"
+Ses için S1, fotoğraflar için F1 gibi kimlikler kullanılabilir.
+Yolları ve uzantıları benim verdiğim şekilde koru; / kullanabilirsin. Sıralı görselleri 1,2,3…10 olarak sayısal sırala, yapıştırma sırasıyla değil.
+
+KESİM ÖRNEKLERİ — SÜRELER YALNIZCA BİÇİM ÖRNEĞİDİR
+Video, anlatıcının altında sessiz:
+{"dosya":"V1","kaynak":["00:00:10.000","00:00:18.000"],"cizelge":["00:00:00.000","00:00:08.000"],"orijinal_ses":false}
+Anlatıcı sesi:
+{"dosya":"S1","kaynak":["00:00:00.000","00:00:08.000"],"cizelge":["00:00:00.000","00:00:08.000"]}
+Fotoğraf:
+{"dosya":"F1","cizelge":["00:00:08.000","00:00:12.000"]}
+Haber bandı:
+{"metin":"WHAT THE RECORDS SHOW","etiket":"ANALYSIS","cizelge":["00:00:00.000","00:00:08.000"]}
+
+ZAMANLAMA KURALLARI
+1. “kaynak”, orijinal medya dosyasının başlangıç/bitiş zamanıdır. “cizelge”, yeni kurgu içindeki başlangıç/bitiştir. İkinci değer süre değil bitiştir.
+2. Video ve seslerde kaynak süresi ile çizelge süresi eşit olmalı; hız 1x.
+3. Fotoğrafta kaynak aralığı yazılmaz.
+4. Verdiğim zamanları koru. Sabit 5 saniye gibi bir aralık varsayma. Eksik zaman, dosya veya uzantı uydurma.
+5. Video ve fotoğraf kesimleri birbirleriyle örtüşemez. Fotoğraf veya sessiz video altında anlatıcı sesi olabilir.
+6. Aynı ses kanalındaki kesimler örtüşemez. Anlatıcıyla orijinal sesi açık video çakışamaz.
+7. Anlatıcının bütün çizelge aralıkları video/fotoğraf kesimleriyle eksiksiz örtülmeli. Sırf anlatıcı konuşuyor diye “goruntu_bosluklari” ekleme. Anlatıcı aralığında yalnızca haber bandı bulunması görüntü kapsamı sayılmaz.
+8. Haber bantları ana görüntüyle ve sesle üst üste gelebilir; bantlar birbirleriyle çakışamaz. Bitişik bantlar olabilir.
+9. SRT kaynak video zamanlarını gösteriyorsa, kesim yer değiştirdikten sonra bant zamanını yeni çizelgeye dönüştür: çizelge başlangıcı + (ilgili kaynak anı - kesimin kaynak başlangıcı). Kaynak zamanını doğrudan bant çizelgesine yapıştırma.
+10. “goruntu_bosluklari” yalnızca özellikle istediğim görüntüsüz aralıklar içindir. Normal anlatıcılı planımızda [] kalmalı.
+11. “beklenen_sure”, projenin toplam bitişidir. Kesimler ve bantlar bunu aşmamalı. Bantlar tek başına ana kurgu süresini uzatmaz.
+12. HH:MM:SS.mmm biçimini kullan. JSON'a açıklama satırı veya desteklenmeyen alan ekleme.
+
+HABER BAŞLIKLARINI SEN ÜRET
+- Bana ait metin/SRT ve sağladığım kaynakların ilgili aralığındaki içeriğe dayanarak kısa, anlaşılır haber başlıkları üret. Zaman damgası tek başına konu bilgisi değildir.
+- Videonun diline uygun yaz; İngilizce video için İngilizce başlık kullan. Benden başka dil istemi gelirse onu uygula.
+- Başlıkları tercihen 5–12 kelime ve yaklaşık 70 karakterin altında tut. Bu tavsiye, zorunlu eşit uzunluk kuralı değildir. Köprü gerçek font ölçümüyle en fazla iki satıra sığdırır. Azami 240 karakter kabul edilir ama her 240 karakterlik başlığın sığacağı garanti değildir.
+- Etiket isteğe bağlıdır; hiç yazmayabilir veya boş bırakabilirsin. Yazılacaksa en fazla 40 karakter, tercihen 1–3 kelime olsun.
+- “BREAKING NEWS” bütün bantların varsayılanı değildir. Sadece içerik ve benim talebim uygunsa kullan. Analiz için “ANALYSIS” uygun olabilir; doğrulanmamış bir şeyi haberleşmiş gerçek gibi sunma.
+- İddia, alıntı ve doğrulanmış bilgi arasındaki ayrımı koru. Kaynakta olmayan sayı, suçlama veya sonuç üretme.
+- Başlığı konu değişince değiştir. Her SRT satırına otomatik yeni başlık yazma; sabit saniye aralığı icat etme. Konu ve okunabilirlik belirleyici olsun.
+- Başlıklar görüntünün alt bölümünde görünür; hareketli kelime kelime altyazı değildir.
+- Görünümü JSON'da tarif etme: beyaz zemin, siyah kalın yazı, isteğe bağlı kırmızı etiket ve güvenli kenarlar köprüde hazırdır. Logo, efekt, geçiş, yazı tipi, renk veya desteklenmeyen yakınlaşma alanları ekleme.
+- Bantlar CapCut'a şeffaf PNG katmanı olarak girer; CapCut'ın düzenlenebilir metin nesnesi değildir. Metin değişikliği JSON üzerinden yeniden proje üretimiyle yapılır.
+
+GİRDİLER TAMAMLANINCA
+Önce dosya-zaman eşleşmesini, tam görüntü kapsamını, sessiz video ayarlarını, süre eşitliğini, çakışmaları ve başlıkların içerikle uyumunu kontrol et. Sonra geçerli JSON'u üret. Yerel dosyaları okuyamadıysan gerçekten var olduklarını veya sürelerini doğruladığını söyleme.
+
+İLK YANITIN
+Bu formatı hazırlayabiliyorsan söyle ve yalnızca eksik gerekli bilgileri benden iste:
+- Proje adı ve çıkış çözünürlüğü/FPS.
+- Video/fotoğraf/anlatıcı sesinin tam yolları ve eşleştirmeleri.
+- Anlatıcı metni veya SRT'si; varsa kaynak videoların SRT'leri.
+- Belirlenmiş kaynak kesimleri ve yeni çizelge zamanları; yoksa bunları hangi referansla hazırlayacağın.
+- Anlatıcı altında kullanılacak video/fotoğraf eşleştirmeleri ve orijinal sesi dinletilecek haber bölümleri.
+- Toplam süre, başlık dili ve varsa tercih edilen etiket.
+Bilgiler zaten verilmişse tekrar isteme. Önceki fotoğraflı başka projeyi yeni haber projesiyle karıştırma.
+
+
+V5 FOTOĞRAF HAREKETİ — YUKARIDAKİ GÖRÜNÜM KISITININ DESTEKLENEN İSTİSNASI
+Şema sürümü yine 3. ayarlar nesnesine isteğe bağlı şu alanlar eklenebilir:
+"fotograf_hareketi": "otomatik",
+"hareket_yuzdesi": 8,
+"kaydirma_yuzdesi": 2
+
+fotograf_hareketi: otomatik, yakinlas, uzaklas, sagdan_yaklas, soldan_yaklas veya kapali.
+hareket_yuzdesi: 1-15; kaydirma_yuzdesi: 0-3. Varsayılanlar otomatik / 8 / 2.
+Otomatik sırayla dört hareketi dağıtır; rastgele değildir. Görsel içeriğini tanıyıp yüz takibi yapmaz.
+Hareket, kesim boyunca başlangıç/bitiş anahtar kareleriyle uygulanır. 4 saniyeden kısa
+kesimlerde miktar azaltılır; 1 saniyeden kısa kesimler sabit tutulur.
+Tek fotoğrafı değiştirmek için fotograf_kesimleri öğesine isteğe bağlı "hareket" ekle:
+{"dosya":"F1","cizelge":["00:00:08.000","00:00:12.000"],"hareket":"uzaklas"}
+"hareket":"kapali" o fotoğrafı sabit tutar. Öğe düzeyi ayarı genel ayarı geçersiz kılar.
+Alan verilmezse genel ayar geçerlidir. Eski JSON planları da açılır, varsayılan otomatik harekettir.
+Video, ses, haber bandı veya boş alan kesimlerine hareket alanı ekleme.
+Köprüde açılan seçenek penceresi genel ayarları değiştirebilir; öğe düzeyindeki tercihler korunur.
+En-boy oranı nedeniyle büyük kırpma gerektiren, özel kadrajlı veya mevcut animasyonlu
+fotoğraflar korunabilir; sonuç kurgu_hareket_raporu.json içinde belirtilir.

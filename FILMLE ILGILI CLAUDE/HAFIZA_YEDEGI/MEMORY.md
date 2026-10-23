@@ -1,0 +1,21 @@
+- [Üretim hattı v2](uretim-hatti-v2.md) — adım 0 TAMAM (16.10): yeni araçlar + rehber bölüm 7; sıra: hikâye → seyirci denetimi → yönetmen → ses kâğıtta → kartlar → görsel → animatik onayı → video → katmanlı kurgu → yayın
+- [PROJE B2](PROJE-b2.md) — B2 BİTTİ + YouTube'da (18.10); tüm B2 dosyaları D:\YZ_FILM_ARSIV\PROJE_B2'de, B1 klasörü C'de (B3 için)
+- [PROJE B3](PROJE-b3.md) — 18.10 başladı; FILMLER\PROJE_B3; baştan 3 parti, ayrıntılı parti belgeleri; hikâye odası öneri A/B
+- [Gemini ajanı görsel](gemini-ajan-gorsel.md) — başlangıç görselleri Gemini ajanında toplu (gemini_paket.py → ZIP → gemini_al.py); Flow yalnız video
+- [Ajanlar Opus yüksek](ajan-opus-yuksek.md) — önemli işlerde ajan model opus + effort high
+- [Soru = sadece cevap](soru-sadece-cevap.md) — kullanıcı sorunca işlem yapma, cevapla, onay bekle
+- [Video istem kuralı](video-istem-kurali.md) — kısa istem, "No music", yaş/girl yok; ambiyansta Lyria yok; efekt/müzik ayrı katman
+- [Seedance Director yöntemi](seedance-director-yontemi.md) — CapCut pro proje analizi: yeşil fon karakter kartı, ızgara storyboard, 15sn 8 plan istem yapısı, 555 kredi
+- [Pencere yakalama](pencere-yakalama.md) — "bak" denince CapCut vb. penceresini PrintWindow ile kendin yakala; onay tıklamaları kullanıcıda
+- [CapCut elle düzenleme](capcut-elle-duzenleme.md) — kullanıcı düzenlediyse taslağı yeniden kurma, dosyaları yerinde değiştir
+- [PROJE yapımı](PROJE-yapimi.md) — B1 BİTTİ (masaüstünde son mp4'ler); B1 ara klasörleri D:\YZ_FILM_ARSIV\PROJE_B1; notlar FILMLER\PROJE\_DEGERLENDIRME_NOTLARI.md
+- [Reklam virüsü temizliği](reklam-virusu-temizligi.md) — B1 BİTTİ → şimdi hatırlat: sahte GoogleUpdateDaily görevi + IDM trial reset
+- [YZ_FILM stüdyosu](yz-film-studyo.md) — ANA klasör Masaüstü\YZ_FILM; araçlar, SES_KUTUPHANESI (CC0 efekt+gerçek rüzgâr zeminleri)
+- [YouTube niş araştırması](youtube-nis-arastirmasi.md) — YZ kanal araştırması; notlar research/NOTLAR.md, kullanıcı henüz okumadı
+- [AI84 ses servisi](ai84-ses-servisi.md) — ElevenLabs aracısı, anahtar dosyada (maskele), TTS 1 kredi/karakter; ses efekti yok
+- [YZ dizi demoları](yz-dizi-demolari.md) — 13 Ekim gecesi ücretsiz hatla 8 demo; Masaüstü\demo deneme taşındı → D:\YZ_FILM_ARSIV\PROJE_B1\DIGER
+- [Ucuz erişim araştırması](ucuz-erisim-arastirmasi.md) — kie.ai fiyatları, Ultra TR, aracılar gri, YPP eşiği 01.02.2027'de 8.000 saat
+- [Olağan dışı = dur](olagandisi-dur.md) — Flow 'olağan dışı etkinlik' derse Memmet kesin durur; bot tespiti atlatılmaz, kalanlar elle/API
+- [İş bitince D'ye taşı](is-bitince-d-arsiv.md) — biten klasörler C'den D:\YZ_FILM_ARSIV'e TAŞINIR (kopya değil); son taslağın bağlı olduğu klasöre dokunma
+- [OpenMontage](openmontage.md) — Masaüstü\YZ_FILM\OpenMontage kurulu, SİLME; ücretli API ister, hattımızın yerine geçmez; om_kopru/shorts_mp4/kalite_denetim ARACLAR'da
+- [Kurgu izleme denetimi](kurgu-izleme-denetimi.md) — taslağı vermeden önce kurgulanmış filmi partiler hâlinde habersiz seyirciye izlet; kopuklukları yönetmen düzeltsin

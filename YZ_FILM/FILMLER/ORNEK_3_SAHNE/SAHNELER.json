@@ -1,0 +1,70 @@
+{
+ "film": "ORNEK_3_SAHNE",
+ "baslik": "She Raised the Dragon They Ordered Her to Kill | EMBERFALL",
+ "karakterler": {
+  "mara": {
+   "ref": "01_KARAKTERLER/mara.jpg",
+   "ses": "mrmaApeLxpgZi4RK7oGq",
+   "ses_adi": "Meaghan"
+  },
+  "ember": {
+   "ref": "01_KARAKTERLER/ember.jpg",
+   "ses": null,
+   "ses_adi": null
+  },
+  "voss": {
+   "ref": "01_KARAKTERLER/voss.jpg",
+   "ses": "M5E055lOUxMi0kJpGyE9",
+   "ses_adi": "Gravel Midnight"
+  }
+ },
+ "sahneler": [
+  {
+   "no": 1,
+   "parti": 1,
+   "referans": [],
+   "gorsel_istem": "Wide establishing shot of a snowy mountain village at dusk, wooden houses with glowing windows, smoke from chimneys, dark pine forest behind, no people in focus, cinematic, photorealistic, anamorphic, 4K",
+   "hareket_istem": "Slow aerial push-in over the snowy village at dusk, snow falling, chimney smoke drifting. No dialogue. Ambient wind.",
+   "amac": "Dünyayı tanıt: yalnız, karlı köy",
+   "duygu": "huzur, ama soğuk"
+  },
+  {
+   "no": 2,
+   "parti": 1,
+   "referans": [
+    "mara"
+   ],
+   "gorsel_istem": "Close-up of Mara the huntress in her fur-lined leather coat watching from behind a pine tree, snow falling, torchlight on her face, cinematic, photorealistic",
+   "hareket_istem": "Mara's eyes narrow, she slowly steps back into the shadows. No dialogue. Snow falling.",
+   "amac": "Mara'yı tanıt: kalabalıktan ayrı, karar veriyor",
+   "duygu": "şüphe → kararlılık"
+  },
+  {
+   "no": 3,
+   "parti": 1,
+   "referans": [
+    "mara",
+    "ember"
+   ],
+   "gorsel_istem": "Mara kneeling at a snowy cave entrance holding a lantern, reaching her gloved hand slowly toward the baby dragon Ember, cinematic, photorealistic",
+   "hareket_istem": "Mara slowly extends her hand, calm and gentle. She whispers softly: \"Easy, little one. I won't hurt you.\"",
+   "replik": {
+    "karakter": "mara",
+    "metin": "Easy, little one. I won't hurt you.",
+    "cumleler": [
+     {
+      "en": "Easy, little one.",
+      "tr": "Sakin ol, küçüğüm."
+     },
+     {
+      "en": "I won't hurt you.",
+      "tr": "Sana zarar vermeyeceğim."
+     }
+    ]
+   },
+   "amac": "İlk temas: Mara güven veriyor",
+   "duygu": "korku → şefkat"
+  }
+ ],
+ "altyazi_dili": "tr"
+}

@@ -1,0 +1,14 @@
+# YZ_FILM kütüphaneleri (Python 3.10 ile denendi). torch ayrıca kurulur (ekran kartına göre), bkz. kurulum.py
+numpy==2.2.6
+pillow==12.3.0
+scipy==1.15.3
+soundfile==0.14.0
+opencv-python==5.0.0.93
+transformers==5.19.0
+faster-whisper==1.2.1
+ctranslate2==4.8.3
+demucs==4.1.0
+pycapcut==0.0.3
+pymediainfo==7.0.1
+playwright==1.63.0
+truststore

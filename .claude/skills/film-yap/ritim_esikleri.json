@@ -1,0 +1,925 @@
+{
+ "surum": {
+  "deger": "1.0",
+  "aciklama": "Eşik dosyası sürümü; ZANAAT.md ile birlikte güncellenir"
+ },
+ "film_sure_hedef_sn": {
+  "deger": 2400,
+  "aciklama": "Hedef film süresi (40 dk); vuruşlar bu süreye oranla taşınır"
+ },
+ "film_sure_aralik_sn": {
+  "deger": [
+   1800,
+   2700
+  ],
+  "aciklama": "Kabul edilen film süresi (kart + jenerik dahil); dışı HATA"
+ },
+ "parti_sayisi": {
+  "deger": 3,
+  "aciklama": "Film her zaman 3 parti"
+ },
+ "parti_sure_oran_aralik": {
+  "deger": [
+   0.3,
+   0.35
+  ],
+  "aciklama": "Her partinin film süresine oranı (40 dk'da 720-840 sn); dışı BAYRAK"
+ },
+ "vurus_oranlari": {
+  "deger": {
+   "soguk_acilis": 0.0,
+   "ilk_kanca": 0.008,
+   "baslik_karti": 0.031,
+   "bag": 0.05,
+   "risk_sozlu": 0.075,
+   "tetikleyici": 0.125,
+   "perde1_donus": 0.25,
+   "parti1_kanca": 0.32,
+   "orta_nokta": 0.5,
+   "parti2_kanca": 0.65,
+   "en_karanlik": 0.74,
+   "perde3_karar": 0.775,
+   "doruk": 0.9,
+   "kapanis": 0.95,
+   "seri_kancasi": 0.965
+  },
+  "aciklama": "Vuruşun film süresi içindeki hedef konumu (oran)"
+ },
+ "vurus_oran_tolerans": {
+  "deger": 0.04,
+  "aciklama": "Vuruş oranından en çok sapma; aşılırsa BAYRAK"
+ },
+ "duygu_turleri": {
+  "deger": [
+   "merak",
+   "gerilim",
+   "korku",
+   "saskinlik",
+   "sefkat",
+   "mizah",
+   "huzun",
+   "umut",
+   "zafer",
+   "ofke",
+   "huzur"
+  ],
+  "aciklama": "hedef_duygu alanı için sabit sözlük"
+ },
+ "duygu_haritasi_40dk": {
+  "deger": [
+   8,
+   6,
+   5,
+   5,
+   6,
+   7,
+   5,
+   6,
+   5,
+   6,
+   7,
+   5,
+   7,
+   8,
+   5,
+   5,
+   6,
+   6,
+   5,
+   7,
+   8,
+   6,
+   6,
+   7,
+   5,
+   7,
+   9,
+   6,
+   5,
+   7,
+   6,
+   6,
+   6,
+   7,
+   8,
+   9,
+   10,
+   8,
+   5,
+   7
+  ],
+  "aciklama": "Dakika 0-39 hedef yoğunluk; başka sürelerde oranla gerilir"
+ },
+ "yogunluk_sapma_max": {
+  "deger": 2,
+  "aciklama": "Plan yoğunluğunun haritadan en çok sapması"
+ },
+ "yogunluk_sapma_sure_max_sn": {
+  "deger": 60,
+  "aciklama": "Sapmanın kesintisiz sürebileceği en uzun süre; aşılırsa BAYRAK"
+ },
+ "pencere_tepe_sn": {
+  "deger": 180,
+  "aciklama": "Bu pencerede en az bir tepe olmalı"
+ },
+ "pencere_tepe_min": {
+  "deger": 6,
+  "aciklama": "3 dk penceredeki en düşük tepe yoğunluğu"
+ },
+ "duz_cizgi_max_sn": {
+  "deger": 180,
+  "aciklama": "Yoğunluk ±1 ve aynı duygu türünde kalınabilecek en uzun süre"
+ },
+ "ayni_duygu_ardisik_dk_max": {
+  "deger": 2,
+  "aciklama": "Aynı duygu türü art arda en çok 2 dakika"
+ },
+ "tepe_esigi": {
+  "deger": 8,
+  "aciklama": "Bu ve üstü yoğunluk 'büyük tepe' sayılır"
+ },
+ "tepe_oncesi_cukur_pencere_sn": {
+  "deger": [
+   60,
+   120
+  ],
+  "aciklama": "Büyük tepeden önce nefes çukurunun aranacağı aralık"
+ },
+ "tepe_oncesi_cukur_min_dusus": {
+  "deger": 2,
+  "aciklama": "Çukurda en az bu kadar puan düşüş"
+ },
+ "parti_sonu_yogunluk_min": {
+  "deger": 8,
+  "aciklama": "Parti 1 ve 2 son 30 sn yoğunluğu"
+ },
+ "doruk_yogunluk_min": {
+  "deger": 9,
+  "aciklama": "Doruk yoğunluğu"
+ },
+ "en_karanlik_yogunluk_min": {
+  "deger": 6,
+  "aciklama": "En karanlık an yoğunluğu (hüzün düz olmamalı)"
+ },
+ "ilk_eylem_max_sn": {
+  "deger": 5,
+  "aciklama": "İlk fiziksel eylemin en geç zamanı"
+ },
+ "ilk_merak_max_sn": {
+  "deger": 20,
+  "aciklama": "İlk merak sorusunun açılması"
+ },
+ "ilk30_manzara_plan_max": {
+  "deger": 1,
+  "aciklama": "İlk 30 sn'de en çok 1 kurulus/gecis planı"
+ },
+ "ilk30_manzara_sure_max_sn": {
+  "deger": 3.0,
+  "aciklama": "İlk 30 sn'deki manzara planının en uzun süresi"
+ },
+ "ilk30_asl_max_sn": {
+  "deger": 3.5,
+  "aciklama": "İlk 30 sn ortalama plan süresi"
+ },
+ "ilk120_asl_max_sn": {
+  "deger": 4.0,
+  "aciklama": "İlk 2 dk ortalama plan süresi"
+ },
+ "baslik_karti_aralik_sn": {
+  "deger": [
+   45,
+   120
+  ],
+  "aciklama": "Başlık kartının görüneceği zaman aralığı"
+ },
+ "baslik_karti_sure_max_sn": {
+  "deger": 6,
+  "aciklama": "Başlık kartının en uzun süresi"
+ },
+ "vaat_imgesi_max_sn": {
+  "deger": 120,
+  "aciklama": "Kapak/başlıktaki ana imge bu zamandan önce ekranda"
+ },
+ "kahraman_adi_max_sn": {
+  "deger": 120,
+  "aciklama": "Ana karakter adının sözle söylenmesi (film başından)"
+ },
+ "ad_ilk_gorunus_max_sahne": {
+  "deger": 2,
+  "aciklama": "Karakter adı ilk görünüşten sonra en çok kaç sahne içinde söylenir"
+ },
+ "risk_sozlu_max_sn": {
+  "deger": 180,
+  "aciklama": "Riskin sözle söylendiği en geç an"
+ },
+ "parti_basi_risk_tazeleme_max_sn": {
+  "deger": 60,
+  "aciklama": "Her parti başında riskin tazelenmesi"
+ },
+ "parti_basi_kanca_donus_max_sn": {
+  "deger": 20,
+  "aciklama": "Parti başında önceki kancaya dönüş"
+ },
+ "seri_kancasi_max_sn": {
+  "deger": 20,
+  "aciklama": "Jenerikten önceki seri kancasının süresi"
+ },
+ "jenerik_max_sn": {
+  "deger": 60,
+  "aciklama": "Jenerik süresi"
+ },
+ "uc_ekran_sn": {
+  "deger": 20,
+  "aciklama": "YouTube uç ekranı için son süre"
+ },
+ "bolum_sayisi_max": {
+  "deger": 8,
+  "aciklama": "YouTube bölüm (chapter) sayısı"
+ },
+ "plan_sure_aralik_sn": {
+  "deger": {
+   "kurulus": [
+    2.5,
+    4.0
+   ],
+   "diyalog": [
+    2.5,
+    8.0
+   ],
+   "tepki": [
+    1.5,
+    4.0
+   ],
+   "ekleme": [
+    1.0,
+    2.5
+   ],
+   "aksiyon": [
+    1.5,
+    4.0
+   ],
+   "eylem": [
+    3.0,
+    7.0
+   ],
+   "duygu_tutma": [
+    4.0,
+    8.0
+   ],
+   "gecis": [
+    2.0,
+    3.0
+   ],
+   "kart": [
+    2.5,
+    6.0
+   ]
+  },
+  "aciklama": "plan_tipi başına kurguda kullanılan süre aralığı; dışı HATA"
+ },
+ "kurulus_ilk_mekan_max_sn": {
+  "deger": 5.0,
+  "aciklama": "Mekân ilk kez görülüyorsa kurulus planı tavanı"
+ },
+ "duygu_tutma_film_max": {
+  "deger": 25,
+  "aciklama": "Film başına duygu_tutma planı"
+ },
+ "duygu_tutma_ardisik_max": {
+  "deger": 1,
+  "aciklama": "Art arda duygu_tutma planı"
+ },
+ "asl_film_aralik_sn": {
+  "deger": [
+   4.2,
+   5.2
+  ],
+  "aciklama": "Film geneli ortalama plan süresi"
+ },
+ "asl_parti_hedef_sn": {
+  "deger": {
+   "P1": 4.7,
+   "P2": 5.0,
+   "P3": 4.4
+  },
+  "aciklama": "Parti ASL hedefi"
+ },
+ "asl_parti_tolerans_sn": {
+  "deger": 0.6,
+  "aciklama": "Parti ASL hedefinden sapma"
+ },
+ "tepe_oncesi_asl_dusus_min": {
+  "deger": 0.25,
+  "aciklama": "Tepeye giden 30 sn'de ASL en az bu oranda düşer"
+ },
+ "ayni_plan_tipi_ardisik_max": {
+  "deger": 4,
+  "aciklama": "Aynı plan_tipi art arda (diyalog-tepki dönüşümü hariç)"
+ },
+ "ayni_kamera_konumu_ardisik_max": {
+  "deger": 2,
+  "aciklama": "Aynı kamera konumu art arda"
+ },
+ "olcek_kademe_min_fark": {
+  "deger": 2,
+  "aciklama": "Aynı açıdan ardışık iki planın ölçek farkı"
+ },
+ "aci_min_fark_derece": {
+  "deger": 30,
+  "aciklama": "Ölçek aynıysa en az bu kadar açı farkı"
+ },
+ "olcek_kademeleri": {
+  "deger": {
+   "EG": 1,
+   "G": 2,
+   "OG": 3,
+   "O": 4,
+   "OY": 5,
+   "Y": 6,
+   "CY": 7
+  },
+  "aciklama": "Kadraj ölçek kademeleri; D ve OU kademe dışı"
+ },
+ "hedef_plan_dagilimi_40dk": {
+  "deger": {
+   "diyalog": 190,
+   "tepki": 90,
+   "eylem": 60,
+   "aksiyon": 55,
+   "ekleme": 45,
+   "kurulus_gecis": 30,
+   "duygu_tutma": 25
+  },
+  "aciklama": "40 dk film hedef plan sayıları (toplam 495)"
+ },
+ "hedef_plan_parti": {
+  "deger": {
+   "P1": 165,
+   "P2": 160,
+   "P3": 170
+  },
+  "aciklama": "Parti başına hedef plan"
+ },
+ "plan_sayisi_tolerans_oran": {
+  "deger": 0.15,
+  "aciklama": "Hedef plan sayısından sapma oranı; aşılırsa BAYRAK"
+ },
+ "sahne_max_sn": {
+  "deger": 180,
+  "aciklama": "Sahne süresi tavanı; aşılırsa HATA"
+ },
+ "sahne_tipi_aralik": {
+  "deger": {
+   "soguk_acilis": {
+    "sure": [
+     30,
+     75
+    ],
+    "plan": [
+     10,
+     20
+    ],
+    "asl_max": 3.5
+   },
+   "diyalog": {
+    "sure": [
+     45,
+     150
+    ],
+    "plan": [
+     10,
+     24
+    ],
+    "asl": [
+     4.5,
+     6.0
+    ]
+   },
+   "gerilim": {
+    "sure": [
+     40,
+     120
+    ],
+    "plan": [
+     8,
+     18
+    ],
+    "asl": [
+     5.0,
+     6.5
+    ]
+   },
+   "aksiyon": {
+    "sure": [
+     30,
+     90
+    ],
+    "plan": [
+     12,
+     30
+    ],
+    "asl": [
+     2.5,
+     3.5
+    ]
+   },
+   "duygusal": {
+    "sure": [
+     45,
+     120
+    ],
+    "plan": [
+     7,
+     14
+    ],
+    "asl": [
+     6.0,
+     8.0
+    ]
+   },
+   "gecis": {
+    "sure": [
+     10,
+     30
+    ],
+    "plan": [
+     3,
+     8
+    ],
+    "asl": [
+     2.5,
+     3.5
+    ]
+   },
+   "doruk": {
+    "sure": [
+     90,
+     180
+    ],
+    "plan": [
+     25,
+     45
+    ],
+    "asl": [
+     3.0,
+     4.0
+    ]
+   }
+  },
+  "aciklama": "Sahne tipine göre süre, plan sayısı ve ASL"
+ },
+ "diyalog_yeni_bilgi_max_sn": {
+  "deger": 60,
+  "aciklama": "Diyalog sahnesinde yeni bilgiler arası en uzun süre"
+ },
+ "gerilim_yeni_ayrinti_max_sn": {
+  "deger": 20,
+  "aciklama": "Gerilim sahnesinde yeni ayrıntı aralığı"
+ },
+ "bilgisiz_gecis_max_sn": {
+  "deger": 15,
+  "aciklama": "Bilgi taşımayan geçiş bölümü"
+ },
+ "sahne_konum_plani_max_sira": {
+  "deger": 3,
+  "aciklama": "Konum planının en geç sırası (geç giriş kalıbında 5)"
+ },
+ "sahne_yeniden_konum_sn": {
+  "deger": 90,
+  "aciklama": "Bu süreden uzun sahnede ortada bir G/OG planı"
+ },
+ "klip_sn": {
+  "deger": [
+   8,
+   10
+  ],
+  "aciklama": "Üretilen klip süreleri"
+ },
+ "kullanim_bas_min_sn": {
+  "deger": 0.3,
+  "aciklama": "Klibin başından en az kırpma"
+ },
+ "kullanim_bas_varsayilan_sn": {
+  "deger": 0.5,
+  "aciklama": "Varsayılan baş kırpma"
+ },
+ "kullanim_son_pay_sn": {
+  "deger": 0.5,
+  "aciklama": "bas+sure en çok klip_sn - bu değer"
+ },
+ "klip_bolme_min_kullanilabilir_sn": {
+  "deger": 6.0,
+  "aciklama": "İkiye bölünecek klibin en az kullanılabilir süresi"
+ },
+ "klip_bolme_atlama_min_sn": {
+  "deger": 0.4,
+  "aciklama": "Bölünen iki parça arasında atlanan en az süre"
+ },
+ "klip_bolme_oran_hedef": {
+  "deger": 0.18,
+  "aciklama": "Başka planın klibinden çıkan planların hedef oranı"
+ },
+ "olu_sure_max_sn": {
+  "deger": 0.6,
+  "aciklama": "Eylem/replik bittikten sonra bekleme"
+ },
+ "kesme_ilk_duragan_yasak_sn": {
+  "deger": 0.3,
+  "aciklama": "Klibin ilk bu kadar saniyesinde kesme yapılmaz"
+ },
+ "konusma_hizi_kelime_sn": {
+  "deger": 2.5,
+  "aciklama": "Normal konuşma hızı"
+ },
+ "konusma_hizi_agir_kelime_sn": {
+  "deger": 2.0,
+  "aciklama": "Fısıltı, yas, ağır replik"
+ },
+ "diyalog_giris_payi_sn": {
+  "deger": 0.4,
+  "aciklama": "Replikten önceki pay"
+ },
+ "diyalog_cikis_payi_sn": {
+  "deger": 0.5,
+  "aciklama": "Replikten sonraki pay"
+ },
+ "cumle_arasi_sn": {
+  "deger": 0.25,
+  "aciklama": "Cümleler arası duraklama"
+ },
+ "replik_max_kelime": {
+  "deger": 20,
+  "aciklama": "Mutlak replik tavanı (10 sn klip)"
+ },
+ "replik_max_kelime_8sn": {
+  "deger": 16,
+  "aciklama": "8 sn klipte replik tavanı"
+ },
+ "ekran_disi_tasima_kelime_esigi": {
+  "deger": 12,
+  "aciklama": "Bu kelimeden uzun replik ekran dışına bölünebilir"
+ },
+ "konusan_karede_max": {
+  "deger": 1,
+  "aciklama": "Klipte konuşan kişi sayısı"
+ },
+ "referans_max": {
+  "deger": 2,
+  "aciklama": "Karede karakter referansı"
+ },
+ "monolog_ardisik_plan_max": {
+  "deger": 3,
+  "aciklama": "Aynı karakterin art arda konuştuğu plan; aşılırsa BAYRAK"
+ },
+ "cevap_boslugu_sn": {
+  "deger": [
+   0.2,
+   0.6
+  ],
+  "aciklama": "Karşılıklı konuşmada cevap boşluğu"
+ },
+ "tepki_orani_min": {
+  "deger": 0.25,
+  "aciklama": "Diyalog sahnesinde tepki planı oranı"
+ },
+ "jl_kesme_orani_min": {
+  "deger": 0.3,
+  "aciklama": "Diyalog sahnesinde J/L kesme oranı"
+ },
+ "j_kesme_aralik_sn": {
+  "deger": [
+   0.3,
+   0.8
+  ],
+  "aciklama": "J kesmede sesin öne alınması"
+ },
+ "l_kesme_aralik_sn": {
+  "deger": [
+   0.3,
+   2.5
+  ],
+  "aciklama": "L kesmede sesin taşması"
+ },
+ "replik_sonu_kesme_sn": {
+  "deger": [
+   0.2,
+   0.5
+  ],
+  "aciklama": "Son kelimeden sonra kesme"
+ },
+ "bakis_tutma_min_sn": {
+  "deger": 0.5,
+  "aciklama": "Bakış kesmesinden önce bakış süresi"
+ },
+ "eslesme_gecis_orani_min": {
+  "deger": 0.15,
+  "aciklama": "Sahne geçişlerinde eşleşme kesmesi oranı"
+ },
+ "sert_kesme_parti_max": {
+  "deger": 4,
+  "aciklama": "Parti başına sert kesme"
+ },
+ "eylem_adim_max": {
+  "deger": 3,
+  "aciklama": "Planda en çok adım"
+ },
+ "eylem_adim_konusmali_max": {
+  "deger": 1,
+  "aciklama": "Konuşmalı planda en çok fiziksel adım"
+ },
+ "eylem_adim_min_sn": {
+  "deger": 1.5,
+  "aciklama": "Adım süresi alt sınırı"
+ },
+ "bitis_tutma_sn": {
+  "deger": 0.5,
+  "aciklama": "Bitiş durumunun tutulduğu son süre"
+ },
+ "kamera_hareketi_klip_max": {
+  "deger": 1,
+  "aciklama": "Klip başına kamera hareketi"
+ },
+ "yasak_sonuc_fiilleri": {
+  "deger": [
+   "take",
+   "takes",
+   "grab",
+   "grabs",
+   "pick up",
+   "picks up",
+   "get",
+   "gets",
+   "use",
+   "uses",
+   "fix",
+   "fixes",
+   "prepare",
+   "prepares",
+   "fight",
+   "fights",
+   "search",
+   "searches"
+  ],
+  "aciklama": "hareket_istem içinde yasak sonuç fiilleri (open ancak açma biçimi yazılmışsa serbest)"
+ },
+ "dusuk_guven_hareketler": {
+  "deger": [
+   "yörünge",
+   "hizli_hareket"
+  ],
+  "aciklama": "Yalnız yedek istemle ve doruğa sınırlı"
+ },
+ "merak_olay_aralik_max_sn": {
+  "deger": 90,
+  "aciklama": "Yeni soru/kapanış/vuruş arası en uzun süre"
+ },
+ "acik_soru_aralik": {
+  "deger": [
+   1,
+   5
+  ],
+  "aciklama": "Aynı anda açık merak sorusu"
+ },
+ "soru_omru_max_sn": {
+  "deger": {
+   "kisa": 120,
+   "orta": 900,
+   "buyuk": "parti"
+  },
+  "aciklama": "Soru türüne göre en uzun ömür"
+ },
+ "seri_sorusu_max": {
+  "deger": 2,
+  "aciklama": "Film sonunda açık kalan soru"
+ },
+ "cevap_yeni_soru_max_sn": {
+  "deger": 30,
+  "aciklama": "Büyük soru kapanınca yeni sorunun açılması"
+ },
+ "kurulum_kullanim_min_sn": {
+  "deger": 20,
+  "aciklama": "Kurulum ile kullanım arası en az süre"
+ },
+ "hatirlatma_esigi_sn": {
+  "deger": 600,
+  "aciklama": "Bundan uzun aralıkta hatırlatma planı şart"
+ },
+ "bilgi_tekrar_max": {
+  "deger": 2,
+  "aciklama": "Aynı bilginin verilme sayısı"
+ },
+ "ironi_parti_min": {
+  "deger": 1,
+  "aciklama": "Parti başına dramatik ironi zinciri"
+ },
+ "ironi_sure_aralik_sn": {
+  "deger": [
+   30,
+   300
+  ],
+  "aciklama": "Seyircinin bilip karakterin bilmediği süre"
+ },
+ "sahne_yeni_ad_max": {
+  "deger": 2,
+  "aciklama": "Sahne başına yeni ad"
+ },
+ "konusan_karakter_max": {
+  "deger": 8,
+  "aciklama": "Film başına konuşan karakter"
+ },
+ "geri_donus_max_sn": {
+  "deger": 20,
+  "aciklama": "Geri dönüş (flashback) süresi"
+ },
+ "diyalog_lufs": {
+  "deger": {
+   "fisilti": -24.0,
+   "yumusak": -21.5,
+   "normal": -19.5,
+   "bagirma": -17.0
+  },
+  "aciklama": "Replik başına hedef LUFS"
+ },
+ "diyalog_lufs_tolerans": {
+  "deger": 1.0,
+  "aciklama": "Replik seviyesinin hedeften sapması (LU)"
+ },
+ "ambiyans_diyalog_alti_db": {
+  "deger": [
+   12,
+   18
+  ],
+  "aciklama": "Ambiyansın diyalogdan aşağıda olduğu aralık"
+ },
+ "efekt_diyalog_alti_db": {
+  "deger": [
+   3,
+   10
+  ],
+  "aciklama": "Efektin diyalogdan aşağıda olduğu aralık"
+ },
+ "muzik_diyalog_alti_min_db": {
+  "deger": 12,
+  "aciklama": "Diyalog sırasında müzik en az bu kadar aşağıda"
+ },
+ "muzik_diyalogsuz_lufs": {
+  "deger": [
+   -20,
+   -16
+  ],
+  "aciklama": "Diyalogsuz bölümde müzik seviyesi"
+ },
+ "final_lufs": {
+  "deger": -14.0,
+  "aciklama": "Final karışım bütünleşik ses"
+ },
+ "final_lufs_tolerans": {
+  "deger": 1.0,
+  "aciklama": "Final LUFS sapması"
+ },
+ "true_peak_max_dbtp": {
+  "deger": -1.0,
+  "aciklama": "Gerçek tepe tavanı"
+ },
+ "ambiyans_sahne_ici_fark_max_lu": {
+  "deger": 3,
+  "aciklama": "Sahne içinde ambiyans seviye farkı"
+ },
+ "ambiyans_capraz_gecis_sn": {
+  "deger": [
+   0.5,
+   1.0
+  ],
+  "aciklama": "Sahne geçişinde ambiyans çapraz geçişi"
+ },
+ "ses_koprusu_sn": {
+  "deger": [
+   0.3,
+   1.0
+  ],
+  "aciklama": "Yeni sahne sesinin görüntüden önce başlaması"
+ },
+ "mutlak_sessizlik_db": {
+  "deger": -50,
+  "aciklama": "Bunun altı mutlak sessizlik"
+ },
+ "mutlak_sessizlik_max_sn": {
+  "deger": 1.0,
+  "aciklama": "Mutlak sessizliğin en uzun süresi"
+ },
+ "mutlak_sessizlik_film_max": {
+  "deger": 2,
+  "aciklama": "Film başına mutlak sessizlik"
+ },
+ "vurgu_sessizlik_sn": {
+  "deger": [
+   0.8,
+   3.0
+  ],
+  "aciklama": "İfşa öncesi/şok sonrası müziksiz an"
+ },
+ "muzik_kaplama_oran": {
+  "deger": [
+   0.4,
+   0.65
+  ],
+  "aciklama": "Müziğin kapladığı film oranı"
+ },
+ "muziksiz_blok_max_sn": {
+  "deger": 240,
+  "aciklama": "Müziksiz en uzun blok"
+ },
+ "muzikli_blok_max_sn": {
+  "deger": 300,
+  "aciklama": "Kesintisiz müzikli en uzun blok"
+ },
+ "muzik_giris_sn": {
+  "deger": [
+   1,
+   3
+  ],
+  "aciklama": "Müzik giriş yükselişi (şok hariç)"
+ },
+ "muzik_cikis_sn": {
+  "deger": [
+   2,
+   4
+  ],
+  "aciklama": "Müzik çıkış sönüşü"
+ },
+ "leitmotif_donus_min": {
+  "deger": 3,
+  "aciklama": "Leitmotifin doruğa kadar dönüş sayısı"
+ },
+ "seyirci_sayisi": {
+  "deger": 3,
+  "aciklama": "Bağımsız habersiz seyirci"
+ },
+ "seyirci_karar": {
+  "deger": "medyan",
+  "aciklama": "Puanların birleştirilme yolu"
+ },
+ "seyirci_genel_esik": {
+  "deger": 8,
+  "aciklama": "GENEL medyan geçme eşiği"
+ },
+ "seyirci_olcut_min": {
+  "deger": 7,
+  "aciklama": "Hiçbir ölçütün medyanı bunun altında olamaz"
+ },
+ "seyirci_olcut_hedef": {
+  "deger": {
+   "anlasilirlik": 8,
+   "akicilik": 8,
+   "merak": 8,
+   "duygu": 7,
+   "ritim": 7,
+   "ilk30": 8
+  },
+  "aciklama": "Ölçüt bazında hedef medyan"
+ },
+ "kopukluk_kritik_max": {
+  "deger": 0,
+  "aciklama": "Parti başına KRİTİK kopukluk"
+ },
+ "kopukluk_orta_max_parti": {
+  "deger": 3,
+  "aciklama": "Parti başına ORTA kopukluk"
+ },
+ "ozet_eslesme_min": {
+  "deger": 0.8,
+  "aciklama": "Seyirci özeti ile hikâye odası özeti anlamsal eşleşmesi"
+ },
+ "sikilma_ortak_isaret_min": {
+  "deger": 2,
+  "aciklama": "Bu kadar seyircinin işaretlediği an kesme turuna girer"
+ },
+ "ilk2dk_devam_evet_min": {
+  "deger": 3,
+  "aciklama": "İlk 2 dk testinde 'devam ederdim' diyen seyirci sayısı"
+ },
+ "kagit_tur_max": {
+  "deger": 4,
+  "aciklama": "Kâğıt üstü seyirci döngüsü en çok tur"
+ },
+ "kurgu_tur_max": {
+  "deger": 3,
+  "aciklama": "Kurgu izleme döngüsü en çok tur"
+ },
+ "kesme_turu_oneri": {
+  "deger": {
+   "plan": 10,
+   "sahne": 2,
+   "uygulama_orani_min": 0.5
+  },
+  "aciklama": "Kesici ajandan istenen öneri sayısı ve uygulama oranı"
+ },
+ "kredi_klip_720p": {
+  "deger": 12,
+  "aciklama": "Flow Omni 720p 8 sn klip kredisi"
+ },
+ "kredi_yeniden_deneme_payi": {
+  "deger": 0.2,
+  "aciklama": "Yeniden deneme payı"
+ }
+}

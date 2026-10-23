@@ -49,7 +49,7 @@ Makinenin denetleyeceği eşikler: `ritim_esikleri.json` (bu belgedeki her sayı
 | dk | yoğ. | tür | | dk | yoğ. | tür | | dk | yoğ. | tür |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 8 | gerilim | | 13 | 8 | saskinlik | | 27 | 6 | huzun |
-| 1 | 6 | merak | | 14 | 5 | merak | | 28 | 5 | huzun |
+| 1 | 6 | merak | | 14 | 5 | merak | | 28 | 5 | ofke |
 | 2 | 5 | sefkat | | 15 | 5 | mizah | | 29 | 7 | huzun (en karanlık) |
 | 3 | 5 | merak | | 16 | 6 | merak | | 30 | 6 | huzun>umut |
 | 4 | 6 | gerilim | | 17 | 6 | gerilim | | 31 | 6 | umut |
@@ -66,7 +66,7 @@ Makinenin denetleyeceği eşikler: `ritim_esikleri.json` (bu belgedeki her sayı
 **Eğri kuralları (makine denetler):**
 1. Herhangi bir 3 dakikalık pencerede en az bir tepe ≥ 6 olur.
 2. Yoğunluğun ±1 aralığında ve aynı türde kaldığı süre ≤ 180 sn ("düz çizgi yasağı").
-3. Her büyük tepeden (≥ 8) önceki 60–120 sn içinde en az 2 puanlık bir **nefes çukuru** olur. Kontrast olmadan tepe hissedilmez.
+3. Her büyük yerel tepeden (≥ 8; soğuk açılış hariç) önceki 60–120 sn içinde en az 2 puanlık bir **nefes çukuru** olur. Kontrast olmadan tepe hissedilmez.
 4. Duygu türü her 2–3 dakikada değişir. Ardışık 3 dakika aynı tür olamaz.
 5. Planların `yogunluk` değerleri zaman çizelgesine dizilince haritadan en çok ±2 sapar. Sapma 60 sn'den uzun sürerse BAYRAK.
 6. Parti sonu ≥ 8, doruk ≥ 9, en karanlık an yoğunluğu ≥ 6 (hüzün düz ve sıkıcı olmamalı).
@@ -274,9 +274,274 @@ bitis_durumu:     Key pinched between left thumb and index finger, 5 cm above th
 
 **Konuşmalı plan örneği (tek adım + replik):**
 ```
-P087  kadraj: OY   sure_sn: 5.6 (12 kelime, 2 cümle)
+P087  kadraj: OY   sure_sn: 7.0 (1,5 sn adım + 12 kelime, 2 cümle → 0,4+4,8+0,25+0,5 ≈ 5,95; adım konuşmadan önce)
 baslangic_durumu: Bram seated left third, facing frame right, both hands around a clay cup.
 eylem_zinciri:  [0.0–1.5] Bram lowers the cup onto the table with both hands.
-replik (1.5–5.4): Bram says: "They will burn the whole street. And they will start with us."
+replik (1.5–6.5): Bram says: "They will burn the whole street. And they will start with us."
 bitis_durumu:   Cup on the table, Bram's hands flat beside it, eyes on Voss (off-screen, frame right).
 ```
+
+---
+
+## 4. Bilgi yönetimi
+Anlatıcı yoktur. Seyircinin bildiği her şey ekranda görülen ya da duyulan bir plandan gelir. **"Amaç" alanı ekranda yoktur**; habersiz seyirci denetçisi yalnız görünen ve duyulan alanları okur.
+
+### 4.1 Üç temel soru (her sahne)
+| Soru | Nerede cevaplanır | Eşik |
+|---|---|---|
+| **Kim?** | Ad sözle söylenir (hitap ya da üçüncü kişi), yüz yakın planda görünür | Ana karakterin adı ilk göründüğü andan sonra ≤ 2 sahne içinde ve film başından ≤ 120 sn'de; yan karakter ilk replikten önce ya da hemen sonra |
+| **Nerede?** | Konum planı (§3.2) ya da yer kartı ya da replik | Sahnenin ilk 3 planında; mekân değişince ≤ 10 sn'de |
+| **Neyi riske atıyor?** | Replikle açıkça söylenir + bir görüntüyle (tehdit edilen kişi/nesne) | Film başından ≤ 180 sn'de; her parti başında ilk 60 sn'de tazelenir; her sahnenin `risk` alanı dolu |
+
+Kural: Büyük sır ya da dünya kuralı **hem görüntüyle hem bir replikle** verilir (YAPIM_REHBERI §5).
+
+### 4.2 Kurulum → kullanım tablosu (`KURULUMLAR` film alanı)
+Her nesne, beceri, kural ya da ilişki kullanılmadan önce kurulur ("öteki yumurta" ve "kömür diski" hataları).
+
+| id | Ne | Kurulum planı | Nasıl (görsel + sözlü) | Hatırlatma | Kullanım planı | Ödeme |
+|---|---|---|---|---|---|---|
+| `kur_anahtar` | Demir anahtar | P042 | D ekleme + "Only the warden has one." | P190 (ekleme) | P402 | Kapı açılır, kaçış |
+| `kur_kural_ates` | Ateş yasak | P006 | Muhafız sobayı söndürür + replik | P150 (replik) | P330 | Ember'in alevi herkesi ele verir |
+
+**Eşikler:**
+- Kurulum, kullanımdan **en az 20 sn** önce gelir (aynı sahnede kurup kullanmak "kolaylık" gibi görünür).
+- Kurulum ile kullanım arası **> 600 sn** ise arada en az bir hatırlatma planı olur.
+- Doruktaki her çözüm (P3) **P1 ya da P2'de kurulmuş** bir şeyle gelir. Yeni beceri ya da yeni nesneyle çözüm = HATA ("deus ex machina").
+- Kurulan her şey kullanılır ya da seri kancasına bağlanır (Çehov'un silahı). Kullanılmayan kurulum = BAYRAK.
+- Plan alanları: `kurulum: ["kur_anahtar"]`, `kullanim: ["kur_anahtar"]`. Makine sırayı denetler.
+
+### 4.3 Merak soruları defteri (`MERAK_DEFTERI` film alanı)
+| id | Soru (seyircinin aklındaki) | Açan plan | Kapatan plan | Tür | Ömür |
+|---|---|---|---|---|---|
+| `m01` | Kar altındaki ışık ne? | P002 | P014 | kısa | ≤ 2 dk |
+| `m02` | Bram yumurtayı neden saklıyor? | P020 | P210 | orta | ≤ 15 dk |
+| `m03` | Lucan, Bram'ın kardeşi mi? | P120 | P330 | büyük | ≤ 1 parti |
+| `m99` | Ember'in annesi yaşıyor mu? | P480 | (seri) | seri | sonraki film |
+
+**Eşikler:**
+- Her an **en az 1, en çok 5** açık soru bulunur. 6. soru açılmadan önce biri kapanır.
+- Yeni soru ya da kapanış aralığı ≤ **90 sn** (§1.4).
+- Kısa sorular ≤ 2 dk, orta sorular ≤ 15 dk, büyük sorular ≤ 1 parti içinde kapanır. Kapanmayan soru yalnız `seri` türünde kalabilir; film başına ≤ 2.
+- **Cevap = yeni soru:** Büyük bir soru kapanırken aynı planda ya da ≤ 30 sn içinde yeni bir soru açılır.
+- Her parti sonu (12:30–13:00, 26:00–26:30) açık bir soruyla biter (kanca).
+- Plan alanları: `merak_ac: ["m02"]`, `merak_kapat: ["m01"]`.
+
+### 4.4 Dramatik ironi
+Seyirci karakterden **fazla** bilir. Bu, gerilim üretir (Hitchcock'un masa altındaki bombası). Anlatıcısız filmde en ucuz gerilim aracıdır.
+- Kurulum: seyirci tehdidi bir planda görür (ör. Kestra kapının dışında dinliyor). Karakter görmez.
+- Sürdürme: kurbanın sahnesine tehdidin 1–2 hatırlatma planı kesilir (tepki, ekleme, gölge).
+- Çözülme: karakter öğrenir. Tepki planı zorunludur.
+- **Eşik:** Parti başına en az 1 ironi zinciri (`ironi: {id, seyirci_bilir_plan, karakter_ogrenir_plan}`). Seyircinin bilip karakterin bilmediği süre 30–300 sn.
+
+### 4.5 Bilgi verme yasakları
+- "Bildiğin gibi" repliği yasak: karakterler ikisinin de bildiği şeyi birbirine anlatmaz. Bilgi taşıyan replikte **çatışma** olur (biri istemez, biri saklar, biri yanlış anlar).
+- Aynı bilgi ikinci kez yalnız yeni bir anlamla verilir (hatırlatma ≠ tekrar). Aynı bilginin üçüncü kez verilmesi = BAYRAK.
+- Bir sahnede ≤ 2 yeni ad. Film başına konuşan karakter ≤ 8.
+- Geri dönüşler soluk ton ya da flaşla işaretlenir (`03_DERSLER.md`) ve ≤ 20 sn sürer.
+
+---
+
+## 5. Ses ve müzik ritmi
+
+### 5.1 Katmanlar ve seviyeler
+| Katman | Kaynak | Hedef seviye |
+|---|---|---|
+| Diyalog | TTS (AI84/ElevenLabs), whisper ile dudak anına oturtulur | fısıltı −24 · yumuşak −21,5 · normal −19,5 · bağırma −17 LUFS (replik başına) |
+| Ambiyans (ortam zemini) | Sahne başına **tek sürekli** dosya (CC0 banka ya da demucs ile ayrılmış Flow ortamı) | Diyalogdan 12–18 dB aşağı |
+| Efekt (adım, kapı, kanat) | Eylem zincirinin her adımına bir efekt | Diyalogdan 3–10 dB aşağı; şok anında diyalog seviyesine çıkabilir |
+| Müzik | Ayrı katman (Gemini/Lyria), leitmotifli | Diyalog altında: diyalogdan ≥ 12 dB aşağı (otomatik kısma). Diyalogsuz bölümde −20…−16 LUFS |
+| **Final karışım** | | Bütünleşik **−14 LUFS**, tepe ≤ −1 dBTP (YouTube ve Shorts) |
+
+### 5.2 Ambiyans sürekliliği
+- Ambiyans **plan değil sahne** katmanıdır. Sahne boyunca tek dosya, kesintisiz çalar. Planlar arası zıplama yasaktır (kapı sahnesi dersi).
+- Sahne içinde ardışık planların ambiyans seviyesi farkı ≤ 3 LU.
+- Sahne geçişinde ambiyanslar 0,5–1,0 sn çapraz geçer. Yeni sahnenin ambiyansı görüntüden 0,3–1,0 sn **önce** başlar (ses köprüsü, J kesme).
+- İç mekândan dışarı bakan planda dış ses arttırılır, mekân ambiyansı değişmez.
+- Yeniden çekilen her planda efekt yerleşimi yeniden yapılır (`03_DERSLER.md`).
+
+### 5.3 Sessizliğin yeri
+"Sessizlik" = müzik ve diyalog yok, **ambiyans var**. Mutlak sessizlik (< −50 dB) yalnız ≤ 1 sn, film başına ≤ 2 kez, en büyük şokta kullanılır.
+
+| Yer | Süre | Neden |
+|---|---|---|
+| Büyük ifşadan hemen önce | 0,8–2 sn | Seyirci nefesini tutar |
+| Şok repliğinden sonra (tepki planı) | 1–3 sn | Duygu yüzde okunur |
+| En karanlık an | 10–40 sn müziksiz | Hüzün süslenmez |
+| Doruktan hemen önce | 1–2 sn | Patlamadan önce çekilme |
+| Soğuk açılışın ilk 3–5 sn'si | ambiyans + efekt | Müzik değil dünya duyulur |
+
+### 5.4 Müzik giriş ve çıkış
+- Müzik filmin **%40–65**'ini kaplar. Müziksiz bölüm en çok 4 dk, müzikli bölüm en çok 5 dk kesintisiz sürer.
+- **Giriş** bir olayla olur: kesme, eylem başlangıcı, bakış, karar repliğinden sonra. Diyalog cümlesinin ortasında girmez. Giriş 1–3 sn yükselir; şokta ani girer.
+- **Çıkış** ifşadan önceki sessizliğe ya da bir sahne sonuna denk gelir. Çıkış 2–4 sn sürer. Müzik bir sahne kesmesiyle birlikte bitmez; ses köprüsü olarak 1–2 sn taşar.
+- Müzik ipucu duygu türü değişince değişir (§1.3). Ardışık iki ipucu aynı türde olamaz.
+- **Leitmotif:** Her ana karakter ya da tema için sabit enstrüman + tempo (ör. Ember = tahta flüt, 70 BPM). Leitmotif ilk kez P1'de sade çalınır, doruğa kadar en az 3 kez döner, doruğunda tam orkestrayla çalar.
+- Müzik istemlerinde sanatçı ve film adı yazılmaz. Video isteminde her zaman `No music.` yazılır.
+
+### 5.5 Diyalog ritmi
+- Karşılıklı konuşmada cevap boşluğu 0,2–0,6 sn. Çatışma büyüdükçe kısalır; şaşkınlıkta 1–2 sn'ye uzar ve tepki planı kullanılır.
+- Bir karakter art arda iki plan boyunca konuşabilir (iki ayrı klip). Üçüncü plan bir tepki ya da cevap olur. Monolog > 3 plan = BAYRAK.
+- Her diyalog sahnesinde planların ≥ %30'unda J ya da L kesme olur. Gerisi düz kesmedir. Bu, "kopuk" hissini azaltan ses aracıdır.
+
+---
+
+## 6. Ölçülebilir denetim listesi ve plan alanları
+
+### 6.1 Önerilen plan alanları (SAHNELER.json; tümü isteğe bağlı, eski dosyalar çalışmaya devam eder)
+Mevcut alanlar (`no`, `parti`, `referans`, `gorsel_istem`, `hareket_istem`, `amac`, `duygu`, `replik`, `kullanim`) değişmez. Yeni alanlar `zanaat` alt nesnesine yazılır. Süreklilik alanları `sureklilik` alt nesnesinde kalır (`arastirma/02_sureklilik.md` §6.1). `hareket_istem` ve `gorsel_istem`, bu alanlardan **kodla derlenir**.
+
+| Alan | Tür / değerler | Doldurur | Ne için |
+|---|---|---|---|
+| `sahne_grubu` | `"S07"` | yönetmen | Sahne süresi, ambiyans, eksen |
+| `vurus` | `soguk_acilis` · `ilk_kanca` · `bag` · `tetikleyici` · `perde1_donus` · `orta_nokta` · `en_karanlik` · `perde3_karar` · `doruk` · `kapanis` · `seri_kancasi` · `parti_kancasi` · null | hikâye odası | Vuruş zamanlaması |
+| `plan_tipi` | §2.1 sözlüğü | yönetmen | Süre aralığı |
+| `hedef_duygu` | §1.1 sözlüğü, `a>b` | hikâye odası | Duygu türü eğrisi |
+| `yogunluk` | 1–10 | hikâye odası | Duygu haritası sapması |
+| `sure_sn` | sayı (kurguda kullanılan) | yönetmen | ASL, zaman çizelgesi |
+| `klip_sn` | 8 / 10 | yönetmen | Üretim süresi |
+| `kaynak_klip` | plan no ya da null | yönetmen | Klip bölme (§2.2) |
+| `kadraj` | §3.1 sözlüğü | yönetmen | Ölçek sıçraması |
+| `kamera_tarafi`, `eksen_gecis`, `bakis` | `A`/`B`, bool, `kadraj_sagi`… | yönetmen | 180°, bakış çizgisi |
+| `hareket_tipi` | §3.6 sözlüğü | yönetmen | Güvenilirlik, tek hareket |
+| `kesme` | `{tip, nokta_sn, ses_tasma_sn}` | yönetmen → kurgu | §3.4 kuralları; J/L oranı |
+| `baslangic_durumu` | `{tarif_en, konumlar{}, bakislar{}, nesneler[{ad,kimde,el,durum}]}` | yönetmen | Başlangıç karesiyle aynı |
+| `eylem_zinciri` | `[{bas, bit, ozne, fiil, hedef, govde}]` (≤ 3) | yönetmen | Atomik eylem |
+| `bitis_durumu` | `baslangic_durumu` ile aynı yapı | yönetmen | Sonraki planın başlangıcı |
+| `replik_zaman` | `{bas, bit}` | yönetmen | Dudak penceresi, süre hesabı |
+| `ekran_disi_ses` | `{karakter, metin}` ya da null | yönetmen | Tepki planı üstüne L kesme |
+| `merak_ac`, `merak_kapat` | `["m02"]` | hikâye odası | Merak defteri |
+| `kurulum`, `kullanim_bilgi` | `["kur_anahtar"]` | hikâye odası | Kurulum → kullanım (adı `kullanim_bilgi`; mevcut `kullanim {bas,sure}` kırpma alanıyla çakışmasın) |
+| `ironi` | `{id, rol: kur/surdur/coz}` | hikâye odası | Dramatik ironi |
+| `ekranda_bilgi` | Seyircinin bu planda öğrendiği tek cümle | yönetmen | Habersiz seyirci karşılaştırması |
+| `risk` | Kim, neyi kaybedebilir (bir cümle) | hikâye odası | "Neyi riske atıyor" |
+| `ses` | `{ambiyans, efektler[], muzik_ipucu, sessizlik_sn, diyalog_seviye}` | müzik süpervizörü | §5 |
+
+**Sahne düzeyi alanlar** (`sahne_gruplari.<id>`): `sahne_tipi` (§2.4), `sahne_degeri {bas, son}` (§7.2), `risk`, `eksen`, `ambiyans`.
+
+**Film düzeyi alanlar:** `duygu_haritasi` (dakika → `{yogunluk, tur}`), `vuruslar` (ad → dakika), `MERAK_DEFTERI`, `KURULUMLAR`, `IRONILER`, `eksenler` (sahne grubu → `[A, B]`), `leitmotifler`.
+
+### 6.2 Denetim listesi (kapı → ölçü → eşik → sonuç)
+Kodlar: **H** = HATA (geçmez, yeniden yazılır ya da üretilir), **B** = BAYRAK (ajan ya da insan bakar).
+
+**Z0: Kâğıt üstü ritim kapısı** (`film.py`, SAHNELER.json üretildikten hemen sonra; kredi yok, ağ yok)
+| # | Ölçü | Eşik | Sonuç |
+|---|---|---|---|
+| 1 | Toplam `sure_sn` + kart + jenerik | 1800–2700 sn | H |
+| 2 | Parti süresi | 720–840 sn (40 dk film için); oranla | B |
+| 3 | Vuruş zamanı / film süresi | §1.2 oranı ±%4 | B |
+| 4 | Plan `sure_sn` / `plan_tipi` aralığı | §2.1 tablosu | H |
+| 5 | Diyalog süresi ≥ §2.3 formülü | eksikse | H |
+| 6 | Replik kelime sayısı | ≤ 16 (8 sn) / ≤ 20 (10 sn) | H |
+| 7 | ASL film / parti / ilk 120 sn / ilk 30 sn | 4,2–5,2 / §2.6 ±0,6 / ≤ 4,0 / ≤ 3,5 | B |
+| 8 | Sahne süresi | ≤ 180 sn | H |
+| 9 | Diyalog sahnesinde tepki planı oranı | ≥ %25 | B |
+| 10 | Diyalog sahnesinde J/L kesme oranı | ≥ %30 | B |
+| 11 | Aynı `plan_tipi` art arda | ≤ 4 | B |
+| 12 | Ardışık planlarda ölçek farkı (aynı açı) | ≥ 2 kademe | H |
+| 13 | `eylem_zinciri` adım sayısı / konuşmalı planda | ≤ 3 / ≤ 1 | H |
+| 14 | Adım süresi; örtüşme | ≥ 1,5 sn; örtüşme yok | H |
+| 15 | Yasak sonuç fiilleri `hareket_istem` içinde (§3.7) | 0 | H |
+| 16 | `bitis_durumu`[N] ≡ `baslangic_durumu`[N+1] (nesne kimde/el, konum, poz) | `yeni_sahne` dışında eşit | H |
+| 17 | 180°: aynı sahnede taraf değişimi `eksen_gecis` olmadan | 0 | H |
+| 18 | Karşılıklı planlarda bakışlar birbirine dönük | evet | H |
+| 19 | `referans` sayısı; aynı karede konuşan sayısı | ≤ 2; ≤ 1 | H |
+| 20 | Yasak kelimeler (filtre listesi, `03_DERSLER.md`) | 0 | H |
+
+**Z1: Bilgi kapısı** (kâğıt üstü)
+| # | Ölçü | Eşik | Sonuç |
+|---|---|---|---|
+| 21 | İlk eylem / ilk merak sorusu zamanı | ≤ 5 sn / ≤ 20 sn | H |
+| 22 | Başlık kartı zamanı ve süresi | 45–120 sn, ≤ 6 sn | B |
+| 23 | Ana karakter adının söylenmesi | ≤ 120 sn ve ilk görünüşten ≤ 2 sahne | H |
+| 24 | Riskin sözle söylenmesi; parti başında tazelenmesi | ≤ 180 sn; parti başından ≤ 60 sn | H |
+| 25 | Merak olayları arası en uzun boşluk | ≤ 90 sn | B |
+| 26 | Aynı anda açık soru sayısı | 1–5 | B |
+| 27 | Soru ömrü (kısa/orta/büyük) | ≤ 120 / 900 sn / 1 parti | B |
+| 28 | Parti sonu açık soru | ≥ 1 | H |
+| 29 | Kullanım öncesi kurulum; kurulum→kullanım arası | var; ≥ 20 sn | H |
+| 30 | Kurulum→kullanım > 600 sn ise hatırlatma | var | B |
+| 31 | Doruk çözümü P1/P2'de kurulmuş mu | evet | H |
+| 32 | Kullanılmayan kurulum | 0 (seri hariç) | B |
+| 33 | Parti başına ironi zinciri | ≥ 1 | B |
+| 34 | Sahne başına yeni ad; konuşan karakter | ≤ 2; ≤ 8 | B |
+
+**Z2: Duygu kapısı** (kâğıt üstü)
+| # | Ölçü | Eşik | Sonuç |
+|---|---|---|---|
+| 35 | Plan yoğunluk dizisi ↔ `duygu_haritasi` | ±2; sapma ≤ 60 sn | B |
+| 36 | 3 dk pencerede tepe | ≥ 6 | B |
+| 37 | Düz çizgi (±1, aynı tür) | ≤ 180 sn | B |
+| 38 | Tepe (≥ 8) öncesi çukur | 60–120 sn içinde ≥ 2 puan düşüş | B |
+| 39 | Parti sonu / doruk / en karanlık an yoğunluğu | ≥ 8 / ≥ 9 / ≥ 6 | H |
+| 40 | Müzik kaplama oranı; müziksiz ve müzikli en uzun blok | %40–65; ≤ 240 sn ve ≤ 300 sn | B |
+
+**Z3: Kurgu kapısı** (kurgu taslağından, kredi yok; `plan_kurgu.py` sonrası)
+| # | Ölçü | Eşik | Sonuç |
+|---|---|---|---|
+| 41 | `kullanim.bas` | ≥ 0,3 sn | B |
+| 42 | `kullanim.bas + sure` | ≤ klip_sn − 0,5 | B |
+| 43 | Replik sonrası ölü süre | ≤ 0,6 sn | B |
+| 44 | Diyalog seviyeleri | hedef ±1 LU | H |
+| 45 | Sahne içi ambiyans farkı; ambiyans boşluğu | ≤ 3 LU; 0 | H |
+| 46 | Müzik diyalog altında | ≥ 12 dB aşağı | H |
+| 47 | Final karışım; gerçek tepe | −14 ±1 LUFS; ≤ −1 dBTP | H |
+| 48 | Süreklilik kapıları G1/V1/V2/K1 | `arastirma/02_sureklilik.md` §6.2 eşikleri | — |
+| 49 | Kurgu izleme denetimi (habersiz seyirci, kare paketi) | §7.3 | H |
+
+Her kapı `RAPORLAR/<kapi>_<parti>.json` yazar: `{kapi, sonuc, hatalar:[{madde, plan, olcu, esik, oneri}]}`. HATA varsa `YENIDEN_YAZ.json` (kâğıt) ya da `YENIDEN_URET.json` (görsel/video) kuyruğu çıkar.
+
+---
+
+## 7. Habersiz seyirci puanını 8/10'a çıkarmak
+
+### 7.1 Teşhis: önceki 5–7/10 neden?
+| Belirti (rapor, kullanıcı notu) | Kök neden | Bu belgedeki önlem |
+|---|---|---|
+| "Gereksiz uzun" | 8 sn klip olduğu gibi kullanıldı; manzara ve geçiş uzun; diyalog sahnesinde yeni bilgi yok | §2.1 süre tavanları, §2.2 kırpma, §2.5 dolgu yasağı, ASL 4,2–5,2, sahne ≤ 180 sn, 60 sn'de yeni bilgi |
+| "Kopuk" | Karakter kaybolup belirdi; nesne zıpladı; ambiyans kesildi; replikler düz kesmeyle dizildi | §3.7 bitiş = başlangıç zinciri, §3.4 eylem üstünde kesme, §5.2 tek ambiyans, J/L ≥ %30, tepki ≥ %25 |
+| "Bu kim, neden" (B1: babanın adı 84. çekimde) | Bilgi "amaç" alanında kaldı, ekrana çıkmadı | §4.1 ad ≤ 120 sn, risk ≤ 180 sn, `ekranda_bilgi` alanı |
+| Kurulmadan kullanılan nesne | Kurulum listesi yoktu | §4.2 tablo + Z1 #29–32 |
+| Merak düşük, "bir bölüm daha" isteği zayıf | Soru açılıp kapanma ritmi yoktu; parti sonları yumuşak | §4.3 defter, ≤ 90 sn kuralı, parti sonu ≥ 8 |
+| Duygu "hak edilmemiş" | Bağ sahnesi kısa; tepki planı az; müzik her yerde | §1.2 bağ vuruşu 2:00, §3.5 tepki, §5.3 sessizlik, müzik ≤ %65 |
+
+### 7.2 Somut önlemler (öncelik sırasıyla)
+1. **Kâğıt üstü kapılar önce.** Z0–Z2 sıfır HATA ile geçmeden görsel üretimine geçilmez. Kopuklukların çoğu kâğıtta görülür ve kredisi yoktur.
+2. **İlk 2 dakika ayrı cilalanır.** Soğuk açılış en az 2 versiyon (A/B) yazılır. Habersiz seyirci yalnız ilk 2 dakikayı okur ve "devam eder miydin? (evet/hayır + neden)" sorusunu cevaplar. 3 seyircinin 3'ü de "evet" demeden ilerlenmez.
+3. **Her parti tek cümleyle savunulur.** "P2'de [kahraman] [hedef] için [engel]le karşılaşır ve [kayıp]la biter." Bu cümle yazılamıyorsa parti yeniden yapılandırılır.
+4. **Sahne değeri kuralı.** Her sahne bir değeri tersine çevirir (güven → ihanet, güvende → tehlikede). `sahne_degeri: {bas, son}` aynıysa sahne ya kesilir ya başka sahneyle birleştirilir. Bu kural "gereksiz uzun" sorununu kökten çözer.
+5. **Oyuncu denetimi.** Her konuşan karakter için bir ajan yalnız o karakterin repliklerini kendi kartına (bildiği, bilmediği, istediği, konuşma tarzı) göre okur. Ad, motivasyon ve "bildiğin gibi" hatalarını yakalar.
+6. **Tepki ve ses köprüsü zorunluluğu.** Diyalog sahnelerinde tepki ≥ %25 ve J/L ≥ %30 değilse kurguya geçilmez.
+7. **Atomik eylem zinciri + durum zinciri.** Bütün planların başlangıç ve bitiş durumu makineyle karşılaştırılır (Z0 #16). Flow'un "kendi kafasına göre" eylemi azalır, kesmeler eylem üstüne oturur.
+8. **Kurgu izleme denetimi parti parti.** §7.3 yöntemi; KRİTİK kopukluk sıfırlanmadan sonraki partiye geçilmez.
+9. **Kesme turu.** Kurgu bitince tek bir "kesici" ajan yalnız şu soruyu cevaplar: "Hangi 10 planı ya da 2 sahneyi atarsak film daha iyi olur?" Önerilerin en az yarısı uygulanır. Her kesmeden sonra Z1 kurulum denetimi yeniden çalışır (kullanıcının kestiği planın bir bilgiyi de götürmesi dersi).
+10. **Puanlar gürültülüdür, eğilim önemlidir.** Karar 3 seyircinin **medyanıyla** verilir. Tek seyircinin 9'u başarı sayılmaz.
+
+### 7.3 Habersiz seyirci yöntemi (kâğıt ve kurgu, aynı ölçüt)
+- **Girdi:** Önceki filmlerin izleyici özeti (varsa) + yalnız ekranda olanlar: `ekranda_bilgi`, replikler (EN), görsel tarifi, yer/zaman kartları. Kurgu aşamasında bunlara kare paketi eklenir: plan başına üçlü pencere (önceki son kare, bu planın 3 karesi, sonraki ilk kare) + replik metni + zaman kodu. `amac`, `risk`, `vurus` ve merak defteri **verilmez**.
+- **3 bağımsız seyirci** (Opus, birbirini okumaz). Her biri 6 ölçütü 1–10 puanlar:
+
+| Ölçüt | Soru | Hedef (medyan) |
+|---|---|---|
+| Anlaşılırlık | Her an kim, nerede, neyi riske atıyor biliyor muydum? | ≥ 8 |
+| Akıcılık (kopukluk yok) | Bir plandan ötekine geçerken "nereden çıktı" dedim mi? | ≥ 8 |
+| Merak | Sonrasını öğrenmek istedim mi? Parti sonunda durabilir miydim? | ≥ 8 |
+| Duygu | Kahraman için endişelendim mi? Duygular hak edilmiş miydi? | ≥ 7 |
+| Ritim | Sıkıldığım ya da hızlı geçtiğim an oldu mu (zaman koduyla)? | ≥ 7 |
+| İlk 30 sn | İlk 30 sn'den sonra devam eder miydim? | ≥ 8 |
+
+- **Ek çıktılar (makine karşılaştırır):**
+  1. 3 cümlelik parti özeti + karakter adları + "kahraman neyi kaybedebilir?" cevabı. Hikâye odasının özetiyle anlamsal eşleşme ≥ %80 olmalı. Altındaysa bilgi ekrana çıkmamıştır.
+  2. Kopukluk listesi: `{plan, tur: KRITIK/ORTA/KUCUK, neden, oneri}`. Eşik: parti başına KRİTİK = 0, ORTA ≤ 3.
+  3. "Sıkıldığım anlar" zaman kodları. 2 seyircinin işaretlediği her an kesme turuna girer.
+  4. Seyircinin aklındaki açık sorular. Merak defteriyle karşılaştırılır: defterde olup seyircide olmayan soru = ekranda açılmamış.
+  5. Sonda tek satır: `OZET | anlasilirlik: 8 | akicilik: 7 | merak: 8 | duygu: 7 | ritim: 7 | ilk30: 9 | GENEL: 8`.
+- **Geçme koşulu:** GENEL medyan ≥ 8, hiçbir ölçütün medyanı < 7, KRİTİK = 0, özet eşleşmesi ≥ %80.
+- **Döngü:** Her tur aynı yazar (hikâye odası / yönetmen) düzeltir. Kâğıtta en çok 4 tur, kurguda en çok 3 tur. Eşiğe ulaşılmazsa kullanıcıya en düşük 3 ölçüt ve öneriler raporlanır. Her turda **yeni** seyirci ajanları kullanılır (önceki metni bilen seyirci habersiz değildir).
+
+### 7.4 Ajan görev özeti
+| Ajan | Bu belgeden sorumlu olduğu bölümler | Kapı |
+|---|---|---|
+| Hikâye odası | §1 duygu haritası ve vuruşlar, §4 bilgi yönetimi, `hedef_duygu`, `yogunluk`, `merak_*`, `kurulum`, `ironi`, `risk` | Z1, Z2 + kâğıt seyirci |
+| Yönetmen | §2 süreler, §3 plan dili ve eylem zinciri, `plan_tipi`, `kadraj`, `kesme`, `*_durumu`, `eylem_zinciri` | Z0 + G1 |
+| Müzik süpervizörü | §5, `ses` alanı, leitmotifler | Z2 #40 |
+| Kurgu | §2.2 kırpma, §3.4 kesme, §5 karışım, kesme turu | Z3 + kurgu seyircisi |

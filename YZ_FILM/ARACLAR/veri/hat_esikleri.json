@@ -1,0 +1,243 @@
+{
+ "_surum": 1,
+ "_aciklama": "Hattın kendi eşikleri ve bütün sayısal güvenlik sınırları (TASARIM D-04, D-34, §5.6, §7.1, §7.3). esikler.py yükler. gevsetilemez: true olanlar FILM_AYAR.json ya da KURALLAR_OGRENILEN.json ile yalnız sıkılaşır; yon: tavan = küçük olan sıkı, taban = büyük olan sıkı, siklik = mola sıklığı (küçük olan sıkı, 0 = kapalı ve açılmaz), sabit = değişmez, cozunurluk = en az bu.",
+ "flow_tempo_1710": {
+  "deger": {
+   "elle": {
+    "gonderim_arasi_sn": [
+     6,
+     15
+    ],
+    "ayni_anda": 2,
+    "mola_kac_gonderimde": 8,
+    "gonderim_mola_dk": [
+     3,
+     6
+    ],
+    "mola_kac_partide": 0,
+    "parti_mola_dk": [
+     0,
+     0
+    ]
+   },
+   "gece": {
+    "gonderim_arasi_sn": [
+     12,
+     30
+    ],
+    "ayni_anda": 2,
+    "mola_kac_gonderimde": 0,
+    "gonderim_mola_dk": [
+     0,
+     0
+    ],
+    "mola_kac_partide": 2,
+    "parti_mola_dk": [
+     15,
+     30
+    ]
+   }
+  },
+  "aciklama": "Flow gönderim temposu, kip başına (17.10 değerleri; memmet.TEMPO ile birebir): elle (gündüz) gönderim arası 6–15 sn, aynı anda 2, 8 gönderimde bir 3–6 dk mola; gece 12–30 sn, aynı anda 2, iki partide bir 15–30 dk mola. Yalnız yavaşlatılabilir",
+  "kaynak": "belge",
+  "etiket": "BK §6.2 #6 (17.10); TASARIM D-04",
+  "gevsetilemez": true,
+  "yon": {
+   "gonderim_arasi_sn": "taban",
+   "ayni_anda": "tavan",
+   "mola_kac_gonderimde": "siklik",
+   "gonderim_mola_dk": "taban",
+   "mola_kac_partide": "siklik",
+   "parti_mola_dk": "taban"
+  }
+ },
+ "flow_gorsel_gunluk_tavan": {
+  "deger": 20,
+  "aciklama": "Flow'da günde en çok görsel gönderimi (Ö0-b ölçene kadar); yalnız düşürülür",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-04; [UM2] §4.7.2 (DR: ~40 görselden sonra işaretlendi)",
+  "gevsetilemez": true,
+  "yon": "tavan"
+ },
+ "flow_gorsel_sonrasi_video_saat": {
+  "deger": 12,
+  "aciklama": "Görsel gönderiminden sonra aynı hesapta video gönderimine kadar en az bekleme (saat)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-04; [UM2] §4.7.2",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "haftalik_uyari_kilidi_gun": {
+  "deger": 7,
+  "aciklama": "Aynı takvim haftasında ikinci Flow uyarısı → hesap bu kadar gün kilitli",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-04; [SA] §7",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "uyari_sonrasi_bekleme_dk": {
+  "deger": 30,
+  "aciklama": "Uyarı kaldırma: elle 1 başarılı videodan sonra en az bekleme (dk; yalnız o takvim günü)",
+  "kaynak": "belge",
+  "etiket": "BK §6.2 #8–#9; TASARIM §7.2 FLOW",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "hesap_degisim_kilidi_gun": {
+  "deger": 14,
+  "aciklama": "Flow hesabı değişince yeni hesapta otomatik gönderim kilidi (gün)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-03; §7.2 FLOW",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "kapi_payi": {
+  "deger": 0.3,
+  "aciklama": "Bütçede kapı (yeniden üretim) payı; BUT0–BUT2",
+  "kaynak": "tahmin",
+  "etiket": "[UM2] §4.7.1 pay.kapi; TASARIM §7.2 BUT",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "take_payi_kredi": {
+  "deger": 720,
+  "aciklama": "İkinci take için ayrılan Flow kredisi",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-23; §7.2 BUT",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "guvenlik_payi": {
+  "deger": 0.1,
+  "aciklama": "Bakiyenin harcanmayan güvenlik payı (BUT2: tahmin ≤ bakiye × 0,9 ve ≤ tavan)",
+  "kaynak": "tahmin",
+  "etiket": "[UM2] §4.7.1 butce.guvenlik_payi",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "flow_model": {
+  "deger": "omni-1.1-flash",
+  "aciklama": "Flow video modeli; bir filmde tek model, değişimi uyarı getirir",
+  "kaynak": "belge",
+  "etiket": "BK §8 #3; [UM2] §4.7.2 flow.model_tek",
+  "gevsetilemez": true,
+  "yon": "sabit"
+ },
+ "flow_cozunurluk_min": {
+  "deger": "720p",
+  "aciklama": "Flow video çözünürlüğü en az 720p (kalite düşürme yok)",
+  "kaynak": "belge",
+  "etiket": "BK §8 #1",
+  "gevsetilemez": true,
+  "yon": "cozunurluk"
+ },
+ "klip_sn_varsayilan": {
+  "deger": 8,
+  "aciklama": "Flow video klip süresi (sn); memmet video_sure \"8 sn.\"",
+  "kaynak": "belge",
+  "etiket": "BK §6.4; TASARIM §7.3",
+  "gevsetilemez": true,
+  "yon": "sabit"
+ },
+ "ajan_paralel_max": {
+  "deger": 5,
+  "aciklama": "Aynı anda çalışan ajan tavanı",
+  "kaynak": "tahmin",
+  "etiket": "[UM2] §4.7.3 ajan.paralel_max; [YN2]",
+  "gevsetilemez": true,
+  "yon": "tavan"
+ },
+ "disk_bos_min_gb": {
+  "deger": 20,
+  "aciklama": "C sürücüsünde en az boş alan (GB); altında arsivle kendiliğinden çalışır",
+  "kaynak": "tahmin",
+  "etiket": "[UM2] §4.7.3 disk.c_bos_min_gb; TASARIM §7.2 DISK",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
+ "gorev_tavani_carpan": {
+  "deger": 1.5,
+  "aciklama": "Görev token tavanı = projeksiyon × bu çarpan",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §1.5; §7.2 TOKEN",
+  "yon": "tavan"
+ },
+ "stop_ardisik_max": {
+  "deger": 8,
+  "aciklama": "Stop kancasında ardışık devam tavanı; sonra BEKLE",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.5",
+  "yon": "tavan"
+ },
+ "film_token_tavan": {
+  "deger": null,
+  "aciklama": "Film token tavanı = Ö0-f projeksiyonu × 1,5 (yoksa ilk 30–50 görevden sonraki D-08 projeksiyonu × 1,5); null = henüz ölçülmedi",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §1.5",
+  "yon": "tavan"
+ },
+ "seyirci_gurultu_std": {
+  "deger": null,
+  "aciklama": "Habersiz seyirci puan gürültüsü (standart sapma); Ö0-f yazar; null = ölçülmedi",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-20; Ö0-f"
+ },
+ "olculen_gunluk_kapasite": {
+  "deger": null,
+  "aciklama": "Ölçülen günlük Flow video kapasitesi; Ö0-b yazar; takvim = ceil(gönderim / bu); null = ölçülmedi",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-04; Ö0-b; [SA] K-1 #2"
+ },
+ "hat_denetcisi_kuyruk_esigi": {
+  "deger": 30,
+  "aciklama": "Kuyruk bu kadar klibi aşınca hat-denetcisi çağrılır",
+  "kaynak": "tahmin",
+  "etiket": "[UM2] §4.7.3; TASARIM §7.2 HAT"
+ },
+ "hata_donus_max": {
+  "deger": 3,
+  "aciklama": "Tavan sonrası aynı hataya en çok dönüş",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "o0b_gun_tavanlari": {
+  "deger": [
+   10,
+   15,
+   20
+  ],
+  "aciklama": "Ö0-b ölçüm merdiveni: gün başına video gönderim tavanları; ilk uyarıda kapanır",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4; TASARIM §7.2 FLOW"
+ },
+ "o0b_uyari_sonrasi_ara_gun": {
+  "deger": 7,
+  "aciklama": "Ö0-b'de uyarıdan sonra ölçüme ara (gün)",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "ab_kol_min_ornek": {
+  "deger": 12,
+  "aciklama": "A/B karşılaştırmasında kol başına en az örnek",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "kesit_sistematik_plan_min": {
+  "deger": 3,
+  "aciklama": "Dikey kesitte sistematik sayılan sorun için en az plan",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "kota_bekle_max_sa": {
+  "deger": 24,
+  "aciklama": "Kota dolunca en uzun bekleme (saat)",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "bekle_azami_dk": {
+  "deger": 110,
+  "aciklama": "Tek bekleme adımının en uzun süresi (dk)",
+  "kaynak": "tahmin",
+  "etiket": "[SON] K-4, O-3, O-4"
+ }
+}

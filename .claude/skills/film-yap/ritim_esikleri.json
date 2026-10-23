@@ -1,29 +1,39 @@
 {
  "surum": {
-  "deger": "1.0",
-  "aciklama": "Eşik dosyası sürümü; ZANAAT.md ile birlikte güncellenir"
+  "deger": "1.1",
+  "aciklama": "Eşik dosyası sürümü; ZANAAT.md ile birlikte güncellenir. 1.1: her anahtarda kaynak ve etiket (TASARIM D-34, §7.1)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT başlığı (RE sürümü)"
  },
  "film_sure_hedef_sn": {
   "deger": 2400,
-  "aciklama": "Hedef film süresi (40 dk); vuruşlar bu süreye oranla taşınır"
+  "aciklama": "Hedef film süresi (40 dk); vuruşlar bu süreye oranla taşınır",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.2"
  },
  "film_sure_aralik_sn": {
   "deger": [
    1800,
    2700
   ],
-  "aciklama": "Kabul edilen film süresi (kart + jenerik dahil); dışı HATA"
+  "aciklama": "Kabul edilen film süresi (kart + jenerik dahil); dışı HATA",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §6.2"
  },
  "parti_sayisi": {
   "deger": 3,
-  "aciklama": "Film her zaman 3 parti"
+  "aciklama": "Film her zaman 3 parti",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §0"
  },
  "parti_sure_oran_aralik": {
   "deger": [
    0.3,
    0.35
   ],
-  "aciklama": "Her partinin film süresine oranı (40 dk'da 720-840 sn); dışı BAYRAK"
+  "aciklama": "Her partinin film süresine oranı (40 dk'da 720-840 sn); dışı BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §6.2"
  },
  "vurus_oranlari": {
   "deger": {
@@ -43,11 +53,15 @@
    "kapanis": 0.95,
    "seri_kancasi": 0.965
   },
-  "aciklama": "Vuruşun film süresi içindeki hedef konumu (oran)"
+  "aciklama": "Vuruşun film süresi içindeki hedef konumu (oran)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.2"
  },
  "vurus_oran_tolerans": {
   "deger": 0.04,
-  "aciklama": "Vuruş oranından en çok sapma; aşılırsa BAYRAK"
+  "aciklama": "Vuruş oranından en çok sapma; aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.2"
  },
  "duygu_turleri": {
   "deger": [
@@ -63,7 +77,9 @@
    "ofke",
    "huzur"
   ],
-  "aciklama": "hedef_duygu alanı için sabit sözlük"
+  "aciklama": "hedef_duygu alanı için sabit sözlük",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.1"
  },
  "duygu_haritasi_40dk": {
   "deger": [
@@ -108,133 +124,195 @@
    5,
    7
   ],
-  "aciklama": "Dakika 0-39 hedef yoğunluk; başka sürelerde oranla gerilir"
+  "aciklama": "Dakika 0-39 hedef yoğunluk; başka sürelerde oranla gerilir",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "yogunluk_sapma_max": {
   "deger": 2,
-  "aciklama": "Plan yoğunluğunun haritadan en çok sapması"
+  "aciklama": "Plan yoğunluğunun haritadan en çok sapması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "yogunluk_sapma_sure_max_sn": {
   "deger": 60,
-  "aciklama": "Sapmanın kesintisiz sürebileceği en uzun süre; aşılırsa BAYRAK"
+  "aciklama": "Sapmanın kesintisiz sürebileceği en uzun süre; aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "pencere_tepe_sn": {
   "deger": 180,
-  "aciklama": "Bu pencerede en az bir tepe olmalı"
+  "aciklama": "Bu pencerede en az bir tepe olmalı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "pencere_tepe_min": {
   "deger": 6,
-  "aciklama": "3 dk penceredeki en düşük tepe yoğunluğu"
+  "aciklama": "3 dk penceredeki en düşük tepe yoğunluğu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "duz_cizgi_max_sn": {
   "deger": 180,
-  "aciklama": "Yoğunluk ±1 ve aynı duygu türünde kalınabilecek en uzun süre"
+  "aciklama": "Yoğunluk ±1 ve aynı duygu türünde kalınabilecek en uzun süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "ayni_duygu_ardisik_dk_max": {
   "deger": 2,
-  "aciklama": "Aynı duygu türü art arda en çok 2 dakika"
+  "aciklama": "Aynı duygu türü art arda en çok 2 dakika",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "tepe_esigi": {
   "deger": 8,
-  "aciklama": "Bu ve üstü yoğunluk 'büyük tepe' sayılır"
+  "aciklama": "Bu ve üstü yoğunluk 'büyük tepe' sayılır",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "tepe_oncesi_cukur_pencere_sn": {
   "deger": [
    60,
    120
   ],
-  "aciklama": "Büyük tepeden önce nefes çukurunun aranacağı aralık"
+  "aciklama": "Büyük tepeden önce nefes çukurunun aranacağı aralık",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "tepe_oncesi_cukur_min_dusus": {
   "deger": 2,
-  "aciklama": "Çukurda en az bu kadar puan düşüş"
+  "aciklama": "Çukurda en az bu kadar puan düşüş",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "parti_sonu_yogunluk_min": {
   "deger": 8,
-  "aciklama": "Parti 1 ve 2 son 30 sn yoğunluğu"
+  "aciklama": "Parti 1 ve 2 son 30 sn yoğunluğu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "doruk_yogunluk_min": {
   "deger": 9,
-  "aciklama": "Doruk yoğunluğu"
+  "aciklama": "Doruk yoğunluğu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "en_karanlik_yogunluk_min": {
   "deger": 6,
-  "aciklama": "En karanlık an yoğunluğu (hüzün düz olmamalı)"
+  "aciklama": "En karanlık an yoğunluğu (hüzün düz olmamalı)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.3"
  },
  "ilk_eylem_max_sn": {
   "deger": 5,
-  "aciklama": "İlk fiziksel eylemin en geç zamanı"
+  "aciklama": "İlk fiziksel eylemin en geç zamanı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "ilk_merak_max_sn": {
   "deger": 20,
-  "aciklama": "İlk merak sorusunun açılması"
+  "aciklama": "İlk merak sorusunun açılması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "ilk30_manzara_plan_max": {
   "deger": 1,
-  "aciklama": "İlk 30 sn'de en çok 1 kurulus/gecis planı"
+  "aciklama": "İlk 30 sn'de en çok 1 kurulus/gecis planı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "ilk30_manzara_sure_max_sn": {
   "deger": 3.0,
-  "aciklama": "İlk 30 sn'deki manzara planının en uzun süresi"
+  "aciklama": "İlk 30 sn'deki manzara planının en uzun süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "ilk30_asl_max_sn": {
   "deger": 3.5,
-  "aciklama": "İlk 30 sn ortalama plan süresi"
+  "aciklama": "İlk 30 sn ortalama plan süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "ilk120_asl_max_sn": {
   "deger": 4.0,
-  "aciklama": "İlk 2 dk ortalama plan süresi"
+  "aciklama": "İlk 2 dk ortalama plan süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "baslik_karti_aralik_sn": {
   "deger": [
    45,
    120
   ],
-  "aciklama": "Başlık kartının görüneceği zaman aralığı"
+  "aciklama": "Başlık kartının görüneceği zaman aralığı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "baslik_karti_sure_max_sn": {
   "deger": 6,
-  "aciklama": "Başlık kartının en uzun süresi"
+  "aciklama": "Başlık kartının en uzun süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "vaat_imgesi_max_sn": {
   "deger": 120,
-  "aciklama": "Kapak/başlıktaki ana imge bu zamandan önce ekranda"
+  "aciklama": "Kapak/başlıktaki ana imge bu zamandan önce ekranda",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "kahraman_adi_max_sn": {
   "deger": 120,
-  "aciklama": "Ana karakter adının sözle söylenmesi (film başından)"
+  "aciklama": "Ana karakter adının sözle söylenmesi (film başından)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "ad_ilk_gorunus_max_sahne": {
   "deger": 2,
-  "aciklama": "Karakter adı ilk görünüşten sonra en çok kaç sahne içinde söylenir"
+  "aciklama": "Karakter adı ilk görünüşten sonra en çok kaç sahne içinde söylenir",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "risk_sozlu_max_sn": {
   "deger": 180,
-  "aciklama": "Riskin sözle söylendiği en geç an"
+  "aciklama": "Riskin sözle söylendiği en geç an",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "parti_basi_risk_tazeleme_max_sn": {
   "deger": 60,
-  "aciklama": "Her parti başında riskin tazelenmesi"
+  "aciklama": "Her parti başında riskin tazelenmesi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "parti_basi_kanca_donus_max_sn": {
   "deger": 20,
-  "aciklama": "Parti başında önceki kancaya dönüş"
+  "aciklama": "Parti başında önceki kancaya dönüş",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "seri_kancasi_max_sn": {
   "deger": 20,
-  "aciklama": "Jenerikten önceki seri kancasının süresi"
+  "aciklama": "Jenerikten önceki seri kancasının süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.2"
  },
  "jenerik_max_sn": {
   "deger": 60,
-  "aciklama": "Jenerik süresi"
+  "aciklama": "Jenerik süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "uc_ekran_sn": {
   "deger": 20,
-  "aciklama": "YouTube uç ekranı için son süre"
+  "aciklama": "YouTube uç ekranı için son süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "bolum_sayisi_max": {
   "deger": 8,
-  "aciklama": "YouTube bölüm (chapter) sayısı"
+  "aciklama": "YouTube bölüm (chapter) sayısı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §1.4"
  },
  "plan_sure_aralik_sn": {
   "deger": {
@@ -275,26 +353,36 @@
     6.0
    ]
   },
-  "aciklama": "plan_tipi başına kurguda kullanılan süre aralığı; dışı HATA"
+  "aciklama": "plan_tipi başına kurguda kullanılan süre aralığı; dışı HATA",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.1"
  },
  "kurulus_ilk_mekan_max_sn": {
   "deger": 5.0,
-  "aciklama": "Mekân ilk kez görülüyorsa kurulus planı tavanı"
+  "aciklama": "Mekân ilk kez görülüyorsa kurulus planı tavanı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.1"
  },
  "duygu_tutma_film_max": {
   "deger": 25,
-  "aciklama": "Film başına duygu_tutma planı"
+  "aciklama": "Film başına duygu_tutma planı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.1"
  },
  "duygu_tutma_ardisik_max": {
   "deger": 1,
-  "aciklama": "Art arda duygu_tutma planı"
+  "aciklama": "Art arda duygu_tutma planı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.1"
  },
  "asl_film_aralik_sn": {
   "deger": [
    4.2,
    5.2
   ],
-  "aciklama": "Film geneli ortalama plan süresi"
+  "aciklama": "Film geneli ortalama plan süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "asl_parti_hedef_sn": {
   "deger": {
@@ -302,31 +390,45 @@
    "P2": 5.0,
    "P3": 4.4
   },
-  "aciklama": "Parti ASL hedefi"
+  "aciklama": "Parti ASL hedefi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6"
  },
  "asl_parti_tolerans_sn": {
   "deger": 0.6,
-  "aciklama": "Parti ASL hedefinden sapma"
+  "aciklama": "Parti ASL hedefinden sapma",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "tepe_oncesi_asl_dusus_min": {
   "deger": 0.25,
-  "aciklama": "Tepeye giden 30 sn'de ASL en az bu oranda düşer"
+  "aciklama": "Tepeye giden 30 sn'de ASL en az bu oranda düşer",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "ayni_plan_tipi_ardisik_max": {
   "deger": 4,
-  "aciklama": "Aynı plan_tipi art arda (diyalog-tepki dönüşümü hariç)"
+  "aciklama": "Aynı plan_tipi art arda (diyalog-tepki dönüşümü hariç)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "ayni_kamera_konumu_ardisik_max": {
   "deger": 2,
-  "aciklama": "Aynı kamera konumu art arda"
+  "aciklama": "Aynı kamera konumu art arda",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "olcek_kademe_min_fark": {
   "deger": 2,
-  "aciklama": "Aynı açıdan ardışık iki planın ölçek farkı"
+  "aciklama": "Aynı açıdan ardışık iki planın ölçek farkı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "aci_min_fark_derece": {
   "deger": 30,
-  "aciklama": "Ölçek aynıysa en az bu kadar açı farkı"
+  "aciklama": "Ölçek aynıysa en az bu kadar açı farkı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.5"
  },
  "olcek_kademeleri": {
   "deger": {
@@ -338,7 +440,9 @@
    "Y": 6,
    "CY": 7
   },
-  "aciklama": "Kadraj ölçek kademeleri; D ve OU kademe dışı"
+  "aciklama": "Kadraj ölçek kademeleri; D ve OU kademe dışı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.1"
  },
  "hedef_plan_dagilimi_40dk": {
   "deger": {
@@ -350,7 +454,9 @@
    "kurulus_gecis": 30,
    "duygu_tutma": 25
   },
-  "aciklama": "40 dk film hedef plan sayıları (toplam 495)"
+  "aciklama": "40 dk film hedef plan sayıları (toplam 495)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6"
  },
  "hedef_plan_parti": {
   "deger": {
@@ -358,15 +464,21 @@
    "P2": 160,
    "P3": 170
   },
-  "aciklama": "Parti başına hedef plan"
+  "aciklama": "Parti başına hedef plan",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6"
  },
  "plan_sayisi_tolerans_oran": {
   "deger": 0.15,
-  "aciklama": "Hedef plan sayısından sapma oranı; aşılırsa BAYRAK"
+  "aciklama": "Hedef plan sayısından sapma oranı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "RE 1.0 (ZANAAT'ta sayı yok)"
  },
  "sahne_max_sn": {
   "deger": 180,
-  "aciklama": "Sahne süresi tavanı; aşılırsa HATA"
+  "aciklama": "Sahne süresi tavanı; aşılırsa HATA",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4"
  },
  "sahne_tipi_aralik": {
   "deger": {
@@ -466,178 +578,258 @@
     ]
    }
   },
-  "aciklama": "Sahne tipine göre süre, plan sayısı ve ASL"
+  "aciklama": "Sahne tipine göre süre, plan sayısı ve ASL",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4"
  },
  "diyalog_yeni_bilgi_max_sn": {
   "deger": 60,
-  "aciklama": "Diyalog sahnesinde yeni bilgiler arası en uzun süre"
+  "aciklama": "Diyalog sahnesinde yeni bilgiler arası en uzun süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4"
  },
  "gerilim_yeni_ayrinti_max_sn": {
   "deger": 20,
-  "aciklama": "Gerilim sahnesinde yeni ayrıntı aralığı"
+  "aciklama": "Gerilim sahnesinde yeni ayrıntı aralığı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4"
  },
  "bilgisiz_gecis_max_sn": {
   "deger": 15,
-  "aciklama": "Bilgi taşımayan geçiş bölümü"
+  "aciklama": "Bilgi taşımayan geçiş bölümü",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4"
  },
  "sahne_konum_plani_max_sira": {
   "deger": 3,
-  "aciklama": "Konum planının en geç sırası (geç giriş kalıbında 5)"
+  "aciklama": "Konum planının en geç sırası (geç giriş kalıbında 5)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.2"
  },
  "sahne_yeniden_konum_sn": {
   "deger": 90,
-  "aciklama": "Bu süreden uzun sahnede ortada bir G/OG planı"
+  "aciklama": "Bu süreden uzun sahnede ortada bir G/OG planı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.2"
  },
  "klip_sn": {
   "deger": [
    8,
    10
   ],
-  "aciklama": "Üretilen klip süreleri"
+  "aciklama": "Üretilen klip süreleri",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §0"
  },
  "kullanim_bas_min_sn": {
   "deger": 0.3,
-  "aciklama": "Klibin başından en az kırpma"
+  "aciklama": "Klibin başından en az kırpma",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "kullanim_bas_varsayilan_sn": {
   "deger": 0.5,
-  "aciklama": "Varsayılan baş kırpma"
+  "aciklama": "Varsayılan baş kırpma",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "kullanim_son_pay_sn": {
   "deger": 0.5,
-  "aciklama": "bas+sure en çok klip_sn - bu değer"
+  "aciklama": "bas+sure en çok klip_sn - bu değer",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "klip_bolme_min_kullanilabilir_sn": {
   "deger": 6.0,
-  "aciklama": "İkiye bölünecek klibin en az kullanılabilir süresi"
+  "aciklama": "İkiye bölünecek klibin en az kullanılabilir süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "klip_bolme_atlama_min_sn": {
   "deger": 0.4,
-  "aciklama": "Bölünen iki parça arasında atlanan en az süre"
+  "aciklama": "Bölünen iki parça arasında atlanan en az süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "klip_bolme_oran_hedef": {
   "deger": 0.18,
-  "aciklama": "Başka planın klibinden çıkan planların hedef oranı"
+  "aciklama": "Başka planın klibinden çıkan planların hedef oranı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6"
  },
  "olu_sure_max_sn": {
   "deger": 0.6,
-  "aciklama": "Eylem/replik bittikten sonra bekleme"
+  "aciklama": "Eylem/replik bittikten sonra bekleme",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.2"
  },
  "kesme_ilk_duragan_yasak_sn": {
   "deger": 0.3,
-  "aciklama": "Klibin ilk bu kadar saniyesinde kesme yapılmaz"
+  "aciklama": "Klibin ilk bu kadar saniyesinde kesme yapılmaz",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "konusma_hizi_kelime_sn": {
   "deger": 2.5,
-  "aciklama": "Normal konuşma hızı"
+  "aciklama": "Normal konuşma hızı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "konusma_hizi_agir_kelime_sn": {
   "deger": 2.0,
-  "aciklama": "Fısıltı, yas, ağır replik"
+  "aciklama": "Fısıltı, yas, ağır replik",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "diyalog_giris_payi_sn": {
   "deger": 0.4,
-  "aciklama": "Replikten önceki pay"
+  "aciklama": "Replikten önceki pay",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "diyalog_cikis_payi_sn": {
   "deger": 0.5,
-  "aciklama": "Replikten sonraki pay"
+  "aciklama": "Replikten sonraki pay",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "cumle_arasi_sn": {
   "deger": 0.25,
-  "aciklama": "Cümleler arası duraklama"
+  "aciklama": "Cümleler arası duraklama",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "replik_max_kelime": {
   "deger": 20,
-  "aciklama": "Mutlak replik tavanı (10 sn klip)"
+  "aciklama": "Mutlak replik tavanı (10 sn klip)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "replik_max_kelime_8sn": {
   "deger": 16,
-  "aciklama": "8 sn klipte replik tavanı"
+  "aciklama": "8 sn klipte replik tavanı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "ekran_disi_tasima_kelime_esigi": {
   "deger": 12,
-  "aciklama": "Bu kelimeden uzun replik ekran dışına bölünebilir"
+  "aciklama": "Bu kelimeden uzun replik ekran dışına bölünebilir",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.3"
  },
  "konusan_karede_max": {
   "deger": 1,
-  "aciklama": "Klipte konuşan kişi sayısı"
+  "aciklama": "Klipte konuşan kişi sayısı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §0"
  },
  "referans_max": {
   "deger": 2,
-  "aciklama": "Karede karakter referansı"
+  "aciklama": "Karede karakter referansı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §0"
  },
  "monolog_ardisik_plan_max": {
   "deger": 3,
-  "aciklama": "Aynı karakterin art arda konuştuğu plan; aşılırsa BAYRAK"
+  "aciklama": "Aynı karakterin art arda konuştuğu plan; aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.5"
  },
  "cevap_boslugu_sn": {
   "deger": [
    0.2,
    0.6
   ],
-  "aciklama": "Karşılıklı konuşmada cevap boşluğu"
+  "aciklama": "Karşılıklı konuşmada cevap boşluğu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.5"
  },
  "tepki_orani_min": {
   "deger": 0.25,
-  "aciklama": "Diyalog sahnesinde tepki planı oranı"
+  "aciklama": "Diyalog sahnesinde tepki planı oranı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.1"
  },
  "jl_kesme_orani_min": {
   "deger": 0.3,
-  "aciklama": "Diyalog sahnesinde J/L kesme oranı"
+  "aciklama": "Diyalog sahnesinde J/L kesme oranı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "j_kesme_aralik_sn": {
   "deger": [
    0.3,
    0.8
   ],
-  "aciklama": "J kesmede sesin öne alınması"
+  "aciklama": "J kesmede sesin öne alınması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "l_kesme_aralik_sn": {
   "deger": [
    0.3,
    2.5
   ],
-  "aciklama": "L kesmede sesin taşması"
+  "aciklama": "L kesmede sesin taşması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "replik_sonu_kesme_sn": {
   "deger": [
    0.2,
    0.5
   ],
-  "aciklama": "Son kelimeden sonra kesme"
+  "aciklama": "Son kelimeden sonra kesme",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "bakis_tutma_min_sn": {
   "deger": 0.5,
-  "aciklama": "Bakış kesmesinden önce bakış süresi"
+  "aciklama": "Bakış kesmesinden önce bakış süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "eslesme_gecis_orani_min": {
   "deger": 0.15,
-  "aciklama": "Sahne geçişlerinde eşleşme kesmesi oranı"
+  "aciklama": "Sahne geçişlerinde eşleşme kesmesi oranı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "sert_kesme_parti_max": {
   "deger": 4,
-  "aciklama": "Parti başına sert kesme"
+  "aciklama": "Parti başına sert kesme",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.4"
  },
  "eylem_adim_max": {
   "deger": 3,
-  "aciklama": "Planda en çok adım"
+  "aciklama": "Plandaki bütün adımların (fiziksel, mikro, konuşma, ses vuruşu) en çok sayısı; konuşma da bir adımdır; aşılırsa HATA (Z0 #13; TASARIM §2.5)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7"
  },
  "eylem_adim_konusmali_max": {
   "deger": 1,
-  "aciklama": "Konuşmalı planda en çok fiziksel adım"
+  "aciklama": "Konuşmalı planda en çok fiziksel adım (konuşma adımı bu sayıya girmez); aşılırsa HATA (Z0 #13; ZANAAT §2.3)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7"
  },
  "eylem_adim_min_sn": {
   "deger": 1.5,
-  "aciklama": "Adım süresi alt sınırı"
+  "aciklama": "Fiziksel adımın en kısa süresi; konuşma adımının süresi replik süresidir (ZANAAT §2.3 formülü); mikro ve ses vuruşu adımı için eylem_adim_mikro_min_sn (Z0 #14)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7"
  },
  "bitis_tutma_sn": {
   "deger": 0.5,
-  "aciklama": "Bitiş durumunun tutulduğu son süre"
+  "aciklama": "Bitiş durumunun tutulduğu son süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7"
  },
  "kamera_hareketi_klip_max": {
   "deger": 1,
-  "aciklama": "Klip başına kamera hareketi"
+  "aciklama": "Klip başına kamera hareketi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.6"
  },
  "yasak_sonuc_fiilleri": {
   "deger": [
@@ -660,25 +852,33 @@
    "search",
    "searches"
   ],
-  "aciklama": "hareket_istem içinde yasak sonuç fiilleri (open ancak açma biçimi yazılmışsa serbest)"
+  "aciklama": "hareket_istem içinde yasak sonuç fiilleri (open ancak açma biçimi yazılmışsa serbest)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7"
  },
  "dusuk_guven_hareketler": {
   "deger": [
    "yörünge",
    "hizli_hareket"
   ],
-  "aciklama": "Yalnız yedek istemle ve doruğa sınırlı"
+  "aciklama": "Yalnız yedek istemle ve doruğa sınırlı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.6"
  },
  "merak_olay_aralik_max_sn": {
   "deger": 90,
-  "aciklama": "Yeni soru/kapanış/vuruş arası en uzun süre"
+  "aciklama": "Yeni soru/kapanış/vuruş arası en uzun süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.3"
  },
  "acik_soru_aralik": {
   "deger": [
    1,
    5
   ],
-  "aciklama": "Aynı anda açık merak sorusu"
+  "aciklama": "Aynı anda açık merak sorusu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.3"
  },
  "soru_omru_max_sn": {
   "deger": {
@@ -686,50 +886,72 @@
    "orta": 900,
    "buyuk": "parti"
   },
-  "aciklama": "Soru türüne göre en uzun ömür"
+  "aciklama": "Soru türüne göre en uzun ömür",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.3"
  },
  "seri_sorusu_max": {
   "deger": 2,
-  "aciklama": "Film sonunda açık kalan soru"
+  "aciklama": "Film sonunda açık kalan soru",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.3"
  },
  "cevap_yeni_soru_max_sn": {
   "deger": 30,
-  "aciklama": "Büyük soru kapanınca yeni sorunun açılması"
+  "aciklama": "Büyük soru kapanınca yeni sorunun açılması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.3"
  },
  "kurulum_kullanim_min_sn": {
   "deger": 20,
-  "aciklama": "Kurulum ile kullanım arası en az süre"
+  "aciklama": "Kurulum ile kullanım arası en az süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.2"
  },
  "hatirlatma_esigi_sn": {
   "deger": 600,
-  "aciklama": "Bundan uzun aralıkta hatırlatma planı şart"
+  "aciklama": "Bundan uzun aralıkta hatırlatma planı şart",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.2"
  },
  "bilgi_tekrar_max": {
   "deger": 2,
-  "aciklama": "Aynı bilginin verilme sayısı"
+  "aciklama": "Aynı bilginin verilme sayısı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.5"
  },
  "ironi_parti_min": {
   "deger": 1,
-  "aciklama": "Parti başına dramatik ironi zinciri"
+  "aciklama": "Parti başına dramatik ironi zinciri",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.4"
  },
  "ironi_sure_aralik_sn": {
   "deger": [
    30,
    300
   ],
-  "aciklama": "Seyircinin bilip karakterin bilmediği süre"
+  "aciklama": "Seyircinin bilip karakterin bilmediği süre",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.4"
  },
  "sahne_yeni_ad_max": {
   "deger": 2,
-  "aciklama": "Sahne başına yeni ad"
+  "aciklama": "Sahne başına yeni ad",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.5"
  },
  "konusan_karakter_max": {
   "deger": 8,
-  "aciklama": "Film başına konuşan karakter"
+  "aciklama": "Film başına konuşan karakter",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.5"
  },
  "geri_donus_max_sn": {
   "deger": 20,
-  "aciklama": "Geri dönüş (flashback) süresi"
+  "aciklama": "Geri dönüş (flashback) süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §4.5"
  },
  "diyalog_lufs": {
   "deger": {
@@ -738,134 +960,186 @@
    "normal": -19.5,
    "bagirma": -17.0
   },
-  "aciklama": "Replik başına hedef LUFS"
+  "aciklama": "Replik başına hedef LUFS",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "diyalog_lufs_tolerans": {
   "deger": 1.0,
-  "aciklama": "Replik seviyesinin hedeften sapması (LU)"
+  "aciklama": "Replik seviyesinin hedeften sapması (LU)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "ambiyans_diyalog_alti_db": {
   "deger": [
    12,
    18
   ],
-  "aciklama": "Ambiyansın diyalogdan aşağıda olduğu aralık"
+  "aciklama": "Ambiyansın diyalogdan aşağıda olduğu aralık",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "efekt_diyalog_alti_db": {
   "deger": [
    3,
    10
   ],
-  "aciklama": "Efektin diyalogdan aşağıda olduğu aralık"
+  "aciklama": "Efektin diyalogdan aşağıda olduğu aralık",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "muzik_diyalog_alti_min_db": {
   "deger": 12,
-  "aciklama": "Diyalog sırasında müzik en az bu kadar aşağıda"
+  "aciklama": "Diyalog sırasında müzik en az bu kadar aşağıda",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "muzik_diyalogsuz_lufs": {
   "deger": [
    -20,
    -16
   ],
-  "aciklama": "Diyalogsuz bölümde müzik seviyesi"
+  "aciklama": "Diyalogsuz bölümde müzik seviyesi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "final_lufs": {
   "deger": -14.0,
-  "aciklama": "Final karışım bütünleşik ses"
+  "aciklama": "Final karışım bütünleşik ses",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "final_lufs_tolerans": {
   "deger": 1.0,
-  "aciklama": "Final LUFS sapması"
+  "aciklama": "Final LUFS sapması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "true_peak_max_dbtp": {
   "deger": -1.0,
-  "aciklama": "Gerçek tepe tavanı"
+  "aciklama": "Gerçek tepe tavanı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.1"
  },
  "ambiyans_sahne_ici_fark_max_lu": {
   "deger": 3,
-  "aciklama": "Sahne içinde ambiyans seviye farkı"
+  "aciklama": "Sahne içinde ambiyans seviye farkı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.2"
  },
  "ambiyans_capraz_gecis_sn": {
   "deger": [
    0.5,
    1.0
   ],
-  "aciklama": "Sahne geçişinde ambiyans çapraz geçişi"
+  "aciklama": "Sahne geçişinde ambiyans çapraz geçişi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.2"
  },
  "ses_koprusu_sn": {
   "deger": [
    0.3,
    1.0
   ],
-  "aciklama": "Yeni sahne sesinin görüntüden önce başlaması"
+  "aciklama": "Yeni sahne sesinin görüntüden önce başlaması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.2"
  },
  "mutlak_sessizlik_db": {
   "deger": -50,
-  "aciklama": "Bunun altı mutlak sessizlik"
+  "aciklama": "Bunun altı mutlak sessizlik",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.3"
  },
  "mutlak_sessizlik_max_sn": {
   "deger": 1.0,
-  "aciklama": "Mutlak sessizliğin en uzun süresi"
+  "aciklama": "Mutlak sessizliğin en uzun süresi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.3"
  },
  "mutlak_sessizlik_film_max": {
   "deger": 2,
-  "aciklama": "Film başına mutlak sessizlik"
+  "aciklama": "Film başına mutlak sessizlik",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.3"
  },
  "vurgu_sessizlik_sn": {
   "deger": [
    0.8,
    3.0
   ],
-  "aciklama": "İfşa öncesi/şok sonrası müziksiz an"
+  "aciklama": "İfşa öncesi/şok sonrası müziksiz an",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.3"
  },
  "muzik_kaplama_oran": {
   "deger": [
    0.4,
    0.65
   ],
-  "aciklama": "Müziğin kapladığı film oranı"
+  "aciklama": "Müziğin kapladığı film oranı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "muziksiz_blok_max_sn": {
   "deger": 240,
-  "aciklama": "Müziksiz en uzun blok"
+  "aciklama": "Müziksiz en uzun blok",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "muzikli_blok_max_sn": {
   "deger": 300,
-  "aciklama": "Kesintisiz müzikli en uzun blok"
+  "aciklama": "Kesintisiz müzikli en uzun blok",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "muzik_giris_sn": {
   "deger": [
    1,
    3
   ],
-  "aciklama": "Müzik giriş yükselişi (şok hariç)"
+  "aciklama": "Müzik giriş yükselişi (şok hariç)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "muzik_cikis_sn": {
   "deger": [
    2,
    4
   ],
-  "aciklama": "Müzik çıkış sönüşü"
+  "aciklama": "Müzik çıkış sönüşü",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "leitmotif_donus_min": {
   "deger": 3,
-  "aciklama": "Leitmotifin doruğa kadar dönüş sayısı"
+  "aciklama": "Leitmotifin doruğa kadar dönüş sayısı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §5.4"
  },
  "seyirci_sayisi": {
   "deger": 3,
-  "aciklama": "Bağımsız habersiz seyirci"
+  "aciklama": "Bağımsız habersiz seyirci",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "seyirci_karar": {
   "deger": "medyan",
-  "aciklama": "Puanların birleştirilme yolu"
+  "aciklama": "Puanların birleştirilme yolu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2"
  },
  "seyirci_genel_esik": {
   "deger": 8,
-  "aciklama": "GENEL medyan geçme eşiği"
+  "aciklama": "GENEL medyan geçme eşiği",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "seyirci_olcut_min": {
   "deger": 7,
-  "aciklama": "Hiçbir ölçütün medyanı bunun altında olamaz"
+  "aciklama": "Hiçbir ölçütün medyanı bunun altında olamaz",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "seyirci_olcut_hedef": {
   "deger": {
@@ -876,35 +1150,51 @@
    "ritim": 7,
    "ilk30": 8
   },
-  "aciklama": "Ölçüt bazında hedef medyan"
+  "aciklama": "Ölçüt bazında hedef medyan",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "kopukluk_kritik_max": {
   "deger": 0,
-  "aciklama": "Parti başına KRİTİK kopukluk"
+  "aciklama": "Parti başına KRİTİK kopukluk",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "kopukluk_orta_max_parti": {
   "deger": 3,
-  "aciklama": "Parti başına ORTA kopukluk"
+  "aciklama": "Parti başına ORTA kopukluk",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "ozet_eslesme_min": {
   "deger": 0.8,
-  "aciklama": "Seyirci özeti ile hikâye odası özeti anlamsal eşleşmesi"
+  "aciklama": "Seyirci özeti ile hikâye odası özeti anlamsal eşleşmesi",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "sikilma_ortak_isaret_min": {
   "deger": 2,
-  "aciklama": "Bu kadar seyircinin işaretlediği an kesme turuna girer"
+  "aciklama": "Bu kadar seyircinin işaretlediği an kesme turuna girer",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "ilk2dk_devam_evet_min": {
   "deger": 3,
-  "aciklama": "İlk 2 dk testinde 'devam ederdim' diyen seyirci sayısı"
+  "aciklama": "İlk 2 dk testinde 'devam ederdim' diyen seyirci sayısı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2"
  },
  "kagit_tur_max": {
   "deger": 4,
-  "aciklama": "Kâğıt üstü seyirci döngüsü en çok tur"
+  "aciklama": "Kâğıt üstü seyirci döngüsü en çok tur",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "kurgu_tur_max": {
   "deger": 3,
-  "aciklama": "Kurgu izleme döngüsü en çok tur"
+  "aciklama": "Kurgu izleme döngüsü en çok tur",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.3"
  },
  "kesme_turu_oneri": {
   "deger": {
@@ -912,14 +1202,509 @@
    "sahne": 2,
    "uygulama_orani_min": 0.5
   },
-  "aciklama": "Kesici ajandan istenen öneri sayısı ve uygulama oranı"
+  "aciklama": "Kesici ajandan istenen öneri sayısı (10 plan ya da 2 sahne) ve uygulama oranı; oranın paydası yalnız simülasyondan HATA'sız geçen önerilerdir (uygulanan / HATA'sız geçen ≥ 0,5; ZANAAT §7.2 #9)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2"
  },
  "kredi_klip_720p": {
   "deger": 12,
-  "aciklama": "Flow Omni 720p 8 sn klip kredisi"
+  "aciklama": "Flow Omni 720p 8 sn klip kredisi",
+  "kaynak": "olcum",
+  "etiket": "BK §6.4 (Flow gerçek gönderim; [UM2] §4.7.1)"
  },
  "kredi_yeniden_deneme_payi": {
   "deger": 0.2,
-  "aciklama": "Yeniden deneme payı"
+  "aciklama": "Yeniden deneme payı",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6"
+ },
+ "eylem_adim_mikro_min_sn": {
+  "deger": 0.8,
+  "aciklama": "mikro ve ses_vurusu adımının en kısa süresi; eylem_adim_min_sn (1,5) yalnız fiziksel adım; altı HATA (Z0 #14)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §7.3; [SON] S-1"
+ },
+ "diyalog_sure_tasma_dus": {
+  "deger": true,
+  "aciklama": "Diyalog süresinde L/J taşması görünen süreden düşülür: sure_sn ≥ ZANAAT §2.3 formülü − ses_tasma_sn; eksikse HATA (Z0 #5)",
+  "kaynak": "belge",
+  "etiket": "TASARIM §7.3; [SON] S-1; ZANAAT §2.3 + §3.4"
+ },
+ "plan_adim_min": {
+  "deger": 2,
+  "aciklama": "Planda en az adım (atomik eylem zinciri); altı HATA",
+  "kaynak": "belge",
+  "etiket": "[YN2] Y01; KK2"
+ },
+ "plan_ilk_adim_min_sn": {
+  "deger": 0.5,
+  "aciklama": "İlk adımın en erken başlangıcı (klibin durağan başı); altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y04"
+ },
+ "plan_son_adim_pay_sn": {
+  "deger": 1.0,
+  "aciklama": "Son adım bittikten sonra klip sonuna kalan en az pay; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y05"
+ },
+ "plan_es_zamanli_ozne_max": {
+  "deger": 1,
+  "aciklama": "Aynı anda durum değiştiren adımı olan özne sayısı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y06; [ESY] EK2-5"
+ },
+ "plan_konusma_adim_arasi_min_sn": {
+  "deger": 0.2,
+  "aciklama": "Konuşma adımı ile komşu adım arasındaki en az boşluk; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y02b"
+ },
+ "plan_goz_farki_bakis_m": {
+  "deger": 0.3,
+  "aciklama": "Bakış hattında iki göz yüksekliği farkı tavanı (m); aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y25"
+ },
+ "plan_goz_yukseklik_m": {
+  "deger": null,
+  "aciklama": "Karakterin göz yüksekliği (m); değer evren kartından okunur (null = evren değeri); denetim BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y25"
+ },
+ "plan_konusan_yaw_max": {
+  "deger": 45,
+  "aciklama": "Konuşan yüzün en büyük yaw açısı (derece); aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y32"
+ },
+ "plan_konusan_yuz_oran_min": {
+  "deger": 0.12,
+  "aciklama": "Konuşan yüzün kadraj yüksekliğine en küçük oranı; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y32"
+ },
+ "plan_bitis_ozel_oran_max": {
+  "deger": 0.1,
+  "aciklama": "Özel bitiş kullanan planların en büyük oranı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y42"
+ },
+ "plan_agac_derinlik_max": {
+  "deger": 3,
+  "aciklama": "Kamera ağacı türev derinliği tavanı; aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "[YN2] Y43"
+ },
+ "zincir_derinlik_max": {
+  "deger": 2,
+  "aciklama": "Kare zinciri derinliği tavanı; sonra temiz görselle yeniden demirlenir; aşılırsa HATA",
+  "kaynak": "belge",
+  "etiket": "[YN2] Y43; AR2 §2.3"
+ },
+ "devam_kesme_tutma_min_sn": {
+  "deger": 0.2,
+  "aciklama": "devam geçişinde kesmeden önce A planında en az tutma; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y55"
+ },
+ "zincir_cikis_tutma_ic_min_sn": {
+  "deger": 0.2,
+  "aciklama": "Zincir karesi çıkışında iç tutma en az süresi; altı HATA (G1Z)",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y55"
+ },
+ "ortulu_devam_araya_min_sn": {
+  "deger": 1.0,
+  "aciklama": "Örtülü devam geçişinde araya giren planın en kısa süresi; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y54; [KU2] İ-11"
+ },
+ "ortu_min_sn": {
+  "deger": {
+   "taban": 1.0,
+   "formul": "max(1.0, a_tutma_sn + b_duraganlik_sn)"
+  },
+  "aciklama": "Örtü planının en kısa süresi: max(1,0; A tutma + B durağanlık); altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y54; [KU2] İ-11"
+ },
+ "plan_hareket_istem_kelime_max": {
+  "deger": 75,
+  "aciklama": "hareket_istem kelime tavanı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y46"
+ },
+ "plan_adim_cumle_kelime_max": {
+  "deger": 16,
+  "aciklama": "Adım cümlesi kelime tavanı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y46"
+ },
+ "plan_istem_elle_oran_max": {
+  "deger": 0.05,
+  "aciklama": "İstemi elle yazılmış (derlenmemiş) plan oranı tavanı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2]"
+ },
+ "plan_dialog_kurulum_min": {
+  "deger": 3,
+  "aciklama": "Diyalog sahnesinde en az kurulum (kamera konumu) sayısı; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2] Y50"
+ },
+ "plan_zincir_zaman_sapma_max_sn": {
+  "deger": 1.0,
+  "aciklama": "Adım enerji tepesinin planlanan zamandan sapması tavanı (V3); aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[YN2]"
+ },
+ "ifade_zorunlu_insanli_plan": {
+  "deger": true,
+  "aciklama": "İnsanlı her planda ifade alanı zorunlu (\"notr\" gerekçeyle yazılır); yoksa HATA",
+  "kaynak": "belge",
+  "etiket": "[ESY] EK2; TASARIM §7.3 kararı"
+ },
+ "ifade_uyum_min_oran": {
+  "deger": 0.85,
+  "aciklama": "Film düzeyinde ifade uyumu en az oranı (G1, V3); altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[ESY]"
+ },
+ "duygu_sicramasi_gerekcesiz": {
+  "deger": 0,
+  "aciklama": "Gerekçesiz duygu sıçraması sayısı (K0); aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[ESY]"
+ },
+ "teslim_sozluk_boyutu": {
+  "deger": 12,
+  "aciklama": "Teslim sözlüğündeki terim sayısı",
+  "kaynak": "belge",
+  "etiket": "TASARIM D-22"
+ },
+ "take_kapsami_plan_max": {
+  "deger": 60,
+  "aciklama": "İkinci take kapsamındaki en çok plan",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-23"
+ },
+ "take_ikinci_secim_min_oran": {
+  "deger": 0.3,
+  "aciklama": "İkinci take'in seçilme oranı alt sınırı (take kararı; PILOT)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-23"
+ },
+ "canli_bekleme_ab_fark_max": {
+  "deger": 0.02,
+  "aciklama": "Canlı bekleme A/B farkı tavanı (PILOT)",
+  "kaynak": "tahmin",
+  "etiket": "[ESY]"
+ },
+ "seyirlik_an_parti_min": {
+  "deger": 2,
+  "aciklama": "Parti başına en az seyirlik an; altı BAYRAK (Z2)",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EO1"
+ },
+ "gosterisiz_aralik_max_sn": {
+  "deger": 360,
+  "aciklama": "Seyirlik an olmadan geçen en uzun süre; aşılırsa BAYRAK (Z2)",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EO1"
+ },
+ "vitrin_plan_max_sn": {
+  "deger": 7,
+  "aciklama": "Vitrin (seyirlik an) planının en uzun süresi; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EO1"
+ },
+ "gorsel_tasima_orani_min": {
+  "deger": 0.5,
+  "aciklama": "Görselle taşınan bilgi oranı alt sınırı (seyirci); altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EO2"
+ },
+ "enerji_duz_max_sn": {
+  "deger": 180,
+  "aciklama": "Enerjinin ±%10 bantta düz kaldığı en uzun süre (T2 görüntü + ses + kesme, T1 yalnız ses); aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "[ESY] EO9; RE duz_cizgi_max_sn ile aynı"
+ },
+ "seyirci_kapi_genel_min": {
+  "deger": 7,
+  "aciklama": "Seyirci kapısı: GENEL medyanı alt sınırı; altı HATA (hedef seyirci_genel_esik 8)",
+  "kaynak": "belge",
+  "etiket": "TASARIM D-20; BK §3 #9 (\"süper\" = 7)"
+ },
+ "ozet_eslesme_kritik_min": {
+  "deger": 0.8,
+  "aciklama": "Seyirci kapısı: özet eşleşmesi alt sınırı; altı HATA",
+  "kaynak": "belge",
+  "etiket": "TASARIM D-20"
+ },
+ "plato_genel_artis_min": {
+  "deger": 0.5,
+  "aciklama": "Turdan tura GENEL artışı bunun altındaysa plato; ölçülen seyirci_gurultu_std büyükse o kullanılır: max(0,5; seyirci_gurultu_std)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-20"
+ },
+ "seyirci_persona_izleme": {
+  "deger": {
+   "A": 2,
+   "B": 1
+  },
+  "aciklama": "İzleme seyircisinde persona dağılımı",
+  "kaynak": "belge",
+  "etiket": "TASARIM D-18"
+ },
+ "izleme_parcasi_sn": {
+  "deger": [
+   240,
+   300
+  ],
+  "aciklama": "İzleme paketinde parça süresi aralığı",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; BK §3.8"
+ },
+ "izleme_kare_plan": {
+  "deger": {
+   "kurgu": 3,
+   "animatik": 1
+  },
+  "aciklama": "İzleme paketinde plan başına kare",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; BK §3.8"
+ },
+ "izleme_sayfa_plan": {
+  "deger": 6,
+  "aciklama": "İzleme paketinde sayfa başına plan",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; BK §3.8"
+ },
+ "animatik_tur_max": {
+  "deger": 3,
+  "aciklama": "Animatik seyirci döngüsü en çok tur (küresel toplam 8)",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.5"
+ },
+ "animatik_kurtarma_tur": {
+  "deger": 1,
+  "aciklama": "Animatik kurtarma turu",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.5"
+ },
+ "kurgu_kurtarma_tur": {
+  "deger": 1,
+  "aciklama": "Kurgu kurtarma turu",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.5"
+ },
+ "kurgu_kurtarma_kosul_genel_artis": {
+  "deger": 0.5,
+  "aciklama": "Kurgu kurtarma turuna girme koşulu: GENEL artışı en az",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "animatik_yer_tutucu_max_oran": {
+  "deger": 0.1,
+  "aciklama": "Animatikte yer tutucu plan oranı tavanı; aşılırsa HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "animatik_tur1_yer_tutucu_max_oran": {
+  "deger": 0.15,
+  "aciklama": "Animatik 1. turda yer tutucu plan oranı tavanı; aşılırsa HATA",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-14"
+ },
+ "animatik_bitis_gecis_sn": {
+  "deger": 0.5,
+  "aciklama": "Animatik plan sonu geçiş süresi",
+  "kaynak": "belge",
+  "etiket": "[KU2]; kurgu köprüsü V5"
+ },
+ "ken_burns_zoom": {
+  "deger": 0.08,
+  "aciklama": "Animatik Ken Burns yakınlaşma oranı",
+  "kaynak": "belge",
+  "etiket": "[KU2]; kurgu köprüsü V5"
+ },
+ "ken_burns_kayma": {
+  "deger": 0.02,
+  "aciklama": "Animatik Ken Burns kayma oranı",
+  "kaynak": "belge",
+  "etiket": "[KU2]; kurgu köprüsü V5"
+ },
+ "render_sure_tolerans_kare": {
+  "deger": 1,
+  "aciklama": "Render süresi = çizelge ± bu kadar kare; aşılırsa HATA",
+  "kaynak": "belge",
+  "etiket": "[KU2] (hesap; AR3)"
+ },
+ "senkron_tolerans_kare": {
+  "deger": 1,
+  "aciklama": "Ses-görüntü senkron toleransı (kare); aşılırsa HATA",
+  "kaynak": "belge",
+  "etiket": "[KU2] (hesap; AR3)"
+ },
+ "sapma_plan_oran_max": {
+  "deger": 0.25,
+  "aciklama": "Kurguda plandan sapan plan oranı tavanı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "l_kesme_gorunen_konusma_min_sn": {
+  "deger": 1.0,
+  "aciklama": "L kesmede konuşanın görünen konuşma süresi alt sınırı; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; RE diyalog_cikis_payi_sn"
+ },
+ "l_kesme_klip_ses_son_pay_sn": {
+  "deger": 0.3,
+  "aciklama": "L kesmede klip sesinin sonundaki pay; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; RE diyalog_cikis_payi_sn"
+ },
+ "l_kesme_alici_plan_ek_sn": {
+  "deger": 0.5,
+  "aciklama": "L kesmede alıcı plana eklenen süre; HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; RE diyalog_cikis_payi_sn"
+ },
+ "kirp_guven_min": {
+  "deger": 0.6,
+  "aciklama": "Otomatik kırpma güveni alt sınırı; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "kirp_hareket_mad_k": {
+  "deger": 3,
+  "aciklama": "Kırpmada hareket tespiti MAD çarpanı",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "kirp_hareket_sure_sn": {
+  "deger": 0.2,
+  "aciklama": "Kırpmada hareket sayılan en kısa süre",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "hiz_aralik_diyalogsuz": {
+  "deger": [
+   0.9,
+   1.15
+  ],
+  "aciklama": "Diyalogsuz planda hız değişimi aralığı; dışı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "yeniden_kadraj_max": {
+  "deger": 0.1,
+  "aciklama": "Yeniden kadrajlama (kırpma-büyütme) tavanı; aşılırsa HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "tepe_sonrasi_uzun_plan_pencere_sn": {
+  "deger": 20,
+  "aciklama": "Tepeden sonra uzun planın aranacağı pencere; yoksa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "oncelik_konum_agirligi": {
+  "deger": 1.5,
+  "aciklama": "Kuyruk önceliğinde film konumu ağırlığı",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "oncelik_dogrulanmis_carpan": {
+  "deger": 1.25,
+  "aciklama": "Kuyruk önceliğinde doğrulanmış bulgu çarpanı",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "ilgi_korelasyon_min": {
+  "deger": 0.5,
+  "aciklama": "Seyirciler arası ilgi eğrisi korelasyonu alt sınırı; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "ilgi_dusuk_esik": {
+  "deger": 4,
+  "aciklama": "Bu ve altı ilgi puanı düşük sayılır",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "parca_konum_egim_bayrak": {
+  "deger": -0.15,
+  "aciklama": "Parça konumuna göre puan eğimi bunun altındaysa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "ozet_kismen_agirlik": {
+  "deger": 0.5,
+  "aciklama": "Özet eşleşmesinde \"kısmen\" cevabın ağırlığı",
+  "kaynak": "belge",
+  "etiket": "[KU2]"
+ },
+ "anlasilmayan_konusma_wer": {
+  "deger": 0.3,
+  "aciklama": "Bu WER üstündeki replik anlaşılmamış sayılır",
+  "kaynak": "belge",
+  "etiket": "[SM2] S7.6"
+ },
+ "kopru_replik_sahne_max": {
+  "deger": 1,
+  "aciklama": "Sahne başına köprü replik tavanı; aşılırsa BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H15"
+ },
+ "is_yaparken_konusma_sahne_min": {
+  "deger": 1,
+  "aciklama": "Sahne başına iş yaparken konuşma en az sayısı; altı BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EO3"
+ },
+ "mux_ofset_max_kare": {
+  "deger": 1,
+  "aciklama": "Yayın mux ses ofseti tavanı (kare); aşılırsa HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "mux_korelasyon_min": {
+  "deger": 0.9,
+  "aciklama": "Yayın mux ses korelasyonu alt sınırı; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "mux_pencere": {
+  "deger": {
+   "adet": 40,
+   "sure_sn": 10
+  },
+  "aciklama": "Mux ölçüm pencereleri: 40 × 10 sn",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "yayin_sure_tolerans_kare": {
+  "deger": 1,
+  "aciklama": "Yayın dosyası süresi = çizelge ± bu kadar kare; aşılırsa HATA",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]"
+ },
+ "kapak_aday_min": {
+  "deger": 8,
+  "aciklama": "Kapak aday sayısı alt sınırı",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EK5"
+ },
+ "kapak_kucuk_okunurluk": {
+  "deger": [
+   168,
+   94
+  ],
+  "aciklama": "Kapak bu boyutta (px) küçültülünce yüz ve yaratık seçilebilir olmalı; değilse HATA",
+  "kaynak": "tahmin",
+  "etiket": "[ESY] EK5"
  }
 }

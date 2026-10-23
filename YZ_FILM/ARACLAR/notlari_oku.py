@@ -7,6 +7,7 @@ Not hangi saniyedeyse o anda Klipler kanalında hangi klip varsa o sahneye bağl
 Çıktı: KURGU/NOTLARIM.txt ve NOTLARIM.json
 """
 import os, sys, json, re
+import ortak   # SAHNELER.json v2 koruması
 sys.stdout.reconfigure(encoding="utf-8")
 SEC = 1_000_000
 
@@ -23,7 +24,7 @@ def fmt(us):
 def main(root):
     root = os.path.abspath(root); K = os.path.join(root, "KURGU")
     info = json.load(open(os.path.join(K, "son_capcut_projesi.json"), encoding="utf-8"))
-    plan = json.load(open(os.path.join(root, "SAHNELER.json"), encoding="utf-8-sig"))
+    plan = ortak.sahneler_oku(root, "notlari_oku.py")
     scenes = {s["no"]: s for s in plan["sahneler"]}
     path = os.path.join(info["klasor"], "draft_content.json")
     raw = open(path, "rb").read()

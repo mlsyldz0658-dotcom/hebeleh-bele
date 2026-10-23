@@ -10,6 +10,7 @@ Her replikli sahne (SIRALI_VIDEO/NNN.mp4) için:
 Karakterin sesi tanımlı değilse ya da TTS başarısız olursa o cümlede Flow'un kendi sesi kullanılır (raporda yazar).
 """
 import os, sys, re, json, hashlib, subprocess, shutil
+import ortak   # SAHNELER.json v2 koruması
 import numpy as np, soundfile as sf
 sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +32,7 @@ def sentences(rep):
 class Voicer:
     def __init__(self, root):
         self.root = os.path.abspath(root)
-        self.plan = json.load(open(os.path.join(self.root, "SAHNELER.json"), encoding="utf-8-sig"))
+        self.plan = ortak.sahneler_oku(self.root, "seslendir.py")
         self.ses = os.path.join(self.root, "SESLER"); self.cache = os.path.join(self.ses, "_tts_onbellek")
         self.tmp = os.path.join(self.ses, "_gecici")
         for d in (self.ses, self.cache, self.tmp, os.path.join(self.root, "KURGU")): os.makedirs(d, exist_ok=True)

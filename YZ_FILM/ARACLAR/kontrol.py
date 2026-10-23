@@ -11,6 +11,7 @@ Film klasöründe GELENLER'e atılan her şey (zip, rar ya da tek tek dosyalar) 
 Bir sahneyi yeniden yaptırmak için SIRALI_GORSEL/NNN.jpg dosyasını silmen yeterli; sonraki çalıştırmada boş sayılır.
 """
 import os, sys, re, json, shutil, zipfile, hashlib, subprocess, html, time
+import ortak   # SAHNELER.json v2 koruması
 sys.stdout.reconfigure(encoding="utf-8")
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
@@ -44,7 +45,7 @@ class Film:
             gel="GELENLER", ham="_HAM", ele="_ELENENLER", sg="SIRALI_GORSEL", sv="SIRALI_VIDEO",
             alt="ALTERNATIFLER", rap="_RAPOR").items()}
         for p in self.d.values(): os.makedirs(p, exist_ok=True)
-        self.plan = json.load(open(os.path.join(self.root, "SAHNELER.json"), encoding="utf-8-sig"))
+        self.plan = ortak.sahneler_oku(self.root, "kontrol.py")
         self.scenes = {s["no"]: s for s in self.plan["sahneler"]}
         sp = os.path.join(self.root, "DURUM.json")
         self.state_path = sp

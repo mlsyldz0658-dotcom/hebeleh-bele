@@ -1,5 +1,6 @@
 """YENİ FİLM — FILMLER altında boş bir film klasörü kurar (klasörler, .bat dosyaları, örnek SAHNELER.json).
-Kullanım: python yeni_film.py FILM_ADI     (YENI_FILM.bat sorar)
+Kullanım: python yeni_film.py FILM_ADI
+Eski MEMMET_BASLAT / MEMMET_SADECE_* / CAPCUT_PROJESI_OLUSTUR / FILM_HATTI .bat'ları emekli (kapıları atlıyorlardı); üretilmez.
 SAHNELER.json'u Claude doldurur; karakter görselleri 01_KARAKTERLER'e konur.
 """
 import os, sys, json, re
@@ -11,13 +12,7 @@ PY = '"%~dp0..\\..\\ARACLAR\\{}" "%~dp0."'
 BATS = {
     "KONTROL.bat": HEAD + "python " + PY.format("kontrol.py") + "\r\npause\r\n",
     "MEMMET_GIRIS.bat": HEAD + "echo Memmet Chrome'u acilacak. Flow'a bir kez Google hesabinla giris yap.\r\npython " + PY.format("memmet.py") + " --giris\r\npause\r\n",
-    "MEMMET_BASLAT.bat": HEAD + "echo Memmet calisiyor: gorseller, videolar, seslendirme, CapCut projesi. Memmet Chrome penceresine dokunma.\r\npython " + PY.format("memmet.py") + "\r\npause\r\n",
-    "MEMMET_SADECE_GORSEL.bat": HEAD + "python " + PY.format("memmet.py") + " --asama gorsel --kurgu-yok\r\npause\r\n",
-    "MEMMET_SADECE_VIDEO.bat": HEAD + "python " + PY.format("memmet.py") + " --asama video\r\npause\r\n",
-    "CAPCUT_PROJESI_OLUSTUR.bat": HEAD + "echo CapCut'i kapat, sonra bir tusa bas.\r\npause >nul\r\npython " + PY.format("seslendir.py") +
-        "\r\nif errorlevel 1 goto hata\r\npython " + PY.format("capcut_film.py") + "\r\nif errorlevel 1 goto hata\r\necho TAMAM. CapCut'i ac; proje en ustte.\r\npause\r\nexit /b\r\n:hata\r\necho HATA OLDU. Ekran goruntusunu Claude'a gonder.\r\npause\r\n",
     "NOTLARI_OKU.bat": HEAD + "python " + PY.format("notlari_oku.py") + "\r\npause\r\n",
-    "FILM_HATTI.bat": HEAD + "echo Film hatti calisiyor. Kredi harcayan asamadan once onay sorar.\r\npython " + PY.format("film.py") + "\r\npause\r\n",
     "FILM_DENEME_SAHTE.bat": HEAD + "echo Kredisiz deneme: sahte gorsel/video/ses ile hatti dener.\r\npython " + PY.format("film.py") + " --saglayici sahte\r\npause\r\n",
 }
 SABLON = {

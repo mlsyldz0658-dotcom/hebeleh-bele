@@ -52,20 +52,40 @@ class FilmHatti(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.kok, "SIRALI_GORSEL")))
         self.assertIn("3 referans", open(os.path.join(self.kok, "_RAPOR", "ISTEM_DENETIM.txt"), encoding="utf-8").read())
 
-    def test_kisitlanan_saglayicidan_sonrakine_gecer(self):
+    def _kisitli(self, kod):
         import saglayicilar as sg
         from saglayicilar.sahte import Sahte
 
         class Kisitli(Sahte):
             ad = "kisitli"
-            def gorsel(self, *a): raise sg.Kisitlandi("olağan dışı etkinlik")
+            def gorsel(self, *a): raise sg.Kisitlandi("deneme", kod=kod)
         sg.KAYIT["kisitli"] = "testler.test_film.Kisitli"; globals()["Kisitli"] = Kisitli
         sys.modules.setdefault("testler.test_film", sys.modules[__name__])
         f = film.Film(self.kok, {"tam_otomatik": True})
         f.ayar["saglayicilar"]["gorsel"] = ["kisitli", "sahte"]
+        return f
+
+    def test_kota_kisitinda_sonrakine_gecer(self):
+        f = self._kisitli("kota")
         with contextlib.redirect_stdout(io.StringIO()): f.a_gorsel()
         self.assertEqual(len(os.listdir(os.path.join(self.kok, "SIRALI_GORSEL"))), 3)
-        self.assertIn("KISITLANDI", open(os.path.join(self.kok, "FILM_KAYIT.txt"), encoding="utf-8").read())
+        self.assertIn("KISITLANDI (kota)", open(os.path.join(self.kok, "FILM_KAYIT.txt"), encoding="utf-8").read())
+
+    def test_flow_uyarisinda_ve_bilinmeyende_saglayici_degismez(self):
+        for kod, cikis in (("olagandisi", 7), ("dogrulama", 2), ("bilinmeyen", 2)):
+            f = self._kisitli(kod)
+            with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(film.Durdur) as c: f.a_gorsel()
+            self.assertEqual(c.exception.kod, kod)
+            self.assertEqual(film.CIKIS.get(kod, 2), cikis)
+            self.assertFalse(os.listdir(os.path.join(self.kok, "SIRALI_GORSEL")), "sahte sağlayıcıya geçilmemeli")
+
+    def test_v2_dosyasini_v1_araclar_islemez(self):
+        p = self.plan(); p["_surum"] = 2
+        json.dump(p, open(os.path.join(self.kok, "SAHNELER.json"), "w", encoding="utf-8"))
+        self.assertEqual(calistir(self.kok, "--saglayici", "sahte"), 4)
+        self.assertFalse(os.path.exists(os.path.join(self.kok, "SIRALI_GORSEL")))
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as c: istem_denetim.rapor(self.kok)
+        self.assertEqual(c.exception.code, 4)
 
     def test_onay_verilmezse_durur(self):
         f = film.Film(self.kok, {})

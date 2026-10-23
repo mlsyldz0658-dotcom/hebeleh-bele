@@ -1,3 +1,7 @@
+!! EMEKLİ YOLLAR: MEMMET_BASLAT, MEMMET_SADECE_*, CAPCUT_PROJESI_OLUSTUR, FILM_HATTI ve YENI_FILM .bat'ları kapıları atladığı için
+!! _ESKI\ klasörüne taşındı (silinmedi). Aşağıda onları anlatan bölümler eskidir. Yeni giriş: FILM_SETI.bat (hazırlanıyor).
+!! Memmet artık Flow uyarısında her kipte durur; varsayılan kip 'elle': istemi Memmet hazırlar, GÖNDER'e sen basarsın.
+
 YZ_FILM — YAPAY ZEKÂ SİNEMA KANALI ÜRETİM STÜDYOSU
 ==================================================
 Bu paket, YouTube için 30-45 dakikalık YZ sinema filmleri üretme sistemidir. İngilizce konuşulur, yüz ve kendi ses gerekmez.

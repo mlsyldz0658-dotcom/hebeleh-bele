@@ -6,6 +6,7 @@ ekranda DUYULAN repliği (SESLER/diyalog.json ya da SAHNELER.json) yazar. "amac"
 ekranda olanı görmeli. Çıktı: _RAPOR/IZLEME[_P<n>]/NNN_k.jpg + IZLE.md (sırayla okunacak film akışı).
 """
 import os, sys, json, subprocess
+import ortak   # SAHNELER.json v2 koruması
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 
@@ -17,7 +18,7 @@ def dur(p):
 
 def main(kok, parti=None, kare=3):
     kok = os.path.abspath(kok)
-    plan = json.load(open(os.path.join(kok, "SAHNELER.json"), encoding="utf-8-sig"))
+    plan = ortak.sahneler_oku(kok, "izleme_paketi.py")
     dlg_p = os.path.join(kok, "SESLER", "diyalog.json")
     dlg = json.load(open(dlg_p, encoding="utf-8")) if os.path.exists(dlg_p) else {}
     hedef = os.path.join(kok, "_RAPOR", "IZLEME" + (f"_P{parti}" if parti else "")); os.makedirs(hedef, exist_ok=True)

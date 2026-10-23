@@ -1,5 +1,8 @@
 """YZ_FILM KURULUM — yeni bir bilgisayarda her şeyi hazırlar ve sonunda kendini test eder.
 KURULUM.bat çalıştırır. Birden fazla kez çalıştırmak güvenlidir (kurulu olanı atlar).
+
+  python kurulum.py                                     kurulum (önce veri kökü emniyeti çalışır)
+  python kurulum.py --veri-emniyet [--veri <klasör>]    yalnız veri kökü emniyeti (veri_emniyet.py; eski Memmet ve .bat'lar emekliye)
 """
 import os, sys, subprocess, shutil, glob, importlib.util, json
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -27,6 +30,18 @@ def pip(*args):
 
 
 def main():
+    sys.path.insert(0, HERE)
+    import veri_emniyet
+    if "--veri-emniyet" in sys.argv:
+        a = sys.argv; veri = a[a.index("--veri") + 1] if "--veri" in a else None
+        baslik("Veri kökü emniyeti"); r = veri_emniyet.veri_emniyet(veri)
+        sys.exit(0 if r["durum"] in ("temiz", "veri_yok") else 3)
+    baslik("0/7 Veri kökü emniyeti (eski Memmet ve .bat'lar emekliye; hiçbir şey silinmez)")
+    try:
+        r = veri_emniyet.veri_emniyet()
+        (ok if r["durum"] in ("temiz", "veri_yok") else hata)(f"veri kökü: {r['durum']} ({len(r['tasinan'])} dosya _ESKI'ye taşındı)")
+    except BaseException as e: hata(f"veri kökü emniyeti çalışmadı: {str(e)[:120]}")
+
     baslik("1/7 Python")
     v = sys.version_info
     if v < (3, 10): hata(f"Python {v.major}.{v.minor} eski. Python 3.10 ya da 3.11 kur (python.org), 'Add to PATH' işaretle."); return

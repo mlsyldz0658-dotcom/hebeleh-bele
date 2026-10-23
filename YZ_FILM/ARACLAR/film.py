@@ -14,8 +14,9 @@ Sıra: önce kâğıt üstü kapılar (kredi yok), sonra kredi harcayan üretim,
 Durum film klasöründeki FILM_DURUM.json'da, kayıt FILM_KAYIT.txt'de tutulur. Bir aşamanın girdisi değişirse
 (SAHNELER.json düzeltildi, bir NNN.jpg silindi) o aşama kendiliğinden yeniden çalışır; yalnız eksikler üretilir.
 Sağlayıcı sırası AYARLAR/FILM_AYAR.json'dan okunur (yoksa: görsel/video flow, ses ai84).
-Bir sağlayıcı kısıtlanırsa (Flow uyarısı, kredi bitti) sıradakine geçilir; sıradaki yoksa hat DURUR ve haber verir.
-Çıkış kodu: 0 bitti · 2 durdu (senin bir şey yapman gerek) · 1 hata
+Bir sağlayıcı kısıtlanırsa yalnız anahtar/ağ/kota/kredi durumunda sıradakine geçilir. Flow uyarısı (olağan dışı etkinlik),
+doğrulama ya da nedeni bilinmeyen kısıtta başka servise GEÇİLMEZ: hat DURUR ve haber verir.
+Çıkış kodu: 0 bitti · 2 durdu (senin bir şey yapman gerek) · 4 ortam/sürüm (SAHNELER.json v2) · 7 Flow uyarısı · 1 hata
 """
 import os, sys, json, time, hashlib, subprocess
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -30,7 +31,13 @@ VARSAYILAN = {"saglayicilar": {"gorsel": ["flow"], "video": ["flow"], "ses": ["a
 
 
 class Durdur(Exception):
-    """Hat burada durur; kullanıcının yapacağı bir şey var (mesajda yazar)."""
+    """Hat burada durur; kullanıcının yapacağı bir şey var (mesajda yazar). kod → çıkış kodu (CIKIS)."""
+    def __init__(self, msg, kod="genel"):
+        super().__init__(msg); self.kod = kod
+
+
+# 7: Flow uyarısı (olağan dışı etkinlik) · 4: ortam/sürüm · 2: diğer duruşlar
+CIKIS = {"olagandisi": 7, "kilitli": 7, "ortam": 4, "surum": 4}
 
 
 def ayar():
@@ -72,7 +79,11 @@ class Film:
 
     def plan(self):
         p = os.path.join(self.kok, "SAHNELER.json")
-        return json.load(open(p, encoding="utf-8-sig")) if os.path.exists(p) else None
+        if not os.path.exists(p): return None
+        plan = json.load(open(p, encoding="utf-8-sig"))
+        if int(plan.get("_surum", 1) or 1) >= 2:
+            raise Durdur("SAHNELER.json v2 (_surum ≥ 2); bu film.py v1. Hiçbir şey yapılmadı.", kod="surum")
+        return plan
 
     def sahneler(self):
         ss = sorted((self.plan() or {}).get("sahneler", []), key=lambda s: s["no"])
@@ -119,7 +130,9 @@ class Film:
                     else: s_.video(self.kok, s, self.yol("gorsel", n), tmp)
                     os.replace(tmp, out); self.log(f"     {n:03d} ✓")
             except Kisitlandi as e:
-                self.log(f"   [{s_.ad}] KISITLANDI: {e} → sıradaki sağlayıcı")
+                if not e.gecilebilir:      # uyarı/doğrulama/bilinmeyen: başka servise geçmek atlatmadır → hat durur
+                    raise Durdur(f"[{s_.ad}] {e.kod}: {e} Başka sağlayıcıya geçilmedi.", kod=e.kod)
+                self.log(f"   [{s_.ad}] KISITLANDI ({e.kod}): {e} → sıradaki sağlayıcı")
         kalan = eksik()
         if kalan: raise Durdur(f"{tur}: {len(kalan)} sahne üretilemedi ({', '.join(str(s['no']) for s in kalan[:15])}).")
 
@@ -273,7 +286,7 @@ def main(a=None):
     try:
         f.calis(); return 0
     except Durdur as e:
-        f.log(f"!! DURDU: {e}"); return 2
+        f.log(f"!! DURDU: {e}"); return CIKIS.get(e.kod, 2)
     except KeyboardInterrupt:
         f.log("Kullanıcı durdurdu."); return 2
 

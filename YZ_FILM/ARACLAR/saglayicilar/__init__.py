@@ -4,8 +4,10 @@ Her sağlayıcı bir sınıftır; hangi işleri yaptığını `turler` söyler. 
   tek tek : sahne sahne çağrılır  → gorsel(film, sahne, cikti) · video(film, sahne, gorsel, cikti)
                                      ses(film, metin, ses_id, cikti) · muzik(film, sure, cikti)
   toplu   : bütün aşamayı kendisi yürütür (Memmet/Flow gibi) → toplu(film, tur, sahneler)
-Sağlayıcı kısıt/uyarı alırsa `Kisitlandi` fırlatır; zincirdeki sıradaki sağlayıcıya geçilir.
-Bot tespitini atlatmaya çalışan sağlayıcı YAZILMAZ: uyarıda o sağlayıcı durur, başka servise geçilir ya da hat durur.
+Sağlayıcı kullanılamazsa `Kisitlandi(mesaj, kod=...)` fırlatır. Sıradaki sağlayıcıya YALNIZ `GECILEBILIR` kodlarda geçilir
+(anahtar yok, ağ, kota, kredi). `olagandisi` (Flow uyarısı), `dogrulama`, `giris` ve kodu bilinmeyen kısıt hattı DURDURUR:
+uyarıdan sonra başka servise ya da hesaba geçmek bot tespitini atlatmanın bir biçimidir (kapalı başarısız).
+Bot tespitini atlatmaya çalışan sağlayıcı YAZILMAZ.
 Anahtarlar yalnız AYARLAR/ klasöründen ya da ortam değişkeninden okunur; asla yazdırılmaz.
 """
 import os, importlib
@@ -21,8 +23,16 @@ KAYIT = {
 }
 
 
+GECILEBILIR = ("anahtar", "ag", "kota", "kredi", "hazir_degil")   # bunlarda sıradaki sağlayıcı denenebilir
+
+
 class Kisitlandi(Exception):
-    """Sağlayıcı bu iş için kullanılamaz (uyarı, kredi bitti, anahtar yok). Sıradakine geçilir."""
+    """Sağlayıcı bu iş için kullanılamaz. kod GECILEBILIR içindeyse sıradakine geçilir; değilse hat durur."""
+    def __init__(self, msg="", kod="bilinmeyen"):
+        super().__init__(msg); self.kod = kod
+
+    @property
+    def gecilebilir(self): return self.kod in GECILEBILIR
 
 
 class Saglayici:

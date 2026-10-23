@@ -1,6 +1,6 @@
 """PAKETLE — YZ_FILM'i başka bilgisayara taşınabilir zip yapar. Gizli ve ağır dosyalar girmez.
 Kullanım: python paketle.py [hedef_klasor]   (varsayılan: Masaüstü)
-Girer : BASLA_BURADAN.txt, KURULUM.bat, YENI_FILM.bat, 00_BENI_OKU.txt, ARACLAR (programlar), BILGI,
+Girer : BASLA_BURADAN.txt, KURULUM.bat, 00_BENI_OKU.txt, ARACLAR (programlar), BILGI,
         AYARLAR (yalnız boş şablonlar), FILMLER/ORNEK_3_SAHNE (örnek film: sahne listesi + karakter görselleri)
 Girmez: anahtarlar, Memmet Chrome profili (Google oturumu), film çıktıları, önbellekler
 Sonunda zip'in içinde anahtarların geçmediğini tarar.
@@ -11,7 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from yeni_film import BATS
 
-KOK = ["BASLA_BURADAN.txt", "KURULUM.bat", "YENI_FILM.bat", "00_BENI_OKU.txt"]
+KOK = ["BASLA_BURADAN.txt", "KURULUM.bat", "00_BENI_OKU.txt"]
 ATLA_KLASOR = {"__pycache__", "memmet_profil"}
 ATLA_ON = ("_",)                       # ARACLAR içindeki _deneme.png gibi geçici dosyalar
 ORNEK_KAYNAK = os.path.join(ROOT, "FILMLER", "MEMMET_TEST")
@@ -21,7 +21,7 @@ AYAR_OKU = ("BU KLASÖR GİZLİDİR. Paylaşma.\n\n"
             "telegram_bot.txt   → Telegram bot anahtarını İLK SATIRA yapıştır (isteğe bağlı). Sonra:\n"
             "                     python ARACLAR\\memmet.py --telegram-test\n"
             "memmet_profil\\     → MEMMET_GIRIS.bat ile Google'a girince kendiliğinden oluşur\n"
-            "MEMMET_AYAR.json   → Memmet tempo ayarları (ilk çalıştırmada oluşur)\n")
+            "MEMMET_AYAR.json   → isteğe bağlı; Memmet temposunu yalnız YAVAŞLATABİLİR (hızlı değer yok sayılır)\n")
 
 
 def main(hedef):

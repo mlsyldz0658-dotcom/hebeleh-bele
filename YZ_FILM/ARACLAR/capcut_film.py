@@ -13,6 +13,7 @@ CapCut'ta oluşan kanallar:
 Proje CapCut'ın proje klasörüne yazılır; mevcut projelere dokunulmaz.
 """
 import os, sys, json, subprocess, time, uuid
+import ortak   # SAHNELER.json v2 koruması
 from pathlib import Path
 import numpy as np, soundfile as sf
 from PIL import Image, ImageDraw
@@ -65,7 +66,7 @@ def bars_png(path):
 
 def main(root):
     root = os.path.abspath(root)
-    plan = json.load(open(os.path.join(root, "SAHNELER.json"), encoding="utf-8-sig"))
+    plan = ortak.sahneler_oku(root, "capcut_film.py")
     K = os.path.join(root, "KURGU"); C1080 = os.path.join(K, "klipler_1080"); os.makedirs(C1080, exist_ok=True)
     dlg_p = os.path.join(root, "SESLER", "diyalog.json")
     dlg = json.load(open(dlg_p, encoding="utf-8")) if os.path.exists(dlg_p) else {}

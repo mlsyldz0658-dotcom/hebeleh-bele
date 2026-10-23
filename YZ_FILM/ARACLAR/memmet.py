@@ -3,22 +3,36 @@
 Kullanım:
   python memmet.py <film_klasoru> --giris            Memmet Chrome'unu açar; Google'a bir kez sen giriş yaparsın
   python memmet.py <film_klasoru>                    bütün partiler: her partide önce görseller, sonra videolar
+  python memmet.py <film_klasoru> --mod elle         (varsayılan) Memmet istemi hazırlar, GÖNDER'e (Oluşturmaya başla) SEN basarsın
+  python memmet.py <film_klasoru> --mod gece         Memmet kendisi gönderir; yalnız AYARLAR/FILM_AYAR.json "izinler.gece_flow": true ise
   python memmet.py <film_klasoru> --asama gorsel     yalnız görseller   (--asama video: yalnız videolar)
   python memmet.py <film_klasoru> --parti 1,2        yalnız bu partiler  (--sahne 3,7: yalnız bu sahneler)
   python memmet.py <film_klasoru> --telegram-test    telefona deneme mesajı
 
 Kendi Chrome profiliyle (ARACLAR/memmet_profil) gerçek Chrome'u açar ve ona bağlanır; senin diğer oturumlarına dokunmaz.
 Ekran görüntüsüne bakmaz, sayfanın yapısını okur. Her sonucu Flow'daki istem metninden tanıyıp NNN.jpg / NNN.mp4 olarak kaydeder.
-İnsan temposunda çalışır (rastgele bekleme, partiler arası mola). reCAPTCHA / olağandışı etkinlik görürse DURUR ve haber verir;
-doğrulamayı sen çözersin, kaldığı yerden devam eder. Her şey MEMMET_KAYIT.txt'ye yazılır; durum MEMMET_DURUM.json'da tutulur.
+Yük sınırı: gönderimler arası bekleme ve molalar kodda sabittir (17.10 değerleri); MEMMET_AYAR.json yalnız YAVAŞLATABİLİR.
+Son gönderim zamanı ve kalan mola HESAP/FLOW_TEMPO.json'da tutulur; Memmet'i kapatıp açmak molayı sıfırlamaz.
+
+GÜVENLİK (bot tespiti atlatılmaz; 03_DERSLER.md):
+  - Flow "olağan dışı etkinlik" derse, HER KİPTE anında durur: sayfada başka hiçbir işlem yapmaz (tıklama, yazma, yenileme yok),
+    HESAP/FLOW_KILIDI.json yazar, haber verir ve 7 ile çıkar. Kilit varken Memmet açılmaz. GÖNDER'e basma, sayfayı yenileme.
+  - reCAPTCHA, doğrulama ya da oturum düşmesinde beklemez, kendiliğinden sürmez: haber verir ve 2 ile çıkar.
+    Sen çözersin, sonra Memmet'i yeniden başlatırsın.
+  - SAHNELER.json "_surum" ≥ 2 ise (v2 dosyası) bu sürüm hiçbir şey yapmaz, 4 ile çıkar.
+Çıkış kodları: 0 bitti · 1 beklenmeyen hata · 2 durdu (doğrulama/giriş/kredi/arayüz) · 4 ortam/sürüm · 7 Flow uyarısı.
+Son çıkışın nedeni film klasöründe _memmet_cikis.json'a yazılır. Her şey MEMMET_KAYIT.txt'ye, durum MEMMET_DURUM.json'a yazılır.
 """
-import os, sys, re, json, time, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes
+import os, sys, re, json, time, datetime, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
-AYARLAR = os.path.join(os.path.dirname(HERE), "AYARLAR")
+VERI = os.environ.get("YZ_FILM_VERI") or os.path.dirname(HERE)   # veri kökü sarmalayıcısı verir (PR-1: ortak.yollar)
+AYARLAR = os.path.join(VERI, "AYARLAR")
 AYAR_DOSYA = os.path.join(AYARLAR, "MEMMET_AYAR.json")
+FILM_AYAR = os.path.join(AYARLAR, "FILM_AYAR.json")
+HESAP = os.path.join(VERI, "HESAP")          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
 
 
 def chrome_bul():
@@ -34,52 +48,144 @@ def telegram_bul():
     return os.path.join(AYARLAR, "telegram_bot.txt")
 
 
-# Bilgisayara özel yollar (chrome, profil, telegram) her çalıştırmada bulunur; MEMMET_AYAR.json'a yalnız tempo ayarları yazılır
+# Bilgisayara özel yollar (chrome, profil, telegram) her çalıştırmada bulunur
 VARSAYILAN = {
     "chrome": chrome_bul(),
     "profil": os.path.join(AYARLAR, "memmet_profil"),
     "port": 9333,
-    "gonderim_arasi_sn": [4, 12],          # iki gönderim arası rastgele bekleme
-    "ayni_anda": 2,                        # aynı anda en fazla kaç üretim beklesin
-    "mola_kac_partide": [2, 3],            # 2-3 partide bir mola
-    "mola_dk": [5, 10, 15],                # mola süresi (rastgele biri)
     "gorsel_zaman_asimi_sn": 180,
     "video_zaman_asimi_sn": 360,
-    "video_cozunurluk": "360p",
+    "video_cozunurluk": "720p",
     "video_sure": "8 sn.",
     "telegram_dosya": telegram_bul(),   # 1. satır bot anahtarı, 2. satır sohbet no
 }
-YOL_ANAHTARLARI = ("chrome", "profil", "telegram_dosya")
+# Yük sınırı (17.10 değerleri). Kodda sabit; ayar dosyası bunları yalnız YAVAŞLATABİLİR (sikilastir).
+#   gonderim_arasi_sn   iki gönderim arası rastgele bekleme      ayni_anda           aynı anda en fazla kaç üretim beklesin
+#   mola_kac_gonderimde N gönderimde bir mola (0: yok)           mola_kac_partide    N partide bir mola (0: yok)
+TEMPO = {
+    "elle": {"gonderim_arasi_sn": [6, 15], "ayni_anda": 2, "mola_kac_gonderimde": 8, "gonderim_mola_dk": [3, 6],
+             "mola_kac_partide": 0, "parti_mola_dk": [0, 0]},
+    "gece": {"gonderim_arasi_sn": [12, 30], "ayni_anda": 2, "mola_kac_gonderimde": 0, "gonderim_mola_dk": [0, 0],
+             "mola_kac_partide": 2, "parti_mola_dk": [15, 30]},
+}
+KIPLER = tuple(TEMPO)
 FLOW = "https://flow.google.com/"
-HATA_KELIMELERI = ["politika", "ihlal", "olağan", "olagan", "uygunsuz", "güvenlik", "başarısız", "oluşturulamadı",
-                   "üretilemedi", "violat", "policy", "unusual", "couldn't", "could not", "failed", "something went wrong",
+# Olağan dışı etkinlik: HER KİPTE anında dur, sayfaya dokunma (çıkış 7). Bu liste yalnız BÜYÜYEBİLİR.
+OLAGANDISI_KELIMELERI = ["olağandışı etkinlik", "olağan dışı etkinlik", "olagandisi etkinlik", "olagan disi etkinlik",
+                         "unusual traffic", "unusual activity", "olağandışı trafik", "olağan dışı trafik"]
+# Tek sonuç kartındaki üretim hatası (yeniden denenebilir). "olağan/unusual" BURADA YOK: onlar uyarıdır, hata değil.
+HATA_KELIMELERI = ["politika", "ihlal", "uygunsuz", "güvenlik", "başarısız", "oluşturulamadı",
+                   "üretilemedi", "violat", "policy", "couldn't", "could not", "failed", "something went wrong",
                    "bir sorun", "bir hata"]
-# "doğrulayın" tek başına yazılmaz: Flow'un altında hep "yanıtları doğrulayın" yazıyor
-DOGRULAMA_KELIMELERI = ["olağandışı etkinlik", "olağan dışı etkinlik", "unusual traffic", "unusual activity", "robot olmadığınızı",
-                        "not a robot", "kimliğinizi doğrulayın", "verify it's you"]
+# Doğrulama / robot sorusu: beklemeden dur (çıkış 2). "doğrulayın" tek başına yazılmaz: Flow'un altında hep "yanıtları doğrulayın" yazıyor
+DOGRULAMA_KELIMELERI = ["robot olmadığınızı", "not a robot", "kimliğinizi doğrulayın", "verify it's you"]
 KREDI_KELIMELERI = ["yetersiz kredi", "kredi yetersiz", "kredin bitti", "not enough credits", "out of credits", "insufficient credits"]
+CIKIS = {"tamam": 0, "beklenmeyen": 1, "dogrulama": 2, "giris": 2, "kredi": 2, "arayuz": 2, "genel": 2, "ortam": 4, "surum": 4,
+         "olagandisi": 7, "kilitli": 7}
 
 
-def ayar():
+def _yavas(kod, gelen):
+    """İki değerden yavaş (güvenli) olanı. Aralıklar eleman eleman büyük; ayni_anda küçük; mola sıklığı küçük (0 = yok sayılır)."""
+    try:
+        if isinstance(kod, list):
+            g = [float(x) for x in gelen][:len(kod)]
+            return [max(a, b) for a, b in zip(kod, g)] if len(g) == len(kod) else kod
+        g = int(gelen)
+        if kod == 0: return 0                                # kodda kapalı olan mola sıklığı ayarla açılmaz (gece/elle farkı)
+        return min(kod, g) if g > 0 else kod
+    except (TypeError, ValueError): return kod
+
+
+def sikilastir(kip, dosya_ayar):
+    """Kodda sabit tempo + ayar dosyası → yalnız yavaşlayan birleşim."""
+    t = {k: (list(v) if isinstance(v, list) else v) for k, v in TEMPO[kip].items()}
+    for k in t:
+        if k in dosya_ayar: t[k] = _yavas(t[k], dosya_ayar[k])
+    return t
+
+
+def ayar(kip="elle"):
     a = dict(VARSAYILAN)
-    os.makedirs(AYARLAR, exist_ok=True)
-    if os.path.exists(AYAR_DOSYA): a.update(json.load(open(AYAR_DOSYA, encoding="utf-8-sig")))
-    else: json.dump({k: v for k, v in VARSAYILAN.items() if k not in YOL_ANAHTARLARI},
-                    open(AYAR_DOSYA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    d = {}
+    if os.path.exists(AYAR_DOSYA):
+        try: d = json.load(open(AYAR_DOSYA, encoding="utf-8-sig"))
+        except ValueError: d = {}
+    # eski (sürümsüz) dosyayı eski Memmet kendiliğinden yazmıştı (360p, hızlı tempo): ondan yalnız yavaşlatan tempo alınır
+    if int(d.get("_surum", 1) or 1) >= 2:
+        for k in ("port", "gorsel_zaman_asimi_sn", "video_zaman_asimi_sn", "video_cozunurluk"):
+            if k in d: a[k] = d[k]
+        if a["video_cozunurluk"] not in ("720p", "1080p"): a["video_cozunurluk"] = "720p"   # en az 720p
+    a.update(sikilastir(kip, d)); a["kip"] = kip
     return a
+
+
+def gece_izni():
+    try: return bool(json.load(open(FILM_AYAR, encoding="utf-8-sig")).get("izinler", {}).get("gece_flow"))
+    except (OSError, ValueError, AttributeError): return False
+
+
+def kilit_yolu(): return os.path.join(HESAP, "FLOW_KILIDI.json")
+
+
+def tempo_yolu(): return os.path.join(HESAP, "FLOW_TEMPO.json")
+
+
+uyu = time.sleep   # testler bekleme yapmadan koşabilsin diye tek noktadan
+
+
+def _atomik(yol, veri):
+    os.makedirs(os.path.dirname(yol), exist_ok=True)
+    tmp = yol + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f: json.dump(veri, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, yol)
+
+
+def cikis_yaz(root, kod, mesaj):
+    """Son çıkışın nedeni: film.py / saglayicilar.flow kodu buradan okur."""
+    try: _atomik(os.path.join(root, "_memmet_cikis.json"), {"kod": kod, "cikis": CIKIS.get(kod, 1), "mesaj": mesaj,
+                                                              "zaman": time.strftime("%Y-%m-%d %H:%M:%S")})
+    except OSError: pass
+
+
+def kilit_yaz(film, mesaj):
+    """Flow uyarısı → hesap düzeyinde kilit. Aynı takvim haftasında ikinci uyarı → en erken 7 gün sonra (tahmin)."""
+    os.makedirs(HESAP, exist_ok=True)
+    simdi = time.time(); y, h, _ = datetime.date.today().isocalendar(); hafta = f"{y}-{h:02d}"   # %G/%V Windows'ta yok
+    gecmis = os.path.join(HESAP, "FLOW_UYARILARI.jsonl")
+    onceki = 0
+    if os.path.exists(gecmis):
+        for l in open(gecmis, encoding="utf-8"):
+            try: onceki += json.loads(l).get("hafta") == hafta
+            except ValueError: pass
+    with open(gecmis, "a", encoding="utf-8") as f:
+        f.write(json.dumps({"zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "hafta": hafta, "film": film}, ensure_ascii=False) + "\n")
+    if os.path.exists(kilit_yolu()): return            # var olan kilidin tarihi korunur
+    _atomik(kilit_yolu(), {
+        "_surum": 1, "neden": "olagandisi", "film": film, "mesaj": mesaj, "zaman": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "zaman_epoch": int(simdi), "haftanin_uyarisi": onceki + 1,
+        "en_erken": time.strftime("%Y-%m-%d %H:%M", time.localtime(simdi + (7 * 86400 if onceki else 1800))),
+        "nasil_kalkar": "GÖNDER'e basma, sayfayı yenileme. Bekle; en erken 'en_erken' zamanında Flow'da ELLE tek bir video dene. "
+                        "Sorunsuzsa Claude'a 'Flow uyarısı geçti' de; kilidi o kaldırır. Başka Google/Flow hesabıyla devam edilmez."})
 
 
 def norm(s): return re.sub(r"\s+", " ", (s or "")).strip().lower()
 
 
 class Durdur(Exception):
-    """Kullanıcının müdahalesi gereken durum (kredi bitti, arayüz değişti...)."""
+    """Kullanıcının müdahalesi gereken durum. kod: olagandisi | kilitli | dogrulama | giris | kredi | arayuz | ortam | surum | genel."""
+    def __init__(self, msg, kod="genel"):
+        super().__init__(msg); self.kod = kod
 
 
 class Memmet:
     def __init__(self, root, args):
-        self.root = os.path.abspath(root); self.args = args; self.A = ayar()
+        self.root = os.path.abspath(root); self.args = args
+        kip = args.get("mod", "elle")
+        if kip not in KIPLER: raise Durdur(f"Bilinmeyen kip: {kip} (elle | gece)", kod="ortam")
+        self.A = ayar(kip)
         self.plan = json.load(open(os.path.join(self.root, "SAHNELER.json"), encoding="utf-8-sig"))
+        if int(self.plan.get("_surum", 1) or 1) >= 2:
+            raise Durdur("SAHNELER.json v2 (_surum ≥ 2): bu Memmet v1, hiçbir şey yapmadı. Memmet v2 gerekli.", kod="surum")
         self.film = self.plan["film"]
         self.sg = os.path.join(self.root, "SIRALI_GORSEL"); self.sv = os.path.join(self.root, "SIRALI_VIDEO")
         self.hata_dir = os.path.join(self.root, "_MEMMET_HATALAR"); self.gecici = os.path.join(self.root, "_memmet_gecici")
@@ -87,7 +193,7 @@ class Memmet:
         self.kayit = open(os.path.join(self.root, "MEMMET_KAYIT.txt"), "a", encoding="utf-8")
         self.dp = os.path.join(self.root, "MEMMET_DURUM.json")
         self.D = json.load(open(self.dp, encoding="utf-8")) if os.path.exists(self.dp) else {"proje_url": None, "yuklenen": [], "sahne": {}}
-        self.page = None; self._tg = None
+        self.page = None; self._tg = None; self.uyari_goruldu = False
 
     # ------------------------------------------------------------------ kayıt ve bildirim
     def log(self, *a):
@@ -121,7 +227,7 @@ class Memmet:
         if tg:
             try:
                 data = urllib.parse.urlencode({"chat_id": tg[1], "text": ("🚨 " if acil else "🎬 ") + f"[{self.film}] {msg}"}).encode()
-                urllib.request.urlopen(f"https://api.telegram.org/bot{tg[0]}/sendMessage", data, timeout=15)
+                urllib.request.urlopen(f"https://api.telegram.org/bot{tg[0]}/sendMessage", data, timeout=8)
             except Exception as e: self.log("telegram gönderilemedi:", str(e)[:80])
 
     # ------------------------------------------------------------------ Chrome
@@ -155,27 +261,64 @@ class Memmet:
         try: return norm(self.page.evaluate("document.body ? document.body.innerText.slice(0, 20000) : ''"))
         except Exception: return ""
 
-    def dogrulama_var_mi(self):
+    def olagandisi_denetle(self, t=None):
+        """Olağan dışı etkinlik → HER KİPTE anında Durdur(olagandisi). Bundan sonra sayfaya hiçbir işlem yapılmaz."""
+        t = self.sayfa_metni() if t is None else norm(t)
+        if any(k in t for k in OLAGANDISI_KELIMELERI):
+            self.uyari_goruldu = True
+            raise Durdur("Flow uyarı verdi (olağan dışı etkinlik): GÖNDER'e basma, sayfayı yenileme. Memmet durdu; Claude'a haber ver.",
+                         kod="olagandisi")
+
+    def dogrulama_var_mi(self, t=None):
         try:
             if self.page.evaluate("""[...document.querySelectorAll('iframe[src*="recaptcha"]')].some(f => {
                 const r = f.getBoundingClientRect(); return r.width > 100 && r.height > 100 && getComputedStyle(f).visibility !== 'hidden'; })"""):
                 return True
         except Exception: pass
-        t = self.sayfa_metni(); u = self.page.url or ""
+        t = self.sayfa_metni() if t is None else t; u = self.page.url or ""
         return any(k in t for k in DOGRULAMA_KELIMELERI) or "accounts.google.com" in u or "/about" in u
 
     def kontrol_noktasi(self):
-        """Her adımda çağrılır: doğrulama/oturum/kredi durumunu yakalar."""
-        if self.dogrulama_var_mi():
-            self.bildir("Doğrulama (reCAPTCHA) ya da giriş istendi. Memmet bekliyor; Memmet Chrome penceresinde çöz, kendisi devam eder.", acil=True)
-            t0 = time.time()
-            while self.dogrulama_var_mi():
-                time.sleep(15)
-                if time.time() - t0 > 3600 * 12: raise Durdur("12 saat boyunca doğrulama çözülmedi.")
-            self.log("Doğrulama çözüldü, devam."); time.sleep(5)
-            self.projeye_git()
+        """Sayfada her işlemden önce çağrılır. Beklemez, kendiliğinden sürmez: uyarıda 7, doğrulama/oturumda 2 ile durdurur."""
         t = self.sayfa_metni()
-        if any(k in t for k in KREDI_KELIMELERI): raise Durdur("Flow kredisi bitti.")
+        self.olagandisi_denetle(t)
+        if self.dogrulama_var_mi(t):
+            raise Durdur("Doğrulama (reCAPTCHA) ya da Google girişi istendi. Memmet beklemeden durdu: Memmet Chrome penceresinde "
+                         "kendin çöz, sonra Memmet'i yeniden başlat.", kod="dogrulama")
+        if any(k in t for k in KREDI_KELIMELERI): raise Durdur("Flow kredisi bitti.", kod="kredi")
+
+    # ------------------------------------------------------------------ yük sınırı (tempo)
+    def tempo_oku(self):
+        try: return json.load(open(tempo_yolu(), encoding="utf-8"))
+        except (OSError, ValueError): return {"_surum": 1, "son_gonderim": 0, "sonraki_izin": 0, "mola_bitis": 0,
+                                              "gonderim_sayaci": 0, "parti_sayaci": 0}
+
+    def tempo_bekle(self):
+        """Bir sonraki izinli zamana kadar bekler. Zaman dosyada; Memmet'i yeniden açmak molayı sıfırlamaz."""
+        T = self.tempo_oku(); hedef = max(T.get("sonraki_izin", 0), T.get("mola_bitis", 0)); kalan = hedef - time.time()
+        if kalan > 0:
+            if kalan > 60: self.log(f"MOLA / yük sınırı: {int(kalan // 60)} dk {int(kalan % 60)} sn bekleniyor (sayfaya dokunulmuyor)")
+            uyu(kalan)
+
+    def gonderim_kaydet(self):
+        T = self.tempo_oku(); simdi = time.time(); A = self.A
+        T["son_gonderim"] = simdi; T["gonderim_sayaci"] = T.get("gonderim_sayaci", 0) + 1; T["kip"] = A["kip"]
+        T["sonraki_izin"] = simdi + random.uniform(*A["gonderim_arasi_sn"])
+        n = A.get("mola_kac_gonderimde", 0)
+        if n and T["gonderim_sayaci"] % n == 0:
+            T["mola_bitis"] = max(T.get("mola_bitis", 0), simdi + random.uniform(*A["gonderim_mola_dk"]) * 60)
+            self.log(f"{n} gönderim oldu → mola (bitiş {time.strftime('%H:%M', time.localtime(T['mola_bitis']))})")
+        _atomik(tempo_yolu(), T)
+
+    def parti_bitti(self):
+        """Parti sonu. Mola düştüyse True (mola sonrası proje sayfası yeniden açılır)."""
+        T = self.tempo_oku(); n = self.A.get("mola_kac_partide", 0); T["parti_sayaci"] = T.get("parti_sayaci", 0) + 1
+        mola = bool(n and T["parti_sayaci"] % n == 0)
+        if mola:
+            T["mola_bitis"] = max(T.get("mola_bitis", 0), time.time() + random.uniform(*self.A["parti_mola_dk"]) * 60)
+            self.log(f"{n} parti oldu → mola (bitiş {time.strftime('%H:%M', time.localtime(T['mola_bitis']))})")
+        _atomik(tempo_yolu(), T)
+        return mola
 
     def hata_kaydi(self, ad):
         base = os.path.join(self.hata_dir, time.strftime("%m%d_%H%M%S_") + ad)
@@ -186,18 +329,23 @@ class Memmet:
         self.log("hata kaydı:", base)
 
     def bekle(self, a, b=None):
-        time.sleep(random.uniform(a, b if b is not None else a))
+        uyu(random.uniform(a, b if b is not None else a))
 
     # ------------------------------------------------------------------ giriş ve proje
-    def giris_kontrol(self):
+    def giris_kontrol(self, bekle_giris=False):
+        """bekle_giris=True yalnız --giris içindir (sen giriş yaparsın). Üretimde girişsizse beklemez, 2 ile durur."""
+        self.olagandisi_denetle()
         self.page.goto(FLOW, wait_until="domcontentloaded"); self.bekle(4)
+        self.olagandisi_denetle()
+        if self.girisli(): return True
+        if not bekle_giris:
+            raise Durdur("Memmet Chrome'unda Flow girişi yok (oturum düşmüş). MEMMET_GIRIS.bat ile giriş yap, sonra yeniden başlat.", kod="giris")
+        self.bildir("Memmet Chrome'unda Google'a giriş yapılmamış. Açılan pencerede Flow'a giriş yap.", acil=True)
         t0 = time.time()
-        while True:
-            if self.girisli(): return True
-            if time.time() - t0 < 5:
-                self.bildir("Memmet Chrome'unda Google'a giriş yapılmamış. Açılan pencerede Flow'a giriş yap.", acil=True)
-            time.sleep(10)
-            if time.time() - t0 > 3600: raise Durdur("Bir saat içinde giriş yapılmadı.")
+        while not self.girisli():
+            uyu(10); self.olagandisi_denetle()
+            if time.time() - t0 > 3600: raise Durdur("Bir saat içinde giriş yapılmadı.", kod="giris")
+        return True
 
     def girisli(self):
         """Girişsiz kullanıcıyı Flow /about tanıtım sayfasına atar; girişliyken hesap düğmesi vardır."""
@@ -209,10 +357,12 @@ class Memmet:
         except Exception: return False
 
     def projeye_git(self):
+        self.kontrol_noktasi()
         if self.D.get("proje_url"):
             self.page.goto(self.D["proje_url"], wait_until="domcontentloaded")
         else:
             self.page.goto(FLOW, wait_until="domcontentloaded"); self.bekle(3)
+            self.kontrol_noktasi()
             self.page.get_by_text("Yeni proje", exact=False).first.click()
             self.page.wait_for_url(re.compile(r"/project/"), timeout=30000); self.bekle(3)
             title = self.page.get_by_role("textbox", name="Düzenlenebilir metin").first
@@ -221,6 +371,7 @@ class Memmet:
             self.D["proje_url"] = self.page.url.split("?")[0]; self.save()
             self.log("Yeni Flow projesi:", self.film, self.D["proje_url"])
         self.page.wait_for_selector(".ProseMirror", timeout=45000); self.bekle(2, 4)
+        self.kontrol_noktasi()
         self.yukari()
 
     def yukari(self):
@@ -271,6 +422,7 @@ class Memmet:
         yollar = [p for p in yollar if os.path.basename(p) not in self.D["yuklenen"]]
         for i in range(0, len(yollar), 10):
             grup = yollar[i:i + 10]
+            self.kontrol_noktasi()
             self.yukari()
             self.page.evaluate("""() => { let i = document.getElementById('memmet_yukle'); if (!i) { i = document.createElement('input');
                 i.type = 'file'; i.multiple = true; i.id = 'memmet_yukle'; i.style.cssText = 'position:fixed;left:-9999px;top:0';
@@ -336,16 +488,27 @@ class Memmet:
         pm = self.page.locator(".ProseMirror").first
         pm.click(); self.page.keyboard.press("Control+A"); self.page.keyboard.press("Delete")
 
-    def istem_yaz_gonder(self, metin):
+    def istem_yaz_gonder(self, metin, etiket=""):
+        """İstemi yazar. gece: kendisi gönderir. elle: GÖNDER'e (Oluşturmaya başla) kullanıcının basmasını bekler."""
+        self.kontrol_noktasi()
         pm = self.page.locator(".ProseMirror").first
         pm.click(); self.bekle(0.3, 0.6)
         self.page.keyboard.type(metin, delay=random.randint(8, 18))
         self.bekle(0.6, 1.5)
-        if norm(pm.inner_text())[:40] != norm(metin)[:40]: raise Durdur("İstem kutusuna yazılamadı.")
+        self.kontrol_noktasi()
+        if norm(pm.inner_text())[:40] != norm(metin)[:40]: raise Durdur("İstem kutusuna yazılamadı.", kod="arayuz")
+        if self.A["kip"] == "elle":
+            self.log(f">> {etiket} HAZIR. Memmet Chrome'unda istemi kontrol et, doğruysa 'Oluşturmaya başla'ya SEN bas.")
+            t0 = time.time(); hatirlat = t0 + 600
+            while norm(pm.inner_text()):
+                uyu(2); self.kontrol_noktasi()
+                if time.time() > hatirlat: self.log(f">> {etiket} hâlâ GÖNDER bekliyor."); hatirlat = time.time() + 600
+            return True
         self.page.get_by_role("button", name="Oluşturmaya başla").first.click()
         t0 = time.time()
         while time.time() - t0 < 20:
             self.bekle(1)
+            self.olagandisi_denetle()
             if not norm(pm.inner_text()): return True
         self.hata_kaydi("gonderim"); self.log("UYARI: istem gönderilmedi gibi görünüyor (kutu temizlenmedi)")
         return False
@@ -449,6 +612,7 @@ class Memmet:
                     st[tur + "_durum"] = "reddedildi"; self.save(); self.log(f"{s['no']:03d} {tur}: bütün denemeler bitti → reddedildi")
                     continue
                 metin = ist[deneme]
+                self.tempo_bekle(); self.kontrol_noktasi()
                 try:
                     self.mod_ayarla(tur); self.kutuyu_temizle()
                     if tur == "gorsel":
@@ -456,23 +620,24 @@ class Memmet:
                     else:
                         self.kare_ekle("Başlat", f"{s['no']:03d}.jpg")
                         if s.get("bitis_karesi"): self.kare_ekle("Bitir", f"{int(s['bitis_karesi']):03d}.jpg")
-                    ok = self.istem_yaz_gonder(metin)
+                    ok = self.istem_yaz_gonder(metin, f"{s['no']:03d} {tur}")
                 except Durdur: raise
                 except Exception as e:
                     self.hata_kaydi(f"{s['no']:03d}_{tur}"); self.log(f"{s['no']:03d} {tur}: gönderim hatası: {str(e)[:150]}")
                     ok = False
                 st[tur + "_deneme"] = deneme + 1; self.save()
+                if ok: self.gonderim_kaydet()
                 if ok:
                     bekleyen[s["no"]] = {"istem": metin, "t": time.time(), "s": s}
                     self.log(f"{s['no']:03d} {tur}: gönderildi (deneme {deneme + 1}{', yedek istem' if deneme >= 2 else ''})")
                 else:
                     kuyruk.insert(0, s); self.projeye_git()
-                self.bekle(*self.A["gonderim_arasi_sn"])
                 continue
             # sonuçları kontrol et
             self.bekle(4, 7)
             for n in list(bekleyen):
                 b = bekleyen[n]; s = b["s"]; r = self.kutu_bul(b["istem"]); gecen = time.time() - b["t"]
+                if r.get("var"): self.olagandisi_denetle(r.get("metin", ""))
                 hedef = os.path.join(hedef_dir, f"{n:03d}.{ext}")
                 if r.get("var") and tur == "gorsel" and r.get("gorsel_url") and not r.get("yuzde"):
                     try:
@@ -501,7 +666,19 @@ class Memmet:
                     del bekleyen[n]; kuyruk.append(s)
                     if gecen > zaman_asimi: self.projeye_git()
 
+    def on_kosullar(self):
+        """Chrome açılmadan önce: kilit ve izin. Sayfaya dokunmaz."""
+        if os.path.exists(kilit_yolu()):
+            k = {}
+            try: k = json.load(open(kilit_yolu(), encoding="utf-8"))
+            except (OSError, ValueError): pass
+            raise Durdur(f"Flow kilidi var ({k.get('zaman', '?')} uyarısı; en erken {k.get('en_erken', '?')}). Memmet açılmadı. "
+                         "GÖNDER'e basma; Claude'a haber ver.", kod="kilitli")
+        if self.A["kip"] == "gece" and not gece_izni():
+            raise Durdur("Gece kipi kapalı: AYARLAR/FILM_AYAR.json içinde izinler.gece_flow açık değil. Varsayılan kip: elle.", kod="ortam")
+
     def calis(self):
+        self.on_kosullar()
         ES = 0x80000000 | 0x00000001
         try: ctypes.windll.kernel32.SetThreadExecutionState(ES)   # çalışırken uyku yok
         except Exception: pass
@@ -509,16 +686,13 @@ class Memmet:
         partiler = sorted({s.get("parti", 1) for s in self.sahneler()})
         if self.args.get("parti"): partiler = [p for p in partiler if p in self.args["parti"]]
         asamalar = ["gorsel", "video"] if self.args.get("asama", "hepsi") == "hepsi" else [self.args["asama"]]
-        self.log(f"BAŞLADI · film {self.film} · partiler {partiler} · aşama {asamalar}")
-        self.bildir(f"Başladı: partiler {partiler}, aşama {'+'.join(asamalar)}")
-        sonraki_mola = random.randint(*self.A["mola_kac_partide"])
+        self.log(f"BAŞLADI · film {self.film} · kip {self.A['kip']} · partiler {partiler} · aşama {asamalar}")
+        self.bildir(f"Başladı ({self.A['kip']}): partiler {partiler}, aşama {'+'.join(asamalar)}")
         for i, p in enumerate(partiler, 1):
             for tur in asamalar: self.asama(tur, self.sahneler(p))
             self.bildir(f"Parti {p} bitti.")
-            if i < len(partiler) and i % sonraki_mola == 0:
-                dk = random.choice(self.A["mola_dk"]); self.log(f"MOLA: {dk} dakika")
-                time.sleep(dk * 60); sonraki_mola = i + random.randint(*self.A["mola_kac_partide"])
-                self.projeye_git()
+            if self.parti_bitti() and i < len(partiler):
+                self.tempo_bekle(); self.projeye_git()
         try:
             import kontrol
             f = kontrol.Film(self.root); f.reports(); f.save()
@@ -544,6 +718,18 @@ class Memmet:
         except Exception: self.bildir("CapCut projesi hazır.")
 
 
+def bitir(m, root, kod, mesaj):
+    """Durdur sonrası: önce kilit ve çıkış dosyası (sayfaya dokunmadan), sonra bildirim. Çıkış kodunu döndürür."""
+    if kod == "olagandisi":
+        kilit_yaz(getattr(m, "film", os.path.basename(root)), mesaj)
+    cikis_yaz(root, kod, mesaj)
+    if m is not None:
+        try: m.bildir(f"DURDU: {mesaj}", acil=True)
+        except Exception: pass
+    else: print("DURDU:", mesaj, flush=True)
+    return CIKIS.get(kod, 2)
+
+
 def telegram_test():
     A = ayar(); p = A.get("telegram_dosya")
     lines = [l.strip() for l in open(p, encoding="utf-8-sig") if l.strip()] if p and os.path.exists(p) else []
@@ -558,29 +744,38 @@ def telegram_test():
     urllib.request.urlopen(f"https://api.telegram.org/bot{tok}/sendMessage", data, timeout=20); print("Deneme mesajı gönderildi.")
 
 
-def main():
-    a = sys.argv[1:]
+def main(a=None):
+    a = sys.argv[1:] if a is None else a
     if not a: print(__doc__); return
     if "--telegram-test" in a: telegram_test(); return
-    root = a[0]; args = {"asama": "hepsi", "kurgu_yok": "--kurgu-yok" in a}
-    for k in ("--asama", "--parti", "--sahne"):
+    root = a[0]; args = {"asama": "hepsi", "kurgu_yok": "--kurgu-yok" in a, "mod": "elle"}
+    for k in ("--asama", "--parti", "--sahne", "--mod"):
         if k in a:
             v = a[a.index(k) + 1]
-            args[k[2:]] = v if k == "--asama" else [int(x) for x in v.split(",")]
-    m = Memmet(root, args)
+            args[k[2:]] = v if k in ("--asama", "--mod") else [int(x) for x in v.split(",")]
+    m = None
     try:
+        m = Memmet(root, args)
         if "--giris" in a:
-            m.chrome_ac(); m.giris_kontrol(); m.log("Giriş tamam. Bu pencereyi açık bırakabilir ya da kapatabilirsin."); return
-        m.calis()
+            m.on_kosullar(); m.chrome_ac(); m.giris_kontrol(bekle_giris=True)
+            m.log("Giriş tamam. Bu pencereyi açık bırakabilir ya da kapatabilirsin."); cikis_yaz(root, "tamam", "giriş"); return
+        m.calis(); cikis_yaz(root, "tamam", "bitti")
     except Durdur as e:
-        m.bildir(f"DURDU: {e}", acil=True); sys.exit(2)
+        if e.kod != "olagandisi" and m is not None and m.page is not None:
+            try: m.olagandisi_denetle()      # başka bir nedenle duruyorsak bile uyarı varsa uyarı olarak kaydedilir
+            except Durdur as e2: e = e2
+        sys.exit(bitir(m, root, e.kod, str(e)))
     except KeyboardInterrupt:
-        m.log("Kullanıcı durdurdu.")
+        if m: m.log("Kullanıcı durdurdu.")
+        cikis_yaz(root, "genel", "kullanıcı durdurdu"); sys.exit(2)
     except Exception:
-        m.log("BEKLENMEYEN HATA:\n" + traceback.format_exc()); m.hata_kaydi("beklenmeyen")
+        if m is None: raise
+        m.log("BEKLENMEYEN HATA:\n" + traceback.format_exc())
+        if not getattr(m, "uyari_goruldu", False): m.hata_kaydi("beklenmeyen")
+        cikis_yaz(root, "beklenmeyen", "beklenmeyen hata")
         m.bildir("Beklenmeyen hata ile durdu. MEMMET_KAYIT.txt'ye bak.", acil=True); sys.exit(1)
     finally:
-        m.kapat()
+        if m: m.kapat()
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ Kurallar CLAUDE_ICIN.md ve 03_DERSLER.md'den alındı:
 Çıktı: _RAPOR/ISTEM_DENETIM.txt
 """
 import os, sys, re, json
+import ortak   # SAHNELER.json v2 koruması
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 # Video istemlerinde küçükler filtresine takılan kelimeler (03_DERSLER.md)
@@ -73,7 +74,7 @@ def denetle(plan, kok=None):
 
 def rapor(kok):
     kok = os.path.abspath(kok)
-    plan = json.load(open(os.path.join(kok, "SAHNELER.json"), encoding="utf-8-sig"))
+    plan = ortak.sahneler_oku(kok, "istem_denetim.py")
     bulgular = denetle(plan, kok)
     os.makedirs(os.path.join(kok, "_RAPOR"), exist_ok=True)
     satirlar = [f"{sv:5} {'S%03d' % n if n is not None else 'GENEL'}  {m}" for sv, n, m in bulgular]

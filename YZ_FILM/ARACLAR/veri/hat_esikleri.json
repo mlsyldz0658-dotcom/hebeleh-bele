@@ -75,6 +75,14 @@
   "gevsetilemez": true,
   "yon": "taban"
  },
+ "uyari_gecti_tempo_carpan": {
+  "deger": 1.5,
+  "aciklama": "UYARI_GECTI günü kalan gönderimlerde tempo bu kat yavaş (aralık ve mola süreleri)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §8.4; [UM2] İ-8",
+  "gevsetilemez": true,
+  "yon": "taban"
+ },
  "uyari_sonrasi_bekleme_dk": {
   "deger": 30,
   "aciklama": "Uyarı kaldırma: elle 1 başarılı videodan sonra en az bekleme (dk; yalnız o takvim günü)",

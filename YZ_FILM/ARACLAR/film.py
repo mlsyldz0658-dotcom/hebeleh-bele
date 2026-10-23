@@ -301,6 +301,15 @@ class Film:
 import re, glob, fnmatch, shutil, datetime, random
 from hat import asamalar as HAT
 
+
+def _istege_bagli_modul(ad):
+    """Komşu PR-2 araçları (kredi, flow_yuk, ders_defteri): yoksa ya da açılmazsa None; film.py kendi yedek yoluyla sürer."""
+    try: return __import__(ad)
+    except Exception: return None
+
+
+kredi_mod, flow_yuk_mod, ders_defteri_mod = (_istege_bagli_modul(x) for x in ("kredi", "flow_yuk", "ders_defteri"))
+
 SURUM_V2 = "film 2.0"
 BITTI, HATA, KULLANICI, AJAN, ORTAM, BUTCE, KAPI, KISIT, BEKLE = range(9)
 MODEL = "claude-opus-5-5"
@@ -386,8 +395,7 @@ def ortam():
 def flow_kilitli():
     """Hesap düzeyi Flow kilidi (sahibi flow_yuk.py; dosya varken kilitli). flow_yuk yoksa ya da hata verirse dosyanın varlığı."""
     try:
-        import flow_yuk
-        return bool(flow_yuk.kilit_durumu().get("kilitli"))
+        return bool(flow_yuk_mod.kilit_durumu().get("kilitli"))
     except Exception:
         try: return os.path.exists(os.path.join(ortak.yollar()["hesap"], "FLOW_KILIDI.json"))
         except ortak.YolYok: return True              # yol bilinmiyorsa kapalı başarısız
@@ -977,9 +985,8 @@ class Defter:
         ajan_orani = 0.6
         t["projeksiyon_film"] = int((t["girdi"] + t["cikti"]) / bitti * tahmin * ajan_orani) if bitti else None
         k = {"flow_kredi": 0, "ai84_kredi": 0, "usd": 0.0}
-        try:
-            import kredi                                    # defterin sahibi kredi.py (birim → harcanan)
-            for br, v in kredi.defter_ozet(self.kok)["birim"].items():
+        try:                                                # defterin sahibi kredi.py (birim → harcanan)
+            for br, v in kredi_mod.defter_ozet(self.kok)["birim"].items():
                 if br == "flow": k["flow_kredi"] = v["harcanan"]
                 elif br == "ai84": k["ai84_kredi"] = v["harcanan"]
                 elif br == "usd": k["usd"] = float(v["harcanan"])
@@ -1558,12 +1565,9 @@ def k_ders(o):
          "olay": o.olay, "asama": o.asama, "kapi": o.kapi, "madde": o.madde, "plan": o.plan, "kategori": None,
          "rol_etiketi": o.rol, "kaynak": o.kaynak, "belirti": o.belirti, "olcum": None, "baglam": {}, "kanit": [],
          "eylem": None, "sonuc": None, "maliyet": None}
-    try:
-        import ders_defteri
-    except ImportError: ders_defteri = None
-    if ders_defteri is not None:
+    if ders_defteri_mod is not None:
         alan = {x: k[x] for x in ("film", "seri", "asama", "kapi", "madde", "plan", "rol_etiketi", "ortam")}
-        try: return BITTI, {"kayit": ders_defteri.kaydet(o.olay, o.kaynak, o.belirti, **alan)}
+        try: return BITTI, {"kayit": ders_defteri_mod.kaydet(o.olay, o.kaynak, o.belirti, **alan)}
         except ValueError as e: raise Hata(f"Ders kaydı geçersiz: {e}")
     k["id"] = f"D-{time.strftime('%Y%m%d')}-{random.getrandbits(16):04x}"
     p = os.path.join(ortak.yollar()["veri_kok"], "BILGI", "DERSLER", "ham",
@@ -1591,7 +1595,7 @@ def k_goster(o):
         a = (ortak.json_oku(ayar_dosyasi(), {}) or {}).get("butce") or {}
         return BITTI, {"sozlesme": {"butce": a, "not": "sayılar olcek.py'den gelir (BUT0/BUT1/BUT2); kullanıcı yalnız fiziksel iş yapar"}}
     d = film_bul(o.film)
-    st = durum_yaz(d) if os.access(d.kok, os.W_OK) else durum_hesapla(d)
+    st = durum_hesapla(d, ortak.json_oku(d.yol("FILM_DURUM.json"), {}))      # salt okunur (film-durum becerisi)
     if ne == "durum": return BITTI, {k: st[k] for k in ("film", "aktif_asama", "asamalar", "bekleyen_kullanici", "sayaclar")}
     if ne == "asama":
         a = HAT.asama(arg); c = d.coz(a)

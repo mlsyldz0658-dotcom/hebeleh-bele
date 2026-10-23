@@ -26,11 +26,17 @@ yürür; bulut oturumları geliştirme ve `sahte`/`kaset` testleri içindir (TAS
   `_surum ≥ 2` → 4; varsayılan 720p. `saglayicilar/flow.py` çıkış kodunu `Kisitlandi(kod)`'a eşler; `film.py` uyarı, doğrulama ve
   bilinmeyen kodda başka sağlayıcıya geçmez. `veri_emniyet.py` + `kurulum.py --veri-emniyet` veri kökündeki eski Memmet ve `.bat`'ları
   `_ESKI/`'ye taşır (silmez). Eski `.bat`'lar depoda `_ESKI/`'de. Testler: `test_memmet_korkuluk` (T10 elle/gece/doğrulama), `test_veri_emniyet`.
-- **PR-1 sürüyor** (§9 adım 1): `puan_oku.py` medyan, `izleme_paketi.py`, `ai84.py` tembel anahtar, `ortak.yollar()` + yol göçü +
-  `kurulum.py --yollar`, `esitle_gelistirme.py` (dar `esitle --gelistirme`), `esikler.py` ve RE `kaynak`/`etiket`, `veri/ADLAR.json` +
-  `test_adlar`, `veri/LISANSLAR.json`, `veri/kok_neden.json`, §2.5 belge düzeltmeleri, bu dosya ve kök `CLAUDE.md`.
-- Henüz yok (TASARIM'da tanımlı): `.claude/bin/film.py` (v2 görev defteri), kancalar (`kanca.py`, `settings.json`), `film-yap`/`film-durum`/
-  `film-not`/`film-gelistir` becerilerinin `SKILL.md`'leri, 21 ajan dosyası, `olcum0/`. Var olmadıkça geliştirme oturumu bu dosyayı izler.
+- **PR-1 tamam** (§9 adım 1): `ortak.yollar()` + `YOLLAR.json` (tek yol kaynağı; `kurulum.py --yollar`), yol göçü, `ai84.py` tembel
+  anahtar, `puan_oku.py` medyan, `izleme_paketi.py` ad maskeleme, `esitle_gelistirme.py`, `esikler.py` + `veri/hat_esikleri.json` + RE
+  `kaynak`/`etiket`, `veri/ADLAR.json` + `test_adlar`, `veri/LISANSLAR.json`, `veri/kok_neden.json`, §2.5 belge düzeltmeleri.
+- **PR-2 tamam** (§9 adım 3): `film.py` v2 görev defteri (`yeni, sonraki, basla, calis, bitir, kurtar, asama-ilerlet, bekle, karar/ders
+  ekle, goster, ozet, surus, notlar, asamalar, esitle --gelistirme`; v1 SAHNELER için eski hat), `hat/asamalar.py` (A00–A18a kaydı),
+  `.claude/bin/film.py`, `kapi.py`, `kuyruk.py`, `kredi.py`, `olcek.py`, `flow_yuk.py` (Memmet her gönderimden önce sorar), `ders_defteri.py`.
+  Testler: `test_gorev_defteri` (30 kesme senaryosu), `test_kuyruk`, `test_olcek`, `test_flow_yuk` …
+- Henüz yok (TASARIM'da tanımlı): kancalar (`kanca.py`, `settings.json`; PR-3), `film-yap`/`film-durum`/`film-not`/`film-gelistir`
+  becerilerinin `SKILL.md`'leri ve 21 ajan dosyası (PR-4), `olcum0/`, PR-5 sonrası araçlar. Var olmadıkça geliştirme oturumu bu dosyayı izler.
+- Açık iş: `hat.asamalar.YEREL_KAPILAR` adları ve görev defteri dosya adları (`FILM.kilit`, `_GOREV/DEFTER.jsonl`, `_KASET/` …)
+  `veri/ADLAR.json`'a eklenecek. Takvim: varsayılan `takvim_hedef_gun` 21 iken BUT0 ölçüm olmadan her zaman 1800 sn seçer (`olcek.py`).
 - Belgelerde anlatılan ama depoda olmayan eski araçlar (`plan_kurgu`, `dudak_denetim`, `diyalog_esitle`, `ses_katmani`, `gemini_paket`,
   `gemini_al`, `gemini_muzik`, `renk_cila`, `taslak_fark`, `animatik`, `birlestir`, `jenerik`, `shorts_mp4`, `kalite_denetim`, `memmet_topla`)
   TASARIM §6'daki adları ve PR adımlarıyla yeniden yazılır.

@@ -1,11 +1,10 @@
 """test_kurgu — kurgu hattının 16 senaryosu (TASARIM §6.10 `test_kurgu (16 senaryo)`; [KU2] §4.6.3). Ağ ve kredi yok; sahte sağlayıcı.
 Başka adımların sahibi olduğu senaryolar (T0 çizelgesi, tek ölçü tek kod, animatik, paket sızıntısı, kesme simülasyonu) o adımın aracı
 varsa onun işleviyle sınanır, yoksa nedeni yazılarak atlanır."""
-import _ortam  # noqa: F401  (önce: geçici YOLLAR.json)
 import os, sys, json, glob, shutil, unittest
+HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); sys.path.insert(0, os.path.dirname(HERE))
+import _ortam  # noqa: F401  (önce: geçici YOLLAR.json)
 import numpy as np
-HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
 import _kurgu_fikstur as F
 import ortak, kurgu_ortak as ko, kirp_oner, plan_kurgu, kurgu_denetim_tam as kdt, dudak_denetim, ses_donustur_ana as sda
 import diyalog_esitle, ses_katmani_t2, muzik_yerlestir, capcut_film, taslak_fark, capcut_yama, notlari_oku

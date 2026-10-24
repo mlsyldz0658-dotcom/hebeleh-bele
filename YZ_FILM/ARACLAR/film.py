@@ -1,15 +1,19 @@
 """FİLM — üretim hattının orkestratörü. v2: görev defteri (TASARIM §1.1, §5.5, §6.1). v1 komutları aynen çalışır.
 
 Kullanım (v2, görev defteri; ana Claude yalnız .claude/bin/film.py üzerinden çağırır):
-  python film.py yeni --konu "<cümle>" [--ad F2026_ejderha] [--seri SERI] [--saglayici sahte]   yeni film (A00)
+  python film.py yeni --konu "<cümle>" [--ad F2026_ejderha] [--seri SERI] [--saglayici sahte|kaset]   yeni film (A00)
   python film.py sonraki [--film <ad|yol>]          sıradaki paralel grubu tek JSON olarak verir (≤ 1.200 karakter)
   python film.py basla <id,id,…>                    görevleri "calisiyor" yapar (ajan görevinde kanca nabzı şart)
   python film.py calis <id> [--topla]               betik görevini çalıştırır (sahte filmde ajan/kullanıcı görevini de taklit eder)
-  python film.py bitir <id> [--kullanim '<json>']   ajan görevinin CIKTI'sını doğrular, taşır, "bitti" yapar (SubagentStop kancası)
+  python film.py bitir <id> [--kullanim '<json>'] [--gecersiz "<neden>"]
+                                                     ajan görevinin CIKTI'sını doğrular, taşır, "bitti" yapar (SubagentStop kancası);
+                                                     --gecersiz: düzeltme hakkı biten görevi geçersiz yapar (yeni deneme açılır)
   python film.py kurtar [--yeniden-kur]             kesilmeden sonra: bayat kilit, yarım görevler; FILM_DURUM'u yeniden kurar
   python film.py asama-ilerlet <id>                 aşamalı okumada sonraki bölümü görevin GIRDI'sine koyar
   python film.py bekle --kullanici <id> | --blok <B> [--kez N] [--aralik sn] [--sure dk]
                                                      kullanıcı eserini yoklar (ZIP, blok sonu, dışa aktarım); 6 saatte bir hatırlatır
+  python film.py video [--blok KESIT|*]             VIDEO_YARI_OTOMATIK.bat: blok bitene kadar blok_plani --imza → memmet --blok sonraki
+                                                     --mod elle; Flow uyarısı/doğrulama/başka kodda hemen durur, yeniden açmaz
   python film.py karar ekle "karar — neden — yanlışsa maliyeti" [--asama A04] [--kaynak betik:puan_oku] [--tur karar]
   python film.py ders ekle --kapi G1 --belirti "…" [--olay kapi_hatasi] [--kaynak kullanici_notu] [--plan 41]
   python film.py goster durum|asama <kod>|gorev <id>|plan <no>|maliyet|token|neden-durdu|ayar|sozlesme|karar|plan-imza|pencere <uygulama>
@@ -30,7 +34,8 @@ FILM_DURUM.json yalnız önbellektir, her komut onu görev ve rapor dosyalarınd
 Aşamalar hat/asamalar.py'den gelir (A00–A18a); tur tavanı dolunca §1.5 merdiveninin sonraki basamağı görev olarak açılır, 6 KAPI
 yalnız merdiven tükenip kapı HATA'sı sürdüğünde verilir. Kredili betik görevinde gönderim kaydı çalıştırmadan ÖNCE yazılır; kesilen
 kredili görev kör yeniden gönderilmez, önce toplanır (calis --topla). Disk, token ve görev sayısı kapıları her aşama başında (8 BEKLE).
-Bulutta (D-45) film yalnız --saglayici sahte ile açılır; konu sorulmaz.
+Bulutta (D-45) film yalnız --saglayici sahte ya da kaset (test: ajan ve betik çıktıları _KASET/'ten) ile açılır; konu sorulmaz.
+Video aşamaları (A13, A14a, A14) animatik ONAYLI imzası (animatik_imza.py) olmadan görev açmaz (6 KAPI ile durur).
 Betik sözleşmesi: calis, aracı "python <ARACLAR>/<arac> <alt komut ve seçenekler> --film <film>" diye çağırır (YZ_FILM_GOREV ortam
 değişkeni görev klasörüdür); araç kapı raporunu _uretim.gorev = görev kimliğiyle yazar, 0–8 çıkış kodlarıyla döner. Araç henüz yoksa 4.
 
@@ -309,6 +314,16 @@ def _istege_bagli_modul(ad):
 
 
 kredi_mod, flow_yuk_mod, ders_defteri_mod = (_istege_bagli_modul(x) for x in ("kredi", "flow_yuk", "ders_defteri"))
+
+
+def _ice_al(ad):
+    """Komşu aracı içe alır. Bazı araçlar içe alınırken sys.stdout.reconfigure çağırır; stdout bir StringIO'ya yönlendirilmişse
+    (beceri içindeki çağrı, testler) bu çöker: içe alma süresince gerçek stdout kullanılır. Hata çağırana geçer (kapalı başarısız)."""
+    if ad in sys.modules: return sys.modules[ad]
+    eski = sys.stdout
+    if not hasattr(eski, "reconfigure") and sys.__stdout__ is not None: sys.stdout = sys.__stdout__
+    try: return __import__(ad)
+    finally: sys.stdout = eski
 
 SURUM_V2 = "film 2.0"
 BITTI, HATA, KULLANICI, AJAN, ORTAM, BUTCE, KAPI, KISIT, BEKLE = range(9)
@@ -606,9 +621,9 @@ class Defter:
     @property
     def sahte(self): return self.meta().get("saglayici") == "sahte"
     @property
-    def kaset(self): return self.meta().get("saglayici") == "kaset"     # test kipi: kayıttan oynatma (D-41, §6.10)
+    def kaset_kipi(self): return self.meta().get("saglayici") == "kaset"     # test kipi: kayıttan oynatma (D-41, §6.10)
     @property
-    def deneme(self): return self.sahte or self.kaset
+    def deneme(self): return self.sahte or self.kaset_kipi
     @property
     def ad(self): return self.meta().get("film") or os.path.basename(self.kok)
     def kilit(self, **k): return Kilit(self.kok, **k)
@@ -690,7 +705,7 @@ class Defter:
         ilk = min(gs, key=lambda g: (g.get("zaman", {}).get("olusturma") or "", g["id"]))
         return ilk.get("asama_imza")
 
-    def atlanir(self, a): return not a.bulutta_test and (self.sahte or (self.kaset and ortam() == "bulut"))
+    def atlanir(self, a): return not a.bulutta_test and (self.sahte or (self.kaset_kipi and ortam() == "bulut"))
 
     # ---- küresel bütçe
     def kuresel_kullanim(self):
@@ -947,7 +962,7 @@ class Defter:
                               f"{a.kod}_{g['ajan']}" + (f"_{g['kip']}" if g["kip"] else "") + ".md")
         govde = _bayt(sablon).decode("utf-8") if os.path.isfile(sablon) else ""
         if govde:
-            import beceri_denetim                                # {{esik:x}} → eşik değeri (ajan ham yer tutucu görmez)
+            beceri_denetim = _ice_al("beceri_denetim")          # {{esik:x}} → eşik değeri (ajan ham yer tutucu görmez)
             try: govde = beceri_denetim.sablon_doldur(govde)
             except beceri_denetim.SablonHatasi as e:
                 raise Hata(f"Görev şablonu doldurulamadı ({os.path.basename(sablon)}: {e}); ajan görevi açılmadı (film-gelistir).",
@@ -1167,8 +1182,7 @@ class Defter:
         a12 = HAT._DIZIN.get("A12")
         a12_durum = self.coz(a12).get("durum") if a12 is not None else "tamam"
         try:
-            import animatik_imza
-            return animatik_imza.video_acilabilir(self.kok, sahte=self.sahte, a12_durum=a12_durum)
+            return _ice_al("animatik_imza").video_acilabilir(self.kok, sahte=self.sahte, a12_durum=a12_durum)
         except Exception as e:
             return False, f"animatik imzası denetlenemedi ({e.__class__.__name__})"
 
@@ -1443,7 +1457,7 @@ class Defter:
         """A01: evren özeti → _HIKAYE_ODASI/EVREN_OZETI.md (yapımcının GIRDI'si; ajan evren klasörünü okuyamaz)."""
         seri = self.meta().get("seri")
         try:
-            import evren
+            evren = _ice_al("evren")
             o = evren.ozet(seri)
             metin = evren.ozet_md(o) if o.get("seriler") else "# Evren özeti\n\nKayıtlı seri yok; film yeni bir evren kurar.\n"
         except Exception as e:                       # evren kökü yoksa ya da okunamıyorsa: bilgi notu (hat durmaz)
@@ -1462,11 +1476,11 @@ class Defter:
         if g["arac"] == "film.py:atla": return 0
         if self.sahte: return self.sahte_betik(g)
         p = os.path.join(HERE, g["arac"])
-        if self.kaset and (self.kaset_betik_var(g) or not os.path.isfile(p)):
+        if self.kaset_kipi and (self.kaset_betik_var(g) or not os.path.isfile(p)):
             from saglayicilar import kaset as kaset_mod     # kayıt varsa (ya da araç yoksa) kasetten; kaset uydurmaz
             try: return kaset_mod.betik_oynat(self.kok, g)[0]
             except kaset_mod.KasetYok as e: raise Hata(f"{g['arac']}: {e}", ORTAM)
-        if self.kaset and g.get("kredili"):
+        if self.kaset_kipi and g.get("kredili"):
             raise Hata(f"{g['arac']} kredili; kaset kipinde kasetsiz gerçek kredili araç koşmaz (BETIK kaydı gerekir).", ORTAM)
         env = dict(os.environ, YZ_FILM_GOREV=self.gorev_dizini(g), YZ_FILM_FILM=self.kok)
         with open(os.path.join(self.gorev_dizini(g), "CALISMA.log"), "a", encoding="utf-8") as log:
@@ -1480,7 +1494,7 @@ class Defter:
         if g["durum"] == "bitti": return BITTI, {"gorev": gid, "durum": "bitti", "not": "zaten bitti; yeniden çalıştırılmadı"}
         if g["durum"] not in ACIK: raise Hata(f"{gid} artık geçerli değil ({g['durum']}); film.py sonraki.")
         if g["tur"] == "ajan":
-            if self.kaset: return BITTI, self.kaset_ajan(g)
+            if self.kaset_kipi: return BITTI, self.kaset_ajan(g)
             if not self.sahte: raise Hata("Ajan görevi Agent aracıyla çalışır (film.py sonraki'nin istemiyle), calis ile değil.")
             return BITTI, self.sahte_ajan(g)
         if g["tur"] == "kullanici":
@@ -1488,7 +1502,7 @@ class Defter:
             return KULLANICI, {"gorev": gid, "kullaniciya": g["mesaj"]}
         ic = g["arac"].startswith("film.py:")
         if not ic and not self.sahte and not os.path.isfile(os.path.join(HERE, g["arac"])) \
-                and not (self.kaset and self.kaset_betik_var(g)):
+                and not (self.kaset_kipi and self.kaset_betik_var(g)):
             raise Hata(f"{g['arac']} henüz yok (TASARIM §9'daki sonraki PR'larda gelir); bu aşama bu kurulumda yürüyemez.", ORTAM)
         with self.kilit():
             self.yeniden_oku(); g = self.g(gid)
@@ -1534,7 +1548,7 @@ class Defter:
             if gonderim:
                 self.sahte_ciktilar(g); g["cikis_kodu"] = 0; self.yaz(g)
                 return self._betik_sonu(g, 0)
-        elif self.kaset:                                  # kayıttan yeniden oynatma: gönderim yok, kredi yok
+        elif self.kaset_kipi:                                  # kayıttan yeniden oynatma: gönderim yok, kredi yok
             kod = self.betik_kos(g); g["cikis_kodu"] = kod; self.yaz(g)
             return self._betik_sonu(g, kod)
         else:
@@ -1646,8 +1660,7 @@ def _animatik_durumu(d, a12):
         ok = a12.get("durum") in ("tamam", "kismi")
         return {"durum": "ONAYLI" if ok else "bekliyor", "imza": a12.get("girdi_imza") if ok else None}
     try:
-        import animatik_imza
-        return animatik_imza.durum(d.kok)
+        return _ice_al("animatik_imza").durum(d.kok)
     except Exception as e:
         return {"durum": "bekliyor", "imza": None, "neden": f"animatik imzası okunamadı ({e.__class__.__name__})"}
 
@@ -1770,7 +1783,7 @@ def k_bekle(o):
             if time.time() - son > 6 * 3600:
                 d.log(f"HATIRLATMA {g['id']}: {g['mesaj']}"); g["hatirlatma"] = simdi()
                 try:
-                    import bildirim                     # Telegram/masaüstü (§8.4); tekrar ve saat tavanını bildirim.py uygular
+                    bildirim = _ice_al("bildirim")      # Telegram/masaüstü (§8.4); tekrar ve saat tavanını bildirim.py uygular
                     bildirim.gonder("kullanici_isi", "Hatırlatma: " + str(g["mesaj"]), film=d.kok, anahtar=g["id"])
                 except Exception: pass
                 with d.kilit(): d.yaz(g)
@@ -1779,6 +1792,49 @@ def k_bekle(o):
                            "kullaniciya": "Hâlâ bekleniyor; film.py bekle'yi yeniden başlat."}
         uyu(o.aralik); d.yeniden_oku()
         if g: g = d.g(g["id"])
+
+
+def _arac_kos(arac, args, yakala=False):
+    """ARACLAR'daki bir aracı aynı Python ile koşar (testler burayı yamalar)."""
+    return subprocess.run([sys.executable, os.path.join(HERE, arac)] + list(args), capture_output=yakala, text=True,
+                          encoding="utf-8", errors="replace")
+
+
+VIDEO_DUR = {KISIT: "Flow uyarı verdi ya da hesap kilitli: GÖNDER'e basma, sayfayı yenileme. Kilidi yalnız sen kaldırırsın "
+                    "(UYARI_GECTI.bat). Memmet yeniden açılmadı.",
+             KULLANICI: "Flow doğrulama ya da giriş istiyor: Memmet durdu ve yeniden açılmadı. Girişi sen yap (FLOW_GIRIS.bat), sonra "
+                        "VIDEO_YARI_OTOMATIK.bat'ı yeniden aç.",
+             BUTCE: "Kredi onayı ya da bakiye yok; video gönderilmedi.", ORTAM: "Memmet bu ortamda açılamadı.",
+             BEKLE: "Flow molası ya da süren iş var; mola bitince VIDEO_YARI_OTOMATIK.bat'ı yeniden aç.",
+             HATA: "Memmet hata ile durdu (MEMMET_KAYIT.txt)."}
+
+
+def k_video(o):
+    """VIDEO_YARI_OTOMATIK.bat'ın komutu (A14a/A14 VG görevi): blok bitene kadar sırayla
+    blok_plani.py --imza → memmet.py <film> --blok sonraki --onizleme <imza> --mod elle (GÖNDER'e kullanıcı basar).
+    Her bloktan önce Flow kilidi ve animatik imzası yeniden sorulur. Memmet 0 dışında bir kodla dönerse döngü HEMEN durur:
+    Flow uyarısında (7) ya da doğrulamada (2) Memmet yeniden açılmaz, sayfa yenilenmez, başka hesaba/servise geçilmez."""
+    d = film_bul(o.film)
+    if d.deneme: return ORTAM, {"kullaniciya": "Sahte/kaset denemede Flow'a gönderim yok (VG görevini film.py calis taklit eder)."}
+    blok = o.blok or "*"
+    for n in range(o.kez or 60):
+        if d.blok_bitti(blok):
+            return BITTI, {"bitti": True, "blok": blok, "kullaniciya": "Bloklar bitti; ben kendim devam ederim."}
+        if flow_kilitli():
+            return KISIT, {"blok": blok, "kullaniciya": VIDEO_DUR[KISIT]}
+        ok, neden = d.video_acilabilir()
+        if not ok: return KAPI, {"blok": blok, "kullaniciya": "Animatik onaylı değil; video gönderilmez: " + str(neden)}
+        r = _arac_kos("blok_plani.py", ["--imza", "--film", d.kok], yakala=True)
+        imza = ((r.stdout or "").strip().splitlines() or [""])[-1].strip()
+        if r.returncode != 0 or not re.match(r"^[0-9a-f]{6,40}$", imza):
+            return BUTCE, {"blok": blok, "kullaniciya": "Kesin bütçe (BUT2) imzası yok; video gönderilmez."}
+        d.log(f"VIDEO blok {n + 1}: memmet --blok sonraki --onizleme {imza} --mod elle")
+        r = _arac_kos("memmet.py", [d.kok, "--blok", "sonraki", "--onizleme", imza, "--mod", "elle"])
+        if r.returncode != 0:
+            kod = r.returncode if r.returncode in VIDEO_DUR else HATA
+            d.log(f"VIDEO durdu: memmet çıkış {r.returncode}")
+            return kod, {"blok": blok, "memmet_cikis": r.returncode, "kullaniciya": VIDEO_DUR[kod]}
+    return BEKLE, {"blok": blok, "kullaniciya": "Bloklar henüz bitmedi; VIDEO_YARI_OTOMATIK.bat'ı yeniden aç."}
 
 
 def k_karar(o):
@@ -1955,6 +2011,7 @@ def _ayristirici():
     s = alt.add_parser("bekle", parents=[ortak_]); s.add_argument("--kullanici"); s.add_argument("--blok")
     s.add_argument("--kez", type=int); s.add_argument("--aralik", type=float, default=30.0); s.add_argument("--sure", type=float)
     s.set_defaults(f=k_bekle)
+    s = alt.add_parser("video", parents=[ortak_]); s.add_argument("--blok"); s.add_argument("--kez", type=int); s.set_defaults(f=k_video)
     s = alt.add_parser("karar", parents=[ortak_]); s.add_argument("ekle", choices=["ekle"]); s.add_argument("metin")
     s.add_argument("--neden"); s.add_argument("--maliyet"); s.add_argument("--asama"); s.add_argument("--kaynak", default="ana_claude")
     s.add_argument("--tur", default="karar", choices=["karar", "soru", "bilgi", "kullanici_notu", "red", "yama"])
@@ -1979,7 +2036,7 @@ def _ayristirici():
     return p
 
 
-KOMUTLAR = ("yeni", "sonraki", "basla", "calis", "bitir", "kurtar", "asama-ilerlet", "bekle", "karar", "ders", "goster", "ozet",
+KOMUTLAR = ("yeni", "sonraki", "basla", "calis", "bitir", "kurtar", "asama-ilerlet", "bekle", "video", "karar", "ders", "goster", "ozet",
             "surus", "notlar", "beceri-denetim", "olcum0", "asamalar", "esitle")
 
 

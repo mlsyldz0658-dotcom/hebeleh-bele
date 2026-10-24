@@ -293,6 +293,28 @@ class SesHazirlik(unittest.TestCase):
         self.assertEqual(os.path.getmtime(os.path.join(f, r1["dosya"])), m0)
         self.assertTrue(ortak.json_oku(os.path.join(f, "SESLER", "diyalog.json"))["replikler"]["R0001"]["tts"]["onbellek"])
 
+    def test_tts_istek_ve_esnetme_orani(self):
+        """Birleştirme: seslendir TTS_ISTEK.json'u okur ('yeniden okut' → aynı ses, yeni tohum: yeni dosya) ve tts.esnetme_oran yazar."""
+        f = film_kur("T_TTSISTEK"); ses_hazirla(f, ("sec", "tts"))
+        D = ortak.json_oku(os.path.join(f, "SESLER", "diyalog.json"))
+        for rid, r in D["replikler"].items(): self.assertIn("esnetme_oran", r["tts"], rid); self.assertGreaterEqual(r["tts"]["esnetme_oran"], 0)
+        eski = D["replikler"]["R0002"]["tts"]["dosya"]
+        D["replikler"]["R0001"]["klip_zamani"] = {"bas": 1.0, "bit": 2.0}          # videodaki konuşma anı 1 sn: işaretli oran
+        ortak.atomik_yaz(os.path.join(f, "SESLER", "diyalog.json"), D)
+        ortak.atomik_yaz(os.path.join(f, "SESLER", "TTS_ISTEK.json"), {"replikler": [
+            {"replik": "R0002", "neden": "esnetme > %8: yeniden okut"}, {"replik": "R0001", "neden": "tts_dudak"}]})
+        self.assertEqual(seslendir.main(["--istek", "--film", f, "--saglayici", "sahte"]), 0)
+        D2 = ortak.json_oku(os.path.join(f, "SESLER", "diyalog.json"))
+        r2 = D2["replikler"]["R0002"]
+        self.assertNotEqual(r2["tts"]["dosya"], eski); self.assertEqual(r2["yeniden_okuma"], 1)
+        self.assertTrue(os.path.isfile(os.path.join(f, eski)))                     # eski take silinmez
+        r1 = D2["replikler"]["R0001"]
+        self.assertAlmostEqual(r1["tts"]["esnetme_oran"], round(r1["tts"]["sure_sn"] / 1.0 - 1, 3), places=3)
+        ist = ortak.json_oku(os.path.join(f, "SESLER", "TTS_ISTEK.json"))["replikler"]
+        self.assertTrue(all(m.get("yapildi") and m.get("dosya") for m in ist))
+        self.assertEqual(seslendir.main(["--istek", "--film", f, "--saglayici", "sahte"]), 0)     # bekleyen yok
+        self.assertEqual(ortak.json_oku(os.path.join(f, "SESLER", "diyalog.json"))["replikler"]["R0002"]["yeniden_okuma"], 1)
+
     def test_tts_hatasi_sessiz_donus_yok(self):
         f = film_kur("T_TTSHATA"); ses_hazirla(f, ("sec",)); enjekte(f, {"tts": {"hata": ["R0002"]}})
         kod, yol, r = seslendir.tts_hazirla(f, so.replikler(f), "sahte")

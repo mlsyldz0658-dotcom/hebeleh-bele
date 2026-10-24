@@ -204,8 +204,17 @@ class MuzikKagidi(Taban):
         self.assertEqual(jl(self.yol("MUZIK", "ZINCIR.json"))["ozet"], "bos")
         z = jl(self.yol("MUZIK", "IPUCU_ZAMANLARI.json")); self.assertTrue(z["muziksiz"])
         self.assertIn("LM_SERA", jl(self.yol("MUZIK", "leitmotif_adaylari.json"))["leitmotifler"])
-        self.assertEqual(sessiz(muzik.main, ["--uret", "--film", self.kok]), 4)
-        self.assertEqual(sessiz(muzik.main, ["--yerlestir", "--film", self.kok]), 4)
+        # birleştirme: --uret → muzik_uret, --yerlestir → muzik_yerlestir (artık "bu sürümde yok → 4" değil)
+        from unittest import mock
+        import muzik_uret, muzik_yerlestir
+        with mock.patch.object(muzik_uret, "main", return_value=0) as mu, mock.patch.object(muzik_yerlestir, "main", return_value=3) as my:
+            self.assertEqual(sessiz(muzik.main, ["--uret", "--film", self.kok, "--kip", "animatik"]), 0)
+            self.assertEqual(sessiz(muzik.main, ["--yerlestir", "--film", self.kok]), 3)
+        self.assertEqual(mu.call_args.args[0], ["--film", self.kok, "--kip", "animatik"])
+        self.assertEqual(my.call_args.args[0], ["--film", self.kok])
+        self.assertEqual(sessiz(muzik.main, ["--uret", "--film", self.kok, "--saglayici", "sahte"]), 0)     # gerçek alt araç (sahte)
+        self.assertEqual(sessiz(muzik.main, ["--yerlestir", "--film", self.kok]), 2)    # gerçek alt araç: KURGU_PLANI yok → 2
+        self.assertEqual(sessiz(muzik.main, ["--gemini-paket", "--film", self.kok]), 4)
 
     def test_olay_ve_istem(self):
         self.muzik_degistir(lambda j: j["ipuclari"][1].update(giris={"olay": "adim_basi", "plan": 11, "adim": "a2", "ofset_sn": 1.0}))

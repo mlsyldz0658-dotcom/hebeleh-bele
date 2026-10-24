@@ -365,5 +365,81 @@ class T18_CilaBuyutKur3(unittest.TestCase):
         self.assertFalse(any("wav2lip" in json.dumps(o).lower() for o in plan["ortamlar"]))
 
 
+class T19_Birlestirme(unittest.TestCase):
+    """Birleştirme turu: zaman_cizelgesi --asama kurgu (T2), kurgu_render --onizleme/--kesit/--yayin (son_miks.onizle stemleri),
+    kurgu_uygula diyalog_kaydir ve SES_ISTEKLERI tüketimi — sentetik fikstürde gerçek araçlarla."""
+    @classmethod
+    def setUpClass(cls):
+        cls.kok = F.film_kur("KURGU_BIRLESTIRME")
+        cls.A = _hazir(cls.kok); diyalog_esitle.main(cls.A); ses_katmani_t2.main(cls.A); muzik_yerlestir.main(cls.A)
+
+    def test_zaman_cizelgesi_t2(self):
+        import zaman_cizelgesi
+        self.assertEqual(zaman_cizelgesi.main(["--asama", "kurgu", "--film", self.kok]), 0)
+        kp = _kp(self.kok)
+        z = _j(self.kok, "KURGU", "ZAMAN_T2.json")
+        self.assertEqual(z["olcumler"], plan_kurgu.olcumler(kp, ko.sahne_planlari(self.kok)))        # tek ölçü tek kod
+        self.assertIn("replik", {e["tur"] for e in z["olaylar"]})
+        r1 = _j(self.kok, "_RAPOR", "ZAMAN_T2.json"); r2 = _j(self.kok, "_RAPOR", "ZAMAN_Z2_T2.json")
+        self.assertEqual((r1["kapi"], r2["kapi"]), ("Z1", "Z2"))
+        sp = _j(self.kok, "_RAPOR", "SAPMA_T2.json")
+        self.assertEqual([x["plan"] for x in sp["planlar"]], [x["plan"] for x in kp["planlar"]])
+
+    def test_render_onizleme_kesit_yayin(self):
+        import kurgu_render as kr
+        if not kr.ffmpeg_var(): self.skipTest("ffmpeg yok")
+        self.assertEqual(kr.main(["--onizleme", "--film", self.kok, "--boyut", "640x360"]), 0)
+        r = _j(self.kok, "_RAPOR", "RENDER_ONIZLEME_v1.json")
+        self.assertEqual(r["sonuc"], "GEC", r); self.assertEqual(r["kare_olculen"], r["kare_beklenen"])
+        self.assertEqual(r["kare_beklenen"], round(ko.toplam_sure(_kp(self.kok)) * 24))
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "KURGU", "onizleme_v1.mp4")))
+        self.assertEqual(r["ses"]["kaynak"], "KURGU/ses_onizleme_v1.wav"); self.assertIn("son_miks.onizle", r["ses"]["miks"])
+        self.assertEqual(set(r["ses"]["stemler"]), set(ko.ses_cizelgesi(self.kok)["stemler"]))
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "_RAPOR", "S7_ONIZLEME.json")))     # ses tek miks kodundan
+        self.assertEqual(kr.main(["--onizleme", "--film", self.kok, "--boyut", "640x360"]), 0)
+        self.assertEqual(_j(self.kok, "_RAPOR", "RENDER_ONIZLEME_v1.json")["onbellek"]["yeni"], 0)   # plan önbelleği
+        ortak.atomik_yaz(os.path.join(self.kok, "BLOK_PLANI.json"), {"kesit": {"planlar": [1, 2, 3]}, "bloklar": []})
+        self.assertEqual(kr.main(["--kesit", "--film", self.kok, "--boyut", "640x360"]), 0)
+        kk = _j(self.kok, "KESIT", "KURGU_PLANI_KESIT_v1.json")
+        self.assertEqual([x["plan"] for x in kk["planlar"]], [1, 2, 3])
+        rk = _j(self.kok, "_RAPOR", "RENDER_KESIT_v1.json"); self.assertEqual(rk["kare_olculen"], rk["kare_beklenen"])
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "KESIT", "kesit_v1.mp4")))
+        self.assertEqual(kr.main(["--yayin", "--film", self.kok, "--boyut", "640x360"]), 0)
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "YAYIN", "KURGU_BIRLESTIRME_master.mp4")))
+        self.assertEqual(kr.main(["--otio", "--film", self.kok]), 4)
+
+    def test_miks_al_tek_kod(self):
+        import kurgu_render as kr
+        yol, kaynak = kr.miks_al(self.kok, ["KURGU/YOK.json"], os.path.join(self.kok, "KURGU", "yok.wav"), "ONIZLEME", 1, "A16")
+        self.assertEqual((yol, kaynak), (None, None))
+
+    def test_diyalog_kaydir_ve_ses_istekleri(self):
+        import kurgu_uygula as ku
+        kok = F.film_kur("KURGU_BIRLESTIRME_KU"); _hazir(kok)
+        kp0 = _kp(kok); d0 = {d["replik"]: d["cizelge_bas"] for d in kp0["diyalog"]}
+        on = os.path.join(kok, "KURGU", "S3_ONERI_v1.json")
+        ortak.atomik_yaz(on, {"asama": "T2", "kip": "s3_yerlesim", "kaynak": "dudak_denetim", "islemler": [
+            {"op": "diyalog_kaydir", "replik": "R0001", "sn": 0.9, "plan": 3, "kok_neden": "dudak_kayma", "bulgu": "S3.1"}]})
+        kod, s = ku.calistir(kok, "T2", 1, kararlar=on)
+        self.assertEqual(kod, 1); self.assertIn("kaydırma", s["hatalar"][0]["neden"])          # |sn| > 0,5 reddedilir
+        ortak.atomik_yaz(on, {"asama": "T2", "islemler": [
+            {"op": "diyalog_kaydir", "replik": "R0001", "sn": -0.208, "plan": 3, "kok_neden": "dudak_kayma", "bulgu": "S3.1"}]})
+        kod, s = ku.calistir(kok, "T2", 1, kararlar=on)
+        self.assertEqual(kod, 0, s)
+        kp1 = _kp(kok); d1 = {d["replik"]: d["cizelge_bas"] for d in kp1["diyalog"]}
+        self.assertAlmostEqual(d1["R0001"], d0["R0001"] - 0.208, places=2)
+        self.assertAlmostEqual(d1["R0002"], d0["R0002"], places=3)                              # diğer replik yerinde (plan_ofset)
+        # SES_ISTEKLERI (ses_karar ekran_disi_tts) — karar dosyası olmadan da tüketilir
+        ortak.atomik_yaz(os.path.join(kok, "KURGU", "SES_ISTEKLERI.json"),
+                         {"islemler": [{"replik": "R0002", "op": "ekran_disi", "plan": 5, "kok_neden": "dudak_kayma"}]})
+        kod, s = ku.calistir(kok, "T2", 2)
+        self.assertEqual(kod, 0, s); self.assertEqual(s["ses_istekleri"], [{"replik": "R0002", "uzerine_plan": 4}])
+        r2 = next(d for d in _kp(kok)["diyalog"] if d["replik"] == "R0002")
+        self.assertEqual((r2["plan"], r2["ekran_disi"], r2["gorunen_konusan"]), (4, True, False))
+        ist = _j(kok, "KURGU", "SES_ISTEKLERI.json")["islemler"][0]
+        self.assertTrue(ist["yapildi"]); self.assertEqual(ist["uygulandi"]["uzerine_plan"], 4)
+        with self.assertRaises(FileNotFoundError): ku.calistir(kok, "T2", 3)                     # bekleyen istek yok, karar yok
+
+
 if __name__ == "__main__":
     unittest.main()

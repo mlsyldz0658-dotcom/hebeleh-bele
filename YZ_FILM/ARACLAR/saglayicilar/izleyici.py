@@ -30,8 +30,9 @@ def _veri():
 
 
 def o0e():
-    y = _veri()
-    return (ortak.json_oku(os.path.join(y["veri_kok"], "BILGI", "OLCUM0", "O0e.json"), {}) or {}) if y else {}
+    """Ö0-e kaydı (gemini_api.o0e ile aynı kaynak: O0e.json, yoksa GEMINI_DURUMU.json katmanı)."""
+    from saglayicilar import gemini_api
+    return gemini_api.o0e()
 
 
 def film_ayar():
@@ -39,19 +40,14 @@ def film_ayar():
     return (ortak.json_oku(os.path.join(y["ayarlar"], "FILM_AYAR.json"), {}) or {}) if y else {}
 
 
-def acik_mi(saglayici, giris="video"):
-    """(açık_mı, neden, bayraklar). Anahtarın içeriği okunmaz, yalnız varlığı sorulur (anahtar() boş değilse)."""
-    if not saglayici.anahtar(ANAHTAR_DOSYASI, ANAHTAR_ORTAM): return False, "Gemini anahtarı yok (kurulum §8.2 adım 3b)", []
-    o = o0e(); bay = []
-    if o.get(giris + "_girisi") is False: return False, "ücretsiz katman %s girişini kabul etmiyor (Ö0-e)" % giris, []
-    katman = o.get("gemini_katman") or "bilinmiyor"
-    if katman == "ucretli":
-        a = film_ayar()
-        if not ((a.get("izinler") or {}).get("gemini_api_ucretli") and float((a.get("butce") or {}).get("usd_tavan_film") or 0) > 0):
-            return False, "Gemini katmanı ücretli; izin (gemini_api_ucretli) ve dolar tavanı yok", []
-        bay.append("ucretli_katman")
-    elif katman != "ucretsiz": bay.append("katman_dogrulanmadi")
-    return True, None, bay
+def acik_mi(saglayici=None, giris="video"):
+    """(açık_mı, neden, bayraklar). Karar tek yerde: gemini_api.izin_karari (anahtarın yalnız varlığı; katman; ücretli izin + dolar tavanı;
+    Ö0-e video/ses girişi). Burada yalnız bayraklar eklenir: ucretli_katman, katman_dogrulanmadi (Ö0-e ölçülmedi)."""
+    from saglayicilar import gemini_api
+    ok, neden = gemini_api.izin_karari("izleyici" if giris == "video" else "dinleyici")
+    if not ok: return False, neden, []
+    katman = gemini_api.o0e().get("gemini_katman") or "bilinmiyor"
+    return True, None, (["ucretli_katman"] if katman == "ucretli" else [] if katman == "ucretsiz" else ["katman_dogrulanmadi"])
 
 
 class GeminiIstemci:

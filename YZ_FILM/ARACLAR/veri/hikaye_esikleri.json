@@ -398,7 +398,7 @@
   "etiket": "hikaye-mimari şablonu; ZANAAT Z1",
   "sonuc": "B"
  },
- "kurulum_kullanim_cift_min": {
+ "kurulum_min": {
   "deger": 5,
   "aciklama": "Öneride (A03/A04) en az bu kadar kurulum → kullanım çifti (süre eşiği RE kurulum_kullanim_min_sn'dedir)",
   "kaynak": "belge",
@@ -407,12 +407,19 @@
  },
  "ornek_replik_max": {
   "deger": 5,
-  "aciklama": "Öneride (A03/A04) en çok bu kadar örnek replik (her biri RE replik_max_kelime_8sn sınırında). Kapak imgesinin ekrana geliş sınırı RE vaat_imgesi_max_sn'dir (120), burada tekrarlanmaz",
+  "aciklama": "Öneride (A03/A04) en çok bu kadar örnek replik (her biri RE replik_max_kelime_8sn sınırında)",
   "kaynak": "belge",
   "etiket": "hikaye-mimari şablonu",
   "sonuc": "B"
  },
- "ayni_karakter_ardisik_blok_max": {
+ "kapak_imgesi_max_sn": {
+  "deger": 120,
+  "aciklama": "Öneride (A03/A04) kapak imgesi ilk bu kadar sn içinde ekranda; RE vaat_imgesi_max_sn ile AYNI değer olmalı (test_hikaye denetler; zaman kapısı RE'yi okur)",
+  "kaynak": "belge",
+  "etiket": "hikaye-mimari şablonu; TASARIM §7.1 Z1 vaat_imgesi_max_sn",
+  "sonuc": "B"
+ },
+ "ayni_karakter_ardisik_max": {
   "deger": 3,
   "aciklama": "Senaryoda (A05) aynı karakter art arda en çok bu kadar replik bloğu",
   "kaynak": "belge",

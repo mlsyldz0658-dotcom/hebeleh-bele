@@ -4,7 +4,7 @@ D-10, D-11, D-45; [CM2] K-20 senaryoları).
 Kancalar gerçek süreç olarak çalıştırılır (stdin JSON → stdout JSON / çıkış kodu); ağ yok, kredi yok, gerçek Claude yok.
   - erisim: gizli dosya iki kökte (büyük/küçük harf), istisna; AYARLAR'ı kapsayan arama; sürüşte makine sahipli yazma ve 200 KB;
     sürüş kapalıyken geliştirme serbest; alt ajan: bağlama, başka görev, ileri bölüm, '..', tasarım belgeleri, iç ajan.
-  - komut: gizli dosya (Bash + PowerShell), robocopy /MIR, kalıcı silme, bot taklidi, kie.ai; Flow kilidi; sürüşte memmet.py,
+  - komut: gizli dosya (Bash + PowerShell), robocopy /MIR, kalıcı silme, bot taklidi, kie.ai (yalnız gerçek kullanım; ad geçmesi serbest); Flow kilidi; sürüşte memmet.py,
     git push, git add -A, makine sahipli kabuk yazımı; yerelde main'e push; geliştirme komutları serbest.
   - ajan: fork/yerleşik/kadro dışı/name/calismiyor/tip/paralel; bekleyen bağ.
   - nabız: komut kancası film.py basla'da KANCA_NABZI.json yazar; film.py basla nabızsız reddeder, nabızla başlar (uçtan uca).
@@ -208,6 +208,21 @@ class TestKomut(Ortam):
                   "git add -A", "echo x > FILM_DURUM.json", "python -m py_compile YZ_FILM/ARACLAR/memmet.py"):
             self.assertFalse(reddedildi(kos("komut", bash(c))), c)
 
+    def test_kie_yalniz_gercek_kullanim(self):
+        """Gri pazar servisi yalnız gerçek kullanımda engellenir (adres, ağ aracı, HTTP kitaplığı, anahtar, kurulum); adın notta,
+        commit mesajında ya da belgede geçmesi serbesttir (son tur B)."""
+        self.surus(False, "gelistirme")
+        for c in ("curl https://api.kie.ai/v1/x", "curl -s kie.ai/api/v1/jobs", "wget http://kie.ai/a", "ping kie.ai",
+                  "python -c \"import requests; requests.post('https://kie.ai/api/v1/veo', json={})\"",
+                  "python -c \"import requests; requests.get(u + 'api.kie.ai')\"", "export KIE_API_KEY=abc",
+                  "$env:KIE_API_KEY='x'", "pip install kie-ai", "Invoke-RestMethod -Uri https://api.kie.ai/v1/x",
+                  "echo ok && curl api.kie.ai"):
+            self.assertTrue(reddedildi(kos("komut", bash(c))), c)
+        for c in ("echo 'kie.ai kullanılmaz' >> notlar.txt", "git commit -m 'kie.ai yasağı: yalnız gerçek kullanım engellenir'",
+                  "python YZ_FILM/ARACLAR/film.py ders ekle --belirti 'kie.ai önerildi, reddedildi'", "grep -rn kie.ai YZ_FILM | head",
+                  "printf 'Flow kilitliyken kie.ai yok\\n'", "git log --grep kie.ai"):
+            self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+
     def test_gizli_yalniz_gercek_erisim(self):
         """Gizli kural adın metinde geçmesini değil, gerçek okuma/kopyalama/yazdırma/arşivlemeyi engeller (birleştirme turu)."""
         self.surus(False, "gelistirme")
@@ -391,6 +406,25 @@ class TestAjanBitti(Ortam):
         r = kos("ajan_bitti", dur); self.assertFalse(r[1])                                  # üçüncüde durur, görev BİTMEZ
         self.assertEqual(jo(os.path.join(gd, "GOREV.json"))["durum"], "calisiyor")
         self.assertEqual(jo(os.path.join(self.film, "_GOREV", "BAGLAR.json"))["biten"]["ag1"]["sonuc"], "gecersiz_aday")
+
+    def test_duzeltme_tukenince_film_py_bitir_gecersiz(self):
+        """İki düzeltmeden sonra kanca `film.py bitir <id> --gecersiz "<neden>"` çağırır: görev geçersiz olur (yeni örnek açılabilir),
+        bağ 'gecersiz' kapanır (son tur B)."""
+        self.gercek_film()
+        gd = self.gorev("A06-OE-009", ajan="ozet-eslestirici")
+        g = jo(os.path.join(gd, "GOREV.json")); g.update(film=os.path.basename(self.film), asama="A06", tasima={}, zaman={},
+                                                       kullanim={"girdi": None, "cikti": None, "onbellek_okuma": None,
+                                                                 "sure_sn": None, "model": FILM.MODEL, "effort": "high"})
+        ortak.atomik_yaz(os.path.join(gd, "GOREV.json"), g)
+        kos("ajan", self.ajan_cagri("A06-OE-009", "ozet-eslestirici"))
+        kos("erisim", self.alt(oku_(os.path.join(gd, "GOREV.json")), aid="ag9", tip="ozet-eslestirici"))
+        dur = {"agent_id": "ag9", "agent_type": "ozet-eslestirici"}
+        for _ in range(2): self.assertEqual(kos("ajan_bitti", dur)[1]["decision"], "block")
+        r = kos("ajan_bitti", dur); self.assertFalse(r[1])                                  # üçüncüde durur
+        g = jo(os.path.join(gd, "GOREV.json"))
+        self.assertEqual(g["durum"], "gecersiz"); self.assertIn("2 düzeltmeden sonra", g["gecersiz_neden"])
+        self.assertIn("Çıktı eksik", g["gecersiz_neden"])
+        self.assertEqual(jo(os.path.join(self.film, "_GOREV", "BAGLAR.json"))["biten"]["ag9"]["sonuc"], "gecersiz")
 
     def test_yonetmen_plan_kapisi(self):
         """SubagentStop yonetmen·plan: plan_sema.py --dosya ve plan_denetim.py --dosya --film koşar; HATA → düzeltme (adim8 #6)."""

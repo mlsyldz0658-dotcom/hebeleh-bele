@@ -7,7 +7,8 @@ Olaylar (alt komutlar):
   erisim        PreToolUse Read|Glob|Grep|Write|Edit|NotebookEdit: gizli dosya (iki kök) reddi; alt ajan yalnız bağlı görev klasörü
                 (rolüne göre), ileri bölüm reddi; sürüşte makine sahipli dosyaya yazma ve 200 KB üstü Read reddi.        KAPALI BAŞARISIZ
   komut         PreToolUse Bash|PowerShell: gizli dosya, robocopy /MIR, kalıcı silme (_gecici/ ve geçici klasör hariç),
-                pyautogui/pynput/SendKeys/stealth/captcha/kie.ai; Flow kilidiyken Memmet; sürüşte doğrudan memmet.py, git push,
+                pyautogui/pynput/SendKeys/stealth/captcha; kie.ai yalnız gerçek kullanımda (adres, API çağrısı, anahtar, kurulum;
+                adın metinde geçmesi serbest); Flow kilidiyken Memmet; sürüşte doğrudan memmet.py, git push,
                 git add -A, makine sahipli dosyaya kabuktan yazma; yerelde main/master'a push. `film.py basla` görünce
                 KANCA NABZI yazar (<film>/_GOREV/KANCA_NABZI.json; film.py basla ≤ 15 sn'lik nabız ister).          KAPALI BAŞARISIZ
   ajan          PreToolUse Agent: sürüşte kadro dışı / fork / yerleşik ajan, name/isolation, `calisiyor` olmayan görev, paralel
@@ -454,7 +455,17 @@ LISTE = {"ls", "dir", "stat", "test", "[", "get-item", "get-childitem", "gci", "
 ARAMA = {"grep", "rg", "egrep", "fgrep", "findstr", "select-string", "sls", "ag", "ack"}
 BOT = re.compile(r"pyautogui|pynput|send-?keys|sendinput|keybd_event|mouse_event|xdotool|autohotkey|\.ahk\b|wscript\.shell|"
                  r"undetected[_-]chromedriver|selenium[_-]stealth|puppeteer-extra-plugin-stealth|playwright[_-]stealth|"
-                 r"2captcha|anti-?captcha|capsolver|captcha[_-]?solver|kie\.ai", re.I)
+                 r"2captcha|anti-?captcha|capsolver|captcha[_-]?solver", re.I)
+# Gri pazar servisi (kie.ai) yalnız GERÇEK KULLANIMDA engellenir: adres (URL / alt alan adı), ağ aracının hedefi, HTTP kitaplığı çağrısı,
+# anahtar değişkeni, paket kurulumu. Adın düz metinde geçmesi (not, commit mesajı, belge, test adı) serbesttir.
+KIE_KULLANIM = re.compile(
+    r"(?:https?|wss?|ftp)://(?:[\w-]+\.)*kie\.ai\b"
+    r"|(?:^|[\s\"'=@(,])(?:[\w-]+\.)+kie\.ai\b"
+    r"|\b(?:curl|wget|iwr|irm|invoke-webrequest|invoke-restmethod|http|https|httpie|xh|nc|ncat|ssh|scp|sftp|ping|nslookup|dig|"
+    r"telnet|openssl)\b[^\n|;&]*?(?<![\w.])kie\.ai\b"
+    r"|\b(?:requests|httpx|urllib\w*|aiohttp|urlopen|fetch|axios)\b[^\n]*?(?<![\w.])kie\.ai\b"
+    r"|\bKIE(?:_AI)?_API_KEY\b"
+    r"|\b(?:pip3?|uv|npm|pnpm|yarn)\b[^\n|;&]*\b(?:install|add)\b[^\n|;&]*\bkie(?:[-_]?ai)?\b", re.I)
 ISTISNA_AD = re.compile(r"(\.ornek\.json|OKU_BENI\.txt)$", re.I)
 MAKINE_AD = re.compile(r"FILM_DURUM\.json|GOREV\.json|DEFTER\.jsonl|BAGLAR\.json|KANCA_NABZI\.json|SAHNELER\.json|"
                        r"DUNYA_DEFTERI\.json|KARAR_DEFTERI\.md|KURGU_PLANI[\w.]*\.json|[\\/]_RAPOR[\\/]|[\\/]KUYRUK[\\/]|[\\/]kararlar[\\/]", re.I)
@@ -726,7 +737,11 @@ def k_komut(g, kaynak="ayar"):
     bot = [s for s in segler if BOT.search(s) and not (program(kelimeler(s)) in ARAMA | OKUMA
                                                        or re.match(r"\s*git\s+(grep|log|diff|show)\b", s))]
     if bot:
-        return ret("bot_taklidi", "Fare/klavye taklidi, gizlilik (stealth) eklentisi, captcha çözücü ve kie.ai kullanılmaz (Flow kuralı).")
+        return ret("bot_taklidi", "Fare/klavye taklidi, gizlilik (stealth) eklentisi ve captcha çözücü kullanılmaz (Flow kuralı).")
+    kie = [s for s in segler if KIE_KULLANIM.search(s) and not (program(kelimeler(s)) in ARAMA | OKUMA
+                                                                or re.match(r"\s*git\s+(grep|log|diff|show)\b", s))]
+    if kie:
+        return ret("kie_ai", "kie.ai kullanılmaz (adres, API çağrısı, anahtar, kurulum yok); başka servis ya da hesap yok (Flow kuralı).")
     memmet = bool(MEMMET_KOS.search(cmd)) and not re.search(r"py_compile|-m\s+unittest", cmd)
     memmet_serbest = bool(re.search(r"--(giris|bakiye)\b", cmd))
     if memmet and flow_kilitli() and not memmet_serbest:
@@ -1147,11 +1162,15 @@ def plan_kapisi(film, gdir, gv):
 
 
 def duzeltme(film, agent_id, bag, anahtar, tavan, neden):
-    """SubagentStop düzeltmesi (bölüm başına ≤ 2); sonra durmaya izin verilir, görev doğrulamasız BİTMEZ (gecersiz adayı)."""
+    """SubagentStop düzeltmesi (bölüm başına ≤ 2). Düzeltmeler tükenince durmaya izin verilir ve görev doğrulamasız BİTMEZ:
+    `film.py bitir <id> --gecersiz "<neden>"` görevi geçersiz yazar (film.py merdiveni yeni örnek açar); film.py koşamazsa bağ
+    "gecersiz_aday" kalır."""
     d = dict(bag.get("duzeltme") or {}); n = d.get(anahtar, 0)
     if n >= tavan:
-        bag_guncelle(film, agent_id, bitti=True, sonuc="gecersiz_aday")
-        kayit(film, olay="dogrulama_tukendi", gorev=bag["gorev"], bolum=anahtar)
+        kod, r = film_py("bitir", bag["gorev"], "--film", film, "--json", "--gecersiz",
+                         "SubagentStop: %d düzeltmeden sonra doğrulama geçmedi (%s): %s" % (tavan, anahtar, neden[:300]), zaman_asimi=90)
+        bag_guncelle(film, agent_id, bitti=True, sonuc="gecersiz" if kod == 0 else "gecersiz_aday")
+        kayit(film, olay="dogrulama_tukendi", gorev=bag["gorev"], bolum=anahtar, bitir_kodu=kod)
         return 0
     d[anahtar] = n + 1; bag_guncelle(film, agent_id, duzeltme=d)
     kayit(film, olay="duzeltme", gorev=bag["gorev"], bolum=anahtar, kez=n + 1)

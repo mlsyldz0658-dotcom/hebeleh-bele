@@ -317,13 +317,18 @@ class EsikVeKaset(unittest.TestCase):
         self.assertEqual(E.kayit["juri_kazanan_min"]["_dosya"], "hikaye_esikleri.json")
 
     def test_sablon_esikleri(self):
-        """A03/A04/A05 şablonlarındaki düz sayıların anahtarları (kanca ajanı isteği); kapak imgesi RE vaat_imgesi_max_sn'den."""
+        """A03/A04/A05 şablonlarındaki düz sayıların anahtarları (kanca ajanı isteği); kapak imgesi RE vaat_imgesi_max_sn ile aynı."""
         E = esikler.yukle()
-        for ad, d in (("merak_sorusu_min", 8), ("kurulum_kullanim_cift_min", 5), ("ornek_replik_max", 5),
-                      ("ayni_karakter_ardisik_blok_max", 3), ("vaat_imgesi_max_sn", 120)):
+        for ad, d in (("merak_sorusu_min", 8), ("kurulum_min", 5), ("ornek_replik_max", 5), ("ayni_karakter_ardisik_max", 3),
+                      ("kapak_imgesi_max_sn", 120)):
             self.assertEqual(E[ad], d, ad)
-        for ad in ("merak_sorusu_min", "kurulum_kullanim_cift_min", "ornek_replik_max", "ayni_karakter_ardisik_blok_max"):
             self.assertEqual(E.kayit[ad]["_dosya"], "hikaye_esikleri.json")
+        self.assertEqual(E["kapak_imgesi_max_sn"], E["vaat_imgesi_max_sn"])          # şablon sayısı RE zaman kapısıyla aynı
+        import glob as _g, re as _re
+        anahtar = set()
+        for p in _g.glob(os.path.join(ortak.DEPO_KOK, ".claude", "skills", "film-yap", "sablonlar", "A0[345]*.md")):
+            with open(p, encoding="utf-8") as f: anahtar |= set(_re.findall(r"\{\{esik:([a-z0-9_]+)\}\}", f.read()))
+        self.assertEqual([a for a in sorted(anahtar) if E.get(a) is None], [])      # şablondaki her eşik anahtarı tanımlı
 
     def test_kaset_uydurmaz(self):
         g = {"id": "A09-ZZ-001", "asama": "A09", "anahtar": "A09@s1/t1/g0/ZZ/1", "tur_no": 1}

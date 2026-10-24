@@ -5,7 +5,7 @@ film.py görevi olarak ("<arac> <args> --film <film>"; aşama isteğe bağlı, y
 Girdi: kullanıcının isteğe bağlı YouTube Studio dışa aktarımları <film>/GELENLER/YOUTUBE/*.csv (video özeti: gösterim, tıklama
   oranı, ortalama izleme; ve izleyici tutma eğrisi: video konumu % ya da sn → tutma %). Gün verilmezse yayın tarihinden
   (YAYIN/YUKLEME.json yayin_zamani, PAKET.json yayin_tarihi ya da --yayin-tarihi) hesaplanır: ≥ 28 → 28, ≥ 7 → 7, ≥ 2 → 2.
-İş: tutma eğrisi film çizelgesine (KURGU/KURGU_PLANI.json) eşlenir; en dik düşüşler (10 sn'de ≥ DUSUS_MIN_PUAN puan; ilk 5 sn hariç)
+İş: tutma eğrisi film çizelgesine (KURGU/KURGU_PLANI.json) eşlenir; en dik düşüşler (10 sn'de ≥ RE tutma_dusus_min_puan puan; ilk 5 sn hariç)
   plan kimliğiyle bulunur ve ders defterine `olay: gercek_seyirci, kaynak: gercek_seyirci` (en yüksek kanıt ağırlığı) yazılır
   (aynı film + gün için bir kez). 48 saatte tıklama oranı ya da ilk 30 sn tutması kanal ortalamasının (KANAL_TESHIS.json) altındaysa
   kapak/başlık değişikliği önerisi BİLGİ olarak yazılır; değişiklik kullanıcının işidir.
@@ -22,7 +22,7 @@ import kanal_teshis as kt
 SURUM = "yayin_analiz 1.0"
 BITTI, HATA, ORTAM = 0, 1, 4
 GUNLER = (2, 7, 28)
-DUSUS_PENCERE_SN, DUSUS_MIN_PUAN, DUSUS_MAX, BAS_HARIC_SN = 10.0, 3.0, 5, 5.0     # (tahmin; EK3 kalibrasyonu)
+DUSUS_PENCERE_SN, DUSUS_MAX, BAS_HARIC_SN = 10.0, 5, 5.0     # (tahmin; EK3 kalibrasyonu) · düşüş eşiği RE tutma_dusus_min_puan
 
 
 def simdi(): return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
@@ -89,10 +89,10 @@ def deger(egri, t):
 
 def dususler(egri):
     if not egri: return []
-    son = egri[-1][0]; adaylar = []; t = BAS_HARIC_SN
+    son = egri[-1][0]; adaylar = []; t = BAS_HARIC_SN; esik_puan = float(kt.re_esik("tutma_dusus_min_puan"))
     while t + DUSUS_PENCERE_SN <= son:
         d = deger(egri, t) - deger(egri, t + DUSUS_PENCERE_SN)
-        if d >= DUSUS_MIN_PUAN: adaylar.append((d, t))
+        if d >= esik_puan: adaylar.append((d, t))
         t += DUSUS_PENCERE_SN / 2
     secilen = []
     for d, t in sorted(adaylar, reverse=True):

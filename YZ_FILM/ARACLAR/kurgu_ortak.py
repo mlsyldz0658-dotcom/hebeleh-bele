@@ -567,7 +567,7 @@ def bilgi(*a): print(*a, flush=True)
 # saglayicilar/__init__.py KAYIT'ında henüz olmayan adlar (paylasilan_istekler: KAYIT satırları); KAYIT'taki ad her zaman önce gelir.
 YEREL_KAYIT = {"openvoice": "saglayicilar.yerel_ses.OpenVoice", "chatterbox": "saglayicilar.yerel_ses.Chatterbox",
                "rvc": "saglayicilar.yerel_ses.RVC", "roformer": "saglayicilar.yerel_ses.Roformer",
-               "demucs": "saglayicilar.yerel_ses.Demucs", "faster_whisper": "saglayicilar.yerel_ses.FasterWhisper",
+               "demucs": "saglayicilar.yerel_ses.Demucs",                # faster_whisper: saglayicilar.KAYIT (asr_whisper; tek sınıf)
                "musetalk": "saglayicilar.yerel_ses.MuseTalk", "yz_buyutucu": "saglayicilar.buyutucu.YZBuyutucu",
                "lanczos": "saglayicilar.buyutucu.Lanczos", "sahte_kurgu": "saglayicilar.sahte_kurgu.SahteKurgu"}
 TEST_SAGLAYICILARI = ("sahte", "kaset", "sahte_bozuk")

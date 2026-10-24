@@ -18,10 +18,10 @@ Bu görev bir **merdiven basamağıdır** (§1.5): önceki turların kapı rapor
 3. Ana karakter ≤ {{esik:ana_karakter_max}}, konuşan karakter ≤ {{esik:oneri_konusan_max}}; ana karakter adı ≤ {{esik:ad_hece_max_ana}} hece; bir karede ≤ {{esik:referans_max}} karakter referansı.
 4. Uzunluk {{esik:oneri_kelime_aralik}} kelime aralığında.
 5. Seyirlik anlar parti başına en az {{esik:seyirlik_an_parti_min}}; dramatik ironi parti başına en az {{esik:ironi_parti_min}}; küçük güzel sahne parti başına en az {{esik:kucuk_guzel_sahne_parti_min}}.
-6. Merak sorusu en az 8, kurulum → kullanım en az 5; karşı gücün yasağı ilk {{esik:risk_sozlu_max_sn}} sn içinde sözle; kapak imgesi ilk 120 sn içinde ekranda.
+6. Merak sorusu en az {{esik:merak_sorusu_min}}, kurulum → kullanım en az {{esik:kurulum_min}}; karşı gücün yasağı ilk {{esik:risk_sozlu_max_sn}} sn içinde sözle; kapak imgesi ilk {{esik:kapak_imgesi_max_sn}} sn içinde ekranda.
 7. Seri kancası ≤ {{esik:seri_kancasi_max_sn}} sn; açık seri sorusu ≤ {{esik:seri_sorusu_max}}.
 8. Üretilebilirlik: kalabalık, su, karmaşık el işi ve hızlı kamera azaltılır; mekân ≤ {{esik:mekan_toplam_max}}; kostüm varyantı karakter başına ≤ {{esik:kostum_varyant_max_karakter}}.
-9. Örnek replik en çok 5, her biri ≤ {{esik:replik_max_kelime_8sn}} kelime; filtre kelimesi, yaş ifadesi ve NE YOK kelimesi yok.
+9. Örnek replik en çok {{esik:ornek_replik_max}}, her biri ≤ {{esik:replik_max_kelime_8sn}} kelime; filtre kelimesi, yaş ifadesi ve NE YOK kelimesi yok.
 
 ## CIKTI
 - `CIKTI/oneri.md` — 10 başlık, başlıklar `## 1. Logline` biçiminde; son satır `OZET | eksen: <eksen> | konusan: <n> | kelime: <n>`

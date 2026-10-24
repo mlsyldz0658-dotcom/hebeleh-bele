@@ -10,7 +10,7 @@ Bu görev bir **merdiven basamağıdır** (§1.5): önceki turların kapı rapor
 
 ## GIRDI
 - `GIRDI/HIKAYE.json` dilimi — karakterler, kostüm değişimleri, mekânlar
-- `GIRDI/KART_ISTEGI.json` (yönetmen)
+- `GIRDI/KART_ISTEGI_P<n>.json` (yönetmen; parti başına bir dosya, isteğe bağlı — hiç olmayabilir; hepsini birlikte oku)
 - evren kartları (varsa)
 
 ## Yap

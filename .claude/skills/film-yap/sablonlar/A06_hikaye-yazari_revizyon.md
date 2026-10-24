@@ -7,7 +7,8 @@ A06 Kâğıt seyirci: kapı GENEL medyan ≥ {{esik:seyirci_kapi_genel_min}}, KR
 Seyirci ya da denetim bulgularını kapatan revizyonu yaz. Bulgu yönlendirmesinde sana gelen maddeleri madde madde kapat; gelmeyene dokunma.
 
 ## GIRDI
-- `GIRDI/` — güncel senaryo/yapı, `BULGU_YONLENDIRME` maddeleri, seyirci kararı özeti (sayılar ve alıntılar)
+- `GIRDI/06_SENARYO_v<N>.json` — güncel (son) senaryo; `GIRDI/05_YAPI.json` — yapı
+- `GIRDI/BULGU_YONLENDIRME_KAGIT_t<n>.json` — sana gelen maddeler; `GIRDI/SEYIRCI_KARAR_KAGIT_t<n>.json` — seyirci kararı özeti (sayılar ve alıntılar)
 
 ## Yap
 1. Her maddeye bir karar: kapatıldı (nasıl, hangi sahne/replik) · kısmen · kapatılmadı (neden).
@@ -16,9 +17,10 @@ Seyirci ya da denetim bulgularını kapatan revizyonu yaz. Bulgu yönlendirmesin
 4. Kilit sonrasıysan (A07 ve sonrası) yalnız dar değişiklik yapılır; bu kip değil.
 
 ## CIKTI
-- Yazılması gereken dosyalar ISTEM.md'de listelidir (A05'te `CIKTI/05_YAPI.json`, A06'da `CIKTI/rapor.json`).
-- `CIKTI/rapor.json` — şema `denetci_rapor_v1`; `maddeler[]` her bulgu için karar ve değişen yer; ek `degisen_sahneler[]`
-- `CIKTI/DEGISIKLIK.md` — sahne sahne ne değişti; son satır `OZET | kapatilan: <n> | kismen: <n> | acik: <n>`
+- `CIKTI/senaryo.json` — revize senaryonun TAMAMI (06_SENARYO şeması; değişmeyen sahneler aynen); betik
+  `_HIKAYE_ODASI/06_SENARYO_v1<tur>.json` olarak taşır
+- `CIKTI/rapor.json` — şema `denetci_rapor_v1`; `maddeler[]` her bulgu için karar ve değişen yer; ek `degisen_sahneler[]` ve
+  `ozet: "kapatilan: <n> | kismen: <n> | acik: <n>"` (betik `_HIKAYE_ODASI/DEGISIKLIK_v<tur>.json` olarak taşır)
 
 ## Bitirmeden
 - Her maddenin kararı var.

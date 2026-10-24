@@ -3,7 +3,7 @@
 kor_paket.py izleme kiplerini bu modüle devreder (aynı CLI; Maske, yasak alan listesi ve sızıntı denetimi kor_paket'tendir):
   python kor_paket.py --kip animatik|kurgu|kesit [--tur N] --film <film>
   python kor_paket.py --kip kesici [--kaynak-kip animatik|kurgu] [--tur N] --film <film>
-  python kor_paket.py --kip kapak [--tur N] --film <film>
+  python kor_paket.py --kip kapak [--tur N] --film <film>   (kapak.kor_paketi'ne gider; bu modül --kip kapak'ı oraya devreder)
   (doğrudan: python kor_paket_izleme.py … aynı seçenekler)
 Kodda: isitsel_dokum(film, plan, kip) → [(plan_no, [satır…])] · paket_kur(film, kip, tur)
 Çıktı (izleme kipleri):
@@ -13,7 +13,7 @@ Kodda: isitsel_dokum(film, plan, kip) → [(plan_no, [satır…])] · paket_kur(
   _KOR_PAKET/<kip>_t<tur>/ESLESTIRICI/ANAHTAR.json · PAKET.json (_uretim, bölüm/parça dağılımı, sızıntı denetimi)
   ANIMATIK/ISITSEL_DOKUM.md (animatik kipinde; yoksa ya da eskiyse yazılır)
   kesici: _KOR_PAKET/kesici_t<tur>/{IZLE.md, KESME_GIRDI.md, SAYFALAR/sayfa_NN.jpg}
-  kapak:  _KOR_PAKET/kapak_t<tur>/{KAPAK.md, k01.jpg …, ESLESTIRICI/ESLEME.json}
+  kapak:  kapak.kor_paketi (_KOR_PAKET/kapak_t<tur>/; A11 kare-tarifcisi·kapak 1/ ve habersiz-seyirci·kapak SEYIRCI/)
 Sayfa: RE izleme_sayfa_plan (6) plan; karede zaman kodu + plan numarası; RE izleme_kare_plan (animatik 1 kare + varsa bitiş görseli,
   kurgu 3 kare: baş + 0,15 sn, orta, son − 0,15 sn); sayfanın başında önceki sayfanın son karesi küçük. Animatikte karenin altında
   eylem şeridi (T1'deki adsız şerit). IZLE.md satırı: zaman, #plan, süre, duyulan [ekranda/ekran dışı + etiket], efekt, müzik.
@@ -113,7 +113,7 @@ def isitsel_dokum(film, plan, kip, mk=None, sahneler=None):
     mk = mk or kp.Maske(kar, kp.ses_etiketleri(film))
     sp = {p.get("no"): p for p in sahneler.get("sahneler") or [] if isinstance(p, dict)}
     rep_h = {r.get("id"): r for r in h.get("replikler") or [] if isinstance(r, dict)}
-    sc = ses_cizelgesi(film, kip); wer = asr_wer(film); wer_esik = t1.E("anlasilmayan_konusma_wer") or 0.30
+    sc = ses_cizelgesi(film, kip); wer = asr_wer(film); wer_esik = t1.E("anlasilmayan_konusma_wer")
     diy = {}
     for d in plan.get("diyalog") or []: diy.setdefault(d.get("plan"), []).append(d)
     efekt = {}
@@ -511,32 +511,6 @@ def kesici_kur(film, kaynak_kip, tur, gorev=None):
     return 0, manifest
 
 
-# --- kapak (ikili: "bu başlık ve bu kapakla tıklar mıydın?") ---------------------------------------------------------
-def kapak_kur(film, tur, gorev=None):
-    film = os.path.abspath(film)
-    adaylar = []
-    for d in ("YAYIN/_ADAYLAR/*.jpg", "YAYIN/KAPAK_ADAYLARI/*.jpg", "SIRALI_GORSEL/_ADAYLAR/KAPAK*.jpg"):
-        adaylar += sorted(glob.glob(os.path.join(film, d)))
-    if not adaylar: raise kp.GirdiHatasi("Kapak adayı yok (YAYIN/_ADAYLAR/*.jpg).")
-    h = ortak.json_oku(os.path.join(film, "HIKAYE.json"), {}) or {}
-    b = h.get("baslik") or {}; baslik = b.get("secilen") if isinstance(b, dict) else b
-    kok = os.path.join(film, "_KOR_PAKET", "kapak_t%d" % tur); gecici = kok + ".yeni"
-    if os.path.exists(gecici): kp.eskiyi_tasi(film, gecici)
-    os.makedirs(gecici)
-    es = {}
-    for i, a in enumerate(adaylar, 1):
-        shutil.copy2(a, os.path.join(gecici, "k%02d.jpg" % i)); es["k%02d.jpg" % i] = os.path.relpath(a, film).replace("\\", "/")
-    m = ["# Kapak", "", kp.PERSONA["A"], "", "BAŞLIK: %s" % (baslik or "(başlık yok)"), "",
-         "Her kapak için: bu başlık ve bu kapakla tıklar mıydın? (evet/hayır + bir cümle neden). İkili karşılaştırma: en çok tıklayacağın iki kapağı seç.", ""]
-    m += ["- %s" % k for k in sorted(es)]
-    kp._yaz(os.path.join(gecici, "KAPAK.md"), "\n".join(m) + "\n")
-    ortak.atomik_yaz(os.path.join(gecici, "ESLESTIRICI", "ESLEME.json"), es)
-    hatalar = kp.denetle_klasor(gecici, kp.yasak_degerler(h), {})
-    if hatalar: return 1, {"hatalar": hatalar}
-    kp.eskiyi_tasi(film, kok); os.replace(gecici, kok)
-    return 0, {"kip": "kapak", "tur": tur, "aday": len(es)}
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Kör paket (izleme kipleri).")
     ap.add_argument("--kip"); ap.add_argument("--tur", type=int); ap.add_argument("--film"); ap.add_argument("--kaynak-kip")
@@ -551,7 +525,7 @@ def main(argv=None):
         elif o.kip == "kesici":
             kaynak = o.kaynak_kip or ("kurgu" if (os.environ.get("YZ_FILM_ASAMA") or "").startswith("A16") else "animatik")
             kod, m = kesici_kur(film, kaynak, tur, gorev)
-        elif o.kip == "kapak": kod, m = kapak_kur(film, tur, gorev)
+        elif o.kip == "kapak": return kp.kapak_paketi(list(sys.argv[1:] if argv is None else argv))     # tek yol: kapak.kor_paketi (kor_paket ile aynı)
         else: print("!! Bilinmeyen izleme kipi: %s" % o.kip); return 1
     except OrtamHatasi as e: print("!! " + str(e)); return 4
     except kp.GirdiHatasi as e: print("!! " + str(e)); return 1

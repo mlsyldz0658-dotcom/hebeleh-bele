@@ -23,7 +23,7 @@ import ortak, kapi, esikler, kuyruk, blok_plani
 
 SURUM = "kalite_denetim 1.0 (V1)"
 VARSAYILAN = {"v1_sure_min_sn": 7.5, "v1_bulaniklik_max": 8.0, "v1_titreme_mae_max": 6.0, "v1_scdet_esik": 10.0, "v1_kesme_kenar_sn": 0.2}
-KOK_TEKNIK = ("teknik_kusur", "kesme_ici")      # kok_neden.json'da "teknik_kusur" yoksa "kesme_ici" (paylaşılan istek)
+KOK_TEKNIK = "teknik_kusur"                     # veri/kok_neden.json (V1 teknik kusur)
 
 
 class Olculemedi(Exception): pass
@@ -126,11 +126,7 @@ def degerlendir(no, p, o):
     return out, kirp
 
 
-def _kok():
-    try:
-        import kuyruk
-        return next((k for k in KOK_TEKNIK if kuyruk.kok_neden_normal(k)), "kesme_ici")
-    except Exception: return "kesme_ici"
+def _kok(): return KOK_TEKNIK
 
 
 def _kuyruk(olc):

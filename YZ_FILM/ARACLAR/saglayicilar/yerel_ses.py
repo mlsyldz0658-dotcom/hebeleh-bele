@@ -1,7 +1,7 @@
 """YEREL SES — ayrı sanal ortamda koşan yerel ses ve dudak motorları (TASARIM §6.6 `saglayicilar/` ses sınıfları, §2.2, D-36, D-37).
 
 Sınıflar (ADLAR saglayici_turleri adlarıyla): OpenVoice, Chatterbox, RVC (ses_donustur) · Roformer, Demucs (ayristirma) ·
-FasterWhisper (asr) · MuseTalk (dudak). Wav2Lip, LatentSync, Seed-VC YAZILMAZ (ADLAR saglayici_dislanan; lisans/kalite).
+MuseTalk (dudak). ASR (faster_whisper) ana ortamdadır: saglayicilar/asr_whisper.py (tek sınıf; burada kopyası yok). Wav2Lip, LatentSync, Seed-VC YAZILMAZ (ADLAR saglayici_dislanan; lisans/kalite).
 Sözleşme: motor, YOLLAR.json "ortamlar.<ortam>" ile verilen ayrı Python'da `motor_kosucu.py <motor> <istek.json>` olarak koşar;
 istek ve yanıt JSON'dur, ses dosyası diskten. Ortam yoksa hazir() False ve çağrı Kisitlandi("hazir_degil") → zincir sıradakine geçer.
 Ana ortamda kurulu hafif paketler (audio-separator, faster-whisper) varsa ayrı ortam gerekmez (ortam_adi None).
@@ -96,15 +96,6 @@ class Roformer(YerelMotor):
 
 class Demucs(Roformer):
     ad, motor, ana_paket = "demucs", "demucs", "demucs"
-
-
-class FasterWhisper(YerelMotor):
-    ad, motor, ana_paket, ortam_adi = "faster_whisper", "faster_whisper", "faster_whisper", "ses_donustur"
-    turler = ("asr",)
-
-    def asr(self, film, wav, bilinen_metin=None, ad=None):
-        y = self.kos({"giris": wav, "bilinen_metin": bilinen_metin})
-        return {"metin": y.get("metin", ""), "kelimeler": y.get("kelimeler") or [], "guven": y.get("guven")}
 
 
 class MuseTalk(YerelMotor):

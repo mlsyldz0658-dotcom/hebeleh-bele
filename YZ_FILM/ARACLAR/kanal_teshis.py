@@ -21,7 +21,20 @@ import ortak
 
 SURUM = "kanal_teshis 1.0"
 BITTI, ORTAM = 0, 4
-GOSTERIM_MIN, TO_MIN, IZLENME_MIN = 1000, 4.0, 30.0       # (tahmin; EK3 kalibrasyonu)
+_RE = {}
+
+
+def re_esik(ad):
+    """Ritim eşiği (ritim_esikleri.json; esikler.yukle): kanal_gosterim_min, kanal_to_min, kanal_izlenme_min, tutma_dusus_min_puan …
+    Sabit yedek yok: anahtar yoksa esikler hatası yükselir (test_esikler anahtarların varlığını denetler)."""
+    if "E" not in _RE:
+        import esikler
+        _RE["E"] = esikler.yukle()
+    return _RE["E"][ad]
+
+
+def sinirlar():
+    return {"gosterim_min": re_esik("kanal_gosterim_min"), "to_min": re_esik("kanal_to_min"), "izlenme_min": re_esik("kanal_izlenme_min")}
 SUTUNLAR = {
     "baslik": ("video title", "video başlığı", "video basligi", "content", "içerik", "title"),
     "yayin": ("video publish time", "yayınlanma", "publish"),
@@ -103,9 +116,10 @@ def video_satirlari(basliklar, satirlar):
 
 def video_teshisi(v):
     n = []
-    if v.get("gosterim") is not None and v["gosterim"] < GOSTERIM_MIN: n.append("keşif")
-    if v.get("to") is not None and v["to"] < TO_MIN: n.append("paketleme")
-    if v.get("ort_oran") is not None and v["ort_oran"] < IZLENME_MIN: n.append("film")
+    sn = sinirlar()
+    if v.get("gosterim") is not None and v["gosterim"] < sn["gosterim_min"]: n.append("keşif")
+    if v.get("to") is not None and v["to"] < sn["to_min"]: n.append("paketleme")
+    if v.get("ort_oran") is not None and v["ort_oran"] < sn["izlenme_min"]: n.append("film")
     if all(v.get(k) is None for k in ("gosterim", "to", "ort_oran")): return "ölçülemedi"
     return " + ".join(n) or "sorun görünmüyor"
 
@@ -138,7 +152,7 @@ def teshis(dosyalar):
                                      "ortam": "yerel" if os.name == "nt" else "bulut"},
             "dosyalar": okunan, "video_sayisi": len(videolar), "kanal_ortalama": ort, "trafik": trafik_k or None,
             "genel_teshis": genel, "sayim": sayim, "videolar": videolar,
-            "sinirlar": {"gosterim_min": GOSTERIM_MIN, "to_min": TO_MIN, "izlenme_min": IZLENME_MIN, "kaynak": "tahmin"}}
+            "sinirlar": dict(sinirlar(), kaynak="ritim_esikleri.json (tahmin)")}
 
 
 def md(t):
@@ -151,7 +165,8 @@ def md(t):
     o = t["kanal_ortalama"]
     s += [f"**Genel teşhis: {t['genel_teshis']}** (keşif = gösterim az · paketleme = tıklama oranı düşük · film = izlenme yüzdesi düşük)", "",
           f"- Kanal ortalaması: gösterim {o['gosterim']} · tıklama oranı %{o['to']} · ortalama izlenme %{o['ort_oran']} · "
-          f"ortalama izleme {o['ort_sure_sn']} sn", f"- Sınırlar (tahmin): gösterim < {GOSTERIM_MIN}, TO < %{TO_MIN}, izlenme < %{IZLENME_MIN}", ""]
+          f"ortalama izleme {o['ort_sure_sn']} sn", f"- Sınırlar (tahmin): gösterim < {t['sinirlar']['gosterim_min']}, TO < %{t['sinirlar']['to_min']}, "
+          f"izlenme < %{t['sinirlar']['izlenme_min']}", ""]
     if t["trafik"]: s += ["## Trafik kaynakları", ""] + [f"- {k}: {v}" for k, v in sorted(t["trafik"].items(), key=lambda x: -(x[1] or 0))] + [""]
     s += ["## Videolar", "", "| Video | Gösterim | TO % | İzlenme % | Teşhis |", "|---|---|---|---|---|"]
     s += [f"| {str(v['baslik'] or '?')[:60]} | {v['gosterim']} | {v['to']} | {v['ort_oran']} | {v['teshis']} |" for v in t["videolar"]]

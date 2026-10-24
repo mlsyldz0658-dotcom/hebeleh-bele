@@ -54,7 +54,7 @@ KOK_NEDEN = {"nesne_el": "ters_el", "fazla_kisi": "fazla_kisi", "yanlis_kisi": "
              "kimlik_fark_payi": "yuz_degisti", "kadraj_sirasi": "yanlis_kisi", "ucte_bir": "yanlis_kisi", "bakis": "bakis",
              "isik": "isik_zipladi", "lab": "isik_zipladi", "yasak_oge": "yasak_oge", "ne_yok": "yasak_oge", "yazi_logo": "yasak_oge",
              "kostum": "kostum_ziplama", "olcek": "olcek", "stil": "stil", "mekan": "mekan_belirsiz", "agiz": "dinleyen_konustu",
-             "anatomi": "morf", "eksik_yuz": "karakter_kayboldu", "teknik": "stil", "yaratik": "yuz_degisti", "plaka_oge": "plaka_oge",
+             "anatomi": "morf", "eksik_yuz": "karakter_kayboldu", "teknik": "gorsel_teknik", "yaratik": "yuz_degisti", "plaka_oge": "plaka_oge",
              "ayrisma_kilitli": "yuz_degisti", "kadro_benzer": "yuz_degisti", "gorunen": "karakter_kayboldu"}
 AYNA_ALANLARI = ("kadraj_sirasi", "bakis", "ucte_bir")
 KIRPMA_ALANLARI = ("yasak_oge", "yazi_logo", "fazla_kisi")

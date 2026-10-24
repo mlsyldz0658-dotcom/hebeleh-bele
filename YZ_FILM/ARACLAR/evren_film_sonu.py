@@ -5,7 +5,8 @@ evren.py bu komutları bu modüle yönlendirir (bağlantı satırı: paylaşıla
         filmin sonucunu seri evrenine EKLER: evren.json filmler + film_sonu kaydı; hikaye.json kanon (yalnız eklenir), seri soruları
         (HIKAYE seri_kancasi.sonraki_tohum açık soru olur), başlık geçmişi (YAYIN/PAKET.json); karakterlerin hikaye.json'u (yay geçmişi,
         durum: yasiyor → olu olabilir, olu → yasiyor HATA), DURUM_SON.json (DUNYA_DEFTERI'nin son durumu; sonraki filmin başlangıcı),
-        sablonlar/jenerik.json (filmde kullanılan jenerik şablonu evrende yoksa). Kaynak: _HIKAYE_ODASI/EVREN_TASLAK.json
+        sablonlar/jenerik.json (filmde kullanılan jenerik şablonu evrende yoksa), muzik/leitmotifler.json (MUZIK/leitmotif_adaylari.json'daki
+        yeni motifler; evrende aynı adlı motif varsa evrenin kaydı kalır, yalnız eklenir — muzik.py'nin düz {LM: motif} biçimi). Kaynak: _HIKAYE_ODASI/EVREN_TASLAK.json
         (hikaye-yazari·evren) + HIKAYE.json + YAYIN/PAKET.json. Aynı film için yeniden çalıştırmak bir şey değiştirmez.
   python evren_film_sonu.py --yedekle (--film <film> | --seri SERI) [--hedef <yedek kökü>] [--yalniz-evren]
         <evren>/<SERI> → <yedek>/EVREN/<SERI>/ KOPYA (robocopy /E; /MIR yok) + SHA1_LISTESI.json. --film verildiğinde (A18 görevi)
@@ -135,11 +136,22 @@ def film_sonu(film):
     if isinstance(j.get("sablon"), dict) and not os.path.exists(evren.seri_yolu(seri, "sablonlar", "jenerik.json")):
         yazilacak.append(("sablonlar/jenerik.json", dict(j["sablon"], ilk_film=ad)))
 
+    # leitmotif adayları → evren (yalnız eklenir; film tarafındaki aday dosyası yerinde kalır, silinmez)
+    adaylar = (_oku(os.path.join(film, "MUZIK", "leitmotif_adaylari.json"), {}) or {}).get("leitmotifler") or {}
+    tasinan = []
+    if isinstance(adaylar, dict) and adaylar:
+        lp = evren.seri_yolu(seri, "muzik", "leitmotifler.json")
+        lm = _oku(lp, {}) or {}; lm2 = _kopya(lm)
+        for k, v in sorted(adaylar.items()):
+            if not isinstance(v, dict) or not str(k).strip() or str(k).startswith("_") or k in lm2: continue
+            lm2[k] = dict({a: b for a, b in v.items() if a != "_kaynak"}, ilk_film=ad); tasinan.append(k)
+        if lm2 != lm: yazilacak.append(("muzik/leitmotifler.json", lm2))
+
     if hatalar: return {"sonuc": "HATA", "seri": seri, "film": ad, "hatalar": hatalar, "degisen": []}, HATA
     degisen = []
     for rel, veri in yazilacak:
         if evren._surumlu_yaz(evren.seri_yolu(seri, *rel.split("/")), veri): degisen.append(rel)
-    return {"sonuc": "GEC", "seri": seri, "film": ad, "degisen": degisen, "taslak": bool(t)}, BITTI
+    return {"sonuc": "GEC", "seri": seri, "film": ad, "degisen": degisen, "taslak": bool(t), "leitmotifler": tasinan}, BITTI
 
 
 # --- yedek ---------------------------------------------------------------------------------------------------------

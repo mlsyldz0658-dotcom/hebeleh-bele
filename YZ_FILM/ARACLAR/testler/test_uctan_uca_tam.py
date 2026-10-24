@@ -80,7 +80,7 @@ class UctanUcaTam(unittest.TestCase):
                 if not isinstance(r, dict): break
                 asama = (r.get("asama") or "").split(" ")[0]
                 if not asamalar or asamalar[-1] != asama: asamalar.append(asama)
-                if asama == "A10a" or r["tur"] not in ("ajan", "betik"): break
+                if asama == "A10a" or r.get("tur") not in ("ajan", "betik"): break
                 for gz in r["gorevler"]:
                     if r["tur"] == "betik":
                         kc, rc = cls.k("calis", gz["id"])

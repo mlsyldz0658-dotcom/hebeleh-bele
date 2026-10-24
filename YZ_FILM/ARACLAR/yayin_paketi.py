@@ -32,7 +32,6 @@ BITTI, HATA, ORTAM = 0, 1, 4
 BASLIK_MAX, ACIKLAMA_MAX, ETIKET_TOPLAM_MAX = 100, 5000, 500      # YouTube alan sınırları (bellekten; YOUTUBE_POLITIKA.md'de doğrulanır)
 BOLUM_MIN, BOLUM_SURE_MIN_SN = 3, 10                               # YouTube bölüm kuralları (bellekten)
 SHORT_SURE = (30, 60); SHORT_ADET = 3; KANCA_SN = 2               # TASARIM §6.7 shorts_mp4
-POLITIKA_GUN_MAX = 90                                              # D-40 (tahmin)
 BASLIK_KALIBI = re.compile(r"^(?P<kanca>[^|]+?)\s*\|\s*(?P<seri>[^|]+?)\s*\|\s*Full Movie 4K \d{4}$")
 POLITIKA_MADDELERI = ("sentetik_icerik_beyani", "ozgun_olmayan_icerik", "yaniltici_meta_veri", "kapak_yaniltmaz", "muzik_lisansi",
                       "cocuk_icerigi_degil")
@@ -290,7 +289,8 @@ def dogrula(film, p):
     if not pd or not os.path.isfile(pd): o.append(m("politika_belgesi", "BAYRAK", neden="<veri>/BILGI/YOUTUBE_POLITIKA.md yok"))
     else:
         gun = (datetime.datetime.now().timestamp() - os.path.getmtime(pd)) / 86400
-        if gun > POLITIKA_GUN_MAX: o.append(m("politika_belgesi", "BAYRAK", olcu=int(gun), esik=POLITIKA_GUN_MAX, neden="tazele (D-40)"))
+        gmax = esik("politika_belgesi_gun_max", None)                 # RE (D-40); sabit yedek yok
+        if gmax is not None and gun > gmax: o.append(m("politika_belgesi", "BAYRAK", olcu=int(gun), esik=gmax, neden="tazele (D-40)"))
     return o
 
 

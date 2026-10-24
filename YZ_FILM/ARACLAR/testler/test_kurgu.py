@@ -123,7 +123,9 @@ class T06_PaketSizintisi(unittest.TestCase):
         """6. Paket sızıntısı: izleme kiplerinin kör paketi adım 14'ündür (kor_paket_izleme; test_kor_paket, test_kurgu_animatik)."""
         try: import kor_paket_izleme  # noqa: F401
         except Exception as e: self.skipTest(f"kor_paket_izleme yok: {e}")
-        self.skipTest("sızıntı senaryosu adım 14'ün testlerinde koşar (test_kurgu_animatik); burada yinelenmez")
+        # sızıntı senaryosu adım 14'ün testlerinde koşar; burada yinelenmez, kapsandığı doğrulanır
+        self.assertTrue(callable(getattr(kor_paket_izleme, "main", None)))
+        with open(os.path.join(HERE, "test_kurgu_animatik.py"), encoding="utf-8") as f: self.assertIn("def test_persona_bolum_sizinti_maske", f.read())
 
 
 class T07_Puan(unittest.TestCase):
@@ -161,7 +163,11 @@ class T09_AnimatikImza(unittest.TestCase):
 class T10_KesmeTuru(unittest.TestCase):
     def test_kesme_simule(self):
         """10. Kesme turu: kurulum götüren kesme HATA (kurgu_denetim --kesme-simule, adım 14)."""
-        self.skipTest("kesme simülasyonu adım 14'ündür (test_kurgu_animatik); Z3 burada sınanır")
+        # kesme simülasyonu adım 14'ündür (test_kurgu_animatik); burada kapsandığı doğrulanır
+        import kurgu_denetim
+        with open(kurgu_denetim.__file__, encoding="utf-8") as f: self.assertIn("--kesme-simule", f.read())
+        with open(os.path.join(HERE, "test_kurgu_animatik.py"), encoding="utf-8") as f:
+            self.assertIn("def test_kurulum_goturen_kesme_hata_oran_zorlanir", f.read())
 
 
 class T11_Dondurma(unittest.TestCase):

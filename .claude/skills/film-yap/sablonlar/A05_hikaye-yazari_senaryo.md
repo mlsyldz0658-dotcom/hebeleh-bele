@@ -18,7 +18,7 @@ Yapıdan tam senaryoyu yaz: sahneler, EKRAN tarifleri (seyircinin göreceği), r
 4. İlk replik ekranda görünen kişiden gelir; her replik taşıdığı bilgiyi (`tasidigi`) belirtir.
 5. Anahtar olgular parti başına {{esik:anahtar_olgu_parti}}; `kritik` işaretli olanlar seyircinin mutlaka anlaması gerekenlerdir.
 6. NE YOK öğeleri ve evren kanonu korunur.
-7. ≥ {{esik:ekran_disi_tasima_kelime_esigi}} kelimelik blok `ekran_disi_uygun` işaretlenir; aynı karakter art arda en çok 3 blok; kahramanın adı ilk {{esik:kahraman_adi_max_sn}} sn içinde duyulur.
+7. ≥ {{esik:ekran_disi_tasima_kelime_esigi}} kelimelik blok `ekran_disi_uygun` işaretlenir; aynı karakter art arda en çok {{esik:ayni_karakter_ardisik_max}} blok; kahramanın adı ilk {{esik:kahraman_adi_max_sn}} sn içinde duyulur.
 8. Seyirlik an parti başına ≥ {{esik:seyirlik_an_parti_min}}; gösterişsiz en uzun aralık ≤ {{esik:gosterisiz_aralik_max_sn}} sn; ekran dışı köprü replik sahne başına ≤ {{esik:kopru_replik_sahne_max}}.
 
 ## CIKTI

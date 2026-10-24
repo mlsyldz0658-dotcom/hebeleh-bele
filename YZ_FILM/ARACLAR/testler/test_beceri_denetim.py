@@ -60,6 +60,35 @@ class GercekDepo(unittest.TestCase):
             self.assertNotIn("{{", bd.sablon_doldur(m))
         self.assertNotIn("_HIKAYE_ODASI", bd.oku(os.path.join(DEPO, ".claude", "agents", "oyuncu.md")))
 
+    def test_son_tur_hikaye_esikleri_yer_tutucu(self):
+        """A03/A04/A05 şablonlarındaki düz sayılar hikaye_esikleri.json anahtarlarına bağlandı (son tur B)."""
+        bek = {"merak_sorusu_min": 8, "kurulum_min": 5, "kapak_imgesi_max_sn": 120, "ornek_replik_max": 5, "ayni_karakter_ardisik_max": 3}
+        E = bd.esikleri_yukle(DEPO)
+        for k, v in bek.items(): self.assertEqual(E.get(k), v, k)
+        for s, anahtarlar in (("A03_hikaye-mimari.md", ("merak_sorusu_min", "kurulum_min", "kapak_imgesi_max_sn", "ornek_replik_max")),
+                              ("A04_hikaye-mimari.md", ("merak_sorusu_min", "kurulum_min", "kapak_imgesi_max_sn", "ornek_replik_max")),
+                              ("A05_hikaye-yazari_senaryo.md", ("ayni_karakter_ardisik_max",))):
+            m = bd.oku(os.path.join(FY, "sablonlar", s))
+            for k in anahtarlar: self.assertIn("{{esik:%s}}" % k, m, s)
+            dolu = bd.sablon_doldur(m)
+            self.assertNotIn("{{", dolu)
+            for duz in ("en az 8,", "en az 5;", "ilk 120 sn", "en çok 5,", "en çok 3 blok"):
+                if duz in m: self.fail("%s: düz sayı kaldı: %s" % (s, duz))
+
+    def test_son_tur_gorev_dosya_adlari(self):
+        """Şablonlar görev kaydının dosya adlarını kullanır: A06 RV CIKTI/senaryo.json, kart KART_ISTEGI_P*, A11 hakem HAKEM_G1."""
+        import hat.asamalar as HAT
+        rv = next(s for s in HAT.asama("A06").gorevler if s.kod == "RV")
+        m = bd.oku(os.path.join(FY, "sablonlar", "A06_hikaye-yazari_revizyon.md"))
+        for c in rv.cikti: self.assertIn("`%s`" % c, m)
+        kt = next(s for s in HAT.asama("A07a").gorevler if s.kod == "KT")
+        self.assertIn("_YONETMEN/KART_ISTEGI_P*.json", kt.girdi)
+        for s in ("A07a_kart-tasarimcisi.md", "A10d_kart-tasarimcisi.md"):
+            k = bd.oku(os.path.join(FY, "sablonlar", s)); self.assertIn("KART_ISTEGI_P<n>.json", k); self.assertNotIn("`GIRDI/KART_ISTEGI.json`", k)
+        rf = next(s for s in HAT.asama("A11").gorevler if s.kod == "RF")
+        self.assertEqual(rf.cikti, ("CIKTI/HAKEM_G1.json",))
+        self.assertIn("`CIKTI/HAKEM_G1.json`", bd.oku(os.path.join(FY, "sablonlar", "A11_sureklilik-denetcisi_hakem.md")))
+
     def test_kurgu_ve_kesici_kararlari_kok_neden_ve_bulgu_ister(self):
         m = bd.oku(os.path.join(FY, "sablonlar", "A12_kurgucu_duzelt.md"))
         self.assertIn("kararlar[{madde, bulgu, kok_neden,", m)

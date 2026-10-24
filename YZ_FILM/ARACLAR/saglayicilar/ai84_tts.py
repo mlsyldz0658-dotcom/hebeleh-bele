@@ -2,8 +2,8 @@
 Önbellek: <film>/SESLER/_tts_onbellek/<ses|model|metin|tohum özeti>.mp3 — aynı cümle iki kez ücretlenmez.
 Anahtar dosyası yalnız VARLIĞI ve boyutuyla denetlenir (içerik okunmaz; okumayı ai84.py ilk istekte yapar). Anahtar yoksa
 `Kisitlandi(kod="anahtar")` (geçilebilir) — süreç ölmez. Ağ/iş hatası `Kisitlandi(kod="ag")`.
-AI84 tohum (seed) ve previous_text/next_text alanlarını geçiriyorsa ai84.tts'e eklenmeleri paylaşılan istektir; o zamana kadar bu alanlar
-önbellek anahtarına girer ama gönderilmez (kayıtta `gecirilmedi`).
+Tohum (seed) ve komşu replikler (onceki → previous_text, sonraki → next_text; tonlama sürekliliği) ai84.tts'e geçirilir. Önbellek anahtarı
+ses + model + metin + tohumdur: komşu replik değişince aynı cümle yeniden ücretlenmez.
 """
 import os, hashlib, subprocess, shutil
 from saglayicilar import Saglayici, Kisitlandi
@@ -53,14 +53,14 @@ class AI84Tts(Saglayici):
         mp3 = self.onbellek(film, metin, ses_id, seed); os.makedirs(os.path.dirname(mp3), exist_ok=True)
         kredi = 0
         if not os.path.exists(mp3):
-            try: kredi = ai84.tts(metin, ses_id, mp3 + ".tmp", model_id=self.model) or self.tahmin(metin)
+            try: kredi = ai84.tts(metin, ses_id, mp3 + ".tmp", model_id=self.model, seed=seed, previous_text=onceki or None,
+                                  next_text=sonraki or None) or self.tahmin(metin)
             except ai84.AI84Error as e: raise Kisitlandi(str(e)[:120], kod="anahtar" if "anahtar" in str(e) else "ag") from None
             os.replace(mp3 + ".tmp", mp3)
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", mp3, "-ar", str(SR), "-ac", "1", cikti], check=True)
         from olcum import ses as O
         x, _ = O.oku(cikti)
-        return {"sure_sn": round(len(x) / SR, 3), "kredi": kredi, "kelimeler": None, "onbellek": os.path.basename(mp3),
-                "gecirilmedi": [k for k, v in (("seed", seed), ("onceki", onceki), ("sonraki", sonraki)) if v]}
+        return {"sure_sn": round(len(x) / SR, 3), "kredi": kredi, "kelimeler": None, "onbellek": os.path.basename(mp3)}
 
     def onbellekte_mi(self, film, metin, ses_id, seed=None): return os.path.exists(self.onbellek(film, metin, ses_id, seed))
 

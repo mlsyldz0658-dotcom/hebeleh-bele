@@ -3,6 +3,7 @@
 Kullanım:
   python kor.py --paket --kip g1|kart|kapak --film <film> [--tur N]   (genellikle kare_denetim / gemini_al / kapak çağırır)
   python kor.py --denetle <_KOR_PAKET/<kip>_t<tur>> --film <film>       sızıntı denetimi (0 temiz · 1 sızıntı)
+  python kor.py --sahte-cevap --kip g1|kart|kapak --film <film> [--tur N]   TEST/simülasyon: beklenenle doğru (enjeksiyonlu) kör cevaplar
   Kodda: import kor
     kor.paket_kur(film, kip, tur, birimler, grup_sayisi=None) → {klasor, gruplar: {i: [gNN.jpg]}, anahtar}
         birim = {anahtar: "071_a", gorsel: <yol>, baglam: {...}}  (baglam: kip'e göre; bkz. sorular_g1 / sorular_kart / sorular_kapak)
@@ -461,6 +462,9 @@ def main(argv):
         yas += [k.get("ad") for k in (h.get("karakterler") or {}).values() if isinstance(k, dict)]
         b = sizinti(kl, yas)
         print(json.dumps({"sizinti": b}, ensure_ascii=False, indent=1)); return 1 if b else 0
+    if "--sahte-cevap" in argv:                      # simülasyon: ANAHTAR'daki beklenenlerle cevap (yan dosyadaki kor_hata enjeksiyonuyla)
+        kip = po.arg_al(argv, "--kip"); film = po.film_kok(po.arg_al(argv, "--film"))
+        print("\n".join(sahte_cevaplar(film, kip, po.tur_no(argv)))); return 0
     if "--paket" in argv:
         kip = po.arg_al(argv, "--kip"); film = po.film_kok(po.arg_al(argv, "--film")); tur = po.tur_no(argv)
         if kip == "g1":

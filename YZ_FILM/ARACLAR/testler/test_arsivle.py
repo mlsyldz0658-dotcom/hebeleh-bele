@@ -78,6 +78,9 @@ class Arsivle(unittest.TestCase):
     def test_d_takili_degil_bekle(self):
         kok = self.kur(); eski = arsivle.arsiv_koku
         arsivle.arsiv_koku = lambda: os.path.join(ortak.yollar()["veri_kok"], "YOK_DISK", "ARSIV")
+        gercek = arsivle.disk_takili              # Windows'ta geçici klasörün sürücüsü hep takılı: takılı olmayan disk benzetilir
+        arsivle.disk_takili = lambda k: False if "YOK_DISK" in os.path.abspath(k) else gercek(k)
+        self.addCleanup(setattr, arsivle, "disk_takili", gercek)
         try:
             k, r = arsivle.arsivle(kok, [])
             self.assertEqual(k, 8); self.assertIn("D'yi tak", r["kullaniciya"]); self.assertTrue(os.path.exists(self.serbest))

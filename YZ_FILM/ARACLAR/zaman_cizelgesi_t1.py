@@ -204,7 +204,7 @@ def ad_tablosu(film):
 
 def goruntu_coz(film, p):
     no = int(p.get("no"))
-    g = os.path.join("SIRALI_GORSEL", "%03d.jpg" % no)
+    g = "SIRALI_GORSEL/%03d.jpg" % no                      # planda hep / (Windows'ta da aynı JSON)
     gp = os.path.join(film, g)
     den = ((p.get("denetim") or {}).get("G1") or {})
     ok = os.path.isfile(gp)
@@ -212,12 +212,12 @@ def goruntu_coz(film, p):
         s = sha(gp, 40) or ""
         ok = s.startswith(str(den["sha1"])[:8]) or str(den["sha1"]).startswith(s[:8])
     bitis = None
-    for aday in (os.path.join("SIRALI_GORSEL", "%03d_bitis.jpg" % no),):
+    for aday in ("SIRALI_GORSEL/%03d_bitis.jpg" % no,):
         if os.path.isfile(os.path.join(film, aday)): bitis = aday
     bg = (((p.get("uretim") or {}).get("zincir") or {}).get("bitis_gorsel"))
     if not bitis and isinstance(bg, str) and bg.startswith("plan:"):
         try:
-            a = os.path.join("SIRALI_GORSEL", "%03d.jpg" % int(bg.split(":", 1)[1]))
+            a = "SIRALI_GORSEL/%03d.jpg" % int(bg.split(":", 1)[1])
             if os.path.isfile(os.path.join(film, a)): bitis = a
         except ValueError: pass
     hk = HAREKET.get(str(((p.get("zanaat") or {}).get("kamera") or {}).get("hareket_tipi") or ""), "nefes")

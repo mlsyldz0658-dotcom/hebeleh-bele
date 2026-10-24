@@ -63,7 +63,8 @@ class VeriEmniyet(unittest.TestCase):
     def test_sarmalayici_yamali_memmeti_cagirir(self):
         ve.veri_emniyet(self.veri, sessiz=True)
         s = os.path.join(self.veri, "ARACLAR", "memmet.py")
-        self.assertIn(os.path.join(os.path.abspath(ARACLAR), "memmet.py"), open(s, encoding="utf-8").read())
+        with open(s, encoding="utf-8") as f: icerik = f.read()                     # yol Python dizgesi olarak (repr) yazılır:
+        self.assertIn("DEPO_MEMMET = %r" % os.path.join(os.path.abspath(ARACLAR), "memmet.py"), icerik)   # Windows'ta \\ ikilenir
         r = subprocess.run([sys.executable, s], capture_output=True, text=True, encoding="utf-8", timeout=60)
         self.assertEqual(r.returncode, 0); self.assertIn("MEMMET AUTO", r.stdout)   # argümansız: depo Memmet'inin kullanım metni
 

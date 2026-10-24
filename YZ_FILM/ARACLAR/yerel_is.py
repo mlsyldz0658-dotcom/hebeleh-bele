@@ -81,11 +81,7 @@ def python_bul(ortam):
     return v if os.path.exists(v) else None
 
 
-def _pid_yasiyor(pid):
-    if os.name == "nt": return True
-    try: os.kill(pid, 0); return True
-    except ProcessLookupError: return False
-    except OSError: return True
+def _pid_yasiyor(pid): return ortak.pid_yasiyor(pid)
 
 
 def gpu_kilidi_al(is_id):

@@ -444,11 +444,7 @@ def jsonl_oku(yol):
     return out
 
 
-def _pid_yasiyor(pid):
-    if os.name == "nt": return True               # Windows'ta yalnız yaş ölçütü
-    try: os.kill(pid, 0); return True
-    except ProcessLookupError: return False
-    except (PermissionError, OSError): return True
+def _pid_yasiyor(pid): return ortak.pid_yasiyor(pid)
 
 
 _TUTULAN = set()
@@ -495,9 +491,9 @@ class Kilit:
         if self.ic: return False
         _TUTULAN.discard(self.p)
         if et is None or issubclass(et, Exception):       # BaseException (süreç ölümü taklidi) kilidi bırakmaz
-            try:
-                with open(self.p, encoding="utf-8") as f:
-                    if json.load(f).get("jeton") == self.jeton: os.remove(self.p)
+            try:                                          # dosya kapandıktan sonra kaldırılır (Windows açık dosyayı kaldırmaz)
+                with open(self.p, encoding="utf-8") as f: benim = json.load(f).get("jeton") == self.jeton
+                if benim: os.remove(self.p)
             except (OSError, ValueError): pass
         return False
 

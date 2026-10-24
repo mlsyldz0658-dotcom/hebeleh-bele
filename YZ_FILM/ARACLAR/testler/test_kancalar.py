@@ -22,6 +22,20 @@ import film as FILM
 DEPO = os.path.dirname(os.path.dirname(ARACLAR))
 KANCA = os.path.join(DEPO, ".claude", "hooks", "kanca.py")
 KANCA_SH = os.path.join(DEPO, ".claude", "bin", "kanca.sh")
+
+
+def git_bash():
+    """Claude Code Windows'ta kancaları Git Bash ile koşar. Windows'ta yalın "bash" System32'deki WSL başlatıcısına gidebilir:
+    git'in yanındaki bash.exe aranır."""
+    if os.name != "nt": return "bash"
+    g = shutil.which("git")
+    if g:
+        kok = os.path.dirname(os.path.dirname(os.path.realpath(g)))
+        for a in (os.path.join(kok, "bin", "bash.exe"), os.path.join(kok, "usr", "bin", "bash.exe")):
+            if os.path.isfile(a): return a
+    for a in (r"C:\Program Files\Git\bin\bash.exe",):
+        if os.path.isfile(a): return a
+    return shutil.which("bash") or "bash"
 AYAR = os.path.join(DEPO, ".claude", "settings.json")
 ERISIM = os.path.join(DEPO, ".claude", "kurallar", "erisim.json")
 _spec = importlib.util.spec_from_file_location("kanca_mod", KANCA); kanca = importlib.util.module_from_spec(_spec)
@@ -692,9 +706,9 @@ class TestKapaliBasarisiz(unittest.TestCase):
             shutil.rmtree(d, True)
 
     def test_kanca_sh(self):
-        r = kos("komut", bash("git status"), arac=["bash", KANCA_SH, "komut"]); self.assertEqual(r[:2], (0, None))
-        self.assertTrue(reddedildi(kos("komut", bash("rm -rf /"), arac=["bash", KANCA_SH, "komut"])))
-        self.assertEqual(kos("erisim", b"bozuk", arac=["bash", KANCA_SH, "erisim"])[0], 2)
+        r = kos("komut", bash("git status"), arac=[git_bash(), KANCA_SH, "komut"]); self.assertEqual(r[:2], (0, None))
+        self.assertTrue(reddedildi(kos("komut", bash("rm -rf /"), arac=[git_bash(), KANCA_SH, "komut"])))
+        self.assertEqual(kos("erisim", b"bozuk", arac=[git_bash(), KANCA_SH, "erisim"])[0], 2)
 
     def test_sure(self):
         t = time.time()

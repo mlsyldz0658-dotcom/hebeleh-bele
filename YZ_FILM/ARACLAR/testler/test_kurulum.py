@@ -47,7 +47,9 @@ class Ortam(unittest.TestCase):
         ag_cagrisi = []
         def ag(*a, **kw): ag_cagrisi.append(a); raise OSError("ağ yasak (test)")
         cikti = lambda cmd, timeout=30: "2.1.305 (Claude Code)" if cmd[0] == "claude" else "git version 2.40"
-        with mock.patch("socket.create_connection", ag), mock.patch("urllib.request.urlopen", ag), \
+        gercek_which = shutil.which                                   # CI'da Claude Code kurulu değil: varmış gibi gösterilir
+        which = lambda ad, *a, **kw: os.path.join(self.kok, "bin", ad) if ad == "claude" else gercek_which(ad, *a, **kw)
+        with mock.patch.object(kurulum.shutil, "which", which), mock.patch("socket.create_connection", ag), mock.patch("urllib.request.urlopen", ag), \
              mock.patch.object(kurulum, "_cikti", cikti), mock.patch.object(kurulum, "pip", lambda *a: self.fail("pip çağrıldı")), \
              mock.patch.object(kurulum, "model_indir", lambda *a: self.fail("model indirildi")):
             kod, out = sessiz(kurulum.Kurulum(veri=self.veri, depo=self.depo, kuru=True, **k).calis)
@@ -330,7 +332,7 @@ class Guncelle(unittest.TestCase):
         yaz(os.path.join(self.kul, "BAT_URETILDI.bat"), "x")       # ilgisiz izlenmeyen dosya engellemez
         kod, out = sessiz(bat_isleri.guncelle, self.kul, bat_yenile=False)
         self.assertEqual(kod, 0, out)
-        self.assertEqual(txt(os.path.join(self.kul, "A.txt")), "a2\n")
+        self.assertEqual(txt(os.path.join(self.kul, "A.txt")).replace("\r\n", "\n"), "a2\n")    # Windows git: core.autocrlf
         self.assertEqual(sessiz(bat_isleri.guncelle, self.kul, bat_yenile=False)[1].strip(), "Set zaten güncel.")
 
     def test_zip_kurulumunda_kapali(self):

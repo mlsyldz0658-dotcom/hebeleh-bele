@@ -77,7 +77,8 @@ def simdi(): return time.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def oku(yol):
-    with open(yol, "rb") as f: return f.read().decode("utf-8-sig", "replace")
+    """Satır sonu \n'e çevrilir: Windows'ta git (core.autocrlf) depoyu CRLF ile açar."""
+    with open(yol, "rb") as f: return f.read().decode("utf-8-sig", "replace").replace("\r\n", "\n")
 
 
 def json_oku(yol, vars_=None):
@@ -207,9 +208,11 @@ class Denetim:
         self._E = None; self._H = None
 
     def m(self, madde, seviye, dosya, neden):
-        self.maddeler.append({"madde": madde, "seviye": seviye, "dosya": os.path.relpath(dosya, self.depo) if dosya else None, "neden": neden})
+        self.maddeler.append({"madde": madde, "seviye": seviye, "dosya": self.rel(dosya) if dosya else None, "neden": neden})
 
-    def rel(self, p): return os.path.relpath(p, self.depo)
+    def rel(self, p):
+        try: return os.path.relpath(p, self.depo)
+        except ValueError: return p                       # Windows: başka sürücüdeki yol (C: / D:) göreli yazılamaz
 
     @property
     def E(self):

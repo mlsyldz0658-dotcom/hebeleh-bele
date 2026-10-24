@@ -4,7 +4,8 @@
 # Python sırası: .claude/bin/python_yolu.txt (kurulumun yazdığı MUTLAK yol) → py -3.10 → python3 → python.
 # Güvenlik olaylarında (erisim, komut, ajan) Python bulunamaz ya da beklenmeyen kodla çıkarsa çağrı ENGELLENİR (çıkış 2);
 # bilgi olaylarında açık başarısız (çıkış 0). Bu dosya hiçbir anahtar ya da ayar okumaz.
-D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+S="${BASH_SOURCE[0]//\\//}"   # Windows: $CLAUDE_PROJECT_DIR ters bölü taşır; dirname yalnız / tanır
+D="$(cd "$(dirname "$S")" && pwd)"
 K="$D/../hooks/kanca.py"
 OLAY="${1:-}"
 guvenlik=0

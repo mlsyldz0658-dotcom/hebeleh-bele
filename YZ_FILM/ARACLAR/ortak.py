@@ -92,6 +92,26 @@ def atomik_yaz(yol, veri):
             time.sleep(0.2)
 
 
+def pid_yasiyor(pid):
+    """Süreç yaşıyor mu (bayat kilit kararı). Windows'ta os.kill süreci öldürür: OpenProcess + GetExitCodeProcess kullanılır.
+    Ölçülemezse yaşıyor sayılır (kilit yalnız yaşla kalkar)."""
+    if os.name != "nt":
+        try: os.kill(pid, 0); return True
+        except ProcessLookupError: return False
+        except OSError: return True
+    try:
+        import ctypes
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        h = k32.OpenProcess(0x1000, False, int(pid))                 # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h: return ctypes.get_last_error() == 5                  # ERROR_ACCESS_DENIED: süreç var; 87: süreç yok
+        try:
+            kod = ctypes.c_ulong(0)
+            if not k32.GetExitCodeProcess(h, ctypes.byref(kod)): return True
+            return kod.value == 259                                    # STILL_ACTIVE
+        finally: k32.CloseHandle(h)
+    except Exception: return True
+
+
 def json_oku(yol, varsayilan=None):
     try:
         with open(yol, encoding="utf-8-sig") as f: return json.load(f)

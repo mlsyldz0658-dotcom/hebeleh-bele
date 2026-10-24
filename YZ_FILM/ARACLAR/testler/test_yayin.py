@@ -403,7 +403,10 @@ class Evren(Temel):
 
     def test_d_takili_degil_ertelenir(self):
         yok = os.path.join(_ortam.KOK, "TAKILI_DEGIL", "YEDEK")
-        self.assertEqual(efs.main(["--yedekle", "--seri", SERI, "--hedef", yok]), 0)
+        gercek = dy.surucu_var                    # Windows'ta geçici klasörün sürücüsü (C:) hep takılı: takılı olmayan disk benzetilir
+        sv = lambda y: False if "TAKILI_DEGIL" in os.path.abspath(y) else gercek(y)
+        with unittest.mock.patch.object(dy, "surucu_var", sv):
+            self.assertEqual(efs.main(["--yedekle", "--seri", SERI, "--hedef", yok]), 0)
         self.assertFalse(os.path.exists(yok))
         self.assertEqual(oku(os.path.join(_ortam.VERI, "HESAP", "YEDEK_DURUMU.json"))[f"evren/{SERI}"]["durum"], "ertelendi")
 

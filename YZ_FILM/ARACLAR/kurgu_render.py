@@ -157,7 +157,9 @@ def segment_yap(film, p, w, h, kartlar, cikti, gecici):
         cmd += ["-i", b]
         fc.append("[1:v]scale=%d:%d,loop=loop=%d:size=1:start=0,setpts=N/%d/TB,fps=%d,format=yuv420p,trim=end_frame=%d,setpts=PTS-STARTPTS[b]"
                   % (w, h, gk - 1, FPS, FPS, gk))
-        fc.append("[%s][b]xfade=transition=fade:duration=%.4f:offset=%.4f[v1]" % (son, gk / FPS, (n - gk) / FPS))
+        # ffmpeg 7.0 setpts'tan sonra kare hızını 1/0 (bilinmiyor) bırakır; xfade sabit kare hızı ister → iki girişe de fps.
+        fc.append("[%s]fps=%d[xa];[b]fps=%d[xb];[xa][xb]xfade=transition=fade:duration=%.4f:offset=%.4f[v1]"
+                  % (son, FPS, FPS, gk / FPS, (n - gk) / FPS))
         son = "v1"; idx = 2
     katman = []
     for j, s in enumerate(p.get("serit") or []):

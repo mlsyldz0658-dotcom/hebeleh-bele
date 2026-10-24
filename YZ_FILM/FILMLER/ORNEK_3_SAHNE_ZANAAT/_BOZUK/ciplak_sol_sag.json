@@ -5,7 +5,10 @@
   {
    "dosya": "_YONETMEN/PLANLAR/S01.json",
    "yol": "planlar.2.zanaat.istem_elle",
-   "deger": "Static close-up. 0.5-1.6s: she looks right. 1.8-3s: the jaw tightens. 3-8s: holds still."
+   "deger": {
+    "metin": "Static close-up. 0.5-1.6s: she looks right. 1.8-3s: the jaw tightens. 3-8s: holds still.",
+    "neden": "filtre reddinden sonra elle yazıldı (test)"
+   }
   }
  ],
  "beklenen": {

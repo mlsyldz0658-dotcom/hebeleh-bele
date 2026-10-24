@@ -238,7 +238,10 @@ def plan_kurallari(p, E, B=None, filtre=None):
             ist = plan_dili.gorunur_tarif(p, "en", B)
         except Exception as e:
             O(po.m("istem_derlenemedi", "OLCULEMEDI", no, neden=f"{e.__class__.__name__}: {str(e)[:120]}"))
-    elle = (z.get("istem_elle") or "") if isinstance(z.get("istem_elle"), str) else ""
+    ie = z.get("istem_elle")                                   # {metin, neden} (şema: nesne); eski dizge de okunur
+    elle = ie if isinstance(ie, str) else (ie or {}).get("metin") or "" if isinstance(ie, dict) else ""
+    if isinstance(ie, dict) and not ie.get("neden"):
+        O(po.m("elle_istem_gerekcesiz", "HATA", no, kural="§5.1 kural 3", neden="istem_elle yalnız gerekçeyle (neden) yazılır"))
     for metin, kaynak in ((ist, "hareket_istem"), (elle, "istem_elle")):
         if not metin: continue
         if kaynak == "hareket_istem" and kelime(metin) > E.get("plan_hareket_istem_kelime_max", 75):

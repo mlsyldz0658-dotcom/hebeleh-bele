@@ -1,0 +1,82 @@
+{
+ "_surum": 1,
+ "sahne_grubu": "S02",
+ "hikaye_sahne": "S02",
+ "ses": {
+  "yatak": {
+   "dosya": null,
+   "etiket": "DIS_magara_agzi_gece_kar",
+   "seviye_lufs": -34.5,
+   "dongu": true,
+   "katmanlar": [
+    {
+     "ad": "hava_kar",
+     "dosya": null,
+     "kazanc_db": -12,
+     "kaynak": "defter:hava=kar"
+    }
+   ]
+  },
+  "oda_yaniti": "dis_magara_agzi",
+  "gecis": {
+   "capraz_sn": 0.0,
+   "one_alma_sn": null,
+   "zaman_surekli_onceki": true
+  },
+  "kalabalik": null
+ },
+ "planlar": {
+  "5": {
+   "diyalog": null,
+   "efektler": [
+    {
+     "id": "E5a",
+     "adim": "a1",
+     "kategori": "ayak",
+     "malzeme": "zemin:kar",
+     "an": "orta",
+     "kaynak_tercih": "klip",
+     "yedek": "kutuphane",
+     "seviye_db_diyaloga_gore": -6.5
+    },
+    {
+     "id": "E5b",
+     "adim": "a2",
+     "kategori": "kumas",
+     "malzeme": "kostum:oda/k1",
+     "an": "bas",
+     "kaynak_tercih": "klip",
+     "yedek": "kutuphane",
+     "seviye_db_diyaloga_gore": -6.5
+    }
+   ],
+   "flow_sound": "Sound: footsteps on snow, cloth rustling, wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "6": {
+   "diyalog": {
+    "yol": "veo_donustur",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "7": {
+   "diyalog": {
+    "yol": "veo_donustur",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  }
+ },
+ "_sahip": "ses-tasarimcisi",
+ "gerekce": "taslak incelendi; yatak ve efektler sahneye uygun"
+}

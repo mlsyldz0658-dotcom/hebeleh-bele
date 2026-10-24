@@ -23,9 +23,8 @@
  "leitmotif_nota_min": {"deger": 3, "aciklama": "Motifli ipucunun motifinde en az nota", "kaynak": "tahmin", "etiket": "[SM2] S0.18; §4.5.9", "sonuc": "H"},
  "muzik_bpm_aralik": {"deger": [40, 200], "aciklama": "Motif ve ipucu BPM akla yatkınlık aralığı; dışı BAYRAK", "kaynak": "tahmin", "etiket": "[SM2] §4.5.9", "sonuc": "B"},
  "muzik_kalite_ikili_min": {"deger": 0.5, "aciklama": "Müzik adayının dinleyici ikili karşılaştırma kazanma oranı; dinleyici yoksa ÖLÇÜLEMEDİ (= BAYRAK, açık eksik)", "kaynak": "tahmin", "etiket": "TASARIM D-25; §7.2 S0–S8 ek", "sonuc": "B"},
- "ses_donusum_benzerlik_min": {"deger": 0.70, "aciklama": "Dönüştürülen sesin hedef ses merkezine benzerliği", "kaynak": "tahmin", "etiket": "TASARIM §2.2 karar 4; [SM2] S1.11", "sonuc": "H"},
+ "ses_donusum_benzerlik_min": {"deger": 0.7, "aciklama": "Dönüştürülen sesin hedef ses merkezine benzerliği", "kaynak": "tahmin", "etiket": "TASARIM §2.2 karar 4; [SM2] S1.11", "sonuc": "H"},
  "ses_donusum_zarf_gecikme_max_ms": {"deger": 20, "aciklama": "Dönüşümde zarf gecikmesi", "kaynak": "tahmin", "etiket": "TASARIM §2.2 karar 4; [SM2] S1.11", "sonuc": "H"},
  "ses_donusum_wer_artis_max": {"deger": 0.05, "aciklama": "Dönüşüm sonrası ASR WER artışı", "kaynak": "tahmin", "etiket": "TASARIM §2.2 karar 4; [SM2] S1.11", "sonuc": "H"},
- "replik_wer_gri_bant": {"deger": [0.10, 0.25], "aciklama": "Veo metni gri bant (replik_kabul görevi); üstü HATA", "kaynak": "tahmin", "etiket": "TASARIM §2.2 ses merdiveni; [SM2] S2.2", "sonuc": "B"},
- "ai84_vc_tavan_film": {"deger": 20000, "aciklama": "Kritik replikte AI84 Voice Changer film tavanı (kredi); BUT tavanlarıyla aynı değer, ses merdiveni okur", "kaynak": "belge", "etiket": "TASARIM §2.2 maliyet; [SM2] İ-6", "sonuc": "H"}
+ "replik_wer_gri_bant": {"deger": [0.1, 0.25], "aciklama": "Veo metni gri bant (replik_kabul görevi); üstü HATA", "kaynak": "tahmin", "etiket": "TASARIM §2.2 ses merdiveni; [SM2] S2.2", "sonuc": "B"}
 }

@@ -719,7 +719,7 @@ def denetle(o):
         olc += film_olcumleri(p, h, E)
         import muzik
         liste = muzik.liste_oku(film)
-        mo, ipuclari = muzik.kagit_olcumleri(p, liste, h, E)
+        mo, ipuclari = muzik.kagit_olcumleri(p, liste, h, E, muzik.motifler(film, h, liste))
         olc += mo
         e2, ert = ertelenen_maddeler(film, p, h, prof); olc += e2; ek["ertelenen"] = ert
         if any(s.get("hareket_istem") for s in plan_listesi(p)):

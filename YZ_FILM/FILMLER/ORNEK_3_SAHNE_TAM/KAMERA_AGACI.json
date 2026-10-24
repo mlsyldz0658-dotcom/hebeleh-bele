@@ -1,0 +1,170 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A09",
+  "gorev": "A09-KA-001",
+  "girdi_imza": null,
+  "arac_surum": "kamera_agaci (kaset)",
+  "esik_surum": null,
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:26:25+00:00",
+  "ortam": "bulut"
+ },
+ "sahne_gruplari": {
+  "S01": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     1
+    ],
+    "KAM4": [
+     2,
+     4
+    ],
+    "KAM2": [
+     3
+    ]
+   }
+  },
+  "S02": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     5
+    ],
+    "KAM4": [
+     6
+    ],
+    "KAM2": [
+     7
+    ]
+   }
+  },
+  "S03": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     8
+    ],
+    "KAM2": [
+     9
+    ]
+   }
+  },
+  "S04": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     10
+    ],
+    "KAM4": [
+     11
+    ],
+    "KAM2": [
+     12
+    ]
+   }
+  },
+  "S05": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     13
+    ],
+    "KAM2": [
+     14
+    ]
+   }
+  },
+  "S06": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     15
+    ],
+    "KAM2": [
+     16
+    ]
+   }
+  },
+  "S07": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     17
+    ],
+    "KAM4": [
+     18
+    ],
+    "KAM3": [
+     19
+    ]
+   }
+  },
+  "S08": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     20
+    ],
+    "KAM2": [
+     21
+    ]
+   }
+  },
+  "S09": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     22
+    ],
+    "KAM2": [
+     23
+    ]
+   }
+  },
+  "S10": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     24
+    ],
+    "KAM2": [
+     25
+    ]
+   }
+  },
+  "S11": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     26
+    ],
+    "KAM4": [
+     27,
+     30
+    ],
+    "KAM5": [
+     28
+    ],
+    "KAM2": [
+     29
+    ]
+   }
+  },
+  "S12": {
+   "kok": "KAM1",
+   "kurulumlar": {
+    "KAM1": [
+     31
+    ],
+    "KAM2": [
+     32
+    ],
+    "KAM3": [
+     33
+    ]
+   }
+  }
+ }
+}

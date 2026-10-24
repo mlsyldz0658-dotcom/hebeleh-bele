@@ -1,0 +1,25 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A09",
+  "gorev": "A09-KA-001",
+  "girdi_imza": null,
+  "arac_surum": "kamera_agaci (kaset)",
+  "esik_surum": null,
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:26:25+00:00",
+  "ortam": "bulut"
+ },
+ "film": "ORNEK_3_SAHNE_TAM",
+ "kagit": "tamam",
+ "plan_sayisi": 33,
+ "sahne_grubu_sayisi": 12,
+ "kapilar": {
+  "S0_PROFIL": "_RAPOR/S0_PROFIL_t1.json",
+  "K0": "_RAPOR/K0_FILM.json",
+  "S0": "_RAPOR/S0_FILM.json",
+  "ISTEM": "_RAPOR/ISTEM_FILM.json"
+ },
+ "elle_istem_orani": 0.0,
+ "not": "kâğıt sonu: video hattı (A10–) bu imzayla açılır"
+}

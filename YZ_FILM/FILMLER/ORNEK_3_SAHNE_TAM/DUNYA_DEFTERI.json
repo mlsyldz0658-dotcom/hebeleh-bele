@@ -1,0 +1,1979 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07c",
+  "gorev": "A07c-DD-001",
+  "girdi_imza": "f8236f5c",
+  "arac_surum": "dunya_defteri 1.0",
+  "esik_surum": "esikler 1.0",
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:26:22+00:00",
+  "ortam": "bulut"
+ },
+ "film": "ORNEK_3_SAHNE_TAM",
+ "evren": "FROSTHOLLOW",
+ "baslangic": {
+  "kaynak": null,
+  "durum": {
+   "karakterler": {},
+   "nesneler": {},
+   "mekan_durumu": {},
+   "zaman": {}
+  }
+ },
+ "zaman_cizgileri": {
+  "ana": [
+   "S01",
+   "S02",
+   "S03",
+   "S04",
+   "S05",
+   "S06",
+   "S07",
+   "S08",
+   "S09",
+   "S10",
+   "S11",
+   "S12"
+  ]
+ },
+ "planlar": {
+  "1": {
+   "kaynak": "SAHNELER.json#1",
+   "kod": "S01-P01",
+   "sahne": "S01",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "2": {
+   "kaynak": "SAHNELER.json#2",
+   "kod": "S01-P02",
+   "sahne": "S01",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "3": {
+   "kaynak": "SAHNELER.json#3",
+   "kod": "S01-P03",
+   "sahne": "S01",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "4": {
+   "kaynak": "SAHNELER.json#4",
+   "kod": "S01-P04",
+   "sahne": "S01",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "5": {
+   "kaynak": "SAHNELER.json#5",
+   "kod": "S02-P01",
+   "sahne": "S02",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "6": {
+   "kaynak": "SAHNELER.json#6",
+   "kod": "S02-P02",
+   "sahne": "S02",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "7": {
+   "kaynak": "SAHNELER.json#7",
+   "kod": "S02-P03",
+   "sahne": "S02",
+   "bas": "418696ba",
+   "bit": "418696ba",
+   "bas_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "8": {
+   "kaynak": "SAHNELER.json#8",
+   "kod": "S03-P01",
+   "sahne": "S03",
+   "bas": "82705aad",
+   "bit": "82705aad",
+   "bas_ozet": "oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "9": {
+   "kaynak": "SAHNELER.json#9",
+   "kod": "S03-P02",
+   "sahne": "S03",
+   "bas": "82705aad",
+   "bit": "82705aad",
+   "bas_ozet": "oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "10": {
+   "kaynak": "SAHNELER.json#10",
+   "kod": "S04-P01",
+   "sahne": "S04",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "11": {
+   "kaynak": "SAHNELER.json#11",
+   "kod": "S04-P02",
+   "sahne": "S04",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "12": {
+   "kaynak": "SAHNELER.json#12",
+   "kod": "S04-P03",
+   "sahne": "S04",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "13": {
+   "kaynak": "SAHNELER.json#13",
+   "kod": "S05-P01",
+   "sahne": "S05",
+   "bas": "30d62c86",
+   "bit": "30d62c86",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "14": {
+   "kaynak": "SAHNELER.json#14",
+   "kod": "S05-P02",
+   "sahne": "S05",
+   "bas": "30d62c86",
+   "bit": "30d62c86",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "15": {
+   "kaynak": "SAHNELER.json#15",
+   "kod": "S06-P01",
+   "sahne": "S06",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "16": {
+   "kaynak": "SAHNELER.json#16",
+   "kod": "S06-P02",
+   "sahne": "S06",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "17": {
+   "kaynak": "SAHNELER.json#17",
+   "kod": "S07-P01",
+   "sahne": "S07",
+   "bas": "ec5c3a58",
+   "bit": "ec5c3a58",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "18": {
+   "kaynak": "SAHNELER.json#18",
+   "kod": "S07-P02",
+   "sahne": "S07",
+   "bas": "ec5c3a58",
+   "bit": "ec5c3a58",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "19": {
+   "kaynak": "SAHNELER.json#19",
+   "kod": "S07-P03",
+   "sahne": "S07",
+   "bas": "ec5c3a58",
+   "bit": "ec5c3a58",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kale_kapisi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kale_kapisi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "20": {
+   "kaynak": "SAHNELER.json#20",
+   "kod": "S08-P01",
+   "sahne": "S08",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "21": {
+   "kaynak": "SAHNELER.json#21",
+   "kod": "S08-P02",
+   "sahne": "S08",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "22": {
+   "kaynak": "SAHNELER.json#22",
+   "kod": "S09-P01",
+   "sahne": "S09",
+   "bas": "30d62c86",
+   "bit": "30d62c86",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "23": {
+   "kaynak": "SAHNELER.json#23",
+   "kod": "S09-P02",
+   "sahne": "S09",
+   "bas": "30d62c86",
+   "bit": "30d62c86",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; patika; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "patika",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "24": {
+   "kaynak": "SAHNELER.json#24",
+   "kod": "S10-P01",
+   "sahne": "S10",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "25": {
+   "kaynak": "SAHNELER.json#25",
+   "kod": "S10-P02",
+   "sahne": "S10",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "26": {
+   "kaynak": "SAHNELER.json#26",
+   "kod": "S11-P01",
+   "sahne": "S11",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "27": {
+   "kaynak": "SAHNELER.json#27",
+   "kod": "S11-P02",
+   "sahne": "S11",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "28": {
+   "kaynak": "SAHNELER.json#28",
+   "kod": "S11-P03",
+   "sahne": "S11",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "29": {
+   "kaynak": "SAHNELER.json#29",
+   "kod": "S11-P04",
+   "sahne": "S11",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "30": {
+   "kaynak": "SAHNELER.json#30",
+   "kod": "S11-P05",
+   "sahne": "S11",
+   "bas": "d56ec28f",
+   "bit": "d56ec28f",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; magara_agzi; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "magara_agzi",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "31": {
+   "kaynak": "SAHNELER.json#31",
+   "kod": "S12-P01",
+   "sahne": "S12",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "32": {
+   "kaynak": "SAHNELER.json#32",
+   "kod": "S12-P02",
+   "sahne": "S12",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  },
+  "33": {
+   "kaynak": "SAHNELER.json#33",
+   "kod": "S12-P03",
+   "sahne": "S12",
+   "bas": "2fa8af0d",
+   "bit": "2fa8af0d",
+   "bas_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "bit_ozet": "brann; ?; ifade gergin | oda; ?; ifade gergin | sera; kulube; ifade gergin",
+   "olaylar": [],
+   "durum": {
+    "bas": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    },
+    "bit": {
+     "karakterler": {
+      "sera": {
+       "mekan": "kulube",
+       "kostum": "k1",
+       "gorunum": {
+        "kir": 1,
+        "yaralar": []
+       },
+       "ifade": "gergin"
+      },
+      "oda": {
+       "ifade": "gergin"
+      },
+      "brann": {
+       "ifade": "gergin"
+      }
+     },
+     "nesneler": {},
+     "mekan_durumu": {},
+     "zaman": {}
+    }
+   }
+  }
+ },
+ "olaylar": [],
+ "sahne_uclari": {
+  "S01": {
+   "giris": "418696ba",
+   "cikis": "418696ba",
+   "hikaye_esit": true
+  },
+  "S02": {
+   "giris": "418696ba",
+   "cikis": "418696ba",
+   "hikaye_esit": true
+  },
+  "S03": {
+   "giris": "82705aad",
+   "cikis": "82705aad",
+   "hikaye_esit": true
+  },
+  "S04": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S05": {
+   "giris": "30d62c86",
+   "cikis": "30d62c86",
+   "hikaye_esit": true
+  },
+  "S06": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S07": {
+   "giris": "ec5c3a58",
+   "cikis": "ec5c3a58",
+   "hikaye_esit": true
+  },
+  "S08": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S09": {
+   "giris": "30d62c86",
+   "cikis": "30d62c86",
+   "hikaye_esit": true
+  },
+  "S10": {
+   "giris": "d56ec28f",
+   "cikis": "d56ec28f",
+   "hikaye_esit": true
+  },
+  "S11": {
+   "giris": "d56ec28f",
+   "cikis": "d56ec28f",
+   "hikaye_esit": true
+  },
+  "S12": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  }
+ },
+ "hikaye": {
+  "kaynak": "HIKAYE.json#bilgi",
+  "salt_okunur": true
+ },
+ "ses_alanlari": {
+  "S01": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S02": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S03": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S04": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S05": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S06": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S07": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S08": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S09": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S10": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S11": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  },
+  "S12": {
+   "yatak_katmanlari": [
+    "hava=kar"
+   ],
+   "surekli_nesne_sesleri": []
+  }
+ },
+ "gozlenen": {},
+ "dondurulmus": {}
+}

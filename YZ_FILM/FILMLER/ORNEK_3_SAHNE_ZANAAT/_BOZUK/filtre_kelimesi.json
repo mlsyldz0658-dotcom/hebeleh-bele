@@ -5,7 +5,10 @@
   {
    "dosya": "_YONETMEN/PLANLAR/S01.json",
    "yol": "planlar.1.zanaat.istem_elle",
-   "deger": "Static macro insert. 0.5-2s: she presses the iron key to her chest. 2-8s: holds still."
+   "deger": {
+    "metin": "Static macro insert. 0.5-2s: she presses the iron key to her chest. 2-8s: holds still.",
+    "neden": "filtre reddinden sonra elle yazıldı (test)"
+   }
   }
  ],
  "beklenen": {

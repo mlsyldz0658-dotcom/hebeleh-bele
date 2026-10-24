@@ -4,6 +4,9 @@ import os, sys, json, io, glob, shutil, contextlib
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 if ARACLAR not in sys.path: sys.path.insert(0, ARACLAR)
 import _ortam, ortak
+# stdout yönlendirmesinden önce yüklensin (modül yüklenirken sys.stdout.reconfigure çağırır)
+import kapi, kuyruk, esikler, plan_ortak, plan_sema, plan_dili, plan_birlestir, dunya_defteri, kroki, plan_denetim, istem_derle  # noqa
+import zaman_cizelgesi, kamera_agaci, cekim_listesi  # noqa
 
 DEPO_YZ = os.path.dirname(ARACLAR)
 ORNEK = os.path.join(DEPO_YZ, "FILMLER", "ORNEK_3_SAHNE_ZANAAT")
@@ -14,7 +17,7 @@ _SAYAC = [0]
 def kopya(ad=None):
     """Örnek filmi geçici veri köküne kopyalar (_BOZUK, _KASET ve _TEST hariç)."""
     _SAYAC[0] += 1
-    kok = os.path.join(_ortam.VERI, "FILMLER", ad or f"ZN_{_SAYAC[0]:03d}")
+    kok = os.path.join(_ortam.VERI, "FILMLER", f"{ad or 'ZN'}_{_SAYAC[0]:03d}")
     shutil.copytree(ORNEK, kok, ignore=shutil.ignore_patterns("_BOZUK", "_KASET", "_TEST", "_RAPOR", "SAHNELER.json", "DUNYA_DEFTERI.json"))
     return kok
 

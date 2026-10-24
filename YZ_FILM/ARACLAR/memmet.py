@@ -789,9 +789,10 @@ class Memmet:
         import blok_plani
         p = self.planlar.get(no)
         if p is None: return self.atla(no, "SAHNELER'de yok")
-        uygun, neden = blok_plani.uygun_mu(self.root, p, self.planlar, tur=tur, blok_nolar=self.blok_nolar, isler=self.D["isler"])
-        if not uygun: return self.atla(no, neden)
         ayr = (self.blok.get("ayrinti") or {}).get(str(no)) or {}
+        uygun, neden = blok_plani.uygun_mu(self.root, p, self.planlar, tur=tur, blok_nolar=self.blok_nolar, isler=self.D["isler"],
+                                           yeniden=bool(ayr.get("madde")))
+        if not uygun: return self.atla(no, neden)
         alan = "gorsel_istem" if tur == "gorsel" else "hareket_istem"
         ana = ayr.get("istem") or p.get(alan); yd = p.get(alan + "_yedek")
         istem = yd if yedek else ana
@@ -850,7 +851,8 @@ class Memmet:
              "bitis": next((d["sha"] for d in j["dosyalar"] if d["yuva"] == "Bitir"), None),
              "istem_sha": hashlib.sha1(j["istem"].encode("utf-8")).hexdigest()[:12], "yedek_istem": j["yedek"], "saglayici": "flow",
              "model": j["model"], "cozunurluk": j["cozunurluk"], "istem_bicimi": u.get("istem_bicimi"), "deneme": j["deneme"],
-             "is": j["is"], "flow_medya_id": medya, "plan_imza": u.get("plan_imza"), "blok": self.blok_id, "mod": self.A["kip"],
+             "is": j["is"], "flow_medya_id": medya, "plan_imza": __import__("blok_plani").plan_imza(p) if p else None,
+             "blok": self.blok_id, "mod": self.A["kip"],
              "zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "kapilar": {}}
         if j["tur"] == "video":
             yol = os.path.join(self.root, "KUNYE", f"{no:03d}.json"); self.eskiye_tasi(yol); _atomik(yol, k)

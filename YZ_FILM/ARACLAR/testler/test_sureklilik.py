@@ -167,7 +167,8 @@ class KasetA07(unittest.TestCase):
         import film
         self.film = film
         self.env = unittest.mock.patch.dict(os.environ, {"YZ_FILM_ORTAM": "yerel"}); self.env.start()
-        self.ad = "ZN_KASET_A07"
+        KasetA07.n = getattr(KasetA07, "n", 0) + 1
+        self.ad = f"ZN_KASET_A07_{KasetA07.n}"
         self.kok = os.path.join(_ortam.VERI, "FILMLER", self.ad)
         kod, r = self.k("yeni", "--konu", "kapıdaki kaptan", "--ad", self.ad)
         self.assertEqual(kod, 0, r)
@@ -206,9 +207,11 @@ class KasetA07(unittest.TestCase):
                 if c["durum"] in ("tamam", "kismi"): continue
                 return a, c
             return None, None
-        gercek = []
+        gercek, kasetten = [], []
         orj_kos = film.Defter.betik_kos
         def betik_kos(d, g):
+            if g["arac"] == "kredi.py":                       # kredi.py görev kimliği yazmıyor (paylaşılan istek): kasetten
+                kasetten.append(g["id"]); return kaset.betik_oynat(d.kok, g)[0]
             gercek.append(g["arac"] + " " + " ".join(g["argumanlar"])); return orj_kos(d, g)
         asamalar = []
         with unittest.mock.patch.object(film.Defter, "aktif", aktif), unittest.mock.patch.object(film.Defter, "betik_kos", betik_kos), \
@@ -226,7 +229,8 @@ class KasetA07(unittest.TestCase):
                         kc, rc = self.k("calis", gz["id"])
                         log = ""
                         lp = os.path.join(self.kok, "_GOREV", gz["id"], "CALISMA.log")
-                        if os.path.isfile(lp): log = open(lp, encoding="utf-8").read()[-1500:]
+                        if os.path.isfile(lp):
+                            with open(lp, encoding="utf-8") as f: log = f.read()[-1500:]
                         self.assertEqual(kc, 0, (gz["id"], rc, log)); continue
                     self.k("basla", gz["id"])
                     g = Z.jl(os.path.join(self.kok, "_GOREV", gz["id"], "GOREV.json"))
@@ -249,6 +253,7 @@ class KasetA07(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(kok, "_YONETMEN", "KROKI_ONERI.json")))
         self.assertEqual(sorted(os.path.basename(p) for p in glob.glob(os.path.join(kok, "_YONETMEN", "PLANLAR", "*.json"))),
                          ["G1.json", "G2.json", "G3.json"])
+        self.assertEqual(len(kasetten), 1)
         g = " | ".join(gercek)
         for alt in ("kroki.py --karsilikli", "plan_denetim.py --harita", "kroki.py --ciz", "dilim.py --asama A07b",
                     "plan_denetim.py --sahne --tum", "plan_birlestir.py", "dunya_defteri.py --derle --denetle",

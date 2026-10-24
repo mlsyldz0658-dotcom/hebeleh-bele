@@ -1,0 +1,243 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07c",
+  "arac_surum": "kredi 1.0",
+  "zaman": "2026-10-24T00:26:14+00:00"
+ },
+ "taslak": true,
+ "butce": {
+  "taban": 108,
+  "dilimler": {
+   "goruntu": 17,
+   "ses": 8,
+   "kurgu": 9
+  },
+  "take": 720,
+  "toplam": 861,
+  "tavan": null
+ },
+ "olcek": {
+  "_surum": 1,
+  "_uretim": {
+   "asama": null,
+   "arac_surum": "olcek 1.0",
+   "esik_surum": "1.1",
+   "zaman": "2026-10-24T00:26:14",
+   "ortam": "bulut",
+   "girdi_imza": "8bfcf369"
+  },
+  "sure_sn": 44,
+  "sure_dk": 0.7,
+  "sure_aralik_sn": [
+   1800,
+   2700
+  ],
+  "plan": {
+   "tahmin": 9,
+   "kullanilan": 9,
+   "kaynak": "SAHNELER.json",
+   "aralik": [
+    8,
+    10
+   ],
+   "klip": 9,
+   "klip_kaynak": "SAHNELER.json",
+   "formul": "plan = round(495 × 44 / 2400); klip = ceil(plan × (1 − 0.18))"
+  },
+  "kredi": {
+   "klip_kredi": 12,
+   "taban": 108,
+   "hedef_yeniden_oran": 0.2,
+   "hedef_toplam": 130,
+   "kapi_payi_oran": 0.3,
+   "kapi_payi": 33,
+   "dilimler": {
+    "goruntu": 17,
+    "ses": 8,
+    "kurgu": 9
+   },
+   "dilim_oranlari": {
+    "goruntu": 0.15,
+    "ses": 0.07,
+    "kurgu": 0.08
+   },
+   "take_payi": 720,
+   "butce_tahmini": 861,
+   "guvenlik_payi": 0.1,
+   "gereken_bakiye": 957,
+   "olcum_kredi": 540,
+   "formul": "taban = 9 × 12; kapı = ceil(taban × 0.3); BUT = taban + kapı + take 720; bakiye ≥ BUT / (1 − 0.1)"
+  },
+  "gonderim": {
+   "video_ilk": 9,
+   "video_yeniden": 3,
+   "video_take": 60,
+   "video_toplam": 72,
+   "gorsel_duzeltme": [
+    3,
+    5
+   ],
+   "blok": 4
+  },
+  "takvim": {
+   "kapasite_gunluk": 10,
+   "kapasite_olculdu": false,
+   "o0b_yapildi": false,
+   "kapasite_not": "ölçülmedi (Ö0-b yok); varsayım 10/gün (Ö0-b merdiveninin ilk basamağı)",
+   "video_gun": 8,
+   "gorsel_gunluk_tavan": 20,
+   "gorsel_gun": [
+    1,
+    1
+   ],
+   "flow_gun": [
+    9,
+    9
+   ],
+   "asamalar_gun": {
+    "kagit": [
+     3,
+     6
+    ],
+    "yerel_hazirlik": [
+     1,
+     2
+    ],
+    "animatik": [
+     2,
+     4
+    ],
+    "kurgu_ses_yayin": [
+     3,
+     6
+    ]
+   },
+   "toplam_gun": [
+    18,
+    27
+   ],
+   "takvim_hedef_gun": 21,
+   "video_sigar": true,
+   "gece_varsayilmaz": true,
+   "formul": "video_gun = ceil(72 / 10); gorsel_gun = ceil(görsel / 20); görsel günü ≠ video günü"
+  },
+  "ajan": {
+   "kalemler": {
+    "hikaye": [
+     40,
+     75
+    ],
+    "ses": [
+     1,
+     1
+    ],
+    "yonetmen": [
+     2,
+     2
+    ],
+    "kart": [
+     1,
+     3
+    ],
+    "kor_gozlem": [
+     3,
+     4
+    ],
+    "hakem": [
+     1,
+     1
+    ],
+    "animatik": [
+     20,
+     35
+    ],
+    "dikey_kesit": [
+     6,
+     10
+    ],
+    "hat_ders": [
+     3,
+     6
+    ],
+    "replik_kabul": [
+     1,
+     1
+    ],
+    "kurgu": [
+     20,
+     35
+    ],
+    "yayin": [
+     5,
+     10
+    ]
+   },
+   "toplam": [
+    103,
+    183
+   ],
+   "gorev_tavani_carpan": 1.5,
+   "gorev_tavani": {
+    "hikaye": 113,
+    "ses": 2,
+    "yonetmen": 3,
+    "kart": 5,
+    "kor_gozlem": 6,
+    "hakem": 2,
+    "animatik": 53,
+    "dikey_kesit": 15,
+    "hat_ders": 9,
+    "replik_kabul": 2,
+    "kurgu": 53,
+    "yayin": 15
+   },
+   "kagit_gorev_tavani": 113,
+   "kaynak": "TASARIM §3.6 (40 dk; tahmin); plan sayısıyla ölçeklenen kalemler: ses, yonetmen, kor_gozlem, hakem, replik_kabul"
+  },
+  "token": {
+   "gorev_basi": null,
+   "projeksiyon": null,
+   "film_token_tavan_onerisi": null,
+   "kaynak": "ölçülmedi",
+   "film_token_tavan_esik": null
+  },
+  "ai84": {
+   "tahmin": [
+    5367,
+    10367
+   ],
+   "tavan_film": 60000,
+   "kaynak": "TASARIM §1.6 [SM2] (tahmin)"
+  },
+  "el_isi": {
+   "gonder": 77,
+   "gonder_video": 72,
+   "gonder_gorsel": 5,
+   "gonder_basi_sn": 80.0,
+   "video_gun": 8,
+   "gunluk_saat": 0.2,
+   "paket": 3,
+   "paket_kaynak": "ceil(plan / 30) + 2 kart paketi",
+   "muzik_paket": 0,
+   "d_tak": 2,
+   "capcut_kez": 3,
+   "tamam": 12,
+   "saat": {
+    "video": 1.6,
+    "gorsel": 0.1,
+    "paket": 0.5,
+    "capcut": 0.8
+   },
+   "toplam_saat": 3.0,
+   "formul": "GÖNDER × (max(tempo, üretim/aynı_anda) + işlem) + paket × süre + CapCut + dışa aktarım"
+  },
+  "olculmedi": [
+   "günlük Flow video kapasitesi: ölçülmedi (Ö0-b yok); varsayım 10/gün (Ö0-b merdiveninin ilk basamağı)",
+   "kâğıt, yerel hazırlık, animatik ve kurgu/ses/yayın gün sayıları tahmindir",
+   "ajan görevi sayıları tahmindir (Ö0-f ve ilk 30–50 görev ölçer)",
+   "token projeksiyonu: ölçülmedi (Ö0-f ya da ilk 30–50 görev; D-08)",
+   "Flow 720p üretim süresi: ölçülmedi; varsayım 120 sn"
+  ]
+ }
+}

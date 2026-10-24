@@ -154,19 +154,15 @@ VARSAYILAN_ZINCIR = {"tts": ["ai84"], "asr": ["faster_whisper"], "ses_donustur":
 
 def saglayici(ad):
     """Ses türlerinde bu dilimin sınıfları önce; yoksa saglayicilar.KAYIT. Bulunamazsa None (kurulu değil)."""
-    yol = YEREL_KAYIT.get(ad)
+    import saglayicilar as sg
+    yol = YEREL_KAYIT.get(ad) or sg.KAYIT.get(ad)
     try:
-        if yol is None:
-            import saglayicilar as sg
-            yol = sg.KAYIT.get(ad)
-            if yol is None:
-                try: importlib.import_module(f"saglayicilar.{ad}")
-                except ImportError: return None
-                mod = importlib.import_module(f"saglayicilar.{ad}")
-                sinif = next((v for k, v in vars(mod).items() if isinstance(v, type) and getattr(v, "ad", None) == ad), None)
-                return sinif() if sinif else None
-        mod, sinif = yol.rsplit(".", 1)
-        return getattr(importlib.import_module(mod), sinif)()
+        if yol:
+            mod, sinif = yol.rsplit(".", 1)
+            return getattr(importlib.import_module(mod), sinif)()
+        mod = importlib.import_module(f"saglayicilar.{ad}")          # başka dilimin yeni sağlayıcısı (KAYIT satırı gelmeden)
+        sinif = next((v for v in vars(mod).values() if isinstance(v, type) and getattr(v, "ad", None) == ad), None)
+        return sinif() if sinif else None
     except ImportError: return None
 
 

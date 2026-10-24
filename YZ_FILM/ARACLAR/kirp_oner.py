@@ -182,7 +182,9 @@ def oner(kok, plan, klip, kelimeler=None, kusurlar=None, zincir=False, kilit=Non
 def kelimeler_klipte(d, no):
     ks = []
     for rid, r in sorted((d.get("replikler") or {}).items()):
-        if r.get("kaynak_plan") == no and r.get("yol_gercek", r.get("yol_plan")) != "tts": ks += r.get("kelimeler") or []
+        if r.get("kaynak_plan") == no and r.get("yol_gercek", r.get("yol_plan")) != "tts":
+            kz = r.get("klip_zamani") or {}
+            ks += r.get("kelimeler") or ([{"w": "…", "bas": kz["bas"], "bit": kz["bit"]}] if kz.get("bas") is not None else [])
     return ks
 
 

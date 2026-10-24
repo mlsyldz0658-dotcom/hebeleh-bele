@@ -1,0 +1,15 @@
+{
+ "_aciklama": "S02'nin kamera tarafı doğuya çevrildi: batıdaki kurulumlar 180° kuralını çiğniyor.",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/HARITA_P1.json",
+   "yol": "sahne_gruplari.S02.kamera_tarafi",
+   "deger": "dogu"
+  }
+ ],
+ "beklenen": {
+  "madde": "eksen_180",
+  "seviye": "HATA"
+ }
+}

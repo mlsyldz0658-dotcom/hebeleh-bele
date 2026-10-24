@@ -1,0 +1,92 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "ozet_eslesme_v1",
+ "title": "Özet eşleştirici raporu (ozet-eslestirici·ozet CIKTI/rapor.json)",
+ "description": "TASARIM §1.4, §3.5. Seyircinin özeti ile HIKAYE.json anahtar olguları kör eşleştirilir. puan_oku.eslesme_hesapla okur: karar bulundu=1, kismen=ozet_kismen_agirlik, yok=0.",
+ "type": "object",
+ "required": [
+  "olgular"
+ ],
+ "properties": {
+  "seyirci": {
+   "type": [
+    "integer",
+    "null"
+   ]
+  },
+  "olgular": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "karar"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "karar": {
+      "enum": [
+       "bulundu",
+       "kismen",
+       "yok"
+      ]
+     },
+     "kanit": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "seyirci metninden birebir alıntı"
+     }
+    }
+   }
+  },
+  "sorular": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "karar"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "karar": {
+      "enum": [
+       "bulundu",
+       "kismen",
+       "yok"
+      ]
+     },
+     "kanit": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  },
+  "yanlis_anlamalar": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "alinti": {
+      "type": "string"
+     },
+     "olgu": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

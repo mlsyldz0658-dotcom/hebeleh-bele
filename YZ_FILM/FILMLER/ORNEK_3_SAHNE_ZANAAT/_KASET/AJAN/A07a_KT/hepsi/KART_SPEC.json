@@ -1,0 +1,45 @@
+{
+ "_surum": 1,
+ "kartlar": [
+  {
+   "id": "mara/k1",
+   "karakter": "mara",
+   "kostum": "k1",
+   "gorunumler": [
+    "on",
+    "3/4",
+    "profil"
+   ],
+   "tarif_en": "a woman in her thirties with a single red braid, dark wool hunting coat, leather bracers",
+   "ne_yok": [
+    "no jewellery",
+    "no hat"
+   ]
+  },
+  {
+   "id": "voss/k1",
+   "karakter": "voss",
+   "kostum": "k1",
+   "gorunumler": [
+    "on",
+    "3/4",
+    "profil"
+   ],
+   "tarif_en": "a broad man in his fifties, grey beard, soot-dark officer's greatcoat with brass buttons",
+   "ne_yok": [
+    "no helmet"
+   ]
+  }
+ ],
+ "plakalar": [
+  {
+   "id": "kulube/ic_genel"
+  },
+  {
+   "id": "kulube/dis_kapi"
+  },
+  {
+   "id": "kulube/dis_kuzey"
+  }
+ ]
+}

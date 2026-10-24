@@ -1,0 +1,242 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "gorev_v2",
+ "title": "Görev sözleşmesi <film>/_GOREV/<id>/GOREV.json (film.py yazar)",
+ "description": "TASARIM §5.5. Ajan bu dosyayı okur, değiştirmez. Zarf istisnası: _surum + kendi zaman/girdi_imza alanları.",
+ "type": "object",
+ "required": [
+  "_surum",
+  "id",
+  "film",
+  "asama",
+  "tur",
+  "durum",
+  "girdi",
+  "cikti",
+  "istem",
+  "zaman"
+ ],
+ "properties": {
+  "_surum": {
+   "const": 2
+  },
+  "id": {
+   "type": "string",
+   "pattern": "^A[0-9]{2}[a-z]?-[A-Z0-9]+-[0-9]{3}$"
+  },
+  "film": {
+   "type": "string"
+  },
+  "asama": {
+   "type": "string",
+   "pattern": "^A[0-9]{2}[a-z]?$"
+  },
+  "tur": {
+   "enum": [
+    "ajan",
+    "betik",
+    "kullanici"
+   ]
+  },
+  "ajan": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "kip": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "persona": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "rol": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "ornek": {
+   "enum": [
+    "yeni",
+    "ayni_yazar",
+    null
+   ]
+  },
+  "paralel_grup": {
+   "type": "string"
+  },
+  "durum": {
+   "enum": [
+    "hazir",
+    "calisiyor",
+    "bitti",
+    "gecersiz",
+    "kesildi",
+    "iptal",
+    "model_sapmasi"
+   ]
+  },
+  "deneme": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "deneme_max": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "asamali": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "properties": {
+    "bolumler": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "acik": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "mekanizma": {
+     "enum": [
+      "subagentstop",
+      "sendmessage",
+      "bolum_gorevi"
+     ]
+    }
+   }
+  },
+  "girdi": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "girdi_imza": {},
+  "cikti": {
+   "type": "object",
+   "required": [
+    "zorunlu"
+   ],
+   "properties": {
+    "zorunlu": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "pattern": "^CIKTI/"
+     }
+    },
+    "son": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "sema": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  },
+  "tasima": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "string"
+   }
+  },
+  "kapi": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "rapor": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "arac": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "argumanlar": {
+   "type": "array"
+  },
+  "kredili": {
+   "type": "boolean"
+  },
+  "mesaj": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "algilama": {
+   "type": [
+    "object",
+    "null"
+   ]
+  },
+  "istem": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "yarim_davranisi": {
+   "enum": [
+    "devam_et",
+    "sifirdan"
+   ]
+  },
+  "agent_id": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "kullanim": {
+   "type": "object"
+  },
+  "zaman": {
+   "type": "object",
+   "required": [
+    "olusturma"
+   ],
+   "properties": {
+    "olusturma": {
+     "type": "string"
+    },
+    "basla": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "bitir": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   }
+  }
+ }
+}

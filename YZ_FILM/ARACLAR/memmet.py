@@ -1,29 +1,41 @@
-"""MEMMET AUTO — SAHNELER.json'daki sahneleri Google Flow'da kendi kendine üretir.
+"""MEMMET AUTO — Google Flow'da görsel ve video üretimi (v1: SAHNELER partileri · v2: BLOK_PLANI blokları).
 
 Kullanım:
   python memmet.py <film_klasoru> --giris            Memmet Chrome'unu açar; Google'a bir kez sen giriş yaparsın
+  python memmet.py <film_klasoru> --bakiye           Flow kredi bakiyesini salt okur (gönderim yok) → HESAP/FLOW_BAKIYE.json
+  v2 (SAHNELER "_surum" ≥ 2; yalnız film.py / VIDEO_*.bat üzerinden):
+  python memmet.py <film_klasoru> --blok <BLOK_PLANI.json#B03 | B03 | sonraki> --onizleme <imza> [--mod elle|gece]
+        bir bloğu (≤ 20 plan) gönderir. İmza = blok_plani.py --imza (kesin bütçe BUT2'nin imzası; FILM_DURUM'da animatik ONAYLI).
+        Bloksuz, imzasız ya da imzası tutmayan v2 dosyasında hiçbir şey göndermez (4).
+  v1 (eski SAHNELER; saglayicilar/flow.py):
   python memmet.py <film_klasoru>                    bütün partiler: her partide önce görseller, sonra videolar
-  python memmet.py <film_klasoru> --mod elle         (varsayılan) Memmet istemi hazırlar, GÖNDER'e (Oluşturmaya başla) SEN basarsın
-  python memmet.py <film_klasoru> --mod gece         Memmet kendisi gönderir; yalnız AYARLAR/FILM_AYAR.json "izinler.gece_flow": true ise
   python memmet.py <film_klasoru> --asama gorsel     yalnız görseller   (--asama video: yalnız videolar)
   python memmet.py <film_klasoru> --parti 1,2        yalnız bu partiler  (--sahne 3,7: yalnız bu sahneler)
-  python memmet.py <film_klasoru> --telegram-test    telefona deneme mesajı
+  Ortak: --mod elle   (varsayılan) Memmet istemi hazırlar, GÖNDER'e (Oluşturmaya başla) SEN basarsın
+         --mod gece   Memmet kendisi gönderir; yalnız FILM_AYAR.json "izinler.gece_flow": true ise. "Gündüz otomatik" kip YOK.
+         --film <film_klasoru> (film.py araç sözleşmesi) · --telegram-test (telefona deneme mesajı)
 
-Kendi Chrome profiliyle (ARACLAR/memmet_profil) gerçek Chrome'u açar ve ona bağlanır; senin diğer oturumlarına dokunmaz.
+Kendi Chrome profiliyle (memmet_profil) gerçek Chrome'u açar ve ona bağlanır; senin diğer oturumlarına dokunmaz.
 Ekran görüntüsüne bakmaz, sayfanın yapısını okur. Her sonucu Flow'daki istem metninden tanıyıp NNN.jpg / NNN.mp4 olarak kaydeder.
 Yük sınırı: gönderimler arası bekleme ve molalar kodda sabittir (17.10 değerleri); MEMMET_AYAR.json yalnız YAVAŞLATABİLİR.
 Son gönderim zamanı ve kalan mola HESAP/FLOW_TEMPO.json'da tutulur; Memmet'i kapatıp açmak molayı sıfırlamaz.
+v2 her gönderimden önce: FLOW_TEMPO/FLOW_YUK (flow_yuk), <film>/DUR, plan uygunluğu (G1 sha'sı, zincir kaynağı, kaynak_klip, soy ≤ 3,
+toplanmamış gönderim) ve bütçe noktası BUTK; sonra kredi defterine gönderim satırı (KREDI_DEFTERI.jsonl) ÖNCE yazılır.
+Filtre reddinde aynı istem yeniden gönderilmez: derlenmiş yedek istem bir kez, sonra plan yonetmen·onarim'a (_RAPOR/FLOW_<blok>.json).
+Zaman aşımında yeniden gönderilmez: önce toplanır (memmet_topla.py). Hesap e-postasının yalnız sha1'i tutulur (HESAP_DURUMU.json).
+Aynı Flow hesabında ikinci Memmet açılmaz (HESAP/FLOW.kilit; 8).
 
 GÜVENLİK (bot tespiti atlatılmaz; 03_DERSLER.md):
   - Flow "olağan dışı etkinlik" derse, HER KİPTE anında durur: sayfada başka hiçbir işlem yapmaz (tıklama, yazma, yenileme yok),
     HESAP/FLOW_KILIDI.json yazar, haber verir ve 7 ile çıkar. Kilit varken Memmet açılmaz. GÖNDER'e basma, sayfayı yenileme.
   - reCAPTCHA, doğrulama ya da oturum düşmesinde beklemez, kendiliğinden sürmez: haber verir ve 2 ile çıkar.
     Sen çözersin, sonra Memmet'i yeniden başlatırsın.
-  - SAHNELER.json "_surum" ≥ 2 ise (v2 dosyası) bu sürüm hiçbir şey yapmaz, 4 ile çıkar.
-Çıkış kodları: 0 bitti · 1 beklenmeyen hata · 2 durdu (doğrulama/giriş/kredi/arayüz) · 4 ortam/sürüm · 7 Flow uyarısı.
+  - SAHNELER.json "_surum" ≥ 2 ise --blok ve --onizleme olmadan hiçbir şey yapmaz, 4 ile çıkar.
+Çıkış kodları: 0 bitti · 1 beklenmeyen hata · 2 durdu (doğrulama/giriş/kredi/arayüz/DUR) · 4 ortam/sürüm/imza · 5 bütçe ·
+               7 Flow uyarısı ya da kilit · 8 bekle (toplanacak iş, başka Memmet açık).
 Son çıkışın nedeni film klasöründe _memmet_cikis.json'a yazılır. Her şey MEMMET_KAYIT.txt'ye, durum MEMMET_DURUM.json'a yazılır.
 """
-import os, sys, re, json, time, datetime, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes
+import os, sys, re, json, time, datetime, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes, hashlib
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -75,6 +87,7 @@ TEMPO = {
              "mola_kac_partide": 2, "parti_mola_dk": [15, 30]},
 }
 KIPLER = tuple(TEMPO)
+KALKAN_KIPLER = ("gunduz", "gündüz", "gunduz_otomatik", "otomatik")   # BK §6.2 #7: gündüz otomatik kip 15–20 dk'da uyarı aldı; yok
 FLOW = "https://flow.google.com/"
 # Olağan dışı etkinlik: HER KİPTE anında dur, sayfaya dokunma (çıkış 7). Bu liste yalnız BÜYÜYEBİLİR.
 OLAGANDISI_KELIMELERI = ["olağandışı etkinlik", "olağan dışı etkinlik", "olagandisi etkinlik", "olagan disi etkinlik",
@@ -86,8 +99,11 @@ HATA_KELIMELERI = ["politika", "ihlal", "uygunsuz", "güvenlik", "başarısız",
 # Doğrulama / robot sorusu: beklemeden dur (çıkış 2). "doğrulayın" tek başına yazılmaz: Flow'un altında hep "yanıtları doğrulayın" yazıyor
 DOGRULAMA_KELIMELERI = ["robot olmadığınızı", "not a robot", "kimliğinizi doğrulayın", "verify it's you"]
 KREDI_KELIMELERI = ["yetersiz kredi", "kredi yetersiz", "kredin bitti", "not enough credits", "out of credits", "insufficient credits"]
+# Politika/filtre reddi (v2): aynı istem yeniden gönderilmez; derlenmiş yedek bir kez, sonra yonetmen·onarim. HATA_KELIMELERI'nin alt kümesi.
+FILTRE_KELIMELERI = ["politika", "ihlal", "uygunsuz", "violat", "policy"]
 CIKIS = {"tamam": 0, "beklenmeyen": 1, "dogrulama": 2, "giris": 2, "kredi": 2, "arayuz": 2, "genel": 2, "ortam": 4, "surum": 4,
-         "olagandisi": 7, "kilitli": 7, "yuk": 2}
+         "olagandisi": 7, "kilitli": 7, "yuk": 2, "dur": 2, "imza": 4, "butce": 5, "topla": 8, "mesgul": 8}
+FLOW_KILIT_BAYAT_SN = 1800        # HESAP/FLOW.kilit: sahibi 30 dk tazelemediyse bayat (UM2 §4.2.1)
 
 
 def _yavas(kod, gelen):
@@ -146,11 +162,59 @@ def _atomik(yol, veri):
     os.replace(tmp, yol)
 
 
-def cikis_yaz(root, kod, mesaj):
-    """Son çıkışın nedeni: film.py / saglayicilar.flow kodu buradan okur."""
-    try: _atomik(os.path.join(root, "_memmet_cikis.json"), {"kod": kod, "cikis": CIKIS.get(kod, 1), "mesaj": mesaj,
-                                                              "zaman": time.strftime("%Y-%m-%d %H:%M:%S")})
+def cikis_yaz(root, kod, mesaj, ek=None):
+    """Son çıkışın nedeni: film.py / saglayicilar.flow kodu buradan okur. ek: v2 blok özeti (gonderilen, indirilen, bekleyen …)."""
+    v = {"kod": kod, "cikis": CIKIS.get(kod, 1), "mesaj": mesaj, "zaman": time.strftime("%Y-%m-%d %H:%M:%S")}
+    for k, x in (ek or {}).items(): v.setdefault(k, x)
+    try: _atomik(os.path.join(root, "_memmet_cikis.json"), v)
     except OSError: pass
+
+
+def flow_kilit_yolu(): return os.path.join(HESAP, "FLOW.kilit")
+
+
+def _pid_yasiyor(pid):
+    if os.name == "nt": return True               # Windows'ta yalnız yaş ölçütü (os.kill Windows'ta süreci öldürür: kullanılmaz)
+    try: os.kill(pid, 0); return True
+    except ProcessLookupError: return False
+    except OSError: return True
+
+
+def flow_kilidi_al(film):
+    """Aynı Flow hesabında tek Memmet (HESAP/FLOW.kilit). Alınamazsa Durdur(mesgul) → 8. Bayat kilit (sahibi yok ya da 30 dk
+    tazelenmemiş) kaldırılır. FLOW_KILIDI.json (uyarı kilidi) bundan ayrıdır ve yalnız UYARI_GECTI.bat ile kalkar."""
+    p = flow_kilit_yolu(); os.makedirs(HESAP, exist_ok=True)
+    for _ in range(2):
+        try:
+            fd = os.open(p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            with os.fdopen(fd, "w", encoding="utf-8") as f: json.dump({"pid": os.getpid(), "zaman": time.time(), "film": film}, f)
+            return True
+        except FileExistsError:
+            try: k = json.load(open(p, encoding="utf-8"))
+            except (OSError, ValueError): k = {}
+            pid = k.get("pid"); yas = time.time() - float(k.get("zaman") or 0)
+            if pid == os.getpid() or not isinstance(pid, int) or not _pid_yasiyor(pid) or yas > FLOW_KILIT_BAYAT_SN:
+                try: os.remove(p)
+                except OSError: pass
+                continue
+            raise Durdur(f"Aynı Flow hesabında başka bir Memmet çalışıyor (film {k.get('film')}). İki film aynı anda Flow'a gidemez; "
+                         "o bitince yeniden başlat.", kod="mesgul")
+    raise Durdur("FLOW.kilit alınamadı.", kod="mesgul")
+
+
+def flow_kilidi_tazele():
+    p = flow_kilit_yolu()
+    try:
+        k = json.load(open(p, encoding="utf-8"))
+        if k.get("pid") == os.getpid(): k["zaman"] = time.time(); _atomik(p, k)
+    except (OSError, ValueError): pass
+
+
+def flow_kilidi_birak():
+    p = flow_kilit_yolu()
+    try:
+        if json.load(open(p, encoding="utf-8")).get("pid") == os.getpid(): os.remove(p)
+    except (OSError, ValueError): pass
 
 
 def kilit_yaz(film, mesaj):
@@ -171,11 +235,16 @@ class Memmet:
     def __init__(self, root, args):
         self.root = os.path.abspath(root); self.args = args
         kip = args.get("mod", "elle")
+        if kip in KALKAN_KIPLER: raise Durdur(f"'{kip}' kipi kaldırıldı (Flow uyarısı aldı). Kipler: elle (varsayılan) | gece", kod="ortam")
         if kip not in KIPLER: raise Durdur(f"Bilinmeyen kip: {kip} (elle | gece)", kod="ortam")
         self.A = ayar(kip)
         self.plan = json.load(open(os.path.join(self.root, "SAHNELER.json"), encoding="utf-8-sig"))
-        if int(self.plan.get("_surum", 1) or 1) >= 2:
-            raise Durdur("SAHNELER.json v2 (_surum ≥ 2): bu Memmet v1, hiçbir şey yapmadı. Memmet v2 gerekli.", kod="surum")
+        self.v2 = int(self.plan.get("_surum", 1) or 1) >= 2
+        gonderimsiz = args.get("giris") or args.get("bakiye") or args.get("topla")
+        if self.v2 and not gonderimsiz and not (args.get("blok") and args.get("onizleme")):
+            raise Durdur("SAHNELER.json v2 (_surum ≥ 2): Memmet yalnız --blok <BLOK_PLANI> --onizleme <imza> ile gönderir "
+                         "(film.py / VIDEO_*.bat). Hiçbir şey yapılmadı.", kod="surum")
+        if args.get("blok") and not self.v2: raise Durdur("--blok yalnız SAHNELER v2 ile çalışır.", kod="surum")
         self.film = self.plan["film"]
         self.sg = os.path.join(self.root, "SIRALI_GORSEL"); self.sv = os.path.join(self.root, "SIRALI_VIDEO")
         self.hata_dir = os.path.join(self.root, "_MEMMET_HATALAR"); self.gecici = os.path.join(self.root, "_memmet_gecici")
@@ -184,13 +253,14 @@ class Memmet:
         self.dp = os.path.join(self.root, "MEMMET_DURUM.json")
         self.D = json.load(open(self.dp, encoding="utf-8")) if os.path.exists(self.dp) else {"proje_url": None, "yuklenen": [], "sahne": {}}
         self.page = None; self._tg = None; self.uyari_goruldu = False
+        self.D.setdefault("isler", {}); self.blok = None; self.ozet = None; self.hesap = None; self._tazele = 0
 
     # ------------------------------------------------------------------ kayıt ve bildirim
     def log(self, *a):
         line = time.strftime("%d.%m %H:%M:%S ") + " ".join(str(x) for x in a)
         print(line, flush=True); self.kayit.write(line + "\n"); self.kayit.flush()
 
-    def save(self): json.dump(self.D, open(self.dp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    def save(self): _atomik(self.dp, self.D)
 
     def sc(self, n): return self.D["sahne"].setdefault(str(n), {})
 
@@ -385,20 +455,21 @@ class Memmet:
             except Exception: self.page.keyboard.press("Escape"); self.bekle(1)
         self.hata_kaydi("ayar_menusu"); raise Durdur("Ayar menüsü açılmadı.")
 
-    def mod_ayarla(self, tur):
-        """tur: 'gorsel' ya da 'video'. Yanlışsa düzeltir, sonra yazıdan doğrular."""
+    def mod_ayarla(self, tur, adet=1):
+        """tur: 'gorsel' ya da 'video'; adet: çıktı sayısı (v2 görsel düzeltmesi 2). Yanlışsa düzeltir, sonra yazıdan doğrular."""
+        x = f"x{int(adet)}"
         def dogru():
             y = self.ayar_yazisi()
-            if tur == "gorsel": return "nano banana" in y and "x1" in y and "video" not in y
-            return "video" in y and norm(self.A["video_cozunurluk"]) in y and norm(self.A["video_sure"]).replace(".", "") in y.replace(".", "") and "x1" in y
+            if tur == "gorsel": return "nano banana" in y and x in y and "video" not in y
+            return "video" in y and norm(self.A["video_cozunurluk"]) in y and norm(self.A["video_sure"]).replace(".", "") in y.replace(".", "") and x in y
         if dogru(): return
         for deneme in range(2):
             self.ayar_menusu_ac()
             if tur == "gorsel":
-                self.radyo("Resim"); self.radyo("16:9"); self.radyo("x1")
+                self.radyo("Resim"); self.radyo("16:9"); self.radyo(x)
             else:
                 self.radyo("Video"); self.radyo("Kareler"); self.radyo("16:9")
-                self.radyo(self.A["video_cozunurluk"]); self.radyo(self.A["video_sure"]); self.radyo("x1")
+                self.radyo(self.A["video_cozunurluk"]); self.radyo(self.A["video_sure"]); self.radyo(x)
             self.page.keyboard.press("Escape"); self.bekle(0.6, 1.2)
             if dogru(): self.log("Ayar:", self.ayar_yazisi()); return
         self.hata_kaydi("ayar"); raise Durdur(f"Ayar doğrulanamadı ({tur}): {self.ayar_yazisi()}")
@@ -511,9 +582,11 @@ class Memmet:
                 const t = n(p.innerText || p.textContent);
                 if (!t || !(hedef.startsWith(t.slice(0, 60)) || t.startsWith(hedef.slice(0, 60)))) continue;
                 const img = b.querySelector('img[data-media-id]');
+                const imgs = [...b.querySelectorAll('img[data-media-id]')].map(i => ({id: i.getAttribute('data-media-id'), url: i.currentSrc || i.src}));
                 const vid = [...b.querySelectorAll('video')].map(v => v.currentSrc || v.src).find(s => /flow-content\\.google\\/video\\//.test(s));
                 const yuzde = [...b.querySelectorAll('*')].some(e => e.childElementCount === 0 && /^%\\d+$/.test(e.textContent.trim()));
                 return {var: true, gorsel_id: img ? img.getAttribute('data-media-id') : null, gorsel_url: img ? (img.currentSrc || img.src) : null,
+                        gorseller: imgs,
                         video_url: vid || null, video_kutusu: !!b.querySelector('flow-video-tile'), yuzde,
                         metin: n(b.innerText).slice(0, 400), sira: kutular.indexOf(b)};
             }
@@ -653,6 +726,266 @@ class Memmet:
                     del bekleyen[n]; kuyruk.append(s)
                     if gecen > zaman_asimi: self.projeye_git()
 
+    # ------------------------------------------------------------------ v2: hesap kimliği ve bakiye (salt okuma)
+    def hesap_denetle(self):
+        """Flow'da görünen hesabın yalnız sha1'i (D-03). Son uyarıdan sonra hesap değiştiyse kilit → 7. E-posta yazılmaz, loglanmaz."""
+        try: etiket = self.page.evaluate("""(() => { const b = document.querySelector('[aria-label^="Google Hesabı"], [aria-label^="Google Account"]');
+            return b ? (b.getAttribute('aria-label') || '') : ''; })()""")
+        except Exception: etiket = ""
+        m = re.search(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", etiket or "")
+        if not m:
+            self.log("Flow hesabı sayfadan okunamadı (hesap kimliği ÖLÇÜLEMEDİ; devam, kilit kuralı FLOW_KILIDI ile sürer)")
+            self.hesap = None; return None
+        r = flow_yuk.hesap_gozlem(eposta=m.group(0), kok=HESAP); self.hesap = r["kimlik"][:8]
+        if r.get("bilgi"): self.log(r["bilgi"])
+        if r.get("kilit"):
+            raise Durdur("Flow hesabı değişti (son uyarıdan sonra). Başka Google/Flow hesabıyla devam edilmez; asıl hesaba dön.", kod="kilitli")
+        return self.hesap
+
+    def bakiye_oku(self):
+        """--bakiye: sayfa metninden kredi bakiyesi (tıklama ve gönderim yok). Bulunamazsa ÖLÇÜLEMEDİ (null)."""
+        self.kontrol_noktasi()
+        t = self.sayfa_metni()
+        m = re.search(r"(\d[\d.,]*)\s*(?:ai\s*)?(?:kredi|credits?)\b", t)
+        b = int(re.sub(r"[.,]", "", m.group(1))) if m else None
+        _atomik(os.path.join(HESAP, "FLOW_BAKIYE.json"), {"_surum": 1, "bakiye": b, "olculemedi": b is None, "kaynak": "flow_sayfa_metni",
+                                                           "hesap": self.hesap, "zaman": time.strftime("%Y-%m-%d %H:%M:%S")})
+        self.log("Flow bakiyesi:", b if b is not None else "ÖLÇÜLEMEDİ (sayfada kredi yazısı bulunamadı)")
+        return b
+
+    # ------------------------------------------------------------------ v2: blok (BLOK_PLANI.json)
+    def dur_var(self): return os.path.exists(os.path.join(self.root, "DUR"))
+
+    def blok_dogrula(self):
+        """Chrome açılmadan önce: blok, önizleme imzası (BUT2), animatik imzası, sağlayıcı. Sayfaya dokunmaz."""
+        import blok_plani
+        try: BP, b = blok_plani.blok_bul(self.root, self.args["blok"])
+        except ValueError as e: raise Durdur(str(e), kod="imza")
+        imza = blok_plani.onizleme_imza(self.root)
+        if not imza: raise Durdur("Kesin bütçe yok (URETIM_ONIZLEME.json taslak): önce kredi.py but2. Hiçbir şey gönderilmedi.", kod="imza")
+        if self.args.get("onizleme") != imza or BP.get("onizleme_imza") != imza:
+            raise Durdur("Önizleme imzası tutmuyor (bütçe ya da plan değişti): blok_plani.py yeniden koşmalı. Hiçbir şey gönderilmedi.", kod="imza")
+        if not blok_plani.animatik_onayli(self.root):
+            raise Durdur("Animatik imzası yok (FILM_DURUM animatik: ONAYLI değil): video kredisi harcanmaz.", kod="imza")
+        if (b.get("saglayici") or "flow") != "flow":
+            raise Durdur(f"Blok {b['id']} Flow'a değil ({b.get('saglayici')}): Memmet göndermez.", kod="ortam")
+        if len(b.get("planlar") or []) > blok_plani.BLOK_MAX:
+            raise Durdur(f"Blok {b['id']} {blok_plani.BLOK_MAX} plandan büyük: blok_plani.py yeniden koşmalı.", kod="imza")
+        self.blok, self.blok_id = b, str(b["id"]); self.blok_nolar = {int(n) for n in b.get("planlar") or []}
+        self.planlar = {int(p["no"]): p for p in self.plan.get("sahneler") or [] if isinstance(p.get("no"), (int, float))}
+        return b
+
+    def atla(self, no, neden):
+        self.ozet["atlanan"].append({"plan": no, "neden": neden}); self.log(f"{no:03d}: atlandı ({neden})"); return None
+
+    def kredi_birim(self, tur):
+        if tur == "gorsel": return 0                          # Flow görsel düzeltmesi 0 kr (günlük tavanla sınırlı)
+        try:
+            import esikler; return int(esikler.yukle().get("kredi_klip_720p") or 12)
+        except Exception: return 12
+
+    def is_hazirla(self, no, tur, yedek=False):
+        """Gönderilecek işin bütün bilgisi; plan şu an uygun değilse None (neden ozet.atlanan'da)."""
+        import blok_plani
+        p = self.planlar.get(no)
+        if p is None: return self.atla(no, "SAHNELER'de yok")
+        uygun, neden = blok_plani.uygun_mu(self.root, p, self.planlar, tur=tur, blok_nolar=self.blok_nolar, isler=self.D["isler"])
+        if not uygun: return self.atla(no, neden)
+        ayr = (self.blok.get("ayrinti") or {}).get(str(no)) or {}
+        alan = "gorsel_istem" if tur == "gorsel" else "hareket_istem"
+        ana = ayr.get("istem") or p.get(alan); yd = p.get(alan + "_yedek")
+        istem = yd if yedek else ana
+        if not istem: return self.atla(no, "istem yok" if not yedek else "yedek istem yok")
+        dosyalar = blok_plani.gonderim_gorselleri(self.root, p, self.plan, tur, ayr)
+        if dosyalar is None: return self.atla(no, "başlangıç/bitiş görseli yok")
+        u = p.get("uretim") or {}
+        deneme = blok_plani.deneme_sayisi(self.root, no, tur) + 1
+        model = u.get("model") or "omni-1.1-flash"; coz = self.A["video_cozunurluk"]
+        ozt = hashlib.sha1(json.dumps([no, tur, istem, [d["sha"] for d in dosyalar], model, coz, deneme],
+                                      ensure_ascii=False).encode("utf-8")).hexdigest()[:6]
+        kim = f"{'G' if tur == 'gorsel' else 'V'}-{no}-d{deneme}-{ozt}"
+        return {"plan": no, "tur": tur, "istem": istem, "yedek": bool(yedek), "yedek_var": bool(yd) and not yedek, "dosyalar": dosyalar,
+                "deneme": deneme, "is": kim, "madde": ayr.get("madde") or kim, "dilim": ayr.get("dilim") or "ana",
+                "kredi": self.kredi_birim(tur), "model": model, "cozunurluk": coz}
+
+    def kredi_once(self, j):
+        """Bütçe noktası (BUTK) + kredi defterine gönderim satırı: GÖNDERİMDEN ÖNCE. Onay yoksa 5 (yeni gönderim yok)."""
+        import kredi
+        try: r, kod = kredi.butk(self.root, j["madde"], j["kredi"], birim="flow", dilim=j["dilim"], saglayici="flow", plan=j["plan"])
+        except kredi.Girdi as e: raise Durdur(f"Bütçe noktası koşamadı: {e}", kod="butce")
+        if kod != 0:
+            neden = r.get("neden") or (r.get("hatalar") or [{}])[0].get("esik")
+            raise Durdur(f"Bütçe noktası (BUTK) {j['plan']:03d} için onay vermedi: {neden}. Yeni gönderim yok.", kod="butce")
+        kredi.defter_ekle(self.root, "gonderim", j["kredi"], birim="flow", dilim=j["dilim"], madde=j["madde"], plan=j["plan"],
+                          saglayici="flow", is_kimligi=j["is"], tur=j["tur"], deneme=j["deneme"], model=j["model"],
+                          cozunurluk=j["cozunurluk"], blok=self.blok_id, yedek_istem=j["yedek"] or None)
+        self.D["isler"][j["is"]] = {"plan": j["plan"], "tur": j["tur"], "istem": j["istem"], "durum": "gonderildi", "blok": self.blok_id,
+                                    "deneme": j["deneme"], "yedek": j["yedek"], "zaman": time.strftime("%Y-%m-%d %H:%M:%S")}
+        self.save()
+
+    def kredi_iade(self, j, neden):
+        import kredi
+        kredi.defter_ekle(self.root, "iade", j["kredi"], birim="flow", dilim=j["dilim"], madde=j["madde"], plan=j["plan"],
+                          saglayici="flow", is_kimligi=j["is"], neden=neden)
+        self.D["isler"][j["is"]]["durum"] = "iade"; self.save()
+
+    def yukle_adli(self, dosyalar):
+        """Görselleri sha'lı adla (NNN_<sha8>.jpg) yükler: aynı adla eski bir görsel Flow'da kalmışsa yanlış kare seçilmesin."""
+        yollar = []
+        for d in dosyalar:
+            hedef = os.path.join(self.gecici, d["ad"])
+            if not os.path.exists(hedef): shutil.copyfile(d["yol"], hedef)
+            yollar.append(hedef)
+        self.yukle(yollar)
+
+    def eskiye_tasi(self, yol):
+        """Kalıcı silme yok: var olan dosya <film>/_ESKI/'ye taşınır."""
+        if not os.path.exists(yol): return
+        rel = os.path.relpath(yol, self.root); hedef = os.path.join(self.root, "_ESKI", time.strftime("%Y%m%d_%H%M%S_") + rel.replace(os.sep, "_"))
+        os.makedirs(os.path.dirname(hedef), exist_ok=True); shutil.move(yol, hedef)
+
+    def kunye_yaz(self, b, dosyalar, medya):
+        j = b["j"]; no = j["plan"]; p = self.planlar.get(no) or {}; u = p.get("uretim") or {}
+        k = {"_surum": 1, "plan": no, "tur": j["tur"], "dosyalar": dosyalar, "baslangic": j["dosyalar"][0]["sha"] if j["dosyalar"] else None,
+             "bitis": next((d["sha"] for d in j["dosyalar"] if d["yuva"] == "Bitir"), None),
+             "istem_sha": hashlib.sha1(j["istem"].encode("utf-8")).hexdigest()[:12], "yedek_istem": j["yedek"], "saglayici": "flow",
+             "model": j["model"], "cozunurluk": j["cozunurluk"], "istem_bicimi": u.get("istem_bicimi"), "deneme": j["deneme"],
+             "is": j["is"], "flow_medya_id": medya, "plan_imza": u.get("plan_imza"), "blok": self.blok_id, "mod": self.A["kip"],
+             "zaman": time.strftime("%Y-%m-%d %H:%M:%S"), "kapilar": {}}
+        if j["tur"] == "video":
+            yol = os.path.join(self.root, "KUNYE", f"{no:03d}.json"); self.eskiye_tasi(yol); _atomik(yol, k)
+
+    def indir_v2(self, b, r):
+        """Sonuç hazırsa indirir (True). Video: SIRALI_VIDEO/NNN.mp4 (eski dosya _ESKI/'ye). Görsel: _ADAYLAR/NNN_flow_<is>_<i>.jpg."""
+        j = b["j"]; no = j["plan"]
+        if j["tur"] == "video":
+            url = r.get("video_url") or self.video_adresi(b["istem"])
+            if not url: return False
+            gecici = os.path.join(self.gecici, f"{no:03d}_{j['is']}.mp4"); self.indir(url, gecici)
+            hedef = os.path.join(self.sv, f"{no:03d}.mp4"); self.eskiye_tasi(hedef); os.replace(gecici, hedef)
+            medya = (re.search(r"video/([0-9a-f-]{36})", url) or [None, None])[1]
+            self.kunye_yaz(b, [os.path.relpath(hedef, self.root).replace(os.sep, "/")], medya)
+        else:
+            gs = [g for g in (r.get("gorseller") or []) if g.get("url")] or ([{"id": r.get("gorsel_id"), "url": r["gorsel_url"]}] if r.get("gorsel_url") else [])
+            if not gs: return False
+            klasor = os.path.join(self.sg, "_ADAYLAR"); os.makedirs(klasor, exist_ok=True); cikan = []
+            for i, g in enumerate(gs[:2]):
+                hedef = os.path.join(klasor, f"{no:03d}_flow_{j['is']}_{'ab'[i]}.jpg"); self.indir(g["url"], hedef)
+                cikan.append(os.path.relpath(hedef, self.root).replace(os.sep, "/"))
+            medya = ",".join(str(g.get("id")) for g in gs[:2])
+        self.D["isler"][j["is"]].update(durum="indirildi", indirme=time.strftime("%Y-%m-%d %H:%M:%S"), medya=medya); self.save()
+        self.ozet["indirilen"].append(no); self.log(f"{no:03d} {j['tur']}: KAYDEDİLDİ ({int(time.time() - b['t'])} sn)")
+        return True
+
+    def blok_asama(self):
+        """Bir blok: her gönderimden önce kontrol noktası, DUR, tempo/yük (FLOW_TEMPO), uygunluk, BUTK + kredi satırı.
+        Uyarı her an Durdur(olagandisi) ile çıkar (sayfada başka işlem yok). Yeniden deneme yalnız filtre reddinde yedek istemle, bir kez."""
+        tur = self.blok.get("tur") or "video"; adet = 2 if tur == "gorsel" else 1
+        self.ozet = {"blok": self.blok_id, "tur": tur, "gonderilen": [], "indirilen": [], "bekleyen": [], "reddedilen": [], "hata": [],
+                     "zaman_asimi": [], "atlanan": [], "dur": False}
+        nolar = [int(n) for n in self.blok.get("planlar") or []]
+        self.log(f"=== BLOK {self.blok_id} ({tur}, kip {self.A['kip']}): {len(nolar)} plan ({', '.join(str(n) for n in nolar)})")
+        self.mod_ayarla(tur, adet)
+        import blok_plani
+        on = [blok_plani.gonderim_gorselleri(self.root, self.planlar[n], self.plan, tur, (self.blok.get("ayrinti") or {}).get(str(n)) or {})
+              for n in nolar if n in self.planlar]
+        self.yukle_adli([d for ds in on if ds for d in ds])
+        kuyruk = [(n, False) for n in nolar]; bekleyen = {}
+        zaman_asimi = self.A["gorsel_zaman_asimi_sn" if tur == "gorsel" else "video_zaman_asimi_sn"]
+        while kuyruk or bekleyen:
+            self.kontrol_noktasi()
+            if time.time() - self._tazele > 60: flow_kilidi_tazele(); self._tazele = time.time()
+            if kuyruk and self.dur_var():
+                self.log("DUR dosyası var: yeni gönderim yok; elimdeki sonuçlar bekleniyor.")
+                for n, _ in kuyruk: self.ozet["atlanan"].append({"plan": n, "neden": "DUR"})
+                kuyruk = []; self.ozet["dur"] = True
+            if kuyruk and len(bekleyen) < self.A["ayni_anda"]:
+                no, yedek = kuyruk.pop(0)
+                j = self.is_hazirla(no, tur, yedek)
+                if j is None: continue
+                self.tempo_bekle(tur); self.kontrol_noktasi()
+                if self.dur_var(): kuyruk.insert(0, (no, yedek)); continue          # beklerken DUR geldiyse gönderme
+                self.kredi_once(j)
+                ok = False
+                try:
+                    self.mod_ayarla(tur, adet); self.kutuyu_temizle()
+                    self.yukle_adli(j["dosyalar"])
+                    for d in j["dosyalar"]:
+                        if d["yuva"] == "Referans": self.referans_ekle(d["ad"])
+                        else: self.kare_ekle(d["yuva"], d["ad"])
+                    ok = self.istem_yaz_gonder(j["istem"], f"{no:03d} {tur}{' (yedek istem)' if yedek else ''}")
+                except Durdur: raise
+                except Exception as e:
+                    self.hata_kaydi(f"{no:03d}_{tur}"); self.log(f"{no:03d} {tur}: gönderim hatası: {str(e)[:150]}")
+                if ok:
+                    self.gonderim_kaydet(tur, no); bekleyen[no] = {"istem": j["istem"], "t": time.time(), "j": j}
+                    self.ozet["gonderilen"].append(no); self.log(f"{no:03d} {tur}: gönderildi ({j['is']})")
+                else:      # gönderilmedi: kredi satırı iade edilir, aynı blokta yeniden denenmez (blok_plani sonra yeniden koyar)
+                    self.kredi_iade(j, "gönderilemedi"); self.ozet["hata"].append({"plan": no, "neden": "gönderilemedi"})
+                    self.projeye_git()
+                continue
+            self.bekle(4, 7)
+            for no in list(bekleyen):
+                b = bekleyen[no]; j = b["j"]; r = self.kutu_bul(b["istem"]); gecen = time.time() - b["t"]
+                if r.get("var"): self.olagandisi_denetle(r.get("metin", ""))
+                hazir = r.get("var") and not r.get("yuzde") and (r.get("video_kutusu") if tur == "video" else r.get("gorsel_url"))
+                if hazir:
+                    try:
+                        if self.indir_v2(b, r): del bekleyen[no]
+                    except Exception as e: self.log(f"{no:03d} indirilemedi, sonra yeniden okunacak: {str(e)[:80]}")
+                    if no not in bekleyen or gecen <= zaman_asimi: continue
+                metin = r.get("metin", "")
+                bos = r.get("var") and not r.get("yuzde") and not r.get("gorsel_url") and not r.get("video_kutusu")
+                if bos and any(k in metin for k in FILTRE_KELIMELERI):
+                    del bekleyen[no]; self.D["isler"][j["is"]]["durum"] = "filtre_red"; self.save()
+                    if j["yedek_var"]:
+                        self.log(f"{no:03d}: filtre reddi → derlenmiş yedek istem BİR kez"); kuyruk.insert(0, (no, True))
+                    else:
+                        self.log(f"{no:03d}: filtre reddi{' (yedek de)' if j['yedek'] else ''} → yonetmen·onarim; yeniden gönderilmez")
+                        self.ozet["reddedilen"].append({"plan": no, "neden": "filtre_red", "yedek_denendi": j["yedek"], "flow": metin[:160]})
+                elif bos and any(k in metin for k in HATA_KELIMELERI):
+                    del bekleyen[no]; self.D["isler"][j["is"]]["durum"] = "hata"; self.save()
+                    self.ozet["hata"].append({"plan": no, "neden": "flow_hata", "flow": metin[:160]})
+                    self.log(f"{no:03d}: Flow hata verdi → bu blokta yeniden gönderilmez (blok_plani karar verir)")
+                elif gecen > zaman_asimi:     # zaman aşımı: yeniden gönderim YOK; önce toplanır (memmet_topla.py)
+                    del bekleyen[no]; self.D["isler"][j["is"]]["durum"] = "zaman_asimi"; self.save()
+                    self.ozet["zaman_asimi"].append(no); self.log(f"{no:03d}: zaman aşımı → toplanacak (memmet_topla), yeniden gönderilmez")
+        return self.ozet
+
+    def blok_bitir(self):
+        """Blok sonu (sayfa işi bitti): FLOW raporu, blok işareti, blok molası (FLOW_TEMPO), V1 + SC1 indirilenlere."""
+        import blok_plani
+        o = self.ozet; o["bekleyen"] = list(o["zaman_asimi"])
+        try: blok_plani.flow_raporu(self.root, self.blok_id, o, self.blok.get("planlar") or [], gorev=os.environ.get("YZ_FILM_GOREV"))
+        except Exception as e: self.log("FLOW raporu yazılamadı:", str(e)[:120])
+        if not o["zaman_asimi"] and not o["dur"]: blok_plani.bitti_isaretle(self.root, self.blok_id, o)
+        if self.parti_bitti(): self.log("blok molası (bitiş FLOW_TEMPO.json'da); sonraki blok o zamandan önce gönderilmez")
+        if o["indirilen"] and o["tur"] == "video": self.blok_denetimleri(o["indirilen"])
+        self.bildir(f"Blok {self.blok_id} bitti: {len(o['indirilen'])} indirildi, {len(o['reddedilen'])} red, {len(o['zaman_asimi'])} toplanacak.")
+        return o
+
+    def blok_denetimleri(self, nolar):
+        """Her indirmede V1 (kalite_denetim --klip) ve SC1 (ses_donustur --hizala). Sayfaya dokunmaz; hatası Memmet'i durdurmaz."""
+        for ad, modul, fonk in (("V1", "kalite_denetim", "klip_denetle"), ("SC1", "ses_donustur", "hizala")):
+            try:
+                m = __import__(modul); getattr(m, fonk)(self.root, nolar, blok=self.blok_id)
+            except Exception as e: self.log(f"{ad} koşamadı (sonra film.py yeniden koşar): {str(e)[:120]}")
+
+    def blok_calis(self):
+        self.on_kosullar(); self.blok_dogrula()
+        flow_kilidi_al(self.film)
+        try: ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001)
+        except Exception: pass
+        self.chrome_ac(); self.giris_kontrol(); self.hesap_denetle(); self.projeye_git()
+        self.bildir(f"Blok {self.blok_id} başladı ({self.A['kip']}).")
+        self.blok_asama()
+        o = self.blok_bitir()
+        if o["dur"]: raise Durdur(f"DUR dosyası: blok {self.blok_id} yarıda bırakıldı (yeni gönderim yok). DEVAM.bat ile sürer.", kod="dur")
+        if o["zaman_asimi"]:
+            raise Durdur(f"{len(o['zaman_asimi'])} plan zaman aşımına uğradı: yeniden gönderilmedi, önce toplanacak (VIDEO_TOPLA.bat / "
+                         "memmet_topla.py).", kod="topla")
+        return o
+
     def on_kosullar(self):
         """Chrome açılmadan önce: kilit ve izin. Sayfaya dokunmaz."""
         k = flow_yuk.kilit_durumu(kok=HESAP)
@@ -663,11 +996,11 @@ class Memmet:
             raise Durdur("Gece kipi kapalı: AYARLAR/FILM_AYAR.json içinde izinler.gece_flow açık değil. Varsayılan kip: elle.", kod="ortam")
 
     def calis(self):
-        self.on_kosullar()
+        self.on_kosullar(); flow_kilidi_al(self.film)
         ES = 0x80000000 | 0x00000001
         try: ctypes.windll.kernel32.SetThreadExecutionState(ES)   # çalışırken uyku yok
         except Exception: pass
-        self.chrome_ac(); self.giris_kontrol(); self.projeye_git()
+        self.chrome_ac(); self.giris_kontrol(); self.hesap_denetle(); self.projeye_git()
         partiler = sorted({s.get("parti", 1) for s in self.sahneler()})
         if self.args.get("parti"): partiler = [p for p in partiler if p in self.args["parti"]]
         asamalar = ["gorsel", "video"] if self.args.get("asama", "hepsi") == "hepsi" else [self.args["asama"]]
@@ -729,26 +1062,45 @@ def telegram_test():
     urllib.request.urlopen(f"https://api.telegram.org/bot{tok}/sendMessage", data, timeout=20); print("Deneme mesajı gönderildi.")
 
 
+def argumanlar(a):
+    """Komut satırı → (kök, args). Kök ilk konumsal argüman ya da --film (film.py sözleşmesi)."""
+    bayrak = {"--giris": "giris", "--bakiye": "bakiye", "--kurgu-yok": "kurgu_yok"}
+    args = {"asama": "hepsi", "mod": "elle"}; root = None; i = 0
+    while i < len(a):
+        k = a[i]
+        if k in bayrak: args[bayrak[k]] = True
+        elif k in ("--asama", "--parti", "--sahne", "--mod", "--film", "--blok", "--onizleme") and i + 1 < len(a):
+            v = a[i + 1]; i += 1
+            if k == "--film": root = root or v
+            elif k in ("--parti", "--sahne"): args[k[2:]] = [int(x) for x in v.split(",")]
+            else: args[k[2:]] = v
+        elif not k.startswith("--") and root is None: root = k
+        i += 1
+    return root, args
+
+
 def main(a=None):
     a = sys.argv[1:] if a is None else a
     if not a: print(__doc__); return
     if "--telegram-test" in a: telegram_test(); return
-    root = a[0]; args = {"asama": "hepsi", "kurgu_yok": "--kurgu-yok" in a, "mod": "elle"}
-    for k in ("--asama", "--parti", "--sahne", "--mod"):
-        if k in a:
-            v = a[a.index(k) + 1]
-            args[k[2:]] = v if k in ("--asama", "--mod") else [int(x) for x in v.split(",")]
+    root, args = argumanlar(a)
+    if not root: print(__doc__); sys.exit(4)
     m = None
     try:
         m = Memmet(root, args)
-        if "--giris" in a:
-            m.on_kosullar(); m.chrome_ac(); m.giris_kontrol(bekle_giris=True)
+        if args.get("giris") or args.get("bakiye"):
+            m.on_kosullar(); m.chrome_ac(); m.giris_kontrol(bekle_giris=bool(args.get("giris"))); m.hesap_denetle()
+            if args.get("bakiye"):
+                b = m.bakiye_oku(); cikis_yaz(root, "tamam", "bakiye", {"bakiye_okunan": b}); return
             m.log("Giriş tamam. Bu pencereyi açık bırakabilir ya da kapatabilirsin."); cikis_yaz(root, "tamam", "giriş"); return
+        if args.get("blok"):
+            o = m.blok_calis(); cikis_yaz(root, "tamam", f"blok {m.blok_id} bitti", o); return
         m.calis(); cikis_yaz(root, "tamam", "bitti")
     except Durdur as e:
         if e.kod != "olagandisi" and m is not None and m.page is not None:
             try: m.olagandisi_denetle()      # başka bir nedenle duruyorsak bile uyarı varsa uyarı olarak kaydedilir
             except Durdur as e2: e = e2
+        if m is not None and m.ozet: cikis_yaz(root, e.kod, str(e), m.ozet)
         sys.exit(bitir(m, root, e.kod, str(e)))
     except KeyboardInterrupt:
         if m: m.log("Kullanıcı durdurdu.")
@@ -757,10 +1109,11 @@ def main(a=None):
         if m is None: raise
         m.log("BEKLENMEYEN HATA:\n" + traceback.format_exc())
         if not getattr(m, "uyari_goruldu", False): m.hata_kaydi("beklenmeyen")
-        cikis_yaz(root, "beklenmeyen", "beklenmeyen hata")
+        cikis_yaz(root, "beklenmeyen", "beklenmeyen hata", m.ozet)
         m.bildir("Beklenmeyen hata ile durdu. MEMMET_KAYIT.txt'ye bak.", acil=True); sys.exit(1)
     finally:
         if m: m.kapat()
+        flow_kilidi_birak()
 
 
 if __name__ == "__main__":

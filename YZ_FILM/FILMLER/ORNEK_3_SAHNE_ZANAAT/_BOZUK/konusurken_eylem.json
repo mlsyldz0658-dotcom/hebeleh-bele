@@ -1,0 +1,25 @@
+{
+ "_aciklama": "Konuşma sürerken aynı karakter fiziksel adım atıyor.",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S02.json",
+   "yol": "planlar.1.zanaat.eylem_zinciri.0",
+   "deger": {
+    "id": "a1",
+    "bas": 0.5,
+    "bit": 2.4,
+    "ozne": "mara",
+    "tur": "fiziksel",
+    "fiil": "kaldirir",
+    "govde": "sag_el",
+    "olcu": "5cm",
+    "etki": {}
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "konusma_fiziksel_ortusme",
+  "seviye": "HATA"
+ }
+}

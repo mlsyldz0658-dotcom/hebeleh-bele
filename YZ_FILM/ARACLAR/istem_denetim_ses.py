@@ -17,7 +17,15 @@ Kullanım (kodda):
   ids.tarif_denetle(tarif, profil=None, E=None, plan=None, birim=None) → [ölçüm]       S0.5
   ids.flow_sound_denetle(fs, E=None, plan=None) → [ölçüm]                               S0.6 (kalıp, ≤ 12 kelime, yasak sözcük, filtre)
   ids.profiller_oku(film) → {karakter: profil}   (_SES/SES_PROFILLERI.json; {"karakterler": {...}} ya da düz sözlük)
-Komut satırı (deneme): python istem_denetim_ses.py --film <film>   ölçümleri JSON satırları olarak yazar (rapor yazmaz; 1 = HATA var)
+  ids.ayikla(olcumler, plan) → [ölçüm]   istem_denetim.denetle_v2'nin ses kuralıyla çakışan iki yanlış alarmını ayıklar:
+      (a) replik tırnağı içindeki kelime iç durum / yasak sonuç fiili sayılmaz (söz eylem değildir);
+      (b) yolu 'tts' olan ya da ağzı görünmeyen ekran dışı replik planında tarif/replik birebir şartı aranmaz (Veo o planda
+          konuşmaz; doğru kural S0.4 'tts_planinda_veo_konusuyor').
+  ids.istem_raporu(kok, tur=1, gorev=None, rapor_yolu=None) → (rapor, yol)   ISTEM kapısı = istem_denetim v2 + ayikla + ses ekleri
+Komut satırı:
+  python istem_denetim_ses.py --film <film>            ölçümleri JSON satırları olarak yazar (rapor yazmaz; 1 = HATA var)
+  python istem_denetim_ses.py --rapor --film <film>    ISTEM kapı raporu (_RAPOR/ISTEM_FILM.json ya da görevin rapor yolu); A09 DN
+      görevi, istem_denetim.py'ye tek satırlık bağlantı (paylaşılan istek) gelene kadar bu yolla da çalışabilir. Çıkış 0 (sonuç raporda).
 Eşikler veri/ses_esikleri.json'dan (esikler.py); dosya okunamazsa aynı değerli yerel varsayılanlar.
 """
 import os, re, sys, json
@@ -210,12 +218,75 @@ def denetle(plan, ses_tarifleri=None, profiller=None, E=None, ciftleri_atla=Fals
     return out
 
 
+# --- istem_denetim v2 ile birleşik ISTEM kapısı ------------------------------------------------------------------------
+TIRNAK_ICI = re.compile(r"[\"“][^\"”]*[\"”]")
+_EYLEM_MADDE = {"ic_durum_fiili": "IC_DURUM_FIILLERI", "yasak_sonuc_fiili": None}
+_BIREBIR = ("veo_ses_tarifi_birebir", "replik_istemde_birebir_degil")
+
+
+def _sessiz_replik(s):
+    rep = s.get("replik") or {}; z = s.get("zanaat") or {}
+    if not rep.get("metin"): return False
+    if _yol(s) == "tts": return True
+    konusan = [k for k in z.get("kadrajdakiler") or [] if isinstance(k, dict) and k.get("konusur")]
+    return not konusan and (s.get("_derlenir") or {}).get("agiz_gorunur") == "yok"
+
+
+def ayikla(olcumler, plan, E=None):
+    try: import istem_denetim as idn
+    except Exception: return list(olcumler)
+    E = esikler_(E); sah = {s.get("no"): s for s in plan.get("sahneler") or [] if isinstance(s, dict)}
+    yasak_sonuc = list(E.get("yasak_sonuc_fiilleri", []) if hasattr(E, "get") else [])
+    out = []
+    for x in olcumler:
+        s = sah.get(x.get("plan")) or {}
+        if x.get("madde") in _BIREBIR and _sessiz_replik(s): continue
+        if x.get("madde") in _EYLEM_MADDE and s:
+            liste = getattr(idn, _EYLEM_MADDE[x["madde"]]) if _EYLEM_MADDE[x["madde"]] else yasak_sonuc
+            eylem = TIRNAK_ICI.sub(" ", s.get("hareket_istem") or "") + " " + idn._eylem_metni(s.get("zanaat") or {})
+            kalan = idn.bul(eylem, liste)
+            if not kalan: continue
+            x = dict(x, olcu=kalan)
+        out.append(x)
+    return out
+
+
+def istem_raporu(kok, tur=1, gorev=None, rapor_yolu=None):
+    import istem_denetim as idn, kapi
+    kok = os.path.abspath(kok); plan = ortak.json_oku(os.path.join(kok, "SAHNELER.json"))
+    if not isinstance(plan, dict): olc = [m("sahneler_yok", "HATA")]; plan = {}
+    elif int(plan.get("_surum", 1) or 1) < 2: olc = [m("sahneler_v1", "HATA", neden="v1 dosyası: python istem_denetim.py <film>")]
+    else:
+        prof = profiller_oku(kok); ses = {k: p["veo_ses_tarifi"] for k, p in prof.items() if p.get("veo_ses_tarifi")}
+        ogr = None
+        try: ogr = ortak.json_oku(os.path.join(ortak.yollar()["veri_kok"], "BILGI", "KURALLAR_OGRENILEN.json"))
+        except ortak.YolYok: pass
+        h = ortak.json_oku(os.path.join(kok, "HIKAYE.json"), {}) or {}
+        kar = h.get("karakterler") or {}
+        yar = {k for k, v in (kar.items() if isinstance(kar, dict) else []) if (v or {}).get("rol") == "yaratik" or (v or {}).get("konusmaz")}
+        olc = ayikla(idn.denetle_v2(plan, idn._evren_bilgisi(kok), ogr, ses_tarifleri=ses), plan)
+        olc += denetle(plan, profiller=prof, ciftleri_atla=True, yaratiklar=yar)
+    birimler = [s.get("no") for s in plan.get("sahneler") or [] if s.get("no") is not None]
+    r = kapi.rapor_kur("ISTEM", "FILM", olc, tur=tur, asama="A09", gorev=gorev, arac_surum=f"{idn.SURUM_V2} + {SURUM}", birimler=birimler)
+    yol = rapor_yolu or os.path.join(kok, "_RAPOR", "ISTEM_FILM.json")
+    hh = kapi.dogrula(r)
+    if hh: raise kapi.RaporHatasi(hh)
+    ortak.atomik_yaz(yol, r)
+    return r, yol
+
+
 def main(a):
     film = a[a.index("--film") + 1] if "--film" in a and a.index("--film") + 1 < len(a) else None
     if not film: print(__doc__); return 4
     try:
         if not os.path.isdir(film): film = os.path.join(ortak.yollar()["filmler"], film)
     except ortak.YolYok as ex: print("!!", ex); return 4
+    if "--rapor" in a:
+        g = ortak.json_oku(os.path.join(os.environ.get("YZ_FILM_GOREV") or "", "GOREV.json"), {}) or {}
+        tur = int(a[a.index("--tur") + 1]) if "--tur" in a else int(g.get("tur_no") or 1)
+        r, yol = istem_raporu(film, tur, g.get("id"), os.path.join(film, g["rapor"]) if g.get("rapor") else None)
+        print(f"ISTEM: {r['sonuc']} · HATA {len(r['hatalar'])} · BAYRAK {len(r['bayraklar'])} → {os.path.relpath(yol, film)}")
+        return 0
     plan = ortak.json_oku(os.path.join(film, "SAHNELER.json"), {}) or {}
     out = denetle(plan, profiller=profiller_oku(film))
     for x in out: print(json.dumps(x, ensure_ascii=False))

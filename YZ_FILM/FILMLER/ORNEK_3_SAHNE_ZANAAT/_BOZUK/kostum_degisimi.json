@@ -1,0 +1,18 @@
+{
+ "_aciklama": "Mara'nın kostümü kostüm fiili olmadan k1'den k2'ye geçiyor.",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.eylem_zinciri.1.etki",
+   "deger": {
+    "mara.kostum": "k2"
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "kostum_fiilsiz_degisti",
+  "seviye": "HATA",
+  "tur": "kostum_degisimi"
+ }
+}

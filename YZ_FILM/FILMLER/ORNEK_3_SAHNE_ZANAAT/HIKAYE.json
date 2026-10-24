@@ -267,5 +267,24 @@
    "kelime": 12,
    "tr": "Odunun kalmadığına yemin ettiğin bir gecede bacandan duman çıkıyor."
   }
+ ],
+ "mekanlar": [
+  {
+   "id": "kulube",
+   "ad": "kulübe",
+   "evren": "EVREN/ORNEK/mekanlar/kulube"
+  }
+ ],
+ "partiler": [
+  {
+   "id": "P1",
+   "sahneler": [
+    "S01",
+    "S02",
+    "S03"
+   ],
+   "sure_hedef_sn": 40,
+   "tek_cumle": "Mara anahtarı saklarken kapıya gelen kaptanı soğuk karşılar ve feneri söndürür."
+  }
  ]
 }

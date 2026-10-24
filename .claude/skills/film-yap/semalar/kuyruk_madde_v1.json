@@ -1,0 +1,161 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "kuyruk_madde_v1",
+ "title": "KUYRUK/YENIDEN_URET.json maddesi (kuyruk.py yazar)",
+ "description": "TASARIM §5.7. kaynak_kapi ADLAR.json kuyruk_kaynak_kapilari'ndan; kok_neden veri/kok_neden.json'dan.",
+ "type": "object",
+ "required": [
+  "id",
+  "plan",
+  "tur",
+  "kaynak_kapi",
+  "kok_neden",
+  "seviye",
+  "cozum",
+  "durum"
+ ],
+ "properties": {
+  "id": {
+   "type": "string",
+   "pattern": "^YU-[A-Z0-9]+-[0-9]+-[0-9]{3}$"
+  },
+  "plan": {
+   "type": [
+    "integer",
+    "string"
+   ]
+  },
+  "tur": {
+   "enum": [
+    "gorsel",
+    "video",
+    "ses"
+   ]
+  },
+  "kaynak_kapi": {
+   "enum": [
+    "G1",
+    "G1Z",
+    "V1",
+    "V2",
+    "V3",
+    "K1",
+    "S2",
+    "S2m",
+    "S3",
+    "Z3",
+    "AI",
+    "KI",
+    "KESIT",
+    "NOT"
+   ]
+  },
+  "kaynak_rapor": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "kok_neden": {
+   "type": "string"
+  },
+  "seviye": {
+   "enum": [
+    "KRITIK",
+    "ORTA",
+    "HATA",
+    "BAYRAK"
+   ]
+  },
+  "seyirci_sayisi": {
+   "type": [
+    "integer",
+    "null"
+   ]
+  },
+  "dogrulanmis": {
+   "type": "boolean"
+  },
+  "konum_agirligi": {
+   "type": "number"
+  },
+  "oncelik": {
+   "type": "number"
+  },
+  "cozum": {
+   "enum": [
+    "yeniden_cek",
+    "bitis_sabit",
+    "yeni_plan",
+    "yeni_sahne",
+    "kirp"
+   ]
+  },
+  "duzeltme": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "sifir_kredi": {
+   "type": [
+    "object",
+    "null"
+   ]
+  },
+  "plan_metni_sahibi": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "zincir_etkisi": {
+   "type": "array"
+  },
+  "dilim": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "kredi_tahmini": {
+   "type": [
+    "number",
+    "null"
+   ]
+  },
+  "soy": {
+   "type": [
+    "integer",
+    "string",
+    "null"
+   ]
+  },
+  "deneme": {
+   "type": "integer"
+  },
+  "deneme_max": {
+   "type": "integer"
+  },
+  "is_kimligi": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "durum": {
+   "enum": [
+    "bekliyor",
+    "gonderildi",
+    "tamam",
+    "iptal"
+   ]
+  },
+  "karar_veren": {
+   "type": [
+    "string",
+    "null"
+   ]
+  }
+ }
+}

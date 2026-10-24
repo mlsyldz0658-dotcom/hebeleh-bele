@@ -1,0 +1,273 @@
+{
+ "sahne_grubu": "S01",
+ "planlar": [
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.3
+   },
+   "amac": "Mara anahtara uzanır",
+   "zanaat": {
+    "kod": "S01-P01",
+    "sahne_grubu": "S01",
+    "plan_tipi": "eylem",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "OG",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 3.0,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "yurur",
+      "hedef": "masa",
+      "olcu": "iki_yavas_adim",
+      "hiz": "yavas",
+      "etki": {
+       "mara.isaret": "M5"
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 3.2,
+      "bit": 5.4,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "uzanir",
+      "govde": "sol_kol",
+      "hedef": "anahtar",
+      "olcu": "10cm",
+      "etki": {
+       "mara.eller.sol.yer": "masa"
+      }
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "kulübede yalnız olduğundan emin değil",
+      "alt_metin": "sessiz kalıp dinliyor",
+      "dis_ifade": {
+       "bas": "dikkatli",
+       "bit": "dikkatli"
+      },
+      "isaretler": [],
+      "siddet": 1
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": "plaka:ic_genel",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "eylem",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara elinde yanan bir fenerle ocağın önünden masaya yürüyor ve masadaki demir anahtara uzanıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "merak_ac": [
+     "m01"
+    ],
+    "vurus": "soguk_acilis",
+    "yogunluk": 6
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 2.5
+   },
+   "amac": "Anahtar Mara'nın elinde",
+   "zanaat": {
+    "kod": "S01-P02",
+    "sahne_grubu": "S01",
+    "plan_tipi": "ekleme",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "D",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "el",
+      "yuz_acisi": "gorunmez",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.0,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "kavrar",
+      "govde": "sol_el",
+      "el_sekli": "kiskac",
+      "hedef": "anahtar",
+      "etki": {
+       "mara.eller.sol.tutar": "anahtar",
+       "mara.eller.sol.sekil": "kiskac"
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 2.0,
+      "bit": 3.5,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "kaldirir",
+      "govde": "sol_el",
+      "olcu": "5cm",
+      "etki": {
+       "mara.eller.sol.yer": "govde_onunde"
+      }
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {},
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S01-P01",
+     "baslangic": "turev",
+     "ebeveyn": "KAM1@1",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "tepki",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara başparmağı ve işaret parmağıyla demir anahtarı kavrayıp kaldırıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "kurulum": [
+     "kur_anahtar"
+    ],
+    "yogunluk": 6
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.0
+   },
+   "amac": "Mara kapıyı duyar",
+   "zanaat": {
+    "kod": "S01-P03",
+    "sahne_grubu": "S01",
+    "plan_tipi": "tepki",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM3",
+     "kadraj": "Y",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "Y",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.6,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "bakis_kaydirir",
+      "govde": "gozler",
+      "hedef": "kapi",
+      "etki": {
+       "mara.bakis": {
+        "hedef": "kapi"
+       }
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 1.8,
+      "bit": 3.0,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "cene_sikar",
+      "govde": "cene"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "dışarıda biri var",
+      "alt_metin": "korkusunu saklıyor",
+      "dis_ifade": {
+       "bas": "dikkatli",
+       "bit": "gizli_endise"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S01-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": "KAM1@1",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "bakis",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara anahtarı tutarken kapıya bakıyor; dışarıdan gelen bir sesten tedirgin.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   }
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Aynı karede iki konuşan.",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S02.json",
+   "yol": "planlar.1.zanaat.kadrajdakiler.1.konusur",
+   "deger": true
+  }
+ ],
+ "beklenen": {
+  "madde": "konusan_fazla",
+  "seviye": "HATA"
+ }
+}

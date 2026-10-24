@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Haritadaki S01 çıkış sözleşmesi anahtarı sağ elde istiyor; planlar sol elde bitiriyor.",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/HARITA_P1.json",
+   "yol": "sahne_gruplari.S01.cikis_durumu.nesneler.anahtar.el",
+   "deger": "sag"
+  }
+ ],
+ "beklenen": {
+  "madde": "sahne_cikisi_sozlesmeye_uymuyor",
+  "seviye": "HATA"
+ }
+}

@@ -1,0 +1,104 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "denetci_rapor_v1",
+ "title": "Denetçi / kör gözlemci / yazar 'rapor.json' ortak gövdesi (CIKTI/rapor.json)",
+ "description": "TASARIM §3.1 kural 5, §3.4, §3.5. Seyirci ve jüri dışındaki rapor.json çıktıları (plan-elestirmeni, uretilebilirlik-denetcisi·plan, sureklilik-denetcisi, diyalog-editoru, oyuncu, kesici, kare-tarifcisi, hat-denetcisi, kurgucu, yonetmen·onarim, ders-editoru, merdiven basamakları) en az bu alanları taşır; kipine özgü alanlar şablonda yazılıdır.",
+ "type": "object",
+ "required": [
+  "gorev",
+  "sonuc",
+  "maddeler"
+ ],
+ "properties": {
+  "gorev": {
+   "type": "string"
+  },
+  "kip": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "sonuc": {
+   "enum": [
+    "GEC",
+    "KISMI",
+    "HATA",
+    "BAYRAK",
+    "OLCULEMEDI",
+    "GIT",
+    "GITME",
+    "TAMAM"
+   ]
+  },
+  "maddeler": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "madde",
+     "seviye"
+    ],
+    "properties": {
+     "madde": {
+      "type": "string"
+     },
+     "seviye": {
+      "enum": [
+       "KRITIK",
+       "ORTA",
+       "HATA",
+       "BAYRAK",
+       "BILGI"
+      ]
+     },
+     "konum": {
+      "type": [
+       "object",
+       "string",
+       "null"
+      ]
+     },
+     "plan": {
+      "type": [
+       "integer",
+       "string",
+       "null"
+      ]
+     },
+     "kanit": {
+      "type": [
+       "string",
+       "array",
+       "null"
+      ]
+     },
+     "oneri": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "sahip": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "kok_neden": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  },
+  "ozet": {
+   "type": [
+    "string",
+    "null"
+   ]
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_aciklama": "Yönetmen planı _derlenir alanına yazmış (yalnız kod yazar).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.0._derlenir",
+   "deger": {
+    "sure_sn": 5.3
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "derlenir_ajan_yazimi",
+  "seviye": "HATA"
+ }
+}

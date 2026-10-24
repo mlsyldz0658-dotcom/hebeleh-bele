@@ -1,0 +1,19 @@
+{
+ "_aciklama": "Başlangıç farkı gerekçesiz (eylem kesmesinde fark yazılamaz).",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.baslangic_durumu",
+   "deger": {
+    "fark": {
+     "mara.isaret": "M2"
+    }
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "gerekcesiz_fark",
+  "seviye": "HATA"
+ }
+}

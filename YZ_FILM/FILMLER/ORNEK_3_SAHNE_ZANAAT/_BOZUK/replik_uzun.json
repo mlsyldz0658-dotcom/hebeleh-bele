@@ -1,0 +1,15 @@
+{
+ "_aciklama": "8 sn klipte 16 kelimeden uzun replik (HIKAYE'de).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "HIKAYE.json",
+   "yol": "replikler.1.metin",
+   "deger": "Smoke from your chimney, on a night you swore to my men and to me that you had no dry wood left at all."
+  }
+ ],
+ "beklenen": {
+  "madde": "replik_uzun",
+  "seviye": "HATA"
+ }
+}

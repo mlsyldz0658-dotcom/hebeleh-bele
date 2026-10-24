@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Elle istemde filtre kelimesi 'chest'.",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.1.zanaat.istem_elle",
+   "deger": "Static macro insert. 0.5-2s: she presses the iron key to her chest. 2-8s: holds still."
+  }
+ ],
+ "beklenen": {
+  "madde": "istemde_filtre_kelimesi",
+  "seviye": "HATA"
+ }
+}

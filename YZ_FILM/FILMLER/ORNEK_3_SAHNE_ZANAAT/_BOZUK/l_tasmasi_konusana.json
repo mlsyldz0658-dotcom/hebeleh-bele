@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Mara'nın L taşması Voss konuşmaya başladıktan sonra da sürüyor (çift ses).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S02.json",
+   "yol": "planlar.1.zanaat.kesme.ses_tasma_sn",
+   "deger": 1.6
+  }
+ ],
+ "beklenen": {
+  "madde": "l_tasmasi_konusana",
+  "seviye": "HATA"
+ }
+}

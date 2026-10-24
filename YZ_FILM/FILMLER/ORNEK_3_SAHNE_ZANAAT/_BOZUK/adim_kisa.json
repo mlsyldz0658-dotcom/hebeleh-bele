@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Fiziksel adım 1,5 sn'den kısa.",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.1.zanaat.eylem_zinciri.0.bit",
+   "deger": 1.2
+  }
+ ],
+ "beklenen": {
+  "madde": "adim_kisa",
+  "seviye": "HATA"
+ }
+}

@@ -1,0 +1,437 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "seyirci_rapor_v2",
+ "title": "Habersiz seyirci raporu (CIKTI/rapor.json; zarfsız)",
+ "description": "TASARIM §5.8. Bütün kipler (kagit, plan, ilk2dk, animatik, kurgu, kapak) tek şema. puan_oku.py v2 önce bu JSON'u, yoksa .md'nin son OZET satırını okur; birleştirme medyandır. film.py taşırken _surum ve _uretim ekler.",
+ "type": "object",
+ "required": [
+  "kip",
+  "tur",
+  "puanlar",
+  "kopukluklar",
+  "acik_sorular",
+  "ozet_parti",
+  "devam"
+ ],
+ "properties": {
+  "kip": {
+   "enum": [
+    "kagit",
+    "plan",
+    "ilk2dk",
+    "animatik",
+    "kurgu",
+    "kapak"
+   ]
+  },
+  "tur": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "seyirci": {
+   "type": [
+    "integer",
+    "null"
+   ]
+  },
+  "persona": {
+   "enum": [
+    "A",
+    "B",
+    "C",
+    null
+   ]
+  },
+  "bolum": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "parca": {
+   "type": [
+    "integer",
+    "null"
+   ]
+  },
+  "donen_seyirci": {
+   "type": "boolean"
+  },
+  "surum": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "description": "ilk2dk A/B sürümü"
+  },
+  "puanlar": {
+   "type": "object",
+   "required": [
+    "GENEL"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "anlasilirlik": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "akicilik": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "merak": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "duygu": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "ritim": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "ilk30": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "GENEL": {
+     "type": "number",
+     "minimum": 1,
+     "maximum": 10
+    }
+   }
+  },
+  "parca_puanlari": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "parca",
+     "GENEL"
+    ],
+    "properties": {
+     "parca": {
+      "type": [
+       "integer",
+       "string"
+      ]
+     },
+     "GENEL": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10
+     }
+    }
+   }
+  },
+  "kopukluklar": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "konum",
+     "tur",
+     "neden"
+    ],
+    "properties": {
+     "konum": {
+      "type": "object",
+      "properties": {
+       "sahne": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "plan": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "onceki_plan": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "zaman": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "zaman_bas": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "zaman_bit": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "parca": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "satir": {
+        "type": [
+         "string",
+         "integer",
+         "null"
+        ]
+       }
+      }
+     },
+     "tur": {
+      "enum": [
+       "KRITIK",
+       "ORTA",
+       "HAFIF"
+      ]
+     },
+     "neden": {
+      "type": "string",
+      "minLength": 3
+     },
+     "oneri": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  },
+  "sikilma": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "bas",
+     "bit"
+    ],
+    "properties": {
+     "bas": {
+      "type": "string"
+     },
+     "bit": {
+      "type": "string"
+     },
+     "neden": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "ilgi": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "konum",
+     "puan"
+    ],
+    "properties": {
+     "konum": {
+      "type": "object",
+      "properties": {
+       "sahne": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "plan": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "onceki_plan": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "zaman": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "zaman_bas": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "zaman_bit": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "parca": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "satir": {
+        "type": [
+         "string",
+         "integer",
+         "null"
+        ]
+       }
+      }
+     },
+     "puan": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10
+     }
+    }
+   }
+  },
+  "acik_sorular": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "ozet_parti": {
+   "type": "string"
+  },
+  "karakterler": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "ad_ya_da_tarif"
+    ],
+    "properties": {
+     "ad_ya_da_tarif": {
+      "type": "string"
+     },
+     "kim": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "adi_nereden": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    }
+   }
+  },
+  "kahraman_ne_kaybedebilir": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "ekran_disi_sesler": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "plan": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "kime_ait_sandim": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "gereksiz_aciklama": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "zaman": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "neden": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "aptal_yerine_konma": {
+   "type": "array"
+  },
+  "anlasilmayan_konusmalar": {
+   "type": "array"
+  },
+  "kapatma_ani": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "devam_olasiligi": {
+   "type": [
+    "number",
+    "null"
+   ],
+   "minimum": 0,
+   "maximum": 1
+  },
+  "devam": {
+   "type": [
+    "boolean",
+    "null"
+   ]
+  },
+  "ilk2dk_devam": {
+   "type": [
+    "boolean",
+    "null"
+   ]
+  },
+  "yz_kusurlari": {
+   "type": "array",
+   "description": "yalnız izleyici raporunda dolu",
+   "items": {
+    "type": "object",
+    "properties": {
+     "zaman": {
+      "type": "string"
+     },
+     "tur": {
+      "type": "string"
+     },
+     "siddet": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ },
+ "x_ozet_satiri": "OZET | anlasilirlik: <n> | akicilik: <n> | merak: <n> | duygu: <n> | ritim: <n> | ilk30: <n> | GENEL: <n> | KRITIK: <n> | ORTA: <n>"
+}

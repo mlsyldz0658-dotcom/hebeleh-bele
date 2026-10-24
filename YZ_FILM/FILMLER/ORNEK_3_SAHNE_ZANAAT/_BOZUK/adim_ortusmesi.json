@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Aynı öznenin iki adımı örtüşüyor (yürürken uzanıyor).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.0.zanaat.eylem_zinciri.1.bas",
+   "deger": 2.5
+  }
+ ],
+ "beklenen": {
+  "madde": "adim_ortusmesi",
+  "seviye": "HATA"
+ }
+}

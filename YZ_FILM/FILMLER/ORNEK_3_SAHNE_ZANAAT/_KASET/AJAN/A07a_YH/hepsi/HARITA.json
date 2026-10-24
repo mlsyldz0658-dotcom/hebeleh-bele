@@ -1,0 +1,405 @@
+{
+ "parti": 1,
+ "nesneler": {
+  "fener": {
+   "ad_en": "lantern",
+   "ad_tr": "fener"
+  },
+  "anahtar": {
+   "ad_en": "iron key",
+   "ad_tr": "demir anahtar"
+  },
+  "mesale": {
+   "ad_en": "torch",
+   "ad_tr": "meşale"
+  }
+ },
+ "mekanlar": {
+  "kulube": {
+   "evren": "EVREN/ORNEK/mekanlar/kulube@1",
+   "kurulumlar": {
+    "KAM1": {
+     "konum": [
+      4.2,
+      0.8
+     ],
+     "yon_derece": 323,
+     "yukseklik_m": 1.6,
+     "lens_mm": 28,
+     "varsayilan_kadraj": "OG",
+     "ebeveyn": "plaka:ic_genel",
+     "not": "ocak önü ve masa, orta geniş"
+    },
+    "KAM2": {
+     "konum": [
+      1.6,
+      1.9
+     ],
+     "yon_derece": 330,
+     "yukseklik_m": 1.1,
+     "lens_mm": 85,
+     "varsayilan_kadraj": "D",
+     "ebeveyn": "KAM1",
+     "not": "masa üstü ekleme"
+    },
+    "KAM3": {
+     "konum": [
+      2.6,
+      3.3
+     ],
+     "yon_derece": 228,
+     "yukseklik_m": 1.6,
+     "lens_mm": 85,
+     "varsayilan_kadraj": "Y",
+     "ebeveyn": "KAM1",
+     "not": "Mara tekli, masa önünde"
+    },
+    "KAM4": {
+     "konum": [
+      1.2,
+      -0.6
+     ],
+     "yon_derece": 86,
+     "yukseklik_m": 1.6,
+     "lens_mm": 28,
+     "varsayilan_kadraj": "IK",
+     "ebeveyn": "plaka:dis_kapi",
+     "not": "dışarıdan ikili"
+    },
+    "KAM5": {
+     "konum": [
+      2.1,
+      -1.9
+     ],
+     "yon_derece": 20,
+     "yukseklik_m": 1.6,
+     "lens_mm": 50,
+     "varsayilan_kadraj": "OU",
+     "ebeveyn": "plaka:dis_kuzey",
+     "not": "Voss'un omzu üstünden Mara"
+    },
+    "KAM6": {
+     "konum": [
+      2.2,
+      0.8
+     ],
+     "yon_derece": 165,
+     "yukseklik_m": 1.6,
+     "lens_mm": 50,
+     "varsayilan_kadraj": "OU",
+     "ebeveyn": "plaka:ic_genel",
+     "not": "Mara'nın omzu üstünden Voss"
+    },
+    "KAM7": {
+     "konum": [
+      2.0,
+      -0.9
+     ],
+     "yon_derece": 24,
+     "yukseklik_m": 1.6,
+     "lens_mm": 85,
+     "varsayilan_kadraj": "Y",
+     "ebeveyn": "KAM5",
+     "not": "Mara tekli, kapıda"
+    },
+    "KAM8": {
+     "konum": [
+      4.2,
+      1.0
+     ],
+     "yon_derece": 270,
+     "yukseklik_m": 1.6,
+     "lens_mm": 24,
+     "varsayilan_kadraj": "O",
+     "ebeveyn": "plaka:ic_genel",
+     "not": "kapıdan masaya, batıya"
+    }
+   }
+  }
+ },
+ "sahne_gruplari": {
+  "S01": {
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 12,
+   "plan_hedef": 3,
+   "kalip": "klasik_giris",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "kurulumlar": [
+    "KAM1",
+    "KAM2",
+    "KAM3"
+   ],
+   "isik": {
+    "ana": "ocak_atesi",
+    "dolgu": "fener",
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": {
+    "karakterler": {
+     "mara": {
+      "mekan": "kulube",
+      "isaret": "M3",
+      "poz": "ayakta",
+      "yuz_yonu": "bati",
+      "bakis": {
+       "hedef": "masa"
+      },
+      "kostum": "k1",
+      "kostum_durumu": [
+       "kapusonu_inik"
+      ],
+      "gorunum": {
+       "kir": 1,
+       "islak": false,
+       "yaralar": []
+      },
+      "eller": {
+       "sag": {
+        "tutar": "fener",
+        "yer": "kalca_hizasi",
+        "sekil": "tutus_tam"
+       },
+       "sol": {
+        "tutar": null,
+        "yer": "yanda",
+        "sekil": "serbest"
+       }
+      }
+     }
+    },
+    "nesneler": {
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "yanik"
+     },
+     "anahtar": {
+      "nerede": "masa",
+      "durum": "soguk_demir"
+     }
+    },
+    "mekan_durumu": {
+     "kapi": "yari_acik",
+     "ocak_atesi": "yanik"
+    }
+   },
+   "cikis_durumu": {
+    "karakterler": {
+     "mara": {
+      "mekan": "kulube",
+      "isaret": "M5",
+      "kostum": "k1"
+     }
+    },
+    "nesneler": {
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "yanik"
+     },
+     "anahtar": {
+      "kimde": "mara",
+      "el": "sol"
+     }
+    }
+   },
+   "canli_arka_plan": "snow drifting past the window"
+  },
+  "S02": {
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "diyalog",
+   "sure_hedef_sn": 15,
+   "plan_hedef": 4,
+   "kalip": "yukselen_diyalog",
+   "eksen": [
+    "mara",
+    "voss"
+   ],
+   "kamera_tarafi": "bati",
+   "kurulumlar": [
+    "KAM4",
+    "KAM5",
+    "KAM6",
+    "KAM7"
+   ],
+   "isik": {
+    "ana": "mesale",
+    "dolgu": "ay",
+    "arka": "ocak_atesi"
+   },
+   "yasaklar": [
+    "no third person"
+   ],
+   "giris_durumu": {
+    "karakterler": {
+     "mara": {
+      "mekan": "kulube",
+      "isaret": "M1",
+      "poz": "ayakta",
+      "yuz_yonu": "guney",
+      "bakis": {
+       "hedef": "voss"
+      },
+      "kostum": "k1",
+      "kostum_durumu": [
+       "kapusonu_inik"
+      ],
+      "gorunum": {
+       "kir": 1,
+       "islak": false,
+       "yaralar": []
+      },
+      "eller": {
+       "sag": {
+        "tutar": "fener",
+        "yer": "kalca_hizasi",
+        "sekil": "tutus_tam"
+       },
+       "sol": {
+        "tutar": "anahtar",
+        "yer": "govde_onunde",
+        "sekil": "kiskac"
+       }
+      }
+     },
+     "voss": {
+      "mekan": "kulube",
+      "isaret": "M2",
+      "poz": "ayakta",
+      "yuz_yonu": "kuzey",
+      "bakis": {
+       "hedef": "mara"
+      },
+      "kostum": "k1",
+      "kostum_durumu": [
+       "migfer_takili"
+      ],
+      "gorunum": {
+       "kir": 0,
+       "islak": true,
+       "yaralar": []
+      },
+      "eller": {
+       "sol": {
+        "tutar": "mesale",
+        "yer": "yanda",
+        "sekil": "tutus_tam"
+       },
+       "sag": {
+        "tutar": null,
+        "yer": "yanda",
+        "sekil": "serbest"
+       }
+      }
+     }
+    },
+    "nesneler": {
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "yanik"
+     },
+     "anahtar": {
+      "kimde": "mara",
+      "el": "sol"
+     },
+     "mesale": {
+      "kimde": "voss",
+      "el": "sol",
+      "durum": "yanik"
+     }
+    },
+    "mekan_durumu": {
+     "kapi": "yari_acik",
+     "ocak_atesi": "yanik"
+    }
+   },
+   "cikis_durumu": {
+    "karakterler": {
+     "mara": {
+      "isaret": "M1"
+     },
+     "voss": {
+      "isaret": "M2"
+     }
+    },
+    "nesneler": {
+     "mesale": {
+      "kimde": "voss",
+      "el": "sol"
+     }
+    }
+   }
+  },
+  "S03": {
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "duygusal",
+   "sure_hedef_sn": 7,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "kurulumlar": [
+    "KAM8",
+    "KAM2"
+   ],
+   "isik": {
+    "ana": "ocak_atesi",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [],
+   "giris_durumu": {
+    "karakterler": {
+     "mara": {
+      "mekan": "kulube",
+      "isaret": "M1",
+      "bakis": {
+       "hedef": "masa"
+      }
+     }
+    }
+   },
+   "cikis_durumu": {
+    "karakterler": {
+     "mara": {
+      "isaret": "M5"
+     }
+    },
+    "nesneler": {
+     "anahtar": {
+      "nerede": "masa"
+     },
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "sonuk"
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,78 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "juri_v1",
+ "title": "Kör jüri raporu (A04 CIKTI/rapor.json → _HIKAYE_ODASI/03_juri_<rol>.json)",
+ "description": "TASARIM §1.3 A04, §3.4. Ölçüt adları ve sırası hikaye_esikleri.json 'juri_olcutleri'nden basılır (şablon). hikaye_odasi.py juri-topla okur: puan 1–10, gerekce boş olmaz; veto yalnız gerekçeli.",
+ "type": "object",
+ "required": [
+  "rol",
+  "oneriler"
+ ],
+ "properties": {
+  "rol": {
+   "type": "string"
+  },
+  "oneriler": {
+   "type": "object",
+   "minProperties": 1,
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "puan",
+     "gerekce"
+    ],
+    "properties": {
+     "puan": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 10
+      },
+      "x_anahtarlar": "juri_olcutleri (hikaye_esikleri.json)"
+     },
+     "gerekce": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+       "type": "string",
+       "minLength": 3
+      }
+     },
+     "veto": {
+      "type": [
+       "string",
+       "null"
+      ],
+      "description": "yalnız üretilemezlik ya da filtre gibi feragat edilemeyen neden; gerekçe zorunlu"
+     },
+     "mutlaka_duzelt": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "calinmaya_deger": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "siralama": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "minimum": 1
+     }
+    }
+   }
+  },
+  "genel_not": {
+   "type": [
+    "string",
+    "null"
+   ]
+  }
+ }
+}

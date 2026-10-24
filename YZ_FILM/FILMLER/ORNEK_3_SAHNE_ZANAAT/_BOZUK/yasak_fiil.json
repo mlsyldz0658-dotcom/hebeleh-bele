@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Sözlük dışı sonuç fiili 'grab' (YZ'ye sonuç söylenmez).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.1.zanaat.eylem_zinciri.0.fiil",
+   "deger": "grab"
+  }
+ ],
+ "beklenen": {
+  "madde": "yasak_sonuc_fiili",
+  "seviye": "HATA"
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "_aciklama": "Yüzü görünen Mara'nın dış ifadesi yok (ifade zorunlu).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.oyunculuk",
+   "deger": {}
+  }
+ ],
+ "beklenen": {
+  "madde": "ifade_yok",
+  "seviye": "HATA"
+ }
+}

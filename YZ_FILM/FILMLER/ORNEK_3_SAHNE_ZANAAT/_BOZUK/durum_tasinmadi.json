@@ -1,0 +1,33 @@
+{
+ "_aciklama": "S01-P03'ün başlangıcı önceki klibin bitişi değil: anahtar sol elde değil (başlangıç karesi = önceki bitiş).",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.baslangic_durumu",
+   "deger": {
+    "karakterler": {
+     "mara": {
+      "eller": {
+       "sol": {
+        "tutar": null,
+        "yer": "yanda",
+        "sekil": "serbest"
+       }
+      }
+     }
+    },
+    "nesneler": {
+     "anahtar": {
+      "nerede": "masa",
+      "durum": "soguk_demir"
+     }
+    }
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "olgu_sicramasi",
+  "seviye": "HATA"
+ }
+}

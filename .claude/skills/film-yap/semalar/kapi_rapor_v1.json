@@ -1,0 +1,157 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "kapi_rapor_v1",
+ "title": "Kapı raporu _RAPOR/<KAPI>_<kapsam>[_t<tur>].json (kapi.py yazar)",
+ "description": "TASARIM §5.7. Bütün kapılar aynı zarf. sonuc ∈ GEC|KISMI|HATA|BAYRAK|OLCULEMEDI.",
+ "type": "object",
+ "required": [
+  "_surum",
+  "_uretim",
+  "kapi",
+  "kapsam",
+  "sonuc",
+  "hatalar"
+ ],
+ "properties": {
+  "_surum": {
+   "type": "integer",
+   "const": 1
+  },
+  "_uretim": {
+   "type": "object",
+   "required": [
+    "asama",
+    "gorev",
+    "girdi_imza",
+    "arac_surum",
+    "esik_surum",
+    "sonuc",
+    "zaman",
+    "ortam"
+   ],
+   "properties": {
+    "asama": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gorev": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "girdi_imza": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "arac_surum": {
+     "type": "string"
+    },
+    "esik_surum": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "sonuc": {
+     "enum": [
+      "GEC",
+      "KISMI",
+      "HATA",
+      "BAYRAK",
+      "OLCULEMEDI"
+     ]
+    },
+    "zaman": {
+     "type": "string"
+    },
+    "ortam": {
+     "enum": [
+      "yerel",
+      "bulut"
+     ]
+    }
+   }
+  },
+  "kapi": {
+   "type": "string"
+  },
+  "kapsam": {
+   "type": "string"
+  },
+  "tur": {
+   "type": [
+    "integer",
+    "null"
+   ]
+  },
+  "sonuc": {
+   "enum": [
+    "GEC",
+    "KISMI",
+    "HATA",
+    "BAYRAK",
+    "OLCULEMEDI"
+   ]
+  },
+  "ozet": {
+   "type": "object",
+   "additionalProperties": {
+    "type": [
+     "integer",
+     "number"
+    ]
+   }
+  },
+  "hatalar": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "madde",
+     "seviye"
+    ],
+    "properties": {
+     "madde": {
+      "type": "string"
+     },
+     "plan": {
+      "type": [
+       "integer",
+       "string",
+       "null"
+      ]
+     },
+     "olcu": {},
+     "esik": {},
+     "seviye": {
+      "enum": [
+       "KRITIK",
+       "ORTA",
+       "HATA",
+       "BAYRAK",
+       "GEC",
+       "OLCULEMEDI"
+      ]
+     },
+     "oneri": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "kanit": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  }
+ }
+}

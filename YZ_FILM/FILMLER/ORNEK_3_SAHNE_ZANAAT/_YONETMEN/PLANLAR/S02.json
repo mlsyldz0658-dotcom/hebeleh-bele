@@ -154,7 +154,7 @@
      {
       "id": "a2",
       "bas": 1.8,
-      "bit": 4.6,
+      "bit": 4.9,
       "ozne": "mara",
       "tur": "konusma",
       "fiil": "konusur",
@@ -188,7 +188,7 @@
     },
     "kesme": {
      "tip": "L",
-     "ses_tasma_sn": 0.5
+     "ses_tasma_sn": 0.6
     },
     "ekran_disi_ses": null,
     "ekranda_bilgi": "Mara kaptana soğuk davranıyor; onu içeri almak istemiyor.",
@@ -204,7 +204,7 @@
   {
    "kullanim": {
     "bas": 0.5,
-    "sure": 6.3
+    "sure": 6.6
    },
    "amac": "Voss yalanı yakalar",
    "zanaat": {
@@ -256,7 +256,7 @@
      {
       "id": "a2",
       "bas": 1.7,
-      "bit": 6.5,
+      "bit": 6.9,
       "ozne": "voss",
       "tur": "konusma",
       "fiil": "konusur",

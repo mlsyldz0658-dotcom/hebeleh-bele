@@ -1,0 +1,18 @@
+{
+ "_aciklama": "Fener sağ elden sol ele el fiili olmadan geçiyor.",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.eylem_zinciri.0.etki",
+   "deger": {
+    "fener.el": "sol"
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "nesne_fiilsiz_degisti",
+  "seviye": "HATA",
+  "tur": "el_degisimi"
+ }
+}

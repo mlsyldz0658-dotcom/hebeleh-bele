@@ -1,0 +1,19 @@
+{
+ "_aciklama": "Anahtar el fiili olmadan masadan ocağa geçiyor (çene sıkma adımının etkisi).",
+ "arac": "k0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.2.zanaat.eylem_zinciri.1.etki",
+   "deger": {
+    "anahtar.kimde": null,
+    "anahtar.nerede": "ocak"
+   }
+  }
+ ],
+ "beklenen": {
+  "madde": "nesne_fiilsiz_degisti",
+  "seviye": "HATA",
+  "tur": "nesne_isinlanmasi"
+ }
+}

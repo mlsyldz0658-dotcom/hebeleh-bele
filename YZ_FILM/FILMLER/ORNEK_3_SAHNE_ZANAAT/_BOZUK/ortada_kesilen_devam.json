@@ -1,0 +1,20 @@
+{
+ "_aciklama": "S01-P02 devam zinciri; kaynak plan son adım bitmeden kesiliyor (Y55).",
+ "arac": "z0",
+ "degisiklikler": [
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.1.zanaat.zincir.gecis_turu",
+   "deger": "devam"
+  },
+  {
+   "dosya": "_YONETMEN/PLANLAR/S01.json",
+   "yol": "planlar.0.kullanim.sure",
+   "deger": 4.0
+  }
+ ],
+ "beklenen": {
+  "madde": "zincir_kesme_penceresi",
+  "seviye": "HATA"
+ }
+}

@@ -38,6 +38,9 @@ class SahteSayfa:
         self.eposta = "Google Hesabı: Mara (mara.deneme@example.com)"; self.girisli = True
         self.sonuc = None; self.kart_sira = []; self.hover_oldu = False; self.gonderilen = []
         self.gecikmeler = []; self.sanal = None; self.kaydirma = 0; self.mut_anlar = []
+        # memmet3'ün gerçek arayüzü: ayar menüsünde "Model" düğmesi → modelin tam adı; model ayar düğmesinin yazısında görünmez
+        self.modeller = ["Veo 3.1 - Quality", "Veo 3.1 - Fast"]; self.model_dugmesi = True; self.model_acik = False; self.model = None
+        self.ok_dugmeleri = 0; self.model_tiklaninca = None
 
     # ---- uyarı görünürlüğü
     @property
@@ -151,7 +154,7 @@ class _Klavye:
 
     def press(self, tus):
         self.s._bas("press:" + tus, True)
-        if tus == "Escape": self.s.menu_acik = self.s.liste_acik = self.s.secici_acik = False
+        if tus == "Escape": self.s.menu_acik = self.s.liste_acik = self.s.secici_acik = self.s.model_acik = False
         elif tus == "Control+A": self.s.tumu_secili = True
         elif tus == "Delete" and self.s.tumu_secili: self.s.kutu = ""; self.s.tumu_secili = False
         self.s._son()
@@ -166,6 +169,8 @@ class _Oge:
     def __init__(self, s, sec, i=None, metin=None): self.s = s; self.sec = sec; self.i = i; self.metin = metin
     @property
     def first(self): return self
+    @property
+    def last(self): return self
     def nth(self, i): return _Oge(self.s, self.sec, i, self.metin)
     def filter(self, has_text=None, **k): return _Oge(self.s, self.sec, self.i, has_text)
     def locator(self, sec): return _Oge(self.s, "temizle" if "xpath" in sec else self.sec + ">" + sec)
@@ -178,6 +183,9 @@ class _Oge:
         if c == "[role=listbox]": return int(s.liste_acik)
         if c == "button:İsteme ekle": return int(s.secilen is not None)
         if c == "temizle": return int(s.ekli > 0)
+        if c == "button:Model": return int(s.model_dugmesi and s.menu_acik)
+        if c == "button" and self.metin == "arrow_drop_down": return s.ok_dugmeleri
+        if c.startswith("text:") and c != "text:Yeni proje": return int(s.model_acik and c[5:] in s.modeller)
         return 1
 
     def count(self): self.s.okuma(); return self._say()
@@ -207,6 +215,10 @@ class _Oge:
         elif c == ".ProseMirror": s.odak = "pm"
         elif c == "text:Yeni proje": s.url = PROJE
         elif c == "textbox:Düzenlenebilir metin": s.odak = "baslik"
+        elif c == "button:Model":
+            s.model_acik = True
+            if s.model_tiklaninca: s.model_tiklaninca()
+        elif c.startswith("text:") and c[5:] in s.modeller and s.model_acik: s.model = c[5:]; s.model_acik = False
         s._son()
     def fill(self, *a, **k): self.s.islem("fill")
     def type(self, *a, **k): self.s.islem("type")
@@ -1197,6 +1209,105 @@ process.stdout.write(f());"""
         self.assertEqual(self.sayfa.ihlal, [])
 
 
+class Memmet3Aktarim(_Taban):
+    """memmet3'ün (gerçek Flow arayüzünde koşan 19.10 sürümü; arşiv YZ_FILM/_ESKI/memmet3) arayüz bilgisi memmet.py'ye yalnız
+    dokun()/oku() üzerinden aktarıldı: video modeli seçici, 9:16 oranı, x2 görsel adayları, elle kipte referansın sahnesinde yüklenmesi,
+    MEMMET_OLCEK. Alınmayanlar: uyarıda yenileme/F5, beklemeyi kısaltma, --hesap, --telefon, arka plan yavaşlatma bayrakları."""
+    def ayar_yaz(self, d):
+        json.dump(d, open(os.path.join(self.ay, "MEMMET_AYAR.json"), "w", encoding="utf-8"))
+
+    def v1_oranli(self, oran):
+        kok = self.v1_film(os.path.join(self.tmp, "V1_" + oran.replace(":", "_")))
+        p = os.path.join(kok, "SAHNELER.json"); d = json.load(open(p, encoding="utf-8")); d["en_boy"] = oran
+        json.dump(d, open(p, "w", encoding="utf-8")); return kok
+
+    def test_en_boy_9_16_radyosu_gecersiz_oran_16_9(self):
+        for oran, beklenen in (("9:16", "9:16"), ("4:3", "16:9")):
+            self.sayfa = SahteSayfa(); self.sayfa.sonuc = dict(HAZIR_GORSEL)
+            m = self.memmet_v1(self.v1_oranli(oran), "gece")
+            self.assertIsNone(self.akis(m, v2=False), oran)
+            self.assertEqual(self.sayfa.secim.get("oran"), beklenen, oran); memmet.flow_kilidi_birak()
+
+    def test_video_modeli_dokun_ile_secilir_yazida_gorunmez(self):
+        self.ayar_yaz({"_surum": 2, "video_model": "Veo 3.1 - Fast"})
+        _, imza = self.v2_film(os.path.join(self.tmp, "V2")); self.sayfa.sonuc = dict(HAZIR_HOVER)
+        m = self.memmet_v2(os.path.join(self.tmp, "V2"), imza, "gece"); self.assertEqual(m.A["video_model"], "Veo 3.1 - Fast")
+        self.assertIsNone(self.akis(m))
+        s = self.sayfa
+        self.assertEqual(s.model, "Veo 3.1 - Fast"); self.assertNotIn("veo", s.ayar_metni().lower())
+        self.assertIn("click:button:Model", s.islemler); self.assertIn("click:text:Veo 3.1 - Fast", s.islemler)
+        self.assertEqual(m.ozet["video_model"], "Veo 3.1 - Fast")
+        n = s.islemler.count("click:button:Model"); m.mod_ayarla("video")               # seçim hatırlanır: menü yeniden açılmaz
+        self.assertEqual(s.islemler.count("click:button:Model"), n)
+        with contextlib.redirect_stdout(io.StringIO()): m.projeye_git()                  # gezinmeden sonra yeniden seçilir
+        self.assertIsNone(m._model)
+
+    def test_video_modeli_yoksa_gonderim_yok_ve_kredi_satiri_yok(self):
+        self.ayar_yaz({"_surum": 2, "video_model": "Veo 9 Ultra"})
+        kok = os.path.join(self.tmp, "V2"); _, imza = self.v2_film(kok); self.sayfa.sonuc = dict(HAZIR_HOVER)
+        m = self.memmet_v2(kok, imza, "gece")
+        self.assertEqual(self.akis(m), "arayuz")
+        self.assertEqual(self.sayfa.islemler.count("click:button:Oluşturmaya başla"), 0)
+        self.assertEqual([x for x in kredi.defter_oku(kok)[0] if x.get("olay") == "gonderim"], [])
+        self.assertIn("press:Escape", self.sayfa.islemler)
+        self.sayfa = SahteSayfa(); self.sayfa.model_dugmesi = False; self.sayfa.ok_dugmeleri = 2   # belirsiz düğme: hiçbirine basılmaz
+        m2 = self.memmet_v2(kok, imza, "gece"); m2.page = self.sayfa; memmet.flow_kilidi_birak()
+        self.assertEqual(self.akis(m2), "arayuz")
+        self.assertFalse([x for x in self.sayfa.islemler if x.startswith("click:button") and "Ayarlar" not in x])
+
+    def test_model_ve_adet_surumsuz_ya_da_bozuk_ayardan_alinmaz(self):
+        for d in ({"video_model": "Veo 3.1 - Fast", "gorsel_adet": 2}, {"_surum": 2, "video_model": "a;b|c&d", "gorsel_adet": 3},
+                  {"_surum": 2, "video_model": "x" * 80}, {"_surum": 2, "video_model": ["Veo"]}):
+            self.ayar_yaz(d); a = memmet.ayar("elle")
+            self.assertIsNone(a["video_model"], d); self.assertEqual(a["gorsel_adet"], 1, d)
+        self.ayar_yaz({"_surum": 2, "video_model": " Veo 3.1 - Quality ", "gorsel_adet": 2,
+                       "gonderim_arasi_sn": [1, 2]}); a = memmet.ayar("elle")
+        self.assertEqual((a["video_model"], a["gorsel_adet"]), ("Veo 3.1 - Quality", 2))
+        self.assertEqual(a["gonderim_arasi_sn"], [6, 15])                                 # tempo yine yalnız yavaşlar
+
+    def test_T10_model_menusu_acilinca_uyari_sonra_islem_yok(self):
+        for kip in ("elle", "gece"):
+            self.ayar_yaz({"_surum": 2, "video_model": "Veo 3.1 - Fast"})
+            kok = os.path.join(self.tmp, "V2_" + kip); _, imza = self.v2_film(kok)
+            self.sayfa = SahteSayfa(); self.sayfa.sonuc = dict(HAZIR_HOVER)
+            self.sayfa.model_tiklaninca = lambda: self.sayfa.uyari_goster("toast")
+            m = self.memmet_v2(kok, imza, kip)
+            self.assertEqual(self.akis(m), "olagandisi", kip)
+            self.assertEqual(self.sayfa.ihlal, [], kip); self.assertNotIn("reload", self.sayfa.islemler)
+            self.assertIsNone(self.sayfa.model, kip); memmet.flow_kilidi_birak()       # kilit + 7: main() (öteki testler)
+
+    def test_v1_x2_ek_aday_adaylar_klasorune(self):
+        self.ayar_yaz({"_surum": 2, "gorsel_adet": 2})
+        kok = self.v1_film(os.path.join(self.tmp, "V1X2"))
+        self.sayfa.sonuc = dict(HAZIR_GORSEL, gorseller=[{"id": "m1", "url": "https://flow-content.google/image/a"},
+                                                        {"id": "m2", "url": "https://flow-content.google/image/b"}])
+        m = self.memmet_v1(kok, "gece"); self.assertIsNone(self.akis(m, v2=False))
+        self.assertEqual(self.sayfa.secim.get("adet"), "x2")
+        for n in (1, 2):
+            self.assertTrue(os.path.exists(os.path.join(kok, "SIRALI_GORSEL", f"{n:03d}.jpg")))
+            self.assertTrue(os.path.exists(os.path.join(kok, "SIRALI_GORSEL", "_ADAYLAR", f"{n:03d}_b.jpg")))
+        self.assertEqual(sorted(f for f in os.listdir(os.path.join(kok, "SIRALI_GORSEL")) if f.endswith(".jpg")), ["001.jpg", "002.jpg"])
+
+    def test_elle_referans_sahnesi_gelince_gece_topluca(self):
+        sira = {}
+        for kip in ("elle", "gece"):
+            self.sayfa = SahteSayfa(); self.sayfa.sonuc = dict(HAZIR_GORSEL)
+            m = self.memmet_v1(self.v1_film(os.path.join(self.tmp, "V1R_" + kip)), kip)
+            self.assertIsNone(self.akis(m, v2=False), kip); memmet.flow_kilidi_birak()
+            i = self.sayfa.islemler
+            self.assertEqual(i.count("set_input_files"), 1, kip)                           # aynı referans bir kez yüklenir
+            sira[kip] = i.index("set_input_files") > i.index("click:.ProseMirror")
+        self.assertEqual(sira, {"elle": True, "gece": False})
+
+    def test_chrome_argumanlari_olcek_ve_yavaslatma_bayragi_yok(self):
+        A = {"chrome": "chrome.exe", "port": 9333, "profil": "P"}
+        a = memmet.chrome_argumanlari(A, olcek="1.25")
+        self.assertIn("--force-device-scale-factor=1.25", a); self.assertEqual(a[-1], memmet.FLOW); self.assertIsInstance(a, list)
+        self.assertFalse([x for x in a if "background" in x or "renderer" in x])
+        for o in ("abc", "9", "0.1", "1 --remote-allow-origins=*", ""):
+            self.assertFalse([x for x in memmet.chrome_argumanlari(A, olcek=o) if "scale" in x or "allow-origins" in x], o)
+
+
 class HerAn(_Taban):
     """Uyarı HER AN belirebilir: gerçekçi sahte sayfada akışın her anından (her sayfa çağrısı ve her bekleme) sonra uyarı görünür
     kılınır; görünür olduktan sonra sayfayı değiştiren işlem sayısı her kipte 0 olmalı ve Memmet olagandisi ile durmalı."""
@@ -1215,6 +1326,7 @@ class HerAn(_Taban):
         with mock.patch.object(memmet, "HESAP", os.path.join(d, "HESAP")):
             m = self.memmet_v1(kok, kip) if tur == "v1" else self.memmet_v2(kok, imza, kip)
             m.A["ayni_anda"] = 1
+            if getattr(self, "video_model", None): m.A["video_model"] = self.video_model      # memmet3 model seçicisi akışta
             return self.akis(m, v2=(tur == "v2")), self.sayfa
 
     @staticmethod
@@ -1243,6 +1355,10 @@ class HerAn(_Taban):
     def test_T10_her_an_v1_gece(self): self.tara("v1", "gece")
     def test_T10_her_an_v2_elle(self): self.tara("v2", "elle")
     def test_T10_her_an_v2_gece(self): self.tara("v2", "gece")
+
+    def test_T10_her_an_v2_elle_video_modeli(self):
+        """memmet3 model seçicisi (Model düğmesi + seçenek) akıştayken de: uyarıdan sonra sayfa işlemi 0, her kipte dur."""
+        self.video_model = "Veo 3.1 - Fast"; self.tara("v2", "elle", bicimler=(("govde", 2), ("kaplama", 3)))
 
     def test_T10_her_an_topla(self):
         v1, v2, imza = self.sablonlar()

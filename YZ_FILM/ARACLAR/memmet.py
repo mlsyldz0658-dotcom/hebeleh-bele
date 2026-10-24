@@ -40,6 +40,11 @@ GÜVENLİK (bot tespiti atlatılmaz; 03_DERSLER.md):
 Çıkış kodları: 0 bitti · 1 beklenmeyen hata · 2 durdu (doğrulama/giriş/kredi/arayüz/DUR) · 4 ortam/sürüm/imza · 5 bütçe ·
                7 Flow uyarısı ya da kilit · 8 bekle (toplanacak iş, başka Memmet açık).
 Son çıkışın nedeni film klasöründe _memmet_cikis.json'a yazılır. Her şey MEMMET_KAYIT.txt'ye, durum MEMMET_DURUM.json'a yazılır.
+
+memmet3'ten alınan gerçek arayüz bilgisi (24.10.2026; arşiv YZ_FILM/_ESKI/memmet3, ÇALIŞTIRILMAZ): video modeli seçici (ayar menüsünde
+"Model" düğmesi → modelin tam adı; model ayar düğmesinin yazısında görünmez), SAHNELER "en_boy" 16:9 | 9:16 (oran radyosu), MEMMET_AYAR
+(_surum ≥ 2) "video_model" ve "gorsel_adet" 1 | 2 (v1 x2: ek aday SIRALI_GORSEL/_ADAYLAR/NNN_b.jpg), elle kipte karakter referansı
+sahnesi gelince yüklenir, MEMMET_OLCEK (Chrome ölçeği). Hepsi dokun()/oku() üzerinden; model bulunamazsa gönderim yok (2).
 """
 import os, sys, re, json, time, datetime, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes, hashlib
 import threading
@@ -85,6 +90,8 @@ VARSAYILAN = {
     "video_zaman_asimi_sn": 360,
     "video_cozunurluk": "720p",
     "video_sure": "8 sn.",
+    "video_model": None,                # memmet3: ör. "Veo 3.1 - Quality"; None = Flow'da seçili model (MEMMET_AYAR _surum ≥ 2)
+    "gorsel_adet": 1,                   # memmet3: v1 görselde istem başına aday (1 | 2); v2 görsel düzeltmesi hep x2
     "telegram_dosya": telegram_bul(),   # 1. satır bot anahtarı, 2. satır sohbet no
 }
 # Yük sınırı (17.10 değerleri). Kodda sabit; ayar dosyası bunları yalnız YAVAŞLATABİLİR (sikilastir).
@@ -120,6 +127,8 @@ YAZMA_GECIKMESI_MS = 12           # istem yazma gecikmesi SABİT (rastgele deği
 YAZMA_PARCA = 24                  # istem parça parça yazılır; her parçadan önce uyarı okunur
 ISLEM_ZAMAN_ASIMI_MS = 7000       # tıklama/yazma bekleme sınırı: uyarı katmanı tıklamayı engellerse hata ≤ 7 sn'de gelir, uyarı okunur
 GEZINME_ZAMAN_ASIMI_MS = 30000
+MODEL_ADI = re.compile(r"[\w][\w .\-]{0,59}")   # MEMMET_AYAR video_model: kısa, düz ad (ör. "Veo 3.1 - Quality")
+ORANLAR = ("16:9", "9:16")          # SAHNELER "en_boy" (memmet3; Flow oran radyoları)
 UYARI_MESAJI = "Flow uyarı verdi (olağan dışı etkinlik): GÖNDER'e basma, sayfayı yenileme. Memmet durdu; Claude'a haber ver."
 # Sayfa metni: gövdenin TAMAMI (kesme yok) + uyarı kutuları (role=alert/alertdialog/dialog/status, aria-live, <dialog>, aria-modal)
 # + açık shadow kökleri. İşaret (memmet:metin) yalnız testlerin sahte sayfası içindir.
@@ -180,6 +189,10 @@ def ayar(kip="elle"):
             except (TypeError, ValueError): pass
         if "video_cozunurluk" in d: a["video_cozunurluk"] = d["video_cozunurluk"]
         if a["video_cozunurluk"] not in ("720p", "1080p"): a["video_cozunurluk"] = "720p"   # en az 720p
+        # memmet3 ekleri: tempoya dokunmaz, yalnız arayüz seçimi. Sürümsüz (eski Memmet'in kendiliğinden yazdığı) dosyadan alınmaz.
+        vm = d.get("video_model")
+        if isinstance(vm, str) and MODEL_ADI.fullmatch(vm.strip()): a["video_model"] = vm.strip()
+        if d.get("gorsel_adet") in (1, 2): a["gorsel_adet"] = d["gorsel_adet"]
     t = sikilastir(kip, d)
     try: ft = flow_yuk.tempo(kip, kok=HESAP, ek={k: v for k, v in t.items()})
     except Exception as e:                                                   # eşikler okunamazsa gönderim yok (kapalı başarısız)
@@ -188,6 +201,19 @@ def ayar(kip="elle"):
         if k in ft: t[k] = _yavas(t[k], ft[k])
     a.update(t); a["kip"] = kip
     return a
+
+
+def chrome_argumanlari(A, olcek=None):
+    """Memmet Chrome'unun komut satırı. 17.10 açılışıyla aynı; memmet3'ün arka plan yavaşlatma bayrakları ALINMADI (örtülü sekmenin
+    zamanlayıcılarını insan sekmesinden farklı koşturur, Flow'un kendi yoklamalarını sıklaştırır). MEMMET_OLCEK yalnız ekran ölçeği
+    (0.5–3; sayfaya dokunmaz, DOM okunur, ekran görüntüsü kullanılmaz)."""
+    a = [A["chrome"], f"--remote-debugging-port={A['port']}", f"--user-data-dir={A['profil']}",
+         "--no-first-run", "--no-default-browser-check", "--start-maximized"]
+    o = os.environ.get("MEMMET_OLCEK") if olcek is None else olcek
+    try:
+        if o and 0.5 <= float(o) <= 3: a.append(f"--force-device-scale-factor={float(o):g}")
+    except (TypeError, ValueError): pass
+    return a + [FLOW]
 
 
 def gece_izni():
@@ -338,6 +364,7 @@ class Memmet:
         self.D = json.load(open(self.dp, encoding="utf-8")) if os.path.exists(self.dp) else {"proje_url": None, "yuklenen": [], "sahne": {}}
         self.page = None; self._tg = None; self.uyari_goruldu = False
         self.D.setdefault("isler", {}); self.blok = None; self.ozet = None; self.hesap = None; self._tazele = 0
+        self._model = None                 # seçilen video modeli (ayar yazısında görünmez; her gezinmede sıfırlanır)
 
     # ------------------------------------------------------------------ kayıt ve bildirim
     def log(self, *a):
@@ -382,8 +409,7 @@ class Memmet:
                 s.settimeout(1); return s.connect_ex(("127.0.0.1", port)) == 0
         if not acik():
             os.makedirs(self.A["profil"], exist_ok=True)
-            subprocess.Popen([self.A["chrome"], f"--remote-debugging-port={port}", f"--user-data-dir={self.A['profil']}",
-                              "--no-first-run", "--no-default-browser-check", "--start-maximized", FLOW])
+            subprocess.Popen(chrome_argumanlari(self.A))
             for _ in range(60):
                 if acik(): break
                 time.sleep(1)
@@ -569,6 +595,7 @@ class Memmet:
         except Exception: return False
 
     def projeye_git(self):
+        self._model = None                 # gezinmeden sonra Flow modeli varsayılana dönebilir: bir sonraki ayarda yeniden seçilir
         if self.D.get("proje_url"):
             self.dokun(self.page.goto, self.D["proje_url"], wait_until="commit")
         else:
@@ -613,20 +640,43 @@ class Memmet:
             self.dokun(self.page.keyboard.press, "Escape"); self.bekle(1)
         self.hata_kaydi("ayar_menusu"); raise Durdur("Ayar menüsü açılmadı.")
 
+    def model_sec(self, model):
+        """memmet3 (gerçek arayüz): açık ayar menüsünde video modeli. Açan düğme "Model" adlı düğme (yoksa sayfada TEK
+        "arrow_drop_down" simgeli düğme; birden çoksa hiçbirine basılmaz), seçenek modelin TAM adı. Model ayar düğmesinin yazısında
+        görünmez: seçim hatırlanır (self._model; gezinmede sıfırlanır). Bulunamazsa GÖNDERİM YOK (Durdur arayuz → 2): başka modelle
+        gönderilseydi kredi bütçesi (BUTK) ve kalite tutmazdı (memmet3 "seçili modelle devam" ederdi)."""
+        ac = self.page.get_by_role("button", name="Model")
+        if not ac.count():
+            ac = self.page.locator("button").filter(has_text="arrow_drop_down")
+            if ac.count() != 1: ac = None
+        if ac is None or not ac.last.is_visible():
+            self.hata_kaydi("model"); raise Durdur(f"Flow'da video modeli düğmesi bulunamadı ({model}): gönderim yapılmadı.", kod="arayuz")
+        self.dokun(ac.last.click); self.bekle(0.6, 1.0)
+        sec = self.page.get_by_text(model, exact=True)
+        if not sec.count():
+            self.dokun(self.page.keyboard.press, "Escape")
+            self.hata_kaydi("model"); raise Durdur(f"Video modeli Flow'da bulunamadı: {model}. Gönderim yapılmadı; MEMMET_AYAR "
+                                                   "video_model'i Flow'daki adla düzelt.", kod="arayuz")
+        self.dokun(sec.last.click); self.bekle(0.5, 0.9); self._model = model; self.log("Model:", model)
+
     def mod_ayarla(self, tur, adet=1):
-        """tur: 'gorsel' ya da 'video'; adet: çıktı sayısı (v2 görsel düzeltmesi 2). Yanlışsa düzeltir, sonra yazıdan doğrular."""
-        x = f"x{int(adet)}"
+        """tur: 'gorsel' ya da 'video'; adet: çıktı sayısı (v2 görsel düzeltmesi 2). Yanlışsa düzeltir, sonra yazıdan doğrular.
+        Oran SAHNELER "en_boy"dan (16:9 | 9:16; başkası 16:9); video modeli MEMMET_AYAR video_model (verilmişse; memmet3)."""
+        x = f"x{int(adet)}"; oran = self.plan.get("en_boy") if self.plan.get("en_boy") in ORANLAR else "16:9"
+        model = self.A.get("video_model") if tur == "video" else None
         def dogru():
             y = self.ayar_yazisi()
             if tur == "gorsel": return "nano banana" in y and x in y and "video" not in y
+            if model and self._model != model: return False
             return "video" in y and norm(self.A["video_cozunurluk"]) in y and norm(self.A["video_sure"]).replace(".", "") in y.replace(".", "") and x in y
         if dogru(): return
         for deneme in range(2):
             self.ayar_menusu_ac()
             if tur == "gorsel":
-                self.radyo("Resim"); self.radyo("16:9"); self.radyo(x)
+                self.radyo("Resim"); self.radyo(oran); self.radyo(x)
             else:
-                self.radyo("Video"); self.radyo("Kareler"); self.radyo("16:9")
+                self.radyo("Video"); self.radyo("Kareler"); self.radyo(oran)
+                if model: self.model_sec(model)
                 self.radyo(self.A["video_cozunurluk"]); self.radyo(self.A["video_sure"]); self.radyo(x)
             self.dokun(self.page.keyboard.press, "Escape"); self.bekle(0.6, 1.2)
             if dogru(): self.log("Ayar:", self.ayar_yazisi()); return
@@ -852,9 +902,11 @@ class Memmet:
                  and self.sc(s["no"]).get(tur + "_durum") not in ("reddedildi", "zaman_asimi")]
         if not isler: self.log(f"{tur}: yapılacak sahne yok"); return
         self.log(f"=== {tur.upper()} aşaması: {len(isler)} sahne ({', '.join(str(s['no']) for s in isler)})")
-        self.mod_ayarla(tur)
+        adet = self.A.get("gorsel_adet", 1)
+        self.mod_ayarla(tur, adet)
         refs = {r for s in isler for r in s.get("referans", [])}
-        self.yukle([os.path.join(self.root, self.plan["karakterler"][r]["ref"]) for r in sorted(refs)])
+        if self.A["kip"] != "elle":       # memmet3 (19.10 kullanıcı): elle kipte referans topluca değil, sahnesi gelince yüklenir
+            self.yukle([os.path.join(self.root, self.plan["karakterler"][r]["ref"]) for r in sorted(refs)])
         kuyruk = list(isler); bekleyen = {}       # sahne no -> {istem, gonderim, deneme}
         zaman_asimi = self.A["gorsel_zaman_asimi_sn"]
         while kuyruk or bekleyen:
@@ -869,8 +921,11 @@ class Memmet:
                 metin = ist[deneme]
                 self.tempo_bekle(tur); self.kontrol_noktasi()
                 try:
-                    self.mod_ayarla(tur); self.kutuyu_temizle()
-                    for r in s.get("referans", []): self.referans_ekle(os.path.basename(self.plan["karakterler"][r]["ref"]))
+                    self.mod_ayarla(tur, adet); self.kutuyu_temizle()
+                    for r in s.get("referans", []):
+                        ref = self.plan["karakterler"][r]["ref"]
+                        if os.path.basename(ref) not in self.D["yuklenen"]: self.yukle([os.path.join(self.root, ref)])   # yalnız elle'de olur
+                        self.referans_ekle(os.path.basename(ref))
                     ok = self.istem_yaz_gonder(metin, f"{s['no']:03d} {tur}")
                 except Exception as e:
                     self.hata_kaydi(f"{s['no']:03d}_{tur}"); self.log(f"{s['no']:03d} {tur}: gönderim hatası: {str(e)[:150]}")
@@ -893,6 +948,7 @@ class Memmet:
                 if r.get("var") and r.get("gorsel_url") and not r.get("yuzde"):
                     try:
                         self.indir(r["gorsel_url"], hedef); self.kontrol_isle(n, tur, f"memmet:{r['gorsel_id']}")
+                        self.ek_adaylar(r, n, adet)
                         self.sc(n)[tur + "_durum"] = "tamam"; self.save(); self.log(f"{n:03d} görsel: KAYDEDİLDİ ({int(gecen)} sn)")
                         del bekleyen[n]
                     except Exception as e: self.log(f"{n:03d} görsel indirilemedi, tekrar denenecek: {str(e)[:80]}")
@@ -903,6 +959,14 @@ class Memmet:
                 elif gecen > zaman_asimi:                  # zaman aşımı: yeniden gönderim YOK, sayfa yenilenmez; sonra toplanır
                     self.sc(n)[tur + "_durum"] = "zaman_asimi"; self.save(); del bekleyen[n]
                     self.log(f"{n:03d} {tur}: zaman aşımı → yeniden gönderilmez (sonraki açılışta önce toplanır)")
+
+    def ek_adaylar(self, r, n, adet):
+        """memmet3 x2: kartın öteki görseli SIRALI_GORSEL/_ADAYLAR/NNN_b.jpg (yalnız indirme; sayfaya dokunmaz). NNN.jpg tek kalır."""
+        ekler = [g["url"] for g in (r.get("gorseller") or []) if g.get("url") and g["url"] != r.get("gorsel_url")][:max(0, int(adet) - 1)]
+        for k, u in enumerate(ekler):
+            d = os.path.join(self.sg, "_ADAYLAR"); os.makedirs(d, exist_ok=True)
+            try: self.indir(u, os.path.join(d, f"{n:03d}_{'bcd'[k]}.jpg"))
+            except Exception as e: self.log(f"{n:03d} ek aday indirilemedi: {str(e)[:60]}")
 
     # ------------------------------------------------------------------ v2: hesap kimliği ve bakiye (salt okuma)
     def hesap_denetle(self):
@@ -1082,7 +1146,8 @@ class Memmet:
         Uyarı her an Durdur(olagandisi) ile çıkar (sayfada başka işlem yok). Yeniden deneme yalnız filtre reddinde yedek istemle, bir kez."""
         tur = self.blok.get("tur") or "video"; adet = 2 if tur == "gorsel" else 1
         self.ozet = {"blok": self.blok_id, "tur": tur, "gonderilen": [], "indirilen": [], "bekleyen": [], "reddedilen": [], "hata": [],
-                     "zaman_asimi": [], "atlanan": [], "dur": False}
+                     "zaman_asimi": [], "atlanan": [], "dur": False,
+                     "video_model": self.A.get("video_model") if tur == "video" else None}
         nolar = [int(n) for n in self.blok.get("planlar") or []]
         self.log(f"=== BLOK {self.blok_id} ({tur}, kip {self.A['kip']}): {len(nolar)} plan ({', '.join(str(n) for n in nolar)})")
         self.mod_ayarla(tur, adet)

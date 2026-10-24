@@ -380,6 +380,25 @@ class TestGuvenlikInceleme(Ortam):
                 self.assertFalse(reddedildi(kos("komut", bash(c))), c)
         finally: os.remove(self.kilit)
 
+    def test_arsivdeki_memmet_hic_calismaz(self):
+        """_ESKI/ ve GELISTIRME/ altındaki Memmet (memmet3 başvuru kopyası) giriş noktası değildir: kilit ya da sürüş olmasa da,
+        --giris/--bakiye ile de reddedilir; dolaylı çalıştırma da. Derleme, okuma, git mv serbest."""
+        self.surus(False, "gelistirme")
+        for c in ("python YZ_FILM/_ESKI/memmet3/memmet.py F --giris", "python3 YZ_FILM/_ESKI/memmet3/memmet.py --bakiye",
+                  "py -3.10 C:\\YZ_FILM_SET\\YZ_FILM\\_ESKI\\memmet3\\memmet.py F --mod elle",
+                  "python YZ_FILM/GELISTIRME/memmet3/ARACLAR/memmet.py F",
+                  "python3 -c \"import runpy; runpy.run_path('YZ_FILM/_ESKI/memmet3/memmet.py')\"",
+                  "python3 - <<'EOF'\nimport sys; sys.path.insert(0, 'YZ_FILM/_ESKI/memmet3')\nimport memmet\nEOF"):
+            for o in ("bulut", "yerel"):
+                self.assertTrue(reddedildi(kos("komut", bash(c), ortam=o)), (o, c))
+        for c in ("python3 -m py_compile YZ_FILM/_ESKI/memmet3/memmet.py", "git mv YZ_FILM/GELISTIRME/memmet3/ARACLAR/memmet.py YZ_FILM/_ESKI/memmet3/memmet.py",
+                  "cat YZ_FILM/_ESKI/memmet3/BENIOKU.md", "python YZ_FILM/ARACLAR/memmet.py --giris",
+                  "cat > m.txt <<'EOF'\nmemmet3 _ESKI/memmet3/memmet.py: runpy, import memmet dahil reddedilir\nEOF"):
+            self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+        r = subprocess.run([sys.executable, os.path.join(DEPO, "YZ_FILM", "_ESKI", "memmet3", "memmet.py"), "--giris"],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
+        self.assertNotEqual(r.returncode, 0); self.assertIn("ARŞİV", r.stderr)            # dosyanın kendisi de çalışmaz
+
     def test_P6_yollar_bilinmezken_ayarlar_kapali(self):
         yok = {"YZ_FILM_YOLLAR": os.path.join(_ortam.KOK, "YOK_YOLLAR.json")}
         for p in ("/srv/baska/YZ_FILM/AYARLAR/FILM_AYAR.json", "C:\\Users\\Soysal\\Desktop\\YZ_FILM\\AYARLAR\\gemini_anahtar.txt",

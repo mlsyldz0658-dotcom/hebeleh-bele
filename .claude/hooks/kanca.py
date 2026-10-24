@@ -627,6 +627,22 @@ def memmet_cagrilari(cmd):
     return kos_, (kos_ and serbest)
 
 
+ARSIV_YOL = re.compile(r"(?:^|[\\/\s\"'=(])(?:_ESKI|GELISTIRME)[\\/]", re.I)
+
+
+def arsiv_memmet(cmd):
+    """Arşivdeki ya da geliştirme kopyasındaki bir Memmet (_ESKI/…, GELISTIRME/…; ör. _ESKI/memmet3/memmet.py) çalıştırılıyor mu?
+    Bunlar yalnız başvuru malzemesidir, giriş noktası değildir: --giris/--bakiye dahil HER bağlamda reddedilir. Derleme/test serbest."""
+    for seg, g in _segmentler(cmd):
+        if re.search(r"py_compile|-m\s+unittest", seg): continue
+        if MEMMET_KOS.search(" " + seg) and ARSIV_YOL.search(seg): return True
+        # dolaylı (runpy, import, -c, heredoc): yalnız Python yorumlayıcısına giden segmentte (commit iletisi, cat > not serbest)
+        if re.match(r"^(?:python[\d.]*|py|pythonw)$", program(kelimeler(seg))):
+            tam = seg + "\n" + "\n".join(str(x) for x in g)
+            if MEMMET_DOLAYLI.search(tam) and ARSIV_YOL.search(tam): return True
+    return False
+
+
 def kelimeler(seg):
     import shlex
     try:
@@ -907,6 +923,9 @@ def k_komut(g, kaynak="ayar"):
                                                                 or re.match(r"\s*git\s+(grep|log|diff|show)\b", s))]
     if kie:
         return ret("kie_ai", "kie.ai kullanılmaz (adres, API çağrısı, anahtar, kurulum yok); başka servis ya da hesap yok (Flow kuralı).")
+    if arsiv_memmet(cmd):
+        return ret("memmet_arsiv", "Arşivdeki/geliştirme kopyasındaki Memmet (_ESKI, GELISTIRME) çalıştırılmaz: yalnız başvuru malzemesi. "
+                                   "Koşan tek Memmet YZ_FILM/ARACLAR/memmet.py.")
     memmet, memmet_serbest = memmet_cagrilari(cmd)
     if memmet and flow_kilitli() and not memmet_serbest:
         return ret("flow_kilidi", "Flow kilidi var: gönderim yapılmaz (her kipte). Kilidi yalnız kullanıcı UYARI_GECTI.bat ile kaldırır.")

@@ -1,3 +1,5 @@
+raise SystemExit("ARŞİV: memmet3 başvuru kopyasıdır, ÇALIŞTIRILMAZ ve içe aktarılmaz (YZ_FILM/_ESKI/memmet3/BENIOKU.md). "
+                 "Koşan tek Memmet: YZ_FILM/ARACLAR/memmet.py")  # arşiv kilidi (24.10.2026); aşağısı ef2b74c'deki hâliyle aynen
 """MEMMET AUTO — Google Flow'da görsel ve video üretimi (v1: SAHNELER partileri · v2: BLOK_PLANI blokları).
 
 Kullanım:

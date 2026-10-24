@@ -80,6 +80,20 @@ class VeriEmniyet(unittest.TestCase):
     def test_depo_klasoru_veri_sayilmaz(self):
         with self.assertRaises(SystemExit): ve.veri_emniyet(os.path.dirname(ARACLAR), sessiz=True)
 
+    def test_arsivdeki_memmet3_giris_noktasi_sayilmaz_cagiran_bat_emekli(self):
+        """_ESKI/memmet3/memmet.py arşivdir: taşınmaz, kalan giriş noktası sayılmaz; onu çağıran .bat ise emekliye ayrılır."""
+        ars = os.path.join(self.veri, "_ESKI", "memmet3", "memmet.py"); os.makedirs(os.path.dirname(ars), exist_ok=True)
+        open(ars, "w", encoding="utf-8").write("raise SystemExit('ARŞİV')\n")
+        bat = os.path.join(self.veri, "FILMLER", "B3", "MEMMET3.bat")
+        open(bat, "w", encoding="utf-8", newline="").write('@echo off\r\npython "%~dp0..\\..\\_ESKI\\memmet3\\memmet.py" "%~dp0."\r\n')
+        r = ve.veri_emniyet(self.veri, sessiz=True)
+        self.assertEqual((r["durum"], r["kalan_giris_noktasi"]), ("temiz", []))
+        tasinan = {t["dosya"].replace("\\", "/") for t in r["tasinan"]}
+        self.assertIn("FILMLER/B3/MEMMET3.bat", tasinan); self.assertNotIn("_ESKI/memmet3/memmet.py", tasinan)
+        self.assertEqual(open(ars, encoding="utf-8").read(), "raise SystemExit('ARŞİV')\n")
+        self.assertNotIn("memmet", open(bat, encoding="ascii").read().lower())
+        self.assertEqual(ve.tara(self.veri), [])
+
 
 if __name__ == "__main__":
     unittest.main()

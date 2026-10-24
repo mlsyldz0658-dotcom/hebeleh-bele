@@ -16,7 +16,9 @@ Alt komutlar:
   --denetle --tum    (A08 S0) _SES/SES_*.json (ses-tasarimcisi·tasarim çıktıları) SAHNELER'e uygulanmış görünümde S0.1–S0.21
                      + muzik.py kâğıt maddeleri (S0.14–S0.18) → _RAPOR/S0_FILM.json. HATA yoksa tasarım SAHNELER.json'a yazılır
                      (zanaat.ses, sahne_gruplari.<S>.ses, _derlenir.{ton_fiili_en, seviye, muzik_ipucu}); HATA'da SAHNELER değişmez,
-                     eşlenebilen maddeler KUYRUK/YENIDEN_YAZ'a (yazar ses-tasarimcisi).
+                     eşlenebilen maddeler KUYRUK/YENIDEN_YAZ'a (yazar ses-tasarimcisi). Kod _derlenir'e yazdığı için
+                     _YONETMEN/DERLENIR_IMZA.json tazelenir (plan_birlestir.imza_yaz; istem_derle ile aynı yol) ve
+                     _SES/SES_TASARIMI.md (insan için özet) yazılır. Profil denetimi SES_KADROSU.md yoksa özetini yazar.
   --denetle --sahne <S>   tek sahne grubu (SubagentStop denetimi) → _RAPOR/S0_<S>.json; SAHNELER'e yazmaz.
 Ortak seçenekler: --film <ad|yol> (zorunlu) · --tur N (görev klasörü yoksa)
 Kodda: ses_tanitim_kurali(sahneler, gizem=()) → [{plan, karakter}] (S0.3 ve Y59 aynı fonksiyon) ·

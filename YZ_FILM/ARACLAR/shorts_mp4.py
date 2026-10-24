@@ -5,8 +5,8 @@ film.py görevi olarak ("<arac> <args> --film <film>"):
 Pencereler: YAYIN/PAKET.json "shorts" ve "fragman" (yayin-paketcisi; zamanlar KURGU_PLANI çizelgesinden) → yoksa PAKET_TASLAK.json →
   yoksa yayin_paketi.taslak() (HIKAYE short_adaylari + vuruşlar). Short: 30–60 sn, dikey 9:16 (orta kırpma), ilk 2 sn kanca metni
   üstte, son 3 sn filme bağlantı metni altta. Fragman: 30–60 sn, dikey kesitten (KESIT/kesit_v<N>.mp4; yoksa yayın dosyası), 16:9.
-Ses: son_miks.py varsa `son_miks.py --shorts --dosya <mp4> --film <film>` (tek miks kodu, PR-9); yoksa ölçülen yüksekliğe göre TEK
-  doğrusal kazanç + tepe sınırlayıcı (−14 LUFS hedef; dinamik işlem yok). Sonra yeniden ölçülür: S7.9 −14 ±1 LUFS, ≤ −1 dBTP (H).
+Ses: son_miks.py varsa onun tek miks kodu (son_miks.miksle: tek doğrusal kazanç + 4× gerçek tepe sınırlayıcı, B15); yoksa yedek
+  yol: ölçülen yüksekliğe göre TEK doğrusal kazanç + ffmpeg sınırlayıcı (−14 LUFS hedef; dinamik işlem yok). Sonra yeniden ölçülür: S7.9 −14 ±1 LUFS, ≤ −1 dBTP (H).
 Çıktı: YAYIN/SHORTS/short_<n>.mp4 · YAYIN/FRAGMAN/fragman.mp4 · YAYIN/SHORTS/SHORTS.json (pencere, ölçüm, metin) ·
   kapı raporu _RAPOR/YAYIN_SHORTS.json (kapı YAYIN, kapsam SHORTS; bilgi, aşama kapısı değil).
 ffmpeg yoksa ya da kaynak medya değilse (sahte deneme) dosya üretilmez, ölçümler ÖLÇÜLEMEDİ (= BAYRAK).
@@ -85,16 +85,17 @@ def kes(kaynak, bas, sure, hedef, gen, yuk, dikey, katmanlar):
 
 
 def ses_ayarla(film, p):
-    """(yöntem, hata). son_miks varsa onu çağırır; yoksa tek doğrusal kazanç + sınırlayıcı (yalnız ses yeniden kodlanır)."""
-    sm = os.path.join(HERE, "son_miks.py")
-    if os.path.isfile(sm):
-        r = subprocess.run([sys.executable, sm, "--shorts", "--dosya", p, "--film", film], capture_output=True, text=True)
-        return ("son_miks", None) if r.returncode == 0 else ("son_miks", f"son_miks --shorts çıkış {r.returncode}")
+    """(yöntem, hata). son_miks varsa onun tek miks kodu (kdf.dogrusal_kazanc → son_miks.miksle); yoksa yedek: ölçülen yüksekliğe
+    göre TEK doğrusal kazanç + ffmpeg sınırlayıcı (yalnız ses yeniden kodlanır; dinamik işlem yok)."""
+    tmp = p[:-4] + ".ses.mp4"
+    if kdf.son_miks_modulu() is not None:
+        e = kdf.dogrusal_kazanc(p, tmp)
+        if e is None: os.replace(tmp, p)
+        return "son_miks", e
     y = kdf.olc_yukseklik(p)
     if not y or y["lufs"] <= -70: return "dogrusal_kazanc", "ses ölçülemedi (sessiz ya da yok)"
     kazanc = kdf.esik("final_lufs") - y["lufs"]
     limit = 10 ** (HEDEF_TEPE_DBTP / 20)
-    tmp = p[:-4] + ".ses.mp4"
     r = subprocess.run(["ffmpeg", "-hide_banner", "-v", "error", "-y", "-i", p, "-map", "0:v:0", "-map", "0:a:0", "-c:v", "copy",
                         "-af", f"volume={kazanc:.2f}dB,alimiter=limit={limit:.4f}:attack=1:release=50:level=disabled",
                         "-c:a", "aac", "-b:a", "192k", "-ar", "48000", tmp], capture_output=True, text=True)

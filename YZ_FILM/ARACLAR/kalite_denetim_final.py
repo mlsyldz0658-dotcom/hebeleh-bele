@@ -292,13 +292,36 @@ def mux_karari(dv):
     return None, "mux kanıtı yok (master korelasyonu geçmedi ya da ölçülemedi)"
 
 
+def son_miks_modulu():
+    try:
+        import son_miks
+        return son_miks
+    except Exception: return None
+
+
+def dogrusal_kazanc(video, cikti, sm=None):
+    """Tek doğrusal kazanç + gerçek tepe sınırlayıcı (son_miks.miksle; B15 tek miks kodu); görüntü kopyalanır. Hata metni ya da None."""
+    sm = sm or son_miks_modulu()
+    if sm is None: return "son_miks.py (PR-9) yok ya da açılamadı"
+    import tempfile
+    try:
+        with tempfile.TemporaryDirectory(prefix="yz_kazanc_") as d:
+            x, _ = sm.O.oku(video); y, _ = sm.miksle([(sm.O.stereo(x), 0.0)])
+            wav = sm.O.yaz(os.path.join(d, "ses.wav"), y); sm.mux(video, wav, cikti)
+        return None
+    except Exception as e: return f"son_miks kazancı uygulanamadı: {e.__class__.__name__}: {e}"
+
+
 def son_miks_mux(film, dosya, tur):
+    """(yeni dosya, hata). master_stem: son_miks --final --mux (stemlerden master); dogrusal_kazanc: kullanıcının miksi + tek kazanç."""
+    hedef = re.sub(r"_4K\.mp4$", "_4K_MUX.mp4", dosya) if dosya.endswith("_4K.mp4") else dosya[:-4] + "_MUX.mp4"
+    if tur == "dogrusal_kazanc":
+        e = dogrusal_kazanc(dosya, hedef)
+        return (None, e) if e else (hedef, None)
     p = os.path.join(HERE, "son_miks.py")
     if not os.path.isfile(p): return None, "son_miks.py (PR-9) henüz yok"
-    hedef = re.sub(r"_4K\.mp4$", "_4K_MUX.mp4", dosya) if dosya.endswith("_4K.mp4") else dosya[:-4] + "_MUX.mp4"
-    r = subprocess.run([sys.executable, p, "--mux", tur, "--dosya", dosya, "--cikti", hedef, "--film", film],
-                       capture_output=True, text=True)
-    if r.returncode != 0 or not os.path.isfile(hedef): return None, f"son_miks --mux çıkış {r.returncode}"
+    r = subprocess.run([sys.executable, p, "--final", "--film", film, "--mux", dosya, "--cikti", hedef], capture_output=True, text=True)
+    if r.returncode != 0 or not os.path.isfile(hedef): return None, f"son_miks --final --mux çıkış {r.returncode}"
     return hedef, None
 
 

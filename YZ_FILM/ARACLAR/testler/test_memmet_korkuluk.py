@@ -1,8 +1,11 @@
 """Memmet korkuluk testi (PR-0, D-02): Flow uyarısında HER KİPTE dur, sayfaya dokunma; doğrulamada bekleme; tempo yalnız yavaşlar.
-Gerçek tarayıcı yok: sahte bir Flow sayfası, Memmet'in sayfada yaptığı her işlemi (tıklama, yazma, gezinme...) kaydeder.
+Gerçek tarayıcı yok: gerçeğe yakın sahte bir Flow sayfası (ayar menüsü ve radyolar, dosya yükleme ve yüzdeler, medya seçici, istem kutusu,
+sonuç kartları, 20.000 karakteri aşan sayfa metni, role=alert/dialog uyarı kutuları, tıklamayı zaman aşımına düşüren uyarı katmanı)
+Memmet'in sayfada yaptığı her işlemi (tıklama, yazma, tuş, gezinme, fare, dosya, olay gönderen JS) kaydeder. mod_ayarla, yukle,
+kutuyu_temizle sahte sayfaya karşı GERÇEKTEN koşar. Kural: uyarı görünür olduktan sonra sayfayı değiştiren işlem sayısı 0.
 Çalıştırma: python -m unittest discover -s ARACLAR/testler     (YZ_FILM klasöründen)
 """
-import os, sys, json, time, shutil, tempfile, unittest, io, contextlib
+import os, sys, re, ast, json, time, shutil, tempfile, unittest, io, contextlib, subprocess, threading
 from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
@@ -11,66 +14,208 @@ import memmet
 
 UYARI = "Olağan dışı etkinlik algıladık. Lütfen daha sonra tekrar deneyin."
 PROJE = "https://labs.google/fx/tools/flow/project/deneme"
+DOLGU = "Scene prompt text " * 1200            # ~21.600 karakterlik istem kartları: sondaki uyarı 20.000. karakterden sonra
+# radyo seçenekleri: innerText 'simge\nYazı'; grup içinde tek seçim
+RADYOLAR = [("image\nResim", "tur"), ("videocam\nVideo", "tur"), ("Kareler", "kaynak"), ("16:9", "oran"), ("9:16", "oran"),
+            ("720p", "coz"), ("1080p", "coz"), ("4 sn.", "sure"), ("8 sn.", "sure"), ("x1", "adet"), ("x2", "adet")]
+ZAMAN_ASIMI = type("TimeoutError", (Exception,), {})       # Playwright TimeoutError benzeri
+DEGISTIREN = re.compile(r"dispatchEvent|appendChild|scrollTo|scrollBy|scrollIntoView|\.click\(|\.focus\(")
 
 
 class SahteSayfa:
-    """Playwright sayfasının Memmet'in kullandığı kadarı. islemler: sayfayı DEĞİŞTİREN her çağrı."""
+    """Playwright sayfasının Memmet'in kullandığı kadarı. islemler: sayfayı DEĞİŞTİREN her çağrı (denemeler dahil).
+    ihlal: uyarı GÖRÜNÜR olduktan sonra yapılan değiştiren çağrılar (her zaman boş kalmalı). an: okuma + yazma + bekleme sayacı;
+    tetik_an verilirse uyarı o andan sonra görünür olur (bicim: govde = 20.000. karakterden sonra, toast = role=alert kutusu,
+    kaplama = alert + tıklamayı engelleyen katman, kart = yalnız sonuç kartında)."""
     def __init__(self):
-        self.metin = ""; self.url = PROJE; self.recaptcha = False; self.kart = {"var": False}
-        self.kutu = ""; self.islemler = []; self.yazilanlar = []; self.gonder_tiklaninca = None
+        self.govde = ""; self.uyarilar = []; self.url = PROJE; self.recaptcha = False; self.kart = {"var": False}
+        self.kutu = ""; self.islemler = []; self.yazilanlar = []; self.gonder_tiklaninca = None; self.ihlal = []
         self.keyboard = _Klavye(self); self.mouse = _Fare(self)
+        self.an = 0; self.tetik_an = None; self.bicim = "govde"; self.gorunur = False; self.kaplama = False; self.okuma_hatasi = False
+        self.kaplama_tikta = False       # bir sonraki tıklama sırasında uyarı katmanı belirir (tıklama zaman aşımına düşer)
+        self.secim = {}; self.menu_acik = False; self.kitaplik = set(); self.yukleniyor = 0; self.yuklenecek = []
+        self.secici_acik = False; self.secilen = None; self.liste_acik = False; self.ekli = 0; self.odak = None; self.tumu_secili = False
+        self.eposta = "Google Hesabı: Mara (mara.deneme@example.com)"; self.girisli = True
+        self.sonuc = None; self.kart_sira = []; self.hover_oldu = False; self.gonderilen = []
+        self.gecikmeler = []; self.sanal = None; self.kaydirma = 0
 
-    def islem(self, ad): self.islemler.append(ad)
+    # ---- uyarı görünürlüğü
+    @property
+    def metin(self): return self.govde
 
+    @metin.setter
+    def metin(self, v):
+        self.govde = v
+        if v and any(k in memmet.norm(v) for k in memmet.OLAGANDISI_KELIMELERI): self.gorunur = True
+
+    def uyari_goster(self, bicim=None):
+        b = bicim or self.bicim
+        if b == "govde": self.govde = DOLGU + UYARI
+        elif b == "toast": self.uyarilar.append(UYARI)
+        elif b == "kaplama": self.uyarilar.append(UYARI); self.kaplama = True
+        elif b == "kart": self.kart = {"var": True, "yuzde": False, "metin": "unusual activity detected"}
+        self.gorunur = True; self.uyari_ani = len(self.islemler)
+
+    def _bas(self, ad, degistirir):
+        if degistirir:
+            self.islemler.append(ad)
+            if self.gorunur: self.ihlal.append(ad)
+            if self.kaplama and ad.split(":")[0] in ("click", "fill", "type", "press", "hover", "scroll", "mouse"):
+                self._son(); raise ZAMAN_ASIMI("Timeout 7000ms exceeded: <div class=overlay> intercepts pointer events")
+            if self.kaplama_tikta and ad.startswith("click"):
+                self.kaplama_tikta = False; self.uyari_goster("kaplama"); self._son()
+                raise ZAMAN_ASIMI("Timeout 7000ms exceeded: <div role=dialog> intercepts pointer events")
+
+    def _son(self):
+        self.an += 1
+        if self.tetik_an is not None and self.an == self.tetik_an and not self.gorunur: self.uyari_goster()
+
+    def islem(self, ad): self._bas(ad, True); self._son()
+    def okuma(self): self._son()
+
+    # ---- gönderim ve sonuçlar
+    def gonderildi(self):
+        self.gonderilen.append(self.kutu or (self.yazilanlar[-1] if self.yazilanlar else "")); self.kutu = ""; self.hover_oldu = False
+        if self.sonuc is not None: self.kart_sira = [{"var": True, "yuzde": True, "metin": "%40"}, dict(self.sonuc)]
+        if self.gonder_tiklaninca: self.gonder_tiklaninca()
+
+    def _kart(self):
+        if self.okuma_hatasi and self.gorunur: raise RuntimeError("Execution context was destroyed (uyarı katmanı)")
+        if self.sanal is not None and self.kaydirma < self.sanal: return {"var": False}       # sanal liste: kart henüz DOM'da yok
+        if self.kart_sira:
+            self.kart = self.kart_sira.pop(0) if len(self.kart_sira) > 1 else self.kart_sira[0]
+        k = dict(self.kart)
+        if k.get("video_url_hover") and self.hover_oldu: k["video_url"] = k["video_url_hover"]
+        k.setdefault("hata_metni", k.get("metin", "")); k.setdefault("hata_ogesi", False)
+        return k
+
+    def ayar_metni(self):
+        s = self.secim
+        if s.get("tur") == "Resim": return " · ".join(["Nano Banana", s.get("oran", ""), s.get("adet", "")])
+        if s.get("tur") == "Video":
+            return " · ".join(["Video", s.get("kaynak", ""), s.get("oran", ""), s.get("coz", ""), s.get("sure", ""), s.get("adet", "")])
+        return "Ayarlar"
+
+    # ---- Playwright yüzeyi
     def evaluate(self, js, *a):
+        self._bas("evaluate:olay", bool(DEGISTIREN.search(js)))
+        try: return self._js(js, *a)
+        finally: self._son()
+
+    def _js(self, js, *a):
+        if "slice(0, 20000)" in js: return self.govde[:20000]                      # PR-0'ın kesen okuması (C2)
+        if "memmet:metin" in js: return self.govde + "\n" + "\n".join(self.uyarilar)
         if "recaptcha" in js: return self.recaptcha
-        if "innerText.slice" in js: return self.metin
-        if "flow-expandable-prompt" in js: return self.kart
+        if "flow-expandable-prompt" in js: return self._kart()
+        if "[role=radio]" in js and "findIndex" in js:
+            return next((i for i, (m, _) in enumerate(RADYOLAR) if a and a[0] in [x.strip() for x in m.split("\n")]), -1)
+        if "İçerik öğesi resmi" in js: return self.ekli
+        if "batch-container *" in js:
+            if self.yukleniyor > 0: self.yukleniyor -= 1; return True
+            self.kitaplik.update(self.yuklenecek); self.yuklenecek = []; return False
+        if "getAttribute('aria-label')" in js: return self.eposta
+        if ".ProseMirror" in js and "/project/" in js: return self.girisli
+        if "dragenter" in js: self.yukleniyor = 3; return None
+        if "scrollBy" in js: self.kaydirma += 1; return {"son": self.sanal is None or self.kaydirma >= self.sanal + 2}
         return None
 
-    def goto(self, url, **k): self.islem("goto"); self.url = url
+    def goto(self, url, **k): self._bas("goto", True); self.url = url; self._son()
     def reload(self, **k): self.islem("reload")
-    def screenshot(self, **k): self.islem("screenshot")
-    def content(self): return ""
+    def screenshot(self, **k): self.okuma()
+    def content(self): self.okuma(); return ""
     def set_default_timeout(self, t): pass
-    def wait_for_selector(self, *a, **k): pass
-    def wait_for_url(self, *a, **k): pass
+    def set_default_navigation_timeout(self, t): pass
+    def wait_for_selector(self, *a, **k): self.okuma()
+    def wait_for_url(self, *a, **k): self.okuma()
+    def set_input_files(self, sec, dosyalar, **k):
+        self._bas("set_input_files", True); self.yuklenecek = [os.path.basename(d) for d in dosyalar]; self._son()
     def locator(self, sec): return _Oge(self, sec)
-    def get_by_role(self, rol, name=None, **k): return _Oge(self, f"{rol}:{name}")
+    def get_by_role(self, rol, name=None, **k): return _Oge(self, f"{rol}:{name}" if isinstance(name, str) or name is None else "temizle")
     def get_by_text(self, t, **k): return _Oge(self, f"text:{t}")
-    def get_by_placeholder(self, t, **k): return _Oge(self, f"ph:{t}")
+    def get_by_placeholder(self, t, **k): return _Oge(self, "ph:ara")
 
 
 class _Klavye:
     def __init__(self, s): self.s = s
-    def type(self, metin, **k): self.s.islem("type"); self.s.kutu += metin; self.s.yazilanlar.append(metin)
-    def press(self, tus): self.s.islem("press:" + tus)
+    def type(self, metin, delay=None, **k):
+        self.s._bas("type", True); self.s.gecikmeler.append(delay)
+        if self.s.odak == "pm":
+            if not self.s.kutu: self.s.yazilanlar.append(metin)
+            else: self.s.yazilanlar[-1] += metin
+            self.s.kutu += metin
+        self.s._son()
+
+    def press(self, tus):
+        self.s._bas("press:" + tus, True)
+        if tus == "Escape": self.s.menu_acik = self.s.liste_acik = self.s.secici_acik = False
+        elif tus == "Control+A": self.s.tumu_secili = True
+        elif tus == "Delete" and self.s.tumu_secili: self.s.kutu = ""; self.s.tumu_secili = False
+        self.s._son()
 
 
 class _Fare:
     def __init__(self, s): self.s = s
-    def move(self, *a): self.s.islem("mouse")
+    def move(self, *a, **k): self.s.islem("mouse")
 
 
 class _Oge:
-    def __init__(self, s, sec): self.s = s; self.sec = sec
+    def __init__(self, s, sec, i=None, metin=None): self.s = s; self.sec = sec; self.i = i; self.metin = metin
     @property
     def first(self): return self
-    def nth(self, i): return self
-    def filter(self, **k): return self
-    def count(self): return 1
-    def is_visible(self): return True
-    def is_enabled(self): return True
-    def inner_text(self): return self.s.kutu if self.sec == ".ProseMirror" else ""
+    def nth(self, i): return _Oge(self.s, self.sec, i, self.metin)
+    def filter(self, has_text=None, **k): return _Oge(self.s, self.sec, self.i, has_text)
+    def locator(self, sec): return _Oge(self.s, "temizle" if "xpath" in sec else self.sec + ">" + sec)
+    def get_by_role(self, rol, name=None, **k): return _Oge(self.s, "temizle")
+
+    def _say(self):
+        s = self.s; c = self.sec
+        if c == "[role=option]": return int(bool(s.secici_acik and self.metin in s.kitaplik))
+        if c == "[role=radio]": return len(RADYOLAR) if s.menu_acik else 0
+        if c == "[role=listbox]": return int(s.liste_acik)
+        if c == "button:İsteme ekle": return int(s.secilen is not None)
+        if c == "temizle": return int(s.ekli > 0)
+        return 1
+
+    def count(self): self.s.okuma(); return self._say()
+    def is_visible(self): self.s.okuma(); return self._say() > 0
+    def is_enabled(self): self.s.okuma(); return True
+    def inner_text(self, **k):
+        self.s.okuma()
+        if self.sec == ".ProseMirror": return self.s.kutu
+        if self.sec == "button:Ayarlar tetikleyicisi": return self.s.ayar_metni()
+        return ""
+    def get_attribute(self, ad, **k):
+        self.s.okuma()
+        if self.sec == "[role=radio]" and ad == "aria-checked" and self.i is not None:
+            m, g = RADYOLAR[self.i]; return "true" if self.s.secim.get(g) == m.split("\n")[-1] else "false"
+        return None
+
     def click(self, **k):
-        self.s.islem("click:" + self.sec)
-        if self.sec == "button:Oluşturmaya başla":
-            self.s.kutu = ""
-            if self.s.gonder_tiklaninca: self.s.gonder_tiklaninca()
+        s = self.s; s._bas("click:" + self.sec + (f"#{self.i}" if self.i is not None else ""), True); c = self.sec
+        if c == "button:Oluşturmaya başla": s.gonderildi()
+        elif c == "button:Ayarlar tetikleyicisi": s.menu_acik = True
+        elif c == "[role=radio]" and self.i is not None and s.menu_acik:
+            m, g = RADYOLAR[self.i]; s.secim[g] = m.split("\n")[-1]
+        elif c in ("button:İçerik öğelerini istem kutusuna ekle", "button:Başlat", "button:Bitir"): s.secici_acik = s.liste_acik = True
+        elif c == "[role=option]": s.secilen = self.metin
+        elif c == "button:İsteme ekle": s.ekli += 1; s.secilen = None
+        elif c == "temizle": s.ekli = max(0, s.ekli - 1)
+        elif c == ".ProseMirror": s.odak = "pm"
+        elif c == "text:Yeni proje": s.url = PROJE
+        elif c == "textbox:Düzenlenebilir metin": s.odak = "baslik"
+        s._son()
     def fill(self, *a, **k): self.s.islem("fill")
     def type(self, *a, **k): self.s.islem("type")
-    def hover(self, **k): self.s.islem("hover")
+    def hover(self, **k):
+        self.s._bas("hover", True)
+        if "flow-video-tile" in self.sec: self.s.hover_oldu = True
+        self.s._son()
     def scroll_into_view_if_needed(self, **k): self.s.islem("scroll")
+
+
+def red(metin, oge=True):
+    """Flow'un açık hata ögesiyle (role=alert vb.) reddettiği kart: hata metni istemden ayrı."""
+    return {"var": True, "yuzde": False, "metin": metin, "hata_metni": metin, "hata_ogesi": oge}
 
 
 PLAN = {"film": "KORKULUK", "karakterler": {},
@@ -104,8 +249,7 @@ class Korkuluk(unittest.TestCase):
     def memmet(self, kip="elle"):
         with contextlib.redirect_stdout(io.StringIO()):
             m = memmet.Memmet(self.kok, {"mod": kip, "asama": "gorsel"})
-        m.page = self.sayfa
-        for ad in ("mod_ayarla", "yukle", "kutuyu_temizle"): setattr(m, ad, lambda *a, **k: None)
+        m.page = self.sayfa            # mod_ayarla, yukle, kutuyu_temizle sahte sayfaya karşı GERÇEKTEN koşar
         return m
 
     def uyarida_dur(self, m):
@@ -125,7 +269,7 @@ class Korkuluk(unittest.TestCase):
         m = self.memmet("elle")
         bekleme = []
         def tetik():   # istem yazıldı, Memmet GÖNDER bekliyor (2 sn'lik yoklama); kullanıcı basmadan uyarı belirdi
-            if self.uykular[-1] != 2: return
+            if self.uykular[-1] != 2 or not self.sayfa.kutu: return
             if not bekleme: bekleme.append(1)
             elif self.sayfa.metin != UYARI: self.uyari_ver()
         self.uyku_tetik = tetik
@@ -238,12 +382,12 @@ class Korkuluk(unittest.TestCase):
         self.assertGreaterEqual(T["mola_bitis"] - time.time(), 3 * 60 - 5)
         m2 = self.memmet("elle"); self.uykular.clear()
         with contextlib.redirect_stdout(io.StringIO()): m2.tempo_bekle()
-        self.assertTrue(self.uykular and self.uykular[0] >= 3 * 60 - 5, self.uykular)
+        self.assertTrue(self.uykular and sum(self.uykular) >= 3 * 60 - 5, self.uykular)     # bekleme dilimlenir (her dilimde uyarı okunur)
 
     def test_gonderimler_arasi_en_az_6_sn(self):
         m = self.memmet("elle")
         with contextlib.redirect_stdout(io.StringIO()): m.gonderim_kaydet(); self.uykular.clear(); m.tempo_bekle()
-        self.assertTrue(self.uykular and self.uykular[0] >= 5.5)
+        self.assertTrue(self.uykular and sum(self.uykular) >= 5.5)
 
     def test_gunluk_gorsel_tavani_ve_gorselden_videoya_bekleme(self):
         m = self.memmet("elle")
@@ -345,7 +489,7 @@ class BlokV2(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             m = memmet.Memmet(self.kok, {"mod": kip, "blok": blok, "onizleme": self.imza}); m.on_kosullar(); m.blok_dogrula()
         m.page = self.sayfa; m.A["ayni_anda"] = 1
-        for ad in ("mod_ayarla", "yukle", "kutuyu_temizle", "blok_denetimleri"): setattr(m, ad, lambda *a, **k: None)
+        m.blok_denetimleri = lambda *a, **k: None          # V1/SC1 sayfaya dokunmaz; ayrı testli
         m.indir = lambda url, hedef: open(hedef, "wb").write(b"\0" * 20000)
         return m
 
@@ -369,7 +513,7 @@ class BlokV2(unittest.TestCase):
     def test_v2_T10_elle_gonder_beklerken_uyari(self):
         m = self.mm("elle"); bekleme = []
         def tetik():
-            if self.uykular[-1] != 2: return
+            if self.uykular[-1] != 2 or not self.sayfa.kutu: return
             if not bekleme: bekleme.append(1)
             elif self.sayfa.metin != UYARI: self.uyari_ver()
         self.uyku_tetik = tetik
@@ -397,7 +541,7 @@ class BlokV2(unittest.TestCase):
         json.dump({"izinler": {"gece_flow": True}}, open(memmet.FILM_AYAR, "w", encoding="utf-8"))
         def hazirla(m):
             m.page = self.sayfa; m.A["ayni_anda"] = 1
-            for ad in ("mod_ayarla", "yukle", "kutuyu_temizle", "blok_denetimleri"): setattr(m, ad, lambda *a, **k: None)
+            m.blok_denetimleri = lambda *a, **k: None
         with mock.patch.object(memmet.Memmet, "chrome_ac", hazirla), mock.patch.object(memmet.Memmet, "giris_kontrol", lambda m, **k: True), \
                 mock.patch.object(memmet.Memmet, "projeye_git", lambda m: None), contextlib.redirect_stdout(io.StringIO()), \
                 self.assertRaises(SystemExit) as c:
@@ -442,7 +586,7 @@ class BlokV2(unittest.TestCase):
 
     def test_v2_filtre_reddi_yedek_bir_kez(self):
         m = self.mm("gece")
-        self.sayfa.gonder_tiklaninca = lambda: self.sayfa.kart.update(var=True, yuzde=False, metin="this prompt violates our policy")
+        self.sayfa.gonder_tiklaninca = lambda: self.sayfa.kart.update(red("this prompt violates our policy"))
         o = self.kos(m)
         self.assertEqual(len(self.sayfa.yazilanlar), 6, "plan başına ana + yedek: 2 gönderim, üçüncüsü yok")
         for n in (1, 2, 3):
@@ -457,7 +601,7 @@ class BlokV2(unittest.TestCase):
         for p in self.doc["sahneler"]: p.pop("hareket_istem_yedek")
         VF.sahneler_yaz(self.kok, self.doc); self.imza = self.blok_kur()
         m = self.mm("gece")
-        self.sayfa.gonder_tiklaninca = lambda: self.sayfa.kart.update(var=True, yuzde=False, metin="policy violation")
+        self.sayfa.gonder_tiklaninca = lambda: self.sayfa.kart.update(red("policy violation"))
         self.kos(m)
         self.assertEqual(len(self.sayfa.yazilanlar), 3)
 

@@ -1374,7 +1374,7 @@ class Defter:
         k = self.kaset(g["kapi"], g["tur_no"]); s = _sonuc(k.get("sonuc", "GEC"))
         return {"_surum": 1, "_uretim": uretim_zarfi(g["asama"], g["id"], s, self, arac="sahte"), "kapi": g["kapi"], "kapsam": "FILM",
                 "tur": g["tur_no"], "sonuc": s, "ozet": {"hata": len(k.get("hatalar") or [])}, "hatalar": k.get("hatalar") or [],
-                "sahte": True}
+                "sahte": True} | ({"plato": True} if k.get("plato") is True else {})
 
     def sahte_dosya(self, p, g, rapor=False):
         if rapor: ortak.atomik_yaz(p, self.kapi_raporu(g))

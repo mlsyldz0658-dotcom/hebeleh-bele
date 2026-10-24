@@ -23,6 +23,14 @@ def _hazir(kok, ses=True):
 def _kp(kok): return ko.kurgu_plani(kok)[1]
 
 
+def _j(*yol):
+    with open(os.path.join(*yol), encoding="utf-8") as f: return json.load(f)
+
+
+def _m(*yol):
+    with open(os.path.join(*yol), encoding="utf-8") as f: return f.read()
+
+
 def _maddeler(r): return [h["madde"] for h in r["hatalar"] + r["bayraklar"]]
 
 
@@ -103,6 +111,10 @@ class T05_SenkronJL(unittest.TestCase):
         self.assertAlmostEqual(b["goruntu"]["kullanim"]["bas"], ko.kare(a["goruntu"]["kullanim"]["bas"] + a["sure"] + arada), places=2)
         _, r = kdt.denetle(kok, ["--film", kok])
         self.assertNotIn("S3.6_bolme_soz_kesisimi", [h["madde"] for h in r["hatalar"]])
+        kp = _kp(kok); b = ko.plan_bul(kp, 6); b["goruntu"]["kullanim"]["bas"] = ko.kare(b["goruntu"]["kullanim"]["bas"] + 0.8)
+        plan_kurgu.cizelgele(kp["planlar"]); kp["kurgu_surumu"] = ko.sonraki_surum(kok); ko.kurgu_plani_yaz(kok, kp)
+        _, r = kdt.denetle(kok, ["--film", kok])
+        self.assertIn("S3.6_bolme_soz_kesisimi", [h["madde"] for h in r["hatalar"]])     # atlanan aralık bir sözü kesiyor
 
 
 class T06_PaketSizintisi(unittest.TestCase):
@@ -167,7 +179,7 @@ class T11_Dondurma(unittest.TestCase):
 def _taslak(kok):
     A = _hazir(kok); diyalog_esitle.main(A); ses_katmani_t2.main(A); muzik_yerlestir.main(A)
     assert capcut_film.giris(A) == 0
-    return A, json.load(open(os.path.join(kok, "KURGU", "son_capcut_projesi.json"), encoding="utf-8"))
+    return A, _j(kok, "KURGU", "son_capcut_projesi.json")
 
 
 def _kullanici_duzenler(p, ripple=True, yazi=True, ses=None):
@@ -202,7 +214,7 @@ class T12_TaslakFarki(unittest.TestCase):
         with open(dc, "w", encoding="utf-8") as f: json.dump(ic, f)
         _kullanici_duzenler(p, ripple=False, yazi=False)
         self.assertEqual(taslak_fark.main(A + ["--plana-isle"]), 0)
-        fk = json.load(open(os.path.join(kok, "KURGU", "TASLAK_FARK.json"), encoding="utf-8"))
+        fk = _j(kok, "KURGU", "TASLAK_FARK.json")
         tur = {k["degisim"] for k in fk["klipler"]}
         self.assertEqual(tur, {"kirpildi", "silindi", "tasindi"})
         kp = _kp(kok); x1 = ko.plan_bul(kp, 1)
@@ -216,7 +228,7 @@ class T12_TaslakFarki(unittest.TestCase):
         kok = F.film_kur(); A, p = _taslak(kok)
         with open(os.path.join(p["klasor"], "draft_content.json"), "wb") as f: f.write(b"\x8a\x01SIFRELI")
         self.assertEqual(taslak_fark.main(A), 2)
-        self.assertTrue(json.load(open(os.path.join(kok, "KURGU", "TASLAK_FARK.json"), encoding="utf-8"))["sifreli"])
+        self.assertTrue(_j(kok, "KURGU", "TASLAK_FARK.json")["sifreli"])
 
 
 class T13_Yama(unittest.TestCase):
@@ -248,13 +260,13 @@ class T13_Yama(unittest.TestCase):
         once = ko.klasor_ozeti(p["klasor"])
         self.assertEqual(capcut_yama.main(A), 0)
         self.assertEqual(once, ko.klasor_ozeti(p["klasor"]))
-        yeni = json.load(open(os.path.join(kok, "KURGU", "son_capcut_projesi.json"), encoding="utf-8"))
+        yeni = _j(kok, "KURGU", "son_capcut_projesi.json")
         self.assertIn("senin düzenlemenle", yeni["proje"])
 
     def test_notlar_plana_baglanir(self):
         kok = F.film_kur(); A, p = _taslak(kok); _kullanici_duzenler(p, ripple=True)
         self.assertEqual(notlari_oku.giris(A), 0)
-        n = json.load(open(os.path.join(kok, "NOTLARIM.json"), encoding="utf-8"))["notlar"]
+        n = _j(kok, "NOTLARIM.json")["notlar"]
         self.assertEqual([(x["not"], x["plan"]) for x in n], [("burası uzun", 1)])
 
 
@@ -273,7 +285,7 @@ class T14_YayinDogrulama(unittest.TestCase):
         self.assertTrue(any(abs(w.get("ofset_kare", 0)) > 1 for w in p if "ofset_kare" in w))
         kok = F.film_kur(); A, pj = _taslak(kok); _kullanici_duzenler(pj, ses="Muzik", yazi=False)
         taslak_fark.main(A)
-        fk = json.load(open(os.path.join(kok, "KURGU", "TASLAK_FARK.json"), encoding="utf-8"))
+        fk = _j(kok, "KURGU", "TASLAK_FARK.json")
         self.assertTrue(any(x["kanal"] == "Muzik" for x in fk["kullanici_ses_duzenlemesi"]))
 
 
@@ -322,10 +334,10 @@ class T17_CapcutKanallari(unittest.TestCase):
         kp = _kp(kok)
         for x in kl: self.assertEqual(x["kaynak_aralik"], ko.plan_bul(kp, x["plan"])["goruntu"]["kullanim"])
         self.assertIn("KULUBE | Full Movie 4K", p["benim_yazilarim"])
-        srt = open(os.path.join(kok, "KURGU", "altyazi_en.srt"), encoding="utf-8").read()
+        srt = _m(kok, "KURGU", "altyazi_en.srt")
         self.assertIn("It's late Captain what do you want", srt)
         self.assertEqual(capcut_film.giris(A + ["--yayin"]), 0)
-        py = json.load(open(os.path.join(kok, "KURGU", "son_capcut_projesi_yayin.json"), encoding="utf-8"))
+        py = _j(kok, "KURGU", "son_capcut_projesi_yayin.json")
         self.assertFalse({"NOTLAR", "Altyazi"} & {x["kanal"] for x in py["segmentler"]})
 
 

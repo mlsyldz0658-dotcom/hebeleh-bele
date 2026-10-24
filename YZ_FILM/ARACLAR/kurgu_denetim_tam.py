@@ -155,16 +155,17 @@ def bolme(kp, d, E, olc, kullanici):
         j = next((k for k in range(i - 1, -1, -1) if ps[k]["plan"] == kk or ps[k]["goruntu"].get("kaynak_klip") == kk), None)
         if j is None: continue
         a = ps[j]["goruntu"]["kullanim"]; b = x["goruntu"]["kullanim"]
-        atl0, atl1 = a["bas"] + a["sure"], b["bas"]
+        arada = sum(ps[k]["sure"] for k in range(j + 1, i))
+        atl0, atl1 = a["bas"] + a["sure"] + arada, b["bas"]                  # aradaki planların süresi sesle (L) duyulur; kalan atlanır
         for rid, r in (d.get("replikler") or {}).items():
             if r.get("kaynak_plan") != kk: continue
             kes = [w for w in r.get("kelimeler") or [] if w["bas"] < atl1 - 1e-6 and w["bit"] > atl0 + 1e-6]
             if kes:
-                arada = sum(ps[k]["sure"] for k in range(j + 1, i)); bek = a["bas"] + a["sure"] + arada
+                bek = a["bas"] + a["sure"] + arada
                 olc.append(ko.m("S3.6_bolme_soz_kesisimi", _H(kullanici), x["plan"], replik=rid, olcu=[round(atl0, 3), round(atl1, 3)],
                                 kelime=[w["w"] for w in kes][:5], oneri={"op": "kirp", "plan": x["plan"], "bas": ko.kare(bek)},
                                 neden="senkron korumalı bölme: parca2.bas = parca1.bas + parca1.sure + aradaki"))
-        if atl1 - atl0 < float(E.get("klip_bolme_atlama_min_sn", 0.4)) - 1e-6 and atl1 > atl0:
+        if 1e-6 < atl1 - (a["bas"] + a["sure"]) < float(E.get("klip_bolme_atlama_min_sn", 0.4)) - 1e-6:
             olc.append(ko.m("klip_bolme_atlama", "BAYRAK", x["plan"], olcu=round(atl1 - atl0, 3), esik=E.get("klip_bolme_atlama_min_sn", 0.4)))
 
 

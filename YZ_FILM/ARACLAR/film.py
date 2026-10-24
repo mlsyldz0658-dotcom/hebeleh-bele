@@ -1485,7 +1485,10 @@ class Defter:
         env = dict(os.environ, YZ_FILM_GOREV=self.gorev_dizini(g), YZ_FILM_FILM=self.kok)
         with open(os.path.join(self.gorev_dizini(g), "CALISMA.log"), "a", encoding="utf-8") as log:
             arg = list(g["argumanlar"])
-            if self.kok not in arg: arg += ["--film", self.kok]       # araç sözleşmesi: <arac> <alt komut/seçenekler> --film <film>
+            if "--film" in arg:                                      # kayıtta değersiz "--film" (A09 DN, A10a KD, arsivle) → film yolu
+                i = arg.index("--film")
+                if i + 1 >= len(arg) or arg[i + 1].startswith("--"): arg.insert(i + 1, self.kok)
+            elif self.kok not in arg: arg += ["--film", self.kok]     # araç sözleşmesi: <arac> <alt komut/seçenekler> --film <film>
             r = subprocess.run([sys.executable, p] + arg, env=env, stdout=log, stderr=subprocess.STDOUT)
         return r.returncode
 

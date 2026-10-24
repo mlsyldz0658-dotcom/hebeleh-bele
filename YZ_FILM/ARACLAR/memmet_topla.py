@@ -13,7 +13,7 @@ Kurallar:
 Çıkış kodları: 0 açık iş kalmadı · 2 durdu (doğrulama/giriş) · 7 Flow uyarısı/kilit · 8 hâlâ süren iş var ya da başka Memmet açık.
 """
 import os, sys, json, time
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import memmet, blok_plani

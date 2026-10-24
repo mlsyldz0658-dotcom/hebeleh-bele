@@ -132,7 +132,7 @@ class SesSahte(Saglayici):
         if f.get("gender"): out = [v for v in out if v["gender"] == f["gender"]] or out
         return out
 
-    def onizleme(self, voice_id, cikti, metin="Hello there. This is how I sound when I speak to you."):
+    def onizleme(self, voice_id, cikti, metin="Hello there. This is how I sound when I speak to you.", **_):
         v = next((x for x in KATALOG if x["voice_id"] == voice_id), {})
         if v and not v.get("preview"): return None
         return self.tts(None, metin, voice_id, cikti)

@@ -41,10 +41,16 @@ SES_KANALLARI = ("ses", "diyalog", "efekt", "ambiyans", "muzik", "audio", "volum
 def simdi(): return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 
 
+_E = []
+
+
 def esik(ad):
+    """Eşik değeri (esikler.yukle bir kez; yoksa VARSAYILAN)."""
     try:
-        import esikler
-        v = esikler.yukle()[ad]
+        if not _E:
+            import esikler
+            _E.append(esikler.yukle())
+        v = _E[0][ad]
         if v is not None: return v
     except Exception: pass
     return VARSAYILAN[ad]

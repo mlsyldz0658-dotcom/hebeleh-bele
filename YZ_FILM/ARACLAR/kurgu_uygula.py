@@ -255,10 +255,30 @@ def kararlar_bul(film, cizelge, tur, asama=None):
     return ad[-1] if ad else None
 
 
+KARAR_OP = {"kirp": "kirp", "uzat": "uzat", "sira": "sira", "kes": "kes", "lj": "jl", "jl": "jl", "yeniden_cek": "yeniden_cek",
+            "ekran_disi": "ekran_disi", "kart": "kart", "hiz": "hiz", "ayna": "ayna"}
+
+
+def karar_cevir(x):
+    """Şablondaki kısa biçim (rapor.json `kararlar[{madde, tur, plan, zaman, deger, kok_neden?}]`) → [KU2] §4.5.6 işlemi."""
+    t = x.get("tur"); d = x.get("deger"); op = KARAR_OP.get(t)
+    if t == "tepki": op = "ortu" if isinstance(d, dict) and d.get("kaynak_plan") else "yeni_plan_iste"
+    out = {"op": op or t, "plan": x.get("plan"), "kok_neden": x.get("kok_neden"), "bulgu": x.get("bulgu") or x.get("madde"),
+           "_kaynak_bicim": "kararlar"}
+    if isinstance(d, dict): out.update({k: v for k, v in d.items() if k not in out or out[k] is None})
+    elif op in ("kirp", "uzat") and isinstance(d, (int, float)): out["sure"] = d
+    elif op == "sira" and isinstance(d, list): out["yeni_sira"] = d
+    elif op == "hiz" and isinstance(d, (int, float)): out["hiz"] = d
+    elif op == "yeni_plan_iste" and d: out["gereksinim"] = str(d)
+    return out
+
+
 def islemleri_oku(yol):
     k = ortak.json_oku(yol)
     if isinstance(k, list): return k, {}
     if not isinstance(k, dict): raise KurguHatasi(f"karar dosyası okunamadı: {yol}")
+    if k.get("islemler") is None and isinstance(k.get("kararlar"), list):
+        return [karar_cevir(x) for x in k["kararlar"] if isinstance(x, dict)], k
     return k.get("islemler") or [], k
 
 

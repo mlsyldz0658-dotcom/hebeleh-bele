@@ -31,11 +31,8 @@ def simdi(): return datetime.datetime.now().astimezone().isoformat(timespec="sec
 
 
 def esik(ad, v):
-    try:
-        import esikler
-        x = esikler.yukle()[ad]
-        return v if x is None else x
-    except Exception: return v
+    import yayin_paketi
+    return yayin_paketi.esik(ad, v)
 
 
 def sablon(film):

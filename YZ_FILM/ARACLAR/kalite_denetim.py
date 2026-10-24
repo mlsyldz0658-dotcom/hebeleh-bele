@@ -16,7 +16,7 @@ Eşikler (tahmin; ilk iki filmde ölçülür): v1_sure_min_sn 7,5 · v1_bulanikl
 Çıkış kodları: 0 rapor yazıldı · 1 girdi yok · 4 kullanım.
 """
 import os, sys, re, json, shutil, subprocess, tempfile, statistics
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -85,7 +85,9 @@ def klip_olc(yol):
                 m = re.search(r"pts_time:([0-9.]+)", satir)
                 if m: t = float(m.group(1)); continue
                 if satir.startswith("lavfi.signalstats.YAVG="): km["yavg"].append(float(satir.split("=")[1]))
-                elif satir.startswith("lavfi.blur="): km["blur"].append(float(satir.split("=")[1]))
+                elif satir.startswith("lavfi.blur="):
+                    v = float(satir.split("=")[1])
+                    if v == v: km["blur"].append(v)                          # siyah karede nan'dır
                 elif satir.startswith("lavfi.scd.score="): km["scd"].append((round(t, 3), float(satir.split("=")[1])))
     finally: shutil.rmtree(d, ignore_errors=True)
     kes, kaynak = _sahne_kesmeleri(yol, km)

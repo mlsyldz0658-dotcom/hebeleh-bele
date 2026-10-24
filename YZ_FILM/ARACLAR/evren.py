@@ -13,7 +13,11 @@ Kullanım:
   Kodda: import evren; evren.ne_yok_kelimeleri(seri=None, film=None) → [kelime] · evren.ozet(seri=None) → sözlük ·
          evren.on_kayit(film, seri=None) → (rapor, kod)
 Yol: ortak.yollar()["evren_kok"] (YOLLAR.json; varsayılan <veri>/EVREN). Seri adı A–Z, 0–9 ve _ (büyük harf).
-Henüz yok (TASARIM §6.3, sonraki PR'lar): --kur, --bagla, --spec-dogrula, --kilitle, --surum-ac, --film-sonu, --disa-aktar, --ice-al,
+  python evren.py --kilitle --film <film> [--seri SERI]      A10d: KART_SECIM + KART_KAPISI → kartlar evrene sürümle kopyalanır ve
+        kilitlenir (SHA1, kimlik bankası); HATA'lı aday ve adı içeren kimlik_en reddedilir (ayrıntı: evren_kilit.py)
+  python evren.py --kilit-dogrula [--seri SERI | --film <film>]   kilitli dosyaların SHA1'i (değişmişse 1: hat durur)
+  python evren.py --surum-ac --karakter <id> [--seri SERI | --film <film>]   kilitli karakterde yeni sürüm
+Henüz yok (TASARIM §6.3, sonraki PR'lar): --kur, --bagla, --spec-dogrula, --film-sonu, --disa-aktar, --ice-al,
   hikaye-kaydet --dogrula, izleyici-ozeti, --yedekle, --yedek-dogrula. Çağrılırsa 4 (ORTAM) ile "henüz yok" der.
 Çıkış kodları: 0 tamam · 1 HATA (kimlik çakışması, HIKAYE.json yok ya da bozuk) · 4 ORTAM (yol yok, komut henüz yok).
 """
@@ -27,7 +31,7 @@ SURUM = "evren 1.0"
 BITTI, HATA, ORTAM = 0, 1, 4
 SERI_DESEN = re.compile(r"[A-Z0-9][A-Z0-9_]{1,40}")
 KIMLIK_DESEN = re.compile(r"[a-z0-9][a-z0-9_]{0,40}")
-SONRAKI = ("--kur", "--bagla", "--spec-dogrula", "--kilitle", "--surum-ac", "--film-sonu", "--disa-aktar", "--ice-al",
+SONRAKI = ("--kur", "--bagla", "--spec-dogrula", "--film-sonu", "--disa-aktar", "--ice-al",
            "hikaye-kaydet", "izleyici-ozeti", "--yedekle", "--yedek-dogrula")
 
 
@@ -253,6 +257,9 @@ def _film_yolu(f):
 def main(a):
     if not a or a[0] in ("-h", "--help"): print(__doc__); return BITTI
     try:
+        if any(x in ("--kilitle", "--kilit-dogrula", "--surum-ac") for x in a):      # kart kilidi (PR-8): evren_kilit.py
+            import evren_kilit
+            return evren_kilit.ana(a)
         if a[0] in SONRAKI or any(x in SONRAKI for x in a if x.startswith("--")):
             print(f"!! {next(x for x in a if x in SONRAKI)} henüz yok (TASARIM §6.3; sonraki PR). İşlem yapılmadı."); return ORTAM
         jm = "--json" in a; film = _film_yolu(_arg(a, "--film")); seri = seri_normal(_arg(a, "--seri"))

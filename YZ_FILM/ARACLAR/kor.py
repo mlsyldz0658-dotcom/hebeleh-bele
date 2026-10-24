@@ -230,7 +230,7 @@ def paket_kur(film, kip, tur, birimler, grup_sayisi=None):
             qs = _ikile(KURUCU[kip](b.get("baglam") or {}), _rng(kip, tur, b["anahtar"]))
             sor["gorseller"].append(ad); sor["hedefli"][ad] = [_acik(q) for q in qs]
             anahtar["gruplar"][str(i)][ad] = {"anahtar": b["anahtar"], "gorsel": os.path.relpath(b["gorsel"], film).replace(os.sep, "/"),
-                                              "sorular": {q["k"]: _gizli(q) for q in qs}}
+                                              "sorular": {q["k"]: _gizli(q) for q in qs}, "baglam": b.get("baglam") or {}}
         if not bs: sor["not"] = "Bu görevde görsel yok; CIKTI/rapor.json'a {\"cevaplar\": []} yaz."
         sor["cikti"] = ("CIKTI/rapor.json: {\"cevaplar\": [<her görsel için {gorsel, kisiler, nesneler, isik_kaynaklari, gun_saati, hava, "
                         "yazi_logo, anatomi, stil, cevaplar: {q_k: cevap | {p1: cevap}}, belirsiz: []}>]}. Son satır: OZET | gorsel: <n> | "
@@ -364,6 +364,72 @@ def _sonuc(alan, bek, a, tut, **ek):
         s = "uyum" if bek and _norm(a).startswith(("image-left" if bek == "sol" else "image-right")) else "uyumsuz"
     else: s = "uyum" if _norm(a) == _norm(bek) else "uyumsuz"
     return dict({"alan": alan, "beklenen": bek, "kor": a, "tutarli": tut, "sonuc": s}, **ek)
+
+
+# --- sahte kör gözlemci (test ve --saglayici sahte simülasyonu) ------------------------------------------------
+def _sahte_tek(sorular, baglam, kip, hata):
+    import olcum
+    kis = sorted(baglam.get("kisiler") or [], key=lambda k: {"sol": 0, "orta": 1, "sag": 2}.get(olcum.ucte_bir_normal(k.get("konum")), 1))
+    kis = [k for k in kis if k["id"] in (baglam.get("insanlar") or [k["id"] for k in kis])]
+    p_of = {f"p{i + 1}": k for i, k in enumerate(kis)}
+    stil = "illustration" if "cizim" in hata else "photograph"
+    c = {"kisiler": [{"p": p, "ucte_bir": {"sol": "left third", "orta": "middle", "sag": "right third"}.get(olcum.ucte_bir_normal(k.get("konum")), "middle"),
+                      "yuz_yonu": "toward camera"} for p, k in p_of.items()],
+         "nesneler": [], "isik_kaynaklari": [], "gun_saati": "cannot tell", "hava": "not visible",
+         "yazi_logo": "a small logo in the corner" if "yazi" in hata else "none", "anatomi": "none", "stil": stil, "cevaplar": {}, "belirsiz": []}
+    for k, q in sorular.items():
+        alan = q["alan"]; bek = q.get("beklenen")
+        if q.get("kisi_basina"):
+            d = {}
+            for p, kv in p_of.items():
+                kid = kv["id"]
+                if alan == "nesne_el":
+                    own = anatomik_el(q.get("taraf"), kv.get("yuz_acisi"))
+                    if own and "ters_el" in hata: own = "sol" if own == "sag" else "sag"
+                    n = ((baglam.get("eller") or {}).get(kid) or {}).get(own) if own else None
+                    ters_ad = {v: a for a, v in (q.get("nesne_ad") or {}).items()}
+                    d[p] = "cannot tell" if own is None else (ters_ad.get(n) or "nothing, open hand")
+                elif alan == "ifade": d[p] = (bek or {}).get(kid, "neutral")
+                elif alan == "agiz": d[p] = "closed"
+                elif alan == "acik_parmak":
+                    own = anatomik_el(q.get("taraf"), kv.get("yuz_acisi"))
+                    v = ((q.get("parmak") or {}).get(kid) or {}).get(own) if own else None
+                    d[p] = str(v) if v is not None else "cannot tell"
+            c["cevaplar"][k] = d; continue
+        if alan == "kisi_sayisi":
+            n = int(str(bek).split()[0]) if bek is not None and str(bek)[0].isdigit() else 0
+            if "fazla_kisi" in hata: n += 1
+            c["cevaplar"][k] = "3 or more" if n >= 3 else str(n)
+        elif alan in ("yazi_logo",): c["cevaplar"][k] = "yes" if "yazi" in hata else "no"
+        elif alan in ("anatomi",): c["cevaplar"][k] = "yes" if "anatomi" in hata else "no"
+        elif alan == "ne_yok": c["cevaplar"][k] = ["none of these"]
+        elif alan == "ogeler": c["cevaplar"][k] = [x for x in (bek or []) if not ("eksik_oge" in hata and x == (bek or [None])[0])]
+        elif alan.startswith("gorunen"):
+            c["cevaplar"][k] = "not visible" if "gorunen_yok" in hata else {"sol": "left third", "orta": "middle", "sag": "right third"}.get(
+                olcum.ucte_bir_normal(bek), "middle")
+        elif alan.startswith("asimetrik"):
+            c["cevaplar"][k] = {"sol": "image-left side", "sag": "image-right side"}.get(bek, "not visible")
+        elif bek is not None: c["cevaplar"][k] = bek
+        else: c["cevaplar"][k] = "cannot tell"
+    return c
+
+
+def sahte_cevaplar(film, kip, tur, hata=None, cikti=None):
+    """ANAHTAR.json'daki beklenenlerle doğru cevap verir; hata: {anahtar: [..]} ya da görselin yan dosyasındaki gercek.kor_hata.
+    cikti: gruba göre yol şablonu (varsayılan g1 → _RAPOR/G1/gozlem_t<tur>_<i>.json; kart → _KARTLAR/gozlem_t<tur>_<i>.json;
+    kapak → _RAPOR/KAPAK/gozlem_t<tur>.json)."""
+    an = anahtar_oku(film, kip, tur); yazilan = []
+    for i, gor in (an.get("gruplar") or {}).items():
+        out = []
+        for g, v in gor.items():
+            yan = ortak.json_oku(os.path.splitext(os.path.join(film, v["gorsel"]))[0] + ".json", {}) or {}
+            h = list((hata or {}).get(v["anahtar"]) or ((yan.get("gercek") or {}).get("kor_hata") or []))
+            out.append(dict(_sahte_tek(v["sorular"], v.get("baglam") or {}, kip, h), gorsel=g))
+        yol = (cikti or {"g1": "_RAPOR/G1/gozlem_t{tur}_{i}.json", "kart": "_KARTLAR/gozlem_t{tur}_{i}.json",
+                         "kapak": "_RAPOR/KAPAK/gozlem_t{tur}.json"}[kip]).format(tur=tur, i=i)
+        ortak.atomik_yaz(os.path.join(film, yol), {"cevaplar": out, "sahte": True})
+        yazilan.append(yol)
+    return yazilan
 
 
 # --- sızıntı -----------------------------------------------------------------------------------------------------

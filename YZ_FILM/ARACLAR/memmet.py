@@ -51,6 +51,7 @@ AYAR_DOSYA = os.path.join(AYARLAR, "MEMMET_AYAR.json")
 FILM_AYAR = os.path.join(AYARLAR, "FILM_AYAR.json")
 HESAP = _Y["hesap"]                          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
 import flow_yuk                              # hesap düzeyi yük: FLOW_YUK.jsonl, FLOW_TEMPO, kilit, günlük tavanlar
+import blok_plani, kredi                     # v2: uygunluk, imza, blok işaretleri · bütçe noktası ve kredi defteri
 
 
 def chrome_bul():

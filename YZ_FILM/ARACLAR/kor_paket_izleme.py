@@ -202,14 +202,13 @@ def bolumle(plan):
         parca, top = [], 0.0
         for s in sahneler:
             ssure = sum(float(p["sure"]) for p in s)
-            if parca and top >= lo: out.append((bol, no, parca)); no += 1; parca, top = [], 0.0
-            if ssure > hi and not parca:                         # tek sahne parçadan uzun: plan sınırından böl
+            if parca and (top >= lo or top + ssure > hi): out.append((bol, no, parca)); no += 1; parca, top = [], 0.0
+            if ssure > hi:                                       # tek sahne parçadan uzun: plan sınırından böl
                 for p in s:
                     if parca and top + float(p["sure"]) > hi: out.append((bol, no, parca)); no += 1; parca, top = [], 0.0
                     parca.append(p); top += float(p["sure"])
                 continue
             parca += s; top += ssure
-            if top > hi: out.append((bol, no, parca)); no += 1; parca, top = [], 0.0
         if parca: out.append((bol, no, parca)); no += 1
     return out
 

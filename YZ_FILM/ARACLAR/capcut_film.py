@@ -1,169 +1,119 @@
-"""CAPCUT FİLM — film klasöründen düzenlenebilir bir CapCut projesi üretir (render yapmaz).
+"""CAPCUT FİLM — kurgu planından düzenlenebilir, sürümlü CapCut taslağı kurar (render yapmaz; TASARIM §6.7, D-30; [KU2] KR10, KR12).
 
-Kullanım: python capcut_film.py <film_klasoru>
-Önce KONTROL (SIRALI_VIDEO) ve SESLENDİR (SESLER/diyalog.json) çalışmış olmalı.
-CapCut'ta oluşan kanallar:
-  Klipler   1080p'ye büyütülmüş sahne videoları (replikli sahnelerde klibin kendi sesi kapalı)
-  Bantlar   sinema bantları (şeffaf PNG; istemezsen kanalı gizle/sil)
-  Baslik    film adı yazısı
-  Altyazi   düzenlenebilir altyazı (SAHNELER.json'daki altyazi_dili; yoksa altyazı eklenmez)
-  Diyalog   sabit karakter sesleri
-  Ortam     replikli sahnelerin ortam sesi (konuşması ayıklanmış)
-  Muzik     geçici müzik (istersen CapCut'ta değiştir)
-Proje CapCut'ın proje klasörüne yazılır; mevcut projelere dokunulmaz.
+Kullanım (v2; KURGU/KURGU_PLANI.json varsa):
+  python capcut_film.py --film <film> [--yayin] [--hizli] [--saglayici sahte]
+    → CapCut taslağı "YZ <FILM> v<N>" (yeni klasör; var olan taslaklara dokunulmaz), KURGU/surumler/v<N>/ (kırpma ve 1080p türevleri,
+      sürüm adıyla; eski sürümler bozulmaz), KURGU/son_capcut_projesi.json v2 (segment ↔ plan eşlemesi), KURGU/altyazi_en.srt (+ tr)
+  --yayin: NOTLAR ve Altyazi kanalı YOK (SRT YouTube'a ayrı gider; [SON] S-6) → "YZ <FILM> v<N> YAYIN", KURGU/son_capcut_projesi_yayin.json
+  --ad-ek " (senin düzenlemenle)": taslak adına ek (capcut_yama'nın yedek yolu: kullanıcının kararlarıyla yeni adla kur)
+  --hizli: 1080p türevi yerine özgün klip sürüm klasörüne kopyalanır (deneme); --saglayici sahte: pycapcut yerine CapCut biçimli fikstür yazar
+           (CapCut klasörü yoksa KURGU/CAPCUT_SAHTE/'ye).
+Kanallar (capcut_taslak.py): Klipler (sessiz; source_timerange = kullanim) · Bantlar · Kartlar (ekran başlığı `baslik`'tan bölünmeden) ·
+Altyazi (duyulan_metin) · Diyalog (replik replik) · Efekt · Ambiyans (sahne parçaları) · Muzik (ipucu parçaları; geçici akor yalnız müzik
+yoksa ve adı GECICI) · NOTLAR (sıra, plan, amaç, duygu, hedef yoğunluk). 48 kHz. Klip kaynağı: buyuk/ > cila/ > 1080p türevi.
+Geçme (KR10): yeni taslakta `taslak_fark --oz-denetim` farkı 0, boşluk 0, eksik medya 0, süre = KURGU_PLANI ±1 kare; değilse çıkış 1.
+Eski kullanım (v1; SAHNELER v1 ve KURGU_PLANI yok): python capcut_film.py <film_klasoru> — davranış değişmedi.
+Çıkış kodları: 0 tamam · 1 öz denetim HATA · 2 KURGU_PLANI/klasör yok · 4 ortam (pycapcut ya da CapCut klasörü yok).
 """
-import os, sys, json, subprocess, time, uuid
-import ortak   # SAHNELER.json v2 koruması
+import os, sys, json, subprocess, time, uuid, shutil
+import ortak   # SAHNELER.json v2 koruması (v1 yolu)
 from pathlib import Path
-import numpy as np, soundfile as sf
-from PIL import Image, ImageDraw
 sys.stdout.reconfigure(encoding="utf-8")
 HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path: sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "kurgu_koprusu"))
-import pycapcut as cc
-from kurgu_koprusu import load_video, load_audio, complete_metadata   # kullanıcının V5 köprüsünden, değiştirilmeden
-
-SEC, SR, W, H, BAR = 1_000_000, 44100, 1920, 1080, 96
-try: DRAFTS = Path(ortak.yollar()["capcut_taslak"])      # CapCut taslak klasörü YOLLAR.json'dan
-except ortak.YolYok as e:
-    if __name__ == "__main__": print("!!", e); sys.exit(4)
-    raise
+SURUM = "capcut_film 2.0"
+SEC, SR, W, H, BAR = 1_000_000, 48000, 1920, 1080, 96
 
 
-def run(*a): subprocess.run([str(x) for x in a], check=True)
-def log(*a): print(*a, flush=True)
-def dur(p): return float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p],
-                                        capture_output=True, text=True).stdout)
-def us(x): return int(round(x * SEC))
-def ts(x):
-    h, m = int(x // 3600), int(x % 3600 // 60); s = x % 60
-    return f"{h:02}:{m:02}:{int(s):02},{int(round((s % 1) * 1000)) % 1000:03}"
+def _taslak_klasoru():
+    try: return Path(ortak.yollar()["capcut_taslak"])
+    except ortak.YolYok: return None
 
 
-def upscale(src, dst):
-    if os.path.exists(dst) and os.path.getmtime(dst) >= os.path.getmtime(src): return
-    run("ffmpeg", "-v", "error", "-y", "-i", src, "-vf", f"scale={W}:{H}:flags=lanczos,unsharp=5:5:0.6:5:5:0,setsar=1",
-        "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", dst)
+# --- v2 -------------------------------------------------------------------------------------------------------------
+def klipleri_hazirla(kok, kp, vk, hizli=False):
+    import kurgu_ortak as ko
+    os.makedirs(os.path.join(vk, "klipler"), exist_ok=True)
+    for x in kp.get("planlar") or []:
+        g = x["goruntu"]
+        if g.get("tur") != "video" or not g.get("dosya"): continue
+        ad = f"{int(x['plan']):03d}.mp4"; dst = os.path.join(vk, "klipler", ad)
+        kaynak = next((p for p in (os.path.join(vk, "buyuk", ad), os.path.join(vk, "cila", ad)) if os.path.exists(p)), ko.mutlak(kok, g["dosya"]))
+        if os.path.exists(dst) and os.path.getmtime(dst) >= os.path.getmtime(kaynak): continue
+        if hizli or "buyuk" in kaynak: shutil.copyfile(kaynak, dst)
+        else:
+            ko.ffmpeg("-i", kaynak, "-vf", f"scale={W}:{H}:flags=lanczos,setsar=1", "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+                      "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", str(SR), dst)
 
 
-def temp_music(total, path):
-    """Geçici karanlık akor dokusu (Dm-Bb-Gm-A). Gerçek müzik gelince CapCut'ta değiştirilir."""
-    def tone(f, d, amp):
-        t = np.arange(int(d * SR)) / SR; env = np.minimum(t / 2.5, 1) * np.minimum((d - t) / 2.5, 1)
-        return sum(np.sin(2 * np.pi * f * k * (1 + 0.003 * i) * t + i) / k ** 1.3 for i, k in enumerate((1, 2, 3, 4))) * env * amp
-    m = np.zeros(int(total * SR) + SR, np.float32); ch = [[0, 3, 7, 12], [-4, 0, 3, 8], [-7, -4, 0, 5], [-5, -1, 2, 7]]
-    t, i = 0.0, 0
-    while t < total:
-        for st in ch[i % 4]:
-            seg = tone(73.42 * 2 ** (st / 12), 9.5, 0.035); k = int(t * SR); n = min(len(seg), len(m) - k)
-            if n > 0: m[k:k + n] += seg[:n]
-        t += 8.0; i += 1
-    m = m[:int(total * SR)]; m /= (np.max(np.abs(m)) + 1e-9) / 0.7
-    sf.write(path, np.stack([m, m], 1), SR)
+def v2(kok, argv):
+    import kurgu_ortak as ko, capcut_taslak as ct, taslak_fark
+    kp_yol, kp = ko.kurgu_plani(kok)
+    if not kp: print("!! KURGU_PLANI yok; önce plan_kurgu.py", flush=True); return 2
+    yayin = "--yayin" in argv; sahte = ko.saglayici_adi(argv) == "sahte"; n = int(kp.get("kurgu_surumu") or 1)
+    vk = os.path.join(kok, "KURGU", "surumler", f"v{n}")
+    klipleri_hazirla(kok, kp, vk, hizli=("--hizli" in argv) or sahte)
+    film = ko.sahneler(kok).get("film") or os.path.basename(kok)
+    ad = f"YZ {film} v{n}" + (" YAYIN" if yayin else "") + (ko.secenek(argv, "--ad-ek") or "")
+    kok_t = _taslak_klasoru()
+    if sahte and (kok_t is None or not kok_t.is_dir()): kok_t = Path(os.path.join(kok, "KURGU", "CAPCUT_SAHTE")); kok_t.mkdir(parents=True, exist_ok=True)
+    if kok_t is None or not kok_t.is_dir(): print(f"!! CapCut taslak klasörü yok: {kok_t} (CapCut kurulu mu?)", flush=True); return 4
+    if not sahte:
+        try: import pycapcut  # noqa: F401
+        except ImportError: print("!! pycapcut kurulu değil (KUR1)", flush=True); return 4
+    m = ct.model_kur(kok, kp, ad, yayin=yayin, klip_klasoru=vk)
+    klasor, _ = ct.yaz(m, str(kok_t), sahte=sahte)
+    m["ad"] = os.path.basename(klasor)
+    K = os.path.join(kok, "KURGU"); dj = ko.diyalog_oku(kok); pl = ko.sahne_planlari(kok)
+    if not yayin:
+        ct.srt_yaz(os.path.join(K, "altyazi_en.srt"), ct.altyazi_satirlari(kok, kp, dj, pl, "en"))
+        tr = ct.altyazi_satirlari(kok, kp, dj, pl, "tr")
+        if tr: ct.srt_yaz(os.path.join(K, "altyazi_tr.srt"), tr)
+    segs = []
+    for s in ct.model_segmentleri(m):
+        e = {"kanal": s["kanal"], "segment_id": s["segment_id"], "bas": s["bas"], "sure": s["sure"]}
+        if s["kanal"] == "Klipler":
+            e.update(plan=s["plan"], sira=s.get("sira"), kaynak=ko.goreli(kok, s["yol"]),
+                     kaynak_aralik=None if s.get("kaynak_bas") is None else {"bas": s["kaynak_bas"], "sure": s["kaynak_sure"]})
+        elif s["kanal"] == "Diyalog": e.update(replik=s.get("replik"), plan=s.get("plan"), kaynak=ko.goreli(kok, s["yol"]))
+        elif s.get("yol"): e["kaynak"] = ko.goreli(kok, s["yol"])
+        if s.get("plan") is not None and s["kanal"] == "NOTLAR": e["plan"] = s["plan"]
+        if s.get("ses") is not None and s["kanal"] in ct.SES_KANALLARI + ("Klipler",): e["ses"] = s["ses"]
+        segs.append(e)
+    proje = {"_surum": 2, "_uretim": ko.po.zarf("A17" if yayin else "A16", SURUM), "proje": m["ad"], "klasor": klasor,
+             "kurgu_plani_surumu": n, "kurgu_plani_imza": m["kurgu_plani_imza"], "kurgu_plani": ko.goreli(kok, kp_yol),
+             "sure_sn": m["sure"], "fps": m["fps"], "segmentler": segs, "yayin": yayin, "sahte": sahte,
+             "benim_yazilarim": [s["metin"] for s in ct.model_segmentleri(m) if s.get("metin")], "notlar_kanali": not yayin}
+    hedef = os.path.join(K, "son_capcut_projesi_yayin.json" if yayin else "son_capcut_projesi.json")
+    ortak.atomik_yaz(hedef, proje)
+    oz = taslak_fark.oz_denetim(kok, klasor, proje, kp)
+    print(f"CAPCUT TASLAĞI HAZIR: {m['ad']} · {m['sure']:.2f} sn · {len(kp['planlar'])} plan · öz denetim "
+          f"{'GEÇ' if oz['sonuc'] == 'GEC' else 'HATA: ' + '; '.join(oz['nedenler'])}", flush=True)
+    if not yayin: print("CapCut açıksa kapatıp yeniden aç; taslak listede en üstte görünür.", flush=True)
+    return 0 if oz["sonuc"] == "GEC" else 1
 
 
-def bars_png(path):
-    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    d.rectangle((0, 0, W, BAR), fill=(0, 0, 0, 255)); d.rectangle((0, H - BAR, W, H), fill=(0, 0, 0, 255)); im.save(path)
+# --- v1 (değişmedi; SAHNELER v1 dosyaları için) ------------------------------------------------------------------------------
+def _v1_kur():
+    global np, sf, Image, ImageDraw, cc, load_video, load_audio, complete_metadata, DRAFTS, SR
+    import numpy as np, soundfile as sf
+    from PIL import Image, ImageDraw
+    import pycapcut as cc
+    from kurgu_koprusu import load_video, load_audio, complete_metadata   # kullanıcının V5 köprüsünden, değiştirilmeden
+    SR = 44100
+    DRAFTS = _taslak_klasoru()
+    if DRAFTS is None: print("!! YOLLAR.json yok (KURULUM.bat)"); sys.exit(4)
 
 
-def main(root):
-    root = os.path.abspath(root)
-    plan = ortak.sahneler_oku(root, "capcut_film.py")
-    K = os.path.join(root, "KURGU"); C1080 = os.path.join(K, "klipler_1080"); os.makedirs(C1080, exist_ok=True)
-    dlg_p = os.path.join(root, "SESLER", "diyalog.json")
-    dlg = json.load(open(dlg_p, encoding="utf-8")) if os.path.exists(dlg_p) else {}
-    if not DRAFTS.is_dir(): raise FileNotFoundError(f"CapCut proje klasörü bulunamadı: {DRAFTS}")
-
-    # 1) zaman çizelgesi: sahneler numara sırasıyla, her klip kendi süresi kadar
-    log("1) Klipler 1080p'ye büyütülüyor (ilk seferde biraz sürer)...")
-    timeline, t, missing = [], 0.0, []
-    for s in sorted(plan["sahneler"], key=lambda s: s["no"]):
-        n = s["no"]; src = os.path.join(root, "SIRALI_VIDEO", f"{n:03d}.mp4")
-        if not os.path.exists(src): missing.append(n); continue
-        dst = os.path.join(C1080, f"{n:03d}.mp4"); upscale(src, dst); d = dur(dst)
-        timeline.append((n, dst, t, d)); t += d
-    total = t
-    if missing: log(f"   UYARI: videosu olmayan sahneler atlandı: {missing}")
-    log(f"   {len(timeline)} klip, toplam {total:.1f} sn")
-
-    # 2) altyazı dosyaları (her dil için; YouTube'a da yüklenebilir)
-    subs = {"en": [], "tr": []}
-    for n, _, t0, d in timeline:
-        for c in dlg.get(str(n), {}).get("cumleler", []):
-            a, b = t0 + c["bas"], t0 + c["bas"] + c["sure"] + 0.3
-            for lang in subs:
-                if c.get(lang): subs[lang].append((a, b, c[lang]))
-    for lang, items in subs.items():
-        if items:
-            with open(os.path.join(K, f"altyazi_{lang}.srt"), "w", encoding="utf-8") as f:
-                for i, (a, b, txt) in enumerate(items, 1): f.write(f"{i}\n{ts(a)} --> {ts(b)}\n{txt}\n\n")
-    music = os.path.join(K, "muzik_gecici.wav"); temp_music(total, music)
-    bars = os.path.join(K, "sinema_bantlari.png"); bars_png(bars)
-
-    # 3) CapCut projesi
-    log("2) CapCut projesi oluşturuluyor...")
-    name = f"YZ {plan['film']} {time.strftime('%Y%m%d-%H%M%S')}"
-    sc = cc.DraftFolder(str(DRAFTS)).create_draft(name, W, H, fps=24, allow_replace=False)
-    sc.add_track(cc.TrackType.video, "Klipler")
-    sc.add_track(cc.TrackType.video, "Bantlar", relative_index=2)
-    sc.add_track(cc.TrackType.audio, "Diyalog")
-    sc.add_track(cc.TrackType.audio, "Ortam")
-    sc.add_track(cc.TrackType.audio, "Muzik")
-    for n, path, t0, d in timeline:
-        has_dlg = str(n) in dlg
-        mat = load_video(cc, path); L = min(us(d), mat.duration)
-        sc.add_segment(cc.VideoSegment(mat, cc.Timerange(us(t0), L), source_timerange=cc.Timerange(0, L),
-                                       volume=0.0 if has_dlg else 1.0), "Klipler")
-        if has_dlg:
-            bed = load_audio(cc, os.path.join(root, "SESLER", dlg[str(n)]["ortam"])); BL = min(L, bed.duration)
-            sc.add_segment(cc.AudioSegment(bed, cc.Timerange(us(t0), BL), source_timerange=cc.Timerange(0, BL), volume=0.8), "Ortam")
-            last_end = us(t0)
-            for c in dlg[str(n)]["cumleler"]:
-                a = load_audio(cc, os.path.join(root, "SESLER", c["dosya"]))
-                st = max(us(t0 + c["bas"]), last_end); ln = min(a.duration, us(t0) + L - st)
-                if ln <= 0: continue
-                sc.add_segment(cc.AudioSegment(a, cc.Timerange(st, ln), source_timerange=cc.Timerange(0, ln), volume=1.0), "Diyalog")
-                last_end = st + ln
-    bm = load_video(cc, bars); sc.add_segment(cc.VideoSegment(bm, cc.Timerange(0, us(total))), "Bantlar")
-    mm = load_audio(cc, music); ML = min(us(total), mm.duration)
-    sc.add_segment(cc.AudioSegment(mm, cc.Timerange(0, ML), source_timerange=cc.Timerange(0, ML), volume=0.45), "Muzik")
-    # film adı (ilk klibin üstünde)
-    title = plan.get("baslik", plan["film"]).split("|")[-1].strip() or plan["film"]
-    sc.add_track(cc.TrackType.text, "Baslik")
-    sc.add_segment(cc.TextSegment(title, cc.Timerange(us(2.0), us(5.0)),
-                                  style=cc.TextStyle(size=16, bold=True, color=(1.0, 0.93, 0.84), align=1, letter_spacing=12),
-                                  border=cc.TextBorder(width=25, alpha=0.6), clip_settings=cc.ClipSettings(transform_y=0.05)), "Baslik")
-    lang = plan.get("altyazi_dili")
-    srt = os.path.join(K, f"altyazi_{lang}.srt") if lang else None
-    if srt and os.path.exists(srt):
-        ref = cc.TextSegment("x", cc.Timerange(0, SEC), style=cc.TextStyle(size=6.5, color=(1, 1, 1), align=1, auto_wrapping=True),
-                             border=cc.TextBorder(width=30, alpha=0.9), clip_settings=cc.ClipSettings(transform_y=-0.78))
-        sc.import_srt(srt, "Altyazi", style_reference=ref)
-    # yönetmen notları: her sahnenin amacı ve duygusu (ekranın üstünde, sarı). Render'dan önce bu kanal silinir.
-    sc.add_track(cc.TrackType.text, "NOTLAR")
-    scenes = {s["no"]: s for s in plan["sahneler"]}
-    my_texts = [title] + [x[2] for x in subs.get(lang, [])] if lang else [title]
-    for n, _, t0, d in timeline:
-        s = scenes[n]; note = f"S{n:03d}"
-        if s.get("amac"): note += f" · {s['amac']}"
-        if s.get("duygu"): note += f" · Duygu: {s['duygu']}"
-        if s.get("motor") and s["motor"] != "flow": note += f" · [{s['motor']}]"
-        my_texts.append(note)
-        sc.add_segment(cc.TextSegment(note, cc.Timerange(us(t0), us(d)),
-                                      style=cc.TextStyle(size=4.2, color=(1.0, 0.85, 0.2), align=1, auto_wrapping=True, max_line_width=0.9),
-                                      border=cc.TextBorder(width=20, alpha=0.8), clip_settings=cc.ClipSettings(transform_y=0.8)), "NOTLAR")
-    sc.content.setdefault("config", {})["maintrack_adsorb"] = False
-    sc.save()
-    target = DRAFTS / name
-    complete_metadata(target, name, us(total))
-    json.dump({"proje": name, "klasor": str(target), "sure_sn": round(total, 2), "klip": len(timeline), "eksik": missing,
-               "sahneler": [{"no": n, "bas": round(t0, 3), "sure": round(d, 3), "dosya": os.path.basename(p)} for n, p, t0, d in timeline],
-               "benim_yazilarim": my_texts},
-              open(os.path.join(K, "son_capcut_projesi.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    log(f"\nCAPCUT PROJESİ HAZIR: {name}\nSüre: {total:.1f} sn · {len(timeline)} klip · {sum(len(v['cumleler']) for v in dlg.values())} replik")
-    log("CapCut açıksa kapatıp yeniden aç; proje listede en üstte görünür.")
+def giris(argv):
+    import kurgu_ortak as ko
+    if "-h" in argv or "--help" in argv: print(__doc__); return 0
+    kok, kalan = ko.film_ve_arg(argv)
+    _, kp = ko.kurgu_plani(kok)
+    if kp or "--film" in argv or "--yayin" in argv: return v2(kok, kalan)
+    main(kok); return 0
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else os.getcwd())
+    sys.exit(giris(sys.argv[1:]))

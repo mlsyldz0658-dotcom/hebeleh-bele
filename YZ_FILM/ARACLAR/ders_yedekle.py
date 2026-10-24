@@ -97,10 +97,11 @@ def _python_kopya(kaynak, hedef, liste):
     return n
 
 
-def kopya_yedek(kaynak, hedef, ekler=None, robocopy=None):
-    """kaynak klasörünü (+ ekler {yedekteki rel: mutlak dosya}) hedefe KOPYALAR, sha1 ile doğrular, SHA1_LISTESI.json yazar."""
+def kopya_yedek(kaynak, hedef, ekler=None, robocopy=None, kok=None):
+    """kaynak klasörünü (+ ekler {yedekteki rel: mutlak dosya}) hedefe KOPYALAR, sha1 ile doğrular, SHA1_LISTESI.json yazar.
+    kok: sürücü denetiminin yapıldığı yedek kökü (verilmezse hedef)."""
     kaynak, hedef = os.path.abspath(kaynak), os.path.abspath(hedef)
-    if not surucu_var(hedef):
+    if not surucu_var(kok or hedef):
         return {"durum": "ertelendi", "hedef": hedef, "neden": "yedek sürücüsü takılı değil", "kopyalanan": 0, "dogrulanan": 0, "fark": []}
     liste = sha1_listesi(kaynak)
     ekler = {k.replace("\\", "/"): v for k, v in (ekler or {}).items() if v and os.path.isfile(v)}
@@ -124,10 +125,10 @@ def kopya_yedek(kaynak, hedef, ekler=None, robocopy=None):
     return {"durum": "hata" if fark else "tamam", "hedef": hedef, "kopyalanan": n, "dogrulanan": len(yedekteki), "fark": fark}
 
 
-def dogrula(kaynak, hedef, ekler=None):
+def dogrula(kaynak, hedef, ekler=None, kok=None):
     """Yedeğin SHA1_LISTESI'ni şimdiki kaynakla karşılaştırır (dosya okumaz yedekten; liste yoksa 'yedek yok')."""
     yl = ortak.json_oku(os.path.join(hedef, LISTE_ADI))
-    if not surucu_var(hedef): return {"durum": "ertelendi", "neden": "yedek sürücüsü takılı değil", "fark": []}
+    if not surucu_var(kok or hedef): return {"durum": "ertelendi", "neden": "yedek sürücüsü takılı değil", "fark": []}
     if not isinstance(yl, dict): return {"durum": "yedek_yok", "fark": [{"dosya": "*", "neden": "yedek hiç alınmamış"}]}
     simdi_l = sha1_listesi(kaynak)
     for rel, p in (ekler or {}).items():
@@ -155,20 +156,23 @@ def ders_kaynaklari():
                                        "_BILGI/DERSLER_AKTIF.md": os.path.join(b, "DERSLER_AKTIF.md")}
 
 
-def ders_hedefi(hedef_kok=None): return os.path.join(os.path.abspath(hedef_kok or ortak.yollar()["yedek"]), "DERSLER")
+def yedek_koku(hedef_kok=None): return os.path.abspath(hedef_kok or ortak.yollar()["yedek"])
+
+
+def ders_hedefi(hedef_kok=None): return os.path.join(yedek_koku(hedef_kok), "DERSLER")
 
 
 def ders_yedekle(hedef_kok=None):
     kaynak, ekler = ders_kaynaklari()
     os.makedirs(kaynak, exist_ok=True)
-    r = kopya_yedek(kaynak, ders_hedefi(hedef_kok), ekler)
+    r = kopya_yedek(kaynak, ders_hedefi(hedef_kok), ekler, kok=yedek_koku(hedef_kok))
     durum_yaz("dersler", r)
     return r
 
 
 def ders_dogrula(hedef_kok=None):
     kaynak, ekler = ders_kaynaklari()
-    return dogrula(kaynak, ders_hedefi(hedef_kok), ekler)
+    return dogrula(kaynak, ders_hedefi(hedef_kok), ekler, kok=yedek_koku(hedef_kok))
 
 
 def mesaj(ad, r):

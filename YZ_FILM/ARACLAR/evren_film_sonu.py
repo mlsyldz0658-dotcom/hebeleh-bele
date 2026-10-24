@@ -149,7 +149,7 @@ def evren_hedefi(seri, hedef_kok=None): return os.path.join(os.path.abspath(hede
 def yedekle(seri, hedef_kok=None, dersler=False):
     kaynak = evren.seri_yolu(seri)
     if not os.path.isdir(kaynak): return {"durum": "hata", "neden": f"evrende {seri} yok", "fark": []}
-    r = dy.kopya_yedek(kaynak, evren_hedefi(seri, hedef_kok))
+    r = dy.kopya_yedek(kaynak, evren_hedefi(seri, hedef_kok), kok=dy.yedek_koku(hedef_kok))
     dy.durum_yaz(f"evren/{seri}", r)
     out = {"evren": r}
     if dersler: out["dersler"] = dy.ders_yedekle(hedef_kok)
@@ -158,7 +158,7 @@ def yedekle(seri, hedef_kok=None, dersler=False):
 
 
 def yedek_dogrula(seri, hedef_kok=None, yenile=False):
-    r = dy.dogrula(evren.seri_yolu(seri), evren_hedefi(seri, hedef_kok))
+    r = dy.dogrula(evren.seri_yolu(seri), evren_hedefi(seri, hedef_kok), kok=dy.yedek_koku(hedef_kok))
     if yenile and r["durum"] in ("fark", "yedek_yok"): r["yenileme"] = yedekle(seri, hedef_kok)
     return r
 

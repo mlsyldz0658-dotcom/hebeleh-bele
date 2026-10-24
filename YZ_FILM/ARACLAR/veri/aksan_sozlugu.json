@@ -1,0 +1,14 @@
+{
+ "_surum": 1,
+ "_aciklama": "Profil aksanı → AI84/ElevenLabs paylaşılan ses 'accent' etiketi ve Veo tarif ifadesi (TASARIM §2.2 karar 1, §6.1 veri/aksan_sozlugu.json; [SM2] İ-3). ses_sec --ara okur; film içinde gözlenen etiketler <film>/_SES/AKSAN_SOZLUGU.json'a eklenir (ses-tasarimcisi·kadro girdisi). Eş adlar: Türkçe ve İngilizce yazım.",
+ "aksanlar": {
+  "british": {"ai84": ["british", "english"], "veo": "a British accent", "es": ["ingiliz", "ingiliz_aksani", "english", "uk"]},
+  "northern_english": {"ai84": ["british", "english"], "veo": "a northern English accent", "es": ["kuzey_ingiliz", "northern"]},
+  "scottish": {"ai84": ["scottish"], "veo": "a Scottish accent", "es": ["iskoc"]},
+  "irish": {"ai84": ["irish"], "veo": "an Irish accent", "es": ["irlanda", "irlandali"]},
+  "american": {"ai84": ["american", "us"], "veo": "an American accent", "es": ["amerikan", "abd", "us"]},
+  "australian": {"ai84": ["australian"], "veo": "an Australian accent", "es": ["avustralya"]},
+  "transatlantic": {"ai84": ["transatlantic", "american", "british"], "veo": "a transatlantic accent", "es": ["transatlantik"]},
+  "neutral": {"ai84": [], "veo": null, "es": ["notr", "nötr", "standart"]}
+ }
+}

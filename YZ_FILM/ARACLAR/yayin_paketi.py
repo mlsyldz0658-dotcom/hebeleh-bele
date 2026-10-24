@@ -42,10 +42,15 @@ VARSAYILAN_ETIKET = ("AI movie", "AI film", "full movie", "fantasy movie", "AI c
 def simdi(): return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 
 
+_E = []
+
+
 def esik(ad, v):
     try:
-        import esikler
-        x = esikler.yukle()[ad]
+        if not _E:
+            import esikler
+            _E.append(esikler.yukle())
+        x = _E[0][ad]
         return v if x is None else x
     except Exception: return v
 

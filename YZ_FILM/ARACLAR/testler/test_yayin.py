@@ -35,11 +35,11 @@ def medya_kur():
     if not FFMPEG or os.path.isfile(os.path.join(MEDYA, "iyi.mp4")): return
     v = ["-f", "lavfi", "-i", f"testsrc2=s=320x180:r=24:d={SURE}", "-f", "lavfi", "-i", f"anoisesrc=d={SURE}:c=pink:r=48000:a=0.3"]
     enc = ["-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000"]
-    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-14:TP=-4:LRA=7[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "iyi.mp4"))
+    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-13.2:TP=-2.5:LRA=7,alimiter=limit=0.65:level=disabled[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "iyi.mp4"))
     ff("-i", os.path.join(MEDYA, "iyi.mp4"), "-vn", "-ar", "48000", os.path.join(MEDYA, "master.wav"))
-    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-7:TP=-0.1:LRA=7[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "yuksek.mp4"))
+    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-13.2:TP=-2.5:LRA=7,volume=6dB[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "yuksek.mp4"))
     ff(*v, "-filter_complex", "[0:v]drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t,40,43)'[v];"
-           "[1:a]loudnorm=I=-14:TP=-4:LRA=7,volume=enable='between(t,40,43)':volume=0[a]", "-map", "[v]", "-map", "[a]", *enc,
+           "[1:a]loudnorm=I=-13.2:TP=-2.5:LRA=7,alimiter=limit=0.65:level=disabled,volume=enable='between(t,40,43)':volume=0[a]", "-map", "[v]", "-map", "[a]", *enc,
        os.path.join(MEDYA, "siyah.mp4"))
     ff("-i", os.path.join(MEDYA, "siyah.mp4"), "-vn", "-ar", "48000", os.path.join(MEDYA, "siyah_master.wav"))
 

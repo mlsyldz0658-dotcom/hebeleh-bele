@@ -17,7 +17,7 @@ Bu araç Flow'a dokunmaz; yalnız inmiş dosyayı okur.
 Çıkış kodları: 0 rapor yazıldı (HATA olsa da) · 1 girdi yok/bozuk · 4 kullanım.
 """
 import os, sys, re, json, glob, time, shutil, subprocess
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -41,7 +41,7 @@ def normal_kelimeler(metin):
     t = re.sub(r"[^\w\s']", " ", t)
     out = []
     for w in t.split():
-        w = w.strip("'")
+        w = w.replace("'", "")
         if not w: continue
         out.append(SAYILAR.get(w, w))
     return out

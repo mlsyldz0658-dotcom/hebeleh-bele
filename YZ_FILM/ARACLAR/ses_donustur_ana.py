@@ -136,6 +136,7 @@ def donustur_replik(kok, argv, rid, r, motor=None, sonraki=False):
     artis = sonuc.get("wer_artis")
     if artis is None and wer_s is not None and w0 is not None: artis = round(max(0.0, wer_s - float(w0)), 3)
     r["dosya"] = ko.goreli(kok, cikti); r["yol_gercek"] = "veo_donustur"
+    r["dosya_ofset_sn"] = round(float(r["klip_zamani"]["bas"]) - max(0.0, float(r["klip_zamani"]["bas"]) - 0.1), 3)
     r["donusum"] = {"motor": ad, "f0_kaydirma_yt": yt if f0h else None, "f0_kaynak_hz": None if f0k is None else round(f0k, 1),
                     "zarf_gecikme_ms": gec, "benzerlik": sonuc.get("benzerlik"), "asr_wer_sonra": wer_s, "wer_artis": artis,
                     "denenen": onceki + [ad], "giris": ko.goreli(kok, gp)}
@@ -162,7 +163,9 @@ def donustur(kok, argv, secili=None):
             p = ayrik_yolu(kok, r.get("kaynak_plan", 0))
             if os.path.exists(p) and not r.get("dosya"):
                 g, sr = kapili_konusma(kok, r)
-                if g is not None: r["dosya"] = ko.goreli(kok, ko.wav_yaz(os.path.join(kok, "SESLER", "donusum", f"{rid}.wav"), g, sr))
+                if g is not None:
+                    r["dosya"] = ko.goreli(kok, ko.wav_yaz(os.path.join(kok, "SESLER", "donusum", f"{rid}.wav"), g, sr))
+                    r["dosya_ofset_sn"] = round(float(r["klip_zamani"]["bas"]) - max(0.0, float(r["klip_zamani"]["bas"]) - 0.1), 3)
             continue
         if yol != "veo_donustur": continue
         mk = r.get("metin_kapisi") or {}

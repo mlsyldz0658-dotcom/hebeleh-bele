@@ -18,7 +18,7 @@ Kurulu olmayan ölçü ÖLÇÜLEMEDİ yazılır (= BAYRAK; asla GEÇ değildir).
 Çıkış kodları: 0 rapor yazıldı · 1 girdi yok · 4 kullanım.
 """
 import os, sys, re, json, glob, shutil, subprocess, tempfile, statistics
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -178,10 +178,12 @@ def v3_olc(no, p, e, sure):
         m("adim_tepe", "GEC" if sap <= sapma_max else "BAYRAK", adim=a.get("id"), olcu={"tepe_sn": tepe, "sapma_sn": sap}, esik=sapma_max)
     kes = kesme_ani(p, sure); son = esik("v3_son_tutma_sn")
     med = statistics.median(x for _, x in e) or 0.0
+    if med <= 1e-3:          # klip çoğunlukla kıpırtısız (sentetik ya da tam durgun): kıyas, hareketli karelerin medyanı
+        hareketli = [x for _, x in e if x > 1e-3]; med = statistics.median(hareketli) if hareketli else 0.0
     sonlar = [x for t, x in e if kes - son <= t <= kes]
     if sonlar:
         o = statistics.mean(sonlar); siniri = esik("v3_son_tutma_oran_max") * med
-        m("bitis_tutma", "GEC" if o <= siniri or med == 0 else "BAYRAK", olcu=round(o, 3), esik=round(siniri, 3), kesme_sn=kes)
+        m("bitis_tutma", "GEC" if o <= siniri else "BAYRAK", olcu=round(o, 3), esik=round(siniri, 3), kesme_sn=kes)
     else: m("bitis_tutma", "OLCULEMEDI", neden="kesme anından önce kare yok")
     m("dirsek_acisi", "OLCULEMEDI", neden="video poz ölçümü yok (olcum.poz video kipi)")
     return olc

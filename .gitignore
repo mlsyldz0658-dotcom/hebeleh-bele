@@ -3,3 +3,14 @@ __pycache__/
 AYARLAR/memmet_profil/
 AYARLAR/MEMMET_AYAR.json
 YZ_FILM/AYARLAR/YOLLAR.json
+# bat_yenile.py üretir (makineye özgü mutlak yollar); izlenirse GUNCELLE yerel değişiklik görür
+/FILM_SETI.bat
+/GUNCELLE.bat
+/FLOW_GIRIS.bat
+/IZINLER.bat
+/UYARI_GECTI.bat
+/GEMINI_TEST.bat
+/DURDUR.bat
+/DEVAM.bat
+.claude/settings.local.json
+.claude/bin/python_yolu.txt

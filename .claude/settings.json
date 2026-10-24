@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {"CLAUDE_CODE_FORK_SUBAGENT": "0"},
+  "permissions": {
+    "allow": ["Bash(python .claude/bin/film.py *)", "Bash(python3 .claude/bin/film.py *)", "Bash(py -3.10 .claude/bin/film.py *)"],
+    "deny": ["Read(./YZ_FILM/AYARLAR/*_anahtar.txt)", "Read(./YZ_FILM/AYARLAR/telegram_bot.txt)",
+             "Read(./YZ_FILM/AYARLAR/memmet_profil/**)", "Read(./YZ_FILM/AYARLAR/.env)", "Read(**/.env)",
+             "Bash(robocopy * /MIR*)", "Bash(robocopy * /mir*)", "PowerShell(robocopy * /MIR*)"]
+  },
+  "hooks": {
+    "SessionStart": [{"matcher": "startup|resume|clear|compact", "hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" oturum_basi", "timeout": 30}]}],
+    "UserPromptSubmit": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" istem", "timeout": 30}]}],
+    "PreToolUse": [
+      {"matcher": "Read|Glob|Grep|Write|Edit|MultiEdit|NotebookEdit|NotebookRead", "hooks": [
+        {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" erisim", "timeout": 10, "onFailure": "block"}]},
+      {"matcher": "Bash|PowerShell", "hooks": [
+        {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" komut", "timeout": 10, "onFailure": "block"}]},
+      {"matcher": "Agent|Task", "hooks": [
+        {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ajan", "timeout": 10, "onFailure": "block"}]}
+    ],
+    "SubagentStart": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ajan_basi", "timeout": 10}]}],
+    "SubagentStop": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ajan_bitti", "timeout": 120}]}],
+    "PostToolUse": [{"matcher": "Agent|Task", "hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ajan_sonrasi", "timeout": 10}]}],
+    "Stop": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" stop", "timeout": 30}]}],
+    "StopFailure": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" hata", "timeout": 10}]}],
+    "PreCompact": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ozet_sakla", "timeout": 30}]}],
+    "PostCompact": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" ozet_sakla", "timeout": 30}]}],
+    "PostModelSwitch": [{"hooks": [
+      {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/bin/kanca.sh\" model_degisti", "timeout": 10}]}]
+  }
+}

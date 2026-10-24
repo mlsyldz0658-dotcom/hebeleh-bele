@@ -326,7 +326,7 @@ class Memmet:
         self.olagandisi_denetle()
         if self.girisli(): return True
         if not bekle_giris:
-            raise Durdur("Memmet Chrome'unda Flow girişi yok (oturum düşmüş). MEMMET_GIRIS.bat ile giriş yap, sonra yeniden başlat.", kod="giris")
+            raise Durdur("Memmet Chrome'unda Flow girişi yok (oturum düşmüş). FLOW_GIRIS.bat (depo kökü) ile giriş yap, sonra yeniden başlat.", kod="giris")
         self.bildir("Memmet Chrome'unda Google'a giriş yapılmamış. Açılan pencerede Flow'a giriş yap.", acil=True)
         t0 = time.time()
         while not self.girisli():

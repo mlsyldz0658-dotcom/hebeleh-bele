@@ -1,0 +1,78 @@
+{
+ "seyirci": 3,
+ "olgular": [
+  {
+   "id": "o01",
+   "karar": "bulundu",
+   "alinti": "Sera ejderha yavrusunu kraldan"
+  },
+  {
+   "id": "o02",
+   "karar": "bulundu",
+   "alinti": "Ejderha saklamak ölüm cezası"
+  },
+  {
+   "id": "o03",
+   "karar": "bulundu",
+   "alinti": "Kemik düdük yavruyu sakinleşti"
+  },
+  {
+   "id": "o04",
+   "karar": "bulundu",
+   "alinti": "Avı yöneten kaptan Brann, Sera"
+  },
+  {
+   "id": "o05",
+   "karar": "bulundu",
+   "alinti": "Sera yavruyu yüksek mağaraya g"
+  },
+  {
+   "id": "o06",
+   "karar": "bulundu",
+   "alinti": "Brann'ın adamı kulübeyi gözlüy"
+  },
+  {
+   "id": "o07",
+   "karar": "bulundu",
+   "alinti": "Yavru çantadan kaçtı"
+  },
+  {
+   "id": "o08",
+   "karar": "bulundu",
+   "alinti": "Yavru büyüdü"
+  },
+  {
+   "id": "o09",
+   "karar": "bulundu",
+   "alinti": "Brann ejderhayı bağışlıyor"
+  },
+  {
+   "id": "o10",
+   "karar": "bulundu",
+   "alinti": "Bahar geldi, ikisi de hayatta"
+  },
+  {
+   "id": "o11",
+   "karar": "bulundu",
+   "alinti": "Kuzeyde başka bir ışık var"
+  }
+ ],
+ "sorular": [
+  {
+   "id": "m01",
+   "karar": "bulundu"
+  },
+  {
+   "id": "m02",
+   "karar": "bulundu"
+  },
+  {
+   "id": "m03",
+   "karar": "bulundu"
+  },
+  {
+   "id": "m04",
+   "karar": "bulundu"
+  }
+ ]
+}

@@ -1,0 +1,61 @@
+{
+ "_sahip": "yapimci",
+ "_surum": 1,
+ "konu_ham": "ejderha yavrusunu saklayan avcı kadın",
+ "kesin_istekler": [],
+ "seri": {
+  "durum": "yeni",
+  "evren": null,
+  "gerekce": "konu kayıtlı evren ya da karakter anmıyor"
+ },
+ "tur": "fantastik",
+ "kanca_ailesi": {
+  "birincil": "insan_yaratik_bagi",
+  "ikincil": "ihanet_taht"
+ },
+ "vaat_imgesi": "A huntress in a snowstorm shields a glowing dragon hatchling under her cloak while torches approach",
+ "riskler": [
+  {
+   "tur": "filtre",
+   "aciklama": "yavru için 'baby/little'",
+   "seviye": "orta",
+   "cozum": "sözlük: 'the hatchling'; boy benzetmeyle"
+  },
+  {
+   "tur": "uretim",
+   "aciklama": "kalabalık asker",
+   "seviye": "orta",
+   "cozum": "siluet, meşale, sırt; yüz ≤ 2 adlı karakter"
+  }
+ ],
+ "sure": {
+  "film_sure_hedef_sn": 1800,
+  "butce_kaynagi": "bilinmiyor",
+  "gerekce": "Ö0-b yok; D-05 gereği 1800 sn"
+ },
+ "eksenler": {
+  "D": "Sera yavruyu büyütürken bağlanmayı öğrenir",
+  "S": "Seyirci yavrunun yerini bilir, ağabeyi bilmez",
+  "E": "Kral avcılarından kış boyu kaçış",
+  "X": "serbest"
+ },
+ "ne_yok": [
+  {
+   "oge": "barut silahı",
+   "neden": "dönem",
+   "kelimeler_en": [
+    "gun",
+    "rifle",
+    "pistol",
+    "musket"
+   ]
+  }
+ ],
+ "varsayimlar": [
+  {
+   "karar": "süre 30 dk",
+   "neden": "bakiye ve Ö0-b bilinmiyor",
+   "yanlissa_maliyet": "ikinci filmde süre uzar"
+  }
+ ]
+}

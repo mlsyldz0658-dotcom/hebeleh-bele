@@ -1,0 +1,28 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A01",
+  "gorev": null,
+  "girdi_imza": "kaset",
+  "arac_surum": "kredi 1.0 (kaset)",
+  "esik_surum": "1.1",
+  "sonuc": "GEC",
+  "zaman": "2026-10-23T10:00:00+03:00",
+  "ortam": "bulut"
+ },
+ "kapi": "BUT0",
+ "kapsam": "FILM",
+ "tur": 1,
+ "sonuc": "GEC",
+ "sure_sn": 1800,
+ "ust_sinir_sn": 1800,
+ "neden": "Ö0-b yok → 1800 sn (D-05)",
+ "ozet": {
+  "gec": 1,
+  "bayrak": 0,
+  "hata": 0,
+  "olculemedi": 0
+ },
+ "hatalar": [],
+ "bayraklar": []
+}

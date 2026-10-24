@@ -24,6 +24,7 @@ KAYIT = {
     "sahte": "saglayicilar.sahte.Sahte",
     "flow": "saglayicilar.flow.Flow",
     "ai84": "saglayicilar.ai84_ses.AI84Ses",
+    "kaset": "saglayicilar.kaset.Kaset",
 }
 
 

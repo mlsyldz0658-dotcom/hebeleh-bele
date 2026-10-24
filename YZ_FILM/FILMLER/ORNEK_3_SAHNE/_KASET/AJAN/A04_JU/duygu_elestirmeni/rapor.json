@@ -1,0 +1,131 @@
+{
+ "rol": "duygu_elestirmeni",
+ "oneriler": {
+  "1": {
+   "puan": {
+    "kanca": 9,
+    "netlik": 9,
+    "merak": 9,
+    "duygu": 9,
+    "karakter": 9,
+    "ozgunluk": 8,
+    "yapi": 9,
+    "uretilebilirlik": 9,
+    "sureklilik_yuku": 9,
+    "seri": 9
+   },
+   "gerekce": {
+    "kanca": "öneri 1: kanca gerekçesi",
+    "netlik": "öneri 1: netlik gerekçesi",
+    "merak": "öneri 1: merak gerekçesi",
+    "duygu": "öneri 1: duygu gerekçesi",
+    "karakter": "öneri 1: karakter gerekçesi",
+    "ozgunluk": "öneri 1: ozgunluk gerekçesi",
+    "yapi": "öneri 1: yapi gerekçesi",
+    "uretilebilirlik": "öneri 1: uretilebilirlik gerekçesi",
+    "sureklilik_yuku": "öneri 1: sureklilik_yuku gerekçesi",
+    "seri": "öneri 1: seri gerekçesi"
+   },
+   "calinmaya_deger": [],
+   "mutlaka_duzelt": [
+    "Ağabey ilişkisi 3. dakikadan önce sözle verilmeli"
+   ],
+   "veto": null
+  },
+  "2": {
+   "puan": {
+    "kanca": 7,
+    "netlik": 7,
+    "merak": 7,
+    "duygu": 7,
+    "karakter": 7,
+    "ozgunluk": 6,
+    "yapi": 7,
+    "uretilebilirlik": 7,
+    "sureklilik_yuku": 7,
+    "seri": 7
+   },
+   "gerekce": {
+    "kanca": "öneri 2: kanca gerekçesi",
+    "netlik": "öneri 2: netlik gerekçesi",
+    "merak": "öneri 2: merak gerekçesi",
+    "duygu": "öneri 2: duygu gerekçesi",
+    "karakter": "öneri 2: karakter gerekçesi",
+    "ozgunluk": "öneri 2: ozgunluk gerekçesi",
+    "yapi": "öneri 2: yapi gerekçesi",
+    "uretilebilirlik": "öneri 2: uretilebilirlik gerekçesi",
+    "sureklilik_yuku": "öneri 2: sureklilik_yuku gerekçesi",
+    "seri": "öneri 2: seri gerekçesi"
+   },
+   "calinmaya_deger": [],
+   "mutlaka_duzelt": [],
+   "veto": null
+  },
+  "3": {
+   "puan": {
+    "kanca": 6,
+    "netlik": 6,
+    "merak": 6,
+    "duygu": 6,
+    "karakter": 6,
+    "ozgunluk": 5,
+    "yapi": 6,
+    "uretilebilirlik": 6,
+    "sureklilik_yuku": 6,
+    "seri": 6
+   },
+   "gerekce": {
+    "kanca": "öneri 3: kanca gerekçesi",
+    "netlik": "öneri 3: netlik gerekçesi",
+    "merak": "öneri 3: merak gerekçesi",
+    "duygu": "öneri 3: duygu gerekçesi",
+    "karakter": "öneri 3: karakter gerekçesi",
+    "ozgunluk": "öneri 3: ozgunluk gerekçesi",
+    "yapi": "öneri 3: yapi gerekçesi",
+    "uretilebilirlik": "öneri 3: uretilebilirlik gerekçesi",
+    "sureklilik_yuku": "öneri 3: sureklilik_yuku gerekçesi",
+    "seri": "öneri 3: seri gerekçesi"
+   },
+   "calinmaya_deger": [
+    "Öneri 3'in kemik düdük kurulumu"
+   ],
+   "mutlaka_duzelt": [],
+   "veto": null
+  },
+  "4": {
+   "puan": {
+    "kanca": 6,
+    "netlik": 6,
+    "merak": 6,
+    "duygu": 6,
+    "karakter": 6,
+    "ozgunluk": 5,
+    "yapi": 6,
+    "uretilebilirlik": 6,
+    "sureklilik_yuku": 6,
+    "seri": 6
+   },
+   "gerekce": {
+    "kanca": "öneri 4: kanca gerekçesi",
+    "netlik": "öneri 4: netlik gerekçesi",
+    "merak": "öneri 4: merak gerekçesi",
+    "duygu": "öneri 4: duygu gerekçesi",
+    "karakter": "öneri 4: karakter gerekçesi",
+    "ozgunluk": "öneri 4: ozgunluk gerekçesi",
+    "yapi": "öneri 4: yapi gerekçesi",
+    "uretilebilirlik": "öneri 4: uretilebilirlik gerekçesi",
+    "sureklilik_yuku": "öneri 4: sureklilik_yuku gerekçesi",
+    "seri": "öneri 4: seri gerekçesi"
+   },
+   "calinmaya_deger": [],
+   "mutlaka_duzelt": [],
+   "veto": null
+  }
+ },
+ "siralama": [
+  "1",
+  "2",
+  "3",
+  "4"
+ ]
+}

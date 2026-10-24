@@ -1,0 +1,28 @@
+{
+ "_surum": 2,
+ "_aciklama": "Erişim politikası (TASARIM §6.2, [CM2] §4.5.7). Sahibi: .claude/hooks/kanca.py (erisim, komut, ajan). Yer tutucular: {veri_kok}, {depo_kok}, {gorev} (kancanın agent_id ile bağladığı görev klasörü). Desenler küçük/büyük harf duyarsız, '\\' → '/', '**' her derinlik. Gizli kural her durumda geçerlidir; makine sahipli yazma reddi ve 200 KB okuma sınırı yalnız film sürüşü açıkken (surus_disinda: gelistirme_serbest).",
+ "gizli": ["{veri_kok}/AYARLAR/**", "{depo_kok}/YZ_FILM/AYARLAR/**", "**/.env", "**/memmet_profil/**", "**/*_anahtar.txt",
+           "**/telegram_bot.txt"],
+ "gizli_istisna": ["**/AYARLAR/*.ornek.json", "**/AYARLAR/OKU_BENI.txt"],
+ "gizli_klasorler": ["{veri_kok}/AYARLAR", "{depo_kok}/YZ_FILM/AYARLAR"],
+ "makine_sahipli": ["**/FILM_DURUM.json", "**/_GOREV/DEFTER.jsonl", "**/_GOREV/BAGLAR.json", "**/_GOREV/KANCA_NABZI.json",
+                    "**/_GOREV/KANCA_KAYIT.jsonl", "**/_GOREV/KANCA_STOP.json",
+                    "**/_GOREV/*/GOREV.json", "**/_GOREV/*/GIRDI/**", "**/SAHNELER.json", "**/DUNYA_DEFTERI.json", "**/_RAPOR/**",
+                    "**/KUYRUK/**", "**/kararlar/**", "**/KARAR_DEFTERI.md", "**/EVREN/**", "**/BILGI/DERSLER/**",
+                    "**/KURGU/KURGU_PLANI*.json", "**/_KOR_PAKET/**", "**/_YONETMEN/DILIM*", "**/.claude/**", "**/YZ_FILM/ARACLAR/**"],
+ "yasak_okuma_film_rolleri": ["**/.claude/skills/film-yap/tartisma/**", "**/.claude/skills/film-yap/arastirma/**"],
+ "film_yollari": ["{veri_kok}/FILMLER/**", "**/_GOREV/**", "**/_KOR_PAKET/**"],
+ "roller": {
+  "kor":     {"okuma": ["{gorev}/GOREV.json", "{gorev}/ISTEM.md", "{gorev}/GIRDI/**", "{gorev}/CIKTI/**"],
+              "yazma": ["{gorev}/CIKTI/**"]},
+  "denetci": {"okuma": ["{gorev}/**", "{depo_kok}/.claude/skills/film-yap/reference/**", "{depo_kok}/.claude/skills/film-yap/semalar/**"],
+              "yazma": ["{gorev}/CIKTI/**"]},
+  "yazar":   {"okuma": ["{gorev}/**", "{depo_kok}/.claude/skills/film-yap/reference/**", "{depo_kok}/.claude/skills/film-yap/semalar/**",
+                        "{depo_kok}/.claude/skills/film-yap/PLAN_DILI.md"],
+              "yazma": ["{gorev}/CIKTI/**"]}
+ },
+ "rol_kaynagi": "YZ_FILM/ARACLAR/veri/ADLAR.json → ajanlar.<ad>.rol (kadro tek kaynaktan; burada ad listesi tutulmaz)",
+ "yerlesik_ajanlar_yasak": ["fork", "general-purpose", "Explore", "Plan", "statusline-setup", "output-style-setup", "claude-code-guide"],
+ "ana_claude": {"okuma_buyuk_dosya_kb": 200, "yazma_yasak": "makine_sahipli", "surus_disinda": "gelistirme_serbest"},
+ "tanimsiz_agent_type": "ret"
+}

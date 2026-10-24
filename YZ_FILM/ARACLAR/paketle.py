@@ -21,7 +21,7 @@ AYAR_OKU = ("BU KLASÖR GİZLİDİR. Paylaşma.\n\n"
             "ai84_anahtar.txt   → AI84.pro API anahtarını İLK SATIRA yapıştır (seslendirme)\n"
             "telegram_bot.txt   → Telegram bot anahtarını İLK SATIRA yapıştır (isteğe bağlı). Sonra:\n"
             "                     python ARACLAR\\memmet.py --telegram-test\n"
-            "memmet_profil\\     → MEMMET_GIRIS.bat ile Google'a girince kendiliğinden oluşur\n"
+            "memmet_profil\\     → FLOW_GIRIS.bat (depo kökü) ile Google'a girince kendiliğinden oluşur\n"
             "MEMMET_AYAR.json   → isteğe bağlı; Memmet temposunu yalnız YAVAŞLATABİLİR (hızlı değer yok sayılır)\n")
 
 

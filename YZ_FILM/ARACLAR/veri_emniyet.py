@@ -15,7 +15,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 SARMALAYICI_IMI = "# YZ_FILM_SET memmet sarmalayicisi"
-DOKUNMA = {"_ESKI", "OpenMontage", "GELISTIRME", "memmet_profil", "__pycache__", ".git"}
+DOKUNMA = {"_ESKI", "OpenMontage", "GELISTIRME", "AYARLAR", "memmet_profil", "__pycache__", ".git"}   # AYARLAR: anahtar dosyaları okunmaz
 KOK_DOSYALARI = ("BASLA_BURADAN.txt", "00_BENI_OKU.txt", "KURULUM.bat", "YENI_FILM.bat")
 BETIK_UZANTI = (".bat", ".cmd", ".ps1")
 MEMMET_IZI = re.compile(r"memmet[\w\-]*\.py|memmet_dongu|gece_video|film\.py", re.I)

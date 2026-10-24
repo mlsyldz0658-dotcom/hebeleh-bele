@@ -1,0 +1,408 @@
+{
+ "_surum": 1,
+ "_aciklama": "Hikâye odası eşikleri (TASARIM §6.3, §7.1, §7.2; [SN2] §4.7.2 listesi). RE (ritim_esikleri.json) ve hat_esikleri.json'daki anahtarlar burada TEKRARLANMAZ (esikler.py çift anahtarı HATA sayar): film süresi, replik kelimesi, seyirci kapı/hedef, plato, ilgi korelasyonu, köprü replik, konuşan sayısı RE'dedir; hata_donus_max ve seyirci_gurultu_std hat_esikleri'ndedir. 'tahmin' etiketli eşikler ilk iki filmde yalnız BAYRAK olarak çalışır (kalibrasyon, [SN2] §4.7); değişiklik yalnız ders defteri terfisiyle. 'sonuc' alanı bilgi amaçlıdır (H = HATA, B = BAYRAK, — = karar kuralı).",
+ "sahne_sayisi_40dk": {
+  "deger": [
+   45,
+   55
+  ],
+  "aciklama": "40 dk'lık filmde sahne sayısı; film süresiyle oranlanır (1800 sn → 34–41); dışı BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.4; [SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "replik_toplam_kelime_40dk": {
+  "deger": [
+   2100,
+   2600
+  ],
+  "aciklama": "40 dk'lık filmde toplam replik kelimesi; süreyle oranlanır; dışı BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §2.6; [SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "sahne_degeri_degismeli": {
+  "deger": true,
+  "aciklama": "Her sahnede sahne_degeri.bas ≠ sahne_degeri.son; eşitse HATA",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2.4",
+  "sonuc": "H"
+ },
+ "parti_tek_cumle": {
+  "deger": true,
+  "aciklama": "Her partinin tek cümlelik savunması dolu ('P<n>'de … ile biter' kalıbı); boşsa HATA, kalıp dışıysa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2.3",
+  "sonuc": "H"
+ },
+ "yapi_baslik_sayisi": {
+  "deger": 8,
+  "aciklama": "Yapıda her partinin dolu başlık sayısı (b1_amac_duygu … b8_kaba_plan_ve_risk)",
+  "kaynak": "belge",
+  "etiket": "[SN2] H7; UH §1",
+  "sonuc": "H"
+ },
+ "ana_karakter_max": {
+  "deger": 4,
+  "aciklama": "Ana karakter sayısı (yaratık hariç); aşılırsa BAYRAK",
+  "kaynak": "belge",
+  "etiket": "hikaye-mimari taslağı; [SN2] H3",
+  "sonuc": "B"
+ },
+ "mekan_tekrar_eden_max": {
+  "deger": 6,
+  "aciklama": "Tekrar eden (≥ 2 sahnede) mekân sayısı; kart yükü",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2 (İ13)",
+  "sonuc": "B"
+ },
+ "mekan_toplam_max": {
+  "deger": 10,
+  "aciklama": "Toplam mekân sayısı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2 (İ13)",
+  "sonuc": "B"
+ },
+ "kostum_varyant_max_karakter": {
+  "deger": 2,
+  "aciklama": "Karakter başına kostüm varyantı (her varyant yeni kart ve yüz denetimi)",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "uc_adli_karakter_sahne_parti_max": {
+  "deger": 3,
+  "aciklama": "Üç ya da daha çok adlı karakterin aynı sahnede olduğu sahne sayısı / parti (≤ 2 referans kuralı)",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2; ZANAAT K3",
+  "sonuc": "B"
+ },
+ "ad_hece_max_ana": {
+  "deger": 2,
+  "aciklama": "Ana karakter adının hece sayısı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2 ad kuralları",
+  "sonuc": "B"
+ },
+ "ad_duzenleme_uzaklik_min": {
+  "deger": 3,
+  "aciklama": "İki karakter adı arasında en az düzenleme uzaklığı; ayrıca ilk harf farklı (telaffuz ve ASR karışıklığı)",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2 ad_ayrisma",
+  "sonuc": "B"
+ },
+ "ad_tts_wer": {
+  "deger": 0,
+  "aciklama": "Ad sözcüğünde TTS kelime hatası; yerelde ses_sec.py ölçer, bulutta ÖLÇÜLEMEDİ (BAYRAK)",
+  "kaynak": "belge",
+  "etiket": "[SM2] A2; [SN2] §4.7.2",
+  "sonuc": "H"
+ },
+ "ses_kadro_ayrisma": {
+  "deger": 2,
+  "aciklama": "Aynı cinsiyet ve yaş bandında konuşan ana karakter sayısı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2; [SM2] B4, S1.5",
+  "sonuc": "B"
+ },
+ "ilk_replik_ekranda": {
+  "deger": true,
+  "aciklama": "Her karakterin ilk repliği ekranda ve ağzı görünür (istisna: gizemli_ses + açık merak sorusu)",
+  "kaynak": "belge",
+  "etiket": "[SM2] S0.3 ses tanıtım kuralı",
+  "sonuc": "H"
+ },
+ "gorunus_atfi_kilitli": {
+  "deger": true,
+  "aciklama": "Replikteki görünüş atfı yalnız hikaye_baglayici görünüş öğesiyle",
+  "kaynak": "belge",
+  "etiket": "[SN2] İ9",
+  "sonuc": "H"
+ },
+ "replik_tasidigi_zorunlu": {
+  "deger": true,
+  "aciklama": "Her replikte 'tasidigi' dolu; her kritik anahtar olgunun 'ekranda' kaynağı var",
+  "kaynak": "belge",
+  "etiket": "[SN2] İ8",
+  "sonuc": "H"
+ },
+ "anahtar_olgu_parti": {
+  "deger": [
+   8,
+   12
+  ],
+  "aciklama": "Parti başına anahtar olgu sayısı",
+  "kaynak": "tahmin",
+  "etiket": "[KU2]; [SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "kucuk_guzel_sahne_parti_min": {
+  "deger": 1,
+  "aciklama": "Parti başına küçük güzel sahne (kucuk_guzel: true)",
+  "kaynak": "tahmin",
+  "etiket": "BK 2.10; [SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "logline_kelime_max": {
+  "deger": 35,
+  "aciklama": "Logline (EN) kelime tavanı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "baslik_karakter_max": {
+  "deger": 100,
+  "aciklama": "YouTube başlığı karakter tavanı (kalıp: Kanca | SERİ | Full Movie 4K 2026)",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.3 A03, A17; YouTube başlık sınırı",
+  "sonuc": "H"
+ },
+ "kanca_cumlesi_karakter_max": {
+  "deger": 60,
+  "aciklama": "Başlıktaki kanca cümlesi (ilk '|' öncesi) karakter tavanı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "vaat_surec_max_oran": {
+  "deger": 0.5,
+  "aciklama": "Başlık fiilinin süreci filmin bu oranına kadar ekranda başlamış olmalı",
+  "kaynak": "tahmin",
+  "etiket": "ZANAAT §1.2; [SN2] §4.2.1",
+  "sonuc": "B"
+ },
+ "short_aday_parti_min": {
+  "deger": 1,
+  "aciklama": "Parti başına Short adayı (30–60 sn, 2 sn'de kanca)",
+  "kaynak": "tahmin",
+  "etiket": "BK 1.8.4, 3.10",
+  "sonuc": "B"
+ },
+ "oneri_baslik_sayisi": {
+  "deger": 10,
+  "aciklama": "Mimar önerisindeki zorunlu başlık sayısı (H3 teslim şablonu)",
+  "kaynak": "belge",
+  "etiket": "[SN2] H3; TASARIM §1.3 A03",
+  "sonuc": "H"
+ },
+ "oneri_konusan_max": {
+  "deger": 8,
+  "aciklama": "Önerideki konuşan karakter sayısı tavanı (film tavanı RE konusan_karakter_max ile aynı değer; öneri aşaması)",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.3 A03 oneri-denetim",
+  "sonuc": "H"
+ },
+ "oneri_kelime_aralik": {
+  "deger": [
+   2500,
+   5000
+  ],
+  "aciklama": "Mimar önerisinin kelime aralığı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H3",
+  "sonuc": "B"
+ },
+ "oneri_benzerlik_esigi": {
+  "deger": 3,
+  "aciklama": "Çeşitlilik dörtlüsünden (kahraman tipi, çekirdek ilişki, doruk mekanizması, ana mekân) bu kadarı aynıysa BENZER",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7.2",
+  "sonuc": "B"
+ },
+ "brifing_bolum_sayisi": {
+  "deger": 7,
+  "aciklama": "Brifingdeki zorunlu bölüm sayısı",
+  "kaynak": "belge",
+  "etiket": "[SN2] H2; TASARIM §1.3 A02",
+  "sonuc": "H"
+ },
+ "brifing_kelime_aralik": {
+  "deger": [
+   1500,
+   4000
+  ],
+  "aciklama": "Brifing kelime aralığı",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H2; TASARIM §1.3 A02",
+  "sonuc": "B"
+ },
+ "juri_sayisi": {
+  "deger": 5,
+  "aciklama": "Jüri üyesi sayısı (4 juri-uyesi rolü + uretilebilirlik-denetcisi·juri)",
+  "kaynak": "belge",
+  "etiket": "[SN2] H5; TASARIM §1.3 A04",
+  "sonuc": "—"
+ },
+ "juri_gecerli_min": {
+  "deger": 3,
+  "aciklama": "Geçerli (şemaya uyan) jüri raporu en az bu kadar olmalı; altı HATA",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H5",
+  "sonuc": "H"
+ },
+ "juri_olcutleri": {
+  "deger": [
+   "kanca",
+   "netlik",
+   "merak",
+   "duygu",
+   "karakter",
+   "ozgunluk",
+   "yapi",
+   "uretilebilirlik",
+   "sureklilik_yuku",
+   "seri"
+  ],
+  "aciklama": "Jüri ölçütleri (1–10; yüksek iyi; sureklilik_yuku'nda yüksek puan = az yük)",
+  "kaynak": "belge",
+  "etiket": "[SN2] H5",
+  "sonuc": "—"
+ },
+ "juri_kazanan_min": {
+  "deger": 8.0,
+  "aciklama": "Kazanan önerinin puanı (ölçüt medyanlarının ortalaması) bu değerin altındaysa yazar 1 kez yeniden + jüri",
+  "kaynak": "belge",
+  "etiket": "TASARIM §1.3 A04; YR A3–A4",
+  "sonuc": "B"
+ },
+ "juri_beraberlik_fark": {
+  "deger": 0.3,
+  "aciklama": "İlk iki öneri farkı bu kadar ya da azsa BIRLESTIR",
+  "kaynak": "tahmin",
+  "etiket": "YR A3–A4; [SN2] H6",
+  "sonuc": "—"
+ },
+ "juri_veto_uretilebilirlik": {
+  "deger": 5,
+  "aciklama": "uretilebilirlik medyanı bunun altındaysa öneri elenir (veto)",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H6",
+  "sonuc": "H"
+ },
+ "revizyon_madde_kapanis": {
+  "deger": 1.0,
+  "aciklama": "KRİTİK + ORTA maddelerin uygulanan ya da gerekçeli oranı",
+  "kaynak": "belge",
+  "etiket": "YR A5, A8",
+  "sonuc": "H"
+ },
+ "salinim_dusus": {
+  "deger": 1,
+  "aciklama": "GENEL medyan en iyi turdan bu kadar düşerse yazar en iyi sürümden devam eder (EN_IYI)",
+  "kaynak": "tahmin",
+  "etiket": "B2 P1 v7 6 → v8 5; [SN2] H11",
+  "sonuc": "—"
+ },
+ "doktor_tetik_iyilesme": {
+  "deger": 0.5,
+  "aciklama": "Tur 3'te GENEL iyileşmesi bunun altındaysa yapimci·doktor teşhisi önerilir",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H11 merdiven",
+  "sonuc": "—"
+ },
+ "yapisal_tur_alt_esik": {
+  "deger": 7.5,
+  "aciklama": "4. tur sonunda KRİTİK 0 ve GENEL ≥ bu değer ise doktor + 2 yapısal tur",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] H11 merdiven",
+  "sonuc": "—"
+ },
+ "tek_kritik_red_kanit": {
+  "deger": true,
+  "aciklama": "Tek seyircinin KRİTİK'i yalnız betikle doğrulanmış kanıtla (satır pakette, kopukluktan önce, maskesiz) geçersiz sayılır",
+  "kaynak": "belge",
+  "etiket": "TASARIM D-21; [KU2] §5.9",
+  "sonuc": "H"
+ },
+ "seyirci_gecerli_rapor_min": {
+  "deger": 2,
+  "aciklama": "Bir turda geçerli seyirci raporu en az bu kadar; altı şema HATA'sı",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §1.4 (şema HATA'sı 0)",
+  "sonuc": "H"
+ },
+ "kritik_birlestirme_komsu": {
+  "deger": 1,
+  "aciklama": "KRİTİK/ORTA kopuklukları aynı konum ±bu kadar plan (kâğıtta sahne) içinde birleşir",
+  "kaynak": "belge",
+  "etiket": "TASARIM §6.3 puan_oku v2 (±1 plan)",
+  "sonuc": "—"
+ },
+ "tutma_egrisi_dilim_sn": {
+  "deger": 60,
+  "aciklama": "Tahmini tutma eğrisinin zaman dilimi",
+  "kaynak": "tahmin",
+  "etiket": "[KU2] §4.5",
+  "sonuc": "—"
+ },
+ "donen_seyirci": {
+  "deger": 1,
+  "aciklama": "Seri devamında 'dönen seyirci' sayısı; medyana girmez",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] İ2",
+  "sonuc": "—"
+ },
+ "zaman_belirsizlik_bandi": {
+  "deger": 0.15,
+  "aciklama": "Hikâye aşamasında zamana bağlı eşiklerde belirsizlik bandı: bant dışı HATA, içi BAYRAK",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.7; TASARIM §7.2 Z1",
+  "sonuc": "—"
+ },
+ "sahne_siniri_durum_esitligi": {
+  "deger": true,
+  "aciklama": "S_n çıkış durumu = S_n+1 giriş durumu; aksi yalnız zaman.atlama ya da ekranda olayla",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §3.7 #4 (sahne ölçeği)",
+  "sonuc": "H"
+ },
+ "bilgi_durumu_ihlali_max": {
+  "deger": 0,
+  "aciklama": "Karakterin bilmediği adı ya da olguyu kullanması",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2.5; YR §5",
+  "sonuc": "H"
+ },
+ "kanon_ihlali_max": {
+  "deger": 0,
+  "aciklama": "Evren kanonuyla çelişki (ölü karakter konuşur, kural çiğnenir)",
+  "kaynak": "belge",
+  "etiket": "ZANAAT §7.2.5; YR §5",
+  "sonuc": "H"
+ },
+ "yonetmen_sahne_sure_sapma": {
+  "deger": 0.2,
+  "aciklama": "Sahne sözleşmesi: planların toplam süresi hedef_sure_sn'den en çok bu oranda sapar",
+  "kaynak": "tahmin",
+  "etiket": "[SN2] §4.5.3",
+  "sonuc": "B"
+ },
+ "parti_sonu_acik_soru_min": {
+  "deger": 1,
+  "aciklama": "Her parti sonunda açık merak sorusu",
+  "kaynak": "belge",
+  "etiket": "ZANAAT Z1 #28",
+  "sonuc": "H"
+ },
+ "kurulum_kullanilmayan_max": {
+  "deger": 0,
+  "aciklama": "Kullanımı olmayan kurulum",
+  "kaynak": "belge",
+  "etiket": "ZANAAT Z1 #32",
+  "sonuc": "B"
+ },
+ "konu_kanca_aileleri": {
+  "deger": [
+   "insan_yaratik_bagi",
+   "ihanet_taht",
+   "orduya_karsi_secim",
+   "kucumsenen_donusu",
+   "hayatta_kalma_bag",
+   "ahlak_dramasi"
+  ],
+  "aciklama": "Konu kartındaki kanca_ailesi sözlüğü (birincil ve ikincil)",
+  "kaynak": "belge",
+  "etiket": "BK §2.1; AN T14–16; [SN2] H1 tablosu",
+  "sonuc": "H"
+ }
+}

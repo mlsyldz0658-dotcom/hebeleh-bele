@@ -1,0 +1,10 @@
+{
+ "surum": "v1",
+ "degisiklikler": [
+  {
+   "madde": "S05 ORTA",
+   "uygulandi": true,
+   "gerekce": "gidiş nedeni R0009'a eklendi"
+  }
+ ]
+}

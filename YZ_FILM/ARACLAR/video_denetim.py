@@ -21,7 +21,7 @@ import os, sys, re, json, glob, shutil, subprocess, tempfile, statistics
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
-import ortak
+import ortak, kapi, esikler
 
 SURUM = "video_denetim 1.0"
 VARSAYILAN = {"v2_kare_aralik_sn": 0.5, "v2_kimlik_dusus_max": 0.15, "v2_kimlik_hata": 0.363, "v2_dino_sicrama_max": 0.15,

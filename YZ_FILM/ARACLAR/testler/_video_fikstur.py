@@ -24,7 +24,7 @@ def plan(no, sahne="S01", replik=None, zincir=None, kaynak_klip=None, adimlar=No
          "hareket_istem": f"Static medium shot. 0.6-2.0s: plan {no} subject turns head slowly. 2.0-8s: holds still. No music.",
          "hareket_istem_yedek": f"Static medium shot. The subject of plan {no} waits calmly. No music.",
          "zanaat": {"kod": f"{sahne}-P{no:02d}", "sahne_grubu": sahne, "plan_tipi": "aksiyon", "klip_sn": 8,
-                    "kadrajdakiler": [{"id": "mara", "olcek": "OY", "yuz_acisi": "3/4"}][:kadraj],
+                    "kadrajdakiler": [{"id": "mara", "olcek": "OY", "yuz_acisi": "3/4"}, {"id": "voss", "olcek": "OY", "yuz_acisi": "profil"}][:kadraj],
                     "eylem_zinciri": adimlar if adimlar is not None else [
                         {"id": "a1", "bas": 0.6, "bit": 2.0, "ozne": "mara", "tur": "fiziksel", "fiil": "doner"}]},
          "kullanim": {"bas": 0.5, "sure": 6.0},

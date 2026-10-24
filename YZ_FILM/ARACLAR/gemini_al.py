@@ -194,6 +194,7 @@ def sahte_gercek(kok, no, hata=()):
         elif h == "ters_el": g["kor_hata"].append("ters_el")
         elif h == "ters_el_iki":
             g["kor_hata"].append("ters_el"); g["el_nesne"] = {n: {"el": "sol" if v["el"] == "sag" else "sag", "guven": 0.8} for n, v in g["el_nesne"].items()}
+        elif h == "kimlik_bayrak": g["kimlik"] = {k: {"benzerlik": 0.40, "fark_payi": 0.1} for k in g["kimlik"]}
         elif h == "kimlik": g["kimlik"] = {k: {"benzerlik": 0.2, "fark_payi": -0.1} for k in g["kimlik"]}
         elif h == "yazi": g["kor_hata"].append("yazi")
         elif h == "cizim": g["stil_clip_foto"] = 0.2; g["kor_hata"].append("cizim")
@@ -235,6 +236,7 @@ def sahte_uret(kok, tur="gorsel", hata_plan=None):
             for h in hs:
                 if h.startswith("benzer="): o, sim = h.split("=", 1)[1].split("@"); g["kadro_benzerlik"][o] = float(sim)
             if "kisi" in hs: g["yuz_sayisi"] = 1
+            if "gorunen_yok" in hs: g["plaka_gorunen_yerel"] = {o: None for o in (v.get("gorunen_idler") or [])}
             g["kor_hata"] = [h for h in hs if h in ("yazi", "cizim", "eksik_oge", "gorunen_yok", "fazla_kisi")]
             v = dict(v, gercek=g, saglayici="sahte")
         else: v = dict(v, saglayici="sahte")

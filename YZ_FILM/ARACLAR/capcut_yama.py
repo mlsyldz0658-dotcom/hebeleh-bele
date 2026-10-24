@@ -88,10 +88,19 @@ def yamala(kok, ic, kp, ad, fk, vk):
     return ic, m, degisen, yeniden
 
 
+def _not_raporu(kok, argv, madde, seviye, **ek):
+    _, kp = ko.kurgu_plani(kok); n = int((kp or {}).get("kurgu_surumu") or 1)
+    ry, r = ko.po.rapor_yaz(kok, "NOT", f"v{n}", [ko.m(madde, seviye, None, **ek)], asama="A16n", arac=SURUM,
+                            varsayilan=os.path.join("_RAPOR", f"YAMA_v{n}.json"))
+    ko.po.yaz_ozet(r, os.path.basename(ry))
+    return r
+
+
 def yedek_yol(kok, argv, neden, f=None):
     import capcut_film
     if f and f.get("fark_var"): tf.plana_isle(kok, f)
     k = capcut_film.v2(kok, list(argv) + ["--ad-ek", " (senin düzenlemenle)"])
+    _not_raporu(kok, argv, "yedek_yol_yeni_adla_kuruldu", "BAYRAK", neden=neden, cikis=k)
     tasinamaz = [o["tur"] for o in (f or {}).get("kullanici_ogeleri") or [] if o["tur"] in ("renk_ayari", "yazi", "efekt")]
     print(f"Taslağını yamalayamadım ({neden}); kararlarınla yeni adla kurdum." +
           (f" Şunları elle taşıman gerekebilir: {', '.join(sorted(set(tasinamaz)))}." if tasinamaz else ""), flush=True)
@@ -109,8 +118,10 @@ def yama(kok, argv=()):
         import capcut_film, plan_kurgu
         _, kp = ko.kurgu_plani(kok)
         if kp and kp.get("kurgu_surumu") == proje.get("kurgu_plani_surumu"):
-            print("taslakta kullanıcı değişikliği yok; yeni sürüm kurgu planı değişince kurulur", flush=True); return 0, None
-        return capcut_film.v2(kok, argv), None
+            print("taslakta kullanıcı değişikliği yok; yeni sürüm kurgu planı değişince kurulur", flush=True)
+            return 0, _not_raporu(kok, argv, "fark_yok", "GEC")
+        k = capcut_film.v2(kok, argv)
+        return k, _not_raporu(kok, argv, "fark_yok_yeni_surum", "GEC" if k == 0 else "HATA", cikis=k)
     acik, neden = bayrak_acik()
     if not acik: return yedek_yol(kok, argv, f"CapCut klonu doğrulanmadı: {neden}", f), None
     ozet_once = ko.klasor_ozeti(proje["klasor"])

@@ -116,7 +116,8 @@ def paket_kart(kok, tur_no=1):
     for k in ki.get("kartlar") or []:
         for a, dosya in zip(k.get("adaylar") or [], k.get("dosyalar") or []):
             bl.append({"blok": dosya[:-4], "dosya": dosya, "referans": [], "istem": k["istem"]})
-            bek[dosya] = {"tur": "kart", "kart_id": k["kart_id"], "aday": a}
+            bek[dosya] = {"tur": "kart", "kart_id": k["kart_id"], "aday": a,
+                          "gorunen_idler": [g.get("id") or g.get("oge") for g in k.get("gorunen") or [] if isinstance(g, dict)]}
     if not bl: print("paketlenecek kart yok (hepsi kilitli)", flush=True); return 0, []
     on = f"{_film_ad(kok)}_KART_t{tur_no}"
     m = _yaz_paket(kok, on, "kart", bl, {}, tur_no, "Character sheets: a wide 16:9 sheet, long edge at least 1376 px.", bek)

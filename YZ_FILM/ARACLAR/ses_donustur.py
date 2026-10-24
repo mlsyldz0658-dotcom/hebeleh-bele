@@ -20,7 +20,7 @@ import os, sys, re, json, glob, time, shutil, subprocess
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
-import ortak
+import ortak, kapi, esikler, blok_plani
 
 SURUM = "ses_donustur 1.0 (SC1)"
 PENCERE_PAY_SN = 1.0                # [SM2] whisper_pencere_pay_sn (tahmin)

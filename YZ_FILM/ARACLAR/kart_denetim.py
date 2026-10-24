@@ -115,6 +115,15 @@ def yerel(yol, k, spec, kok=None):
     except kimlik.KimlikYok as e: y["olculemedi"]["yuz_sayisi"] = str(e)
     try: y["stil_clip_foto"] = round(gorunum.clip_foto(yol), 4)
     except Exception as e: y["olculemedi"]["stil_clip_foto"] = f"{e.__class__.__name__}"
+    if k["tur"] == "mekan" and k.get("gorunen"):
+        try:
+            import istem_derle_gorsel as idg
+            W = y["teknik"]["genislik"]; bul = gorunum.owl(yol, [g.get("ad") or idg._ad(g.get("id")) for g in k["gorunen"]])
+            y["plaka_gorunen_yerel"] = {}
+            for g in k["gorunen"]:
+                ad = g.get("ad") or idg._ad(g.get("id")); d = next((b for b in bul if b["sorgu"] == ad), None)
+                y["plaka_gorunen_yerel"][g.get("id")] = olcum.ucte_bir(d["kutu"][0] + d["kutu"][2] / 2, W) if d else None
+        except Exception as e: y["olculemedi"]["plaka_gorunen"] = f"{e.__class__.__name__}"
     return y
 
 
@@ -168,7 +177,12 @@ def degerlendir(y, ks, cevap, k, spec):
         elif a.startswith("asimetrik") and r["sonuc"] == "uyumsuz": out.append(_m("asimetrik", "HATA", "kor", oge=a.split(":", 1)[1], kor=r["kor"]))
         elif a == "kisi_sayisi" and k["tur"] == "mekan" and r["sonuc"] == "uyumsuz": out.append(_m("plaka_kisi", "HATA", "kor", kor=r["kor"]))
         elif a.startswith("gorunen") and r["sonuc"] != "uyum":
-            out.append(_m("plaka_gorunen", "BAYRAK", "kor", oge=a.split(":", 1)[1], kor=r["kor"], beklenen=r["beklenen"]))
+            oge = a.split(":", 1)[1]; yg = y.get("plaka_gorunen_yerel")
+            yerel_olcti = isinstance(yg, dict) and oge in yg
+            yerel_ters = yerel_olcti and (yg[oge] is None or (r.get("beklenen") and yg[oge] != olcum.ucte_bir_normal(r["beklenen"])))
+            sev = "HATA" if yerel_ters and r["sonuc"] == "uyumsuz" else "BAYRAK"
+            out.append(_m("plaka_gorunen", sev, "iki" if sev == "HATA" else "kor", oge=oge, kor=r["kor"], beklenen=r["beklenen"],
+                          yerel=yg.get(oge) if yerel_olcti else None))
         elif a.startswith("notr") and r["sonuc"] == "uyumsuz": out.append(_m("plaka_notr", "HATA", "kor", oge=a.split(":", 1)[1], kor=r["kor"]))
         elif a == "yazi_logo" and r["sonuc"] == "uyumsuz": out.append(_m("yazi_logo", "HATA" if str((cevap or {}).get("yazi_logo", "none")) != "none" else "BAYRAK", "kor"))
         elif a == "anatomi" and r["sonuc"] != "uyum": out.append(_m("anatomi", "HATA" if r["sonuc"] == "uyumsuz" and r["tutarli"] else "BAYRAK", "kor"))

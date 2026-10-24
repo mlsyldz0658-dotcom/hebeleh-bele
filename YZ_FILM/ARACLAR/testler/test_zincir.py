@@ -147,7 +147,7 @@ class Zincir(unittest.TestCase):
     def test_v3_adim_tepesi_ve_bitis_tutmasi(self):
         if not VF.ffmpeg_var(): self.skipTest("ffmpeg yok")
         VF.klip_yaz(os.path.join(self.kok, "SIRALI_VIDEO", "001.mp4"), kutu=[(1.0, 3.0)]); kunye(self.kok, 1, ())
-        VF.klip_yaz(os.path.join(self.kok, "SIRALI_VIDEO", "004.mp4"), kutu=[(4.5, 5.0), (6.5, 7.5)]); kunye(self.kok, 4, ())
+        VF.klip_yaz(os.path.join(self.kok, "SIRALI_VIDEO", "004.mp4"), kutu=[(4.5, 5.0), (5.9, 7.5)]); kunye(self.kok, 4, ())
         with contextlib.redirect_stdout(io.StringIO()): r2, r3 = video_denetim.klip_denetle(self.kok, [1, 4])
         self.assertEqual(kapi.dogrula(r2), []); self.assertEqual(kapi.dogrula(r3), [])
         self.assertTrue(os.path.exists(os.path.join(self.kok, "_RAPOR", "V2_FILM_t1.json")))

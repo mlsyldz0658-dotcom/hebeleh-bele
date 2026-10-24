@@ -190,7 +190,9 @@ def _ikile(qs, rng):
 def _acik(q): return {k: v for k, v in q.items() if not k.startswith("_")}
 
 
-def _gizli(q): return {k[1:]: v for k, v in q.items() if k.startswith("_")} | {"tekrar_of": q.get("tekrar_of")}
+def _gizli(q):
+    return {k[1:]: v for k, v in q.items() if k.startswith("_")} | {"tekrar_of": q.get("tekrar_of"), "kisi_basina": q.get("kisi_basina"),
+                                                                     "coklu": q.get("coklu")}
 
 
 # --- paket -------------------------------------------------------------------------------------------------------

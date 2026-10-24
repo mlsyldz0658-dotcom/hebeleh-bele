@@ -35,16 +35,20 @@ def _taslak_klasoru():
 def klipleri_hazirla(kok, kp, vk, hizli=False):
     import kurgu_ortak as ko
     os.makedirs(os.path.join(vk, "klipler"), exist_ok=True)
+    buy = (ortak.json_oku(os.path.join(vk, "buyuk", "BUYUTME.json"), {}) or {}).get("planlar") or {}
+    kay_yol = os.path.join(vk, "klipler", "KAYNAK.json"); kay = ortak.json_oku(kay_yol, {}) or {}
     for x in kp.get("planlar") or []:
         g = x["goruntu"]
         if g.get("tur") != "video" or not g.get("dosya"): continue
         ad = f"{int(x['plan']):03d}.mp4"; dst = os.path.join(vk, "klipler", ad)
         kaynak = next((p for p in (os.path.join(vk, "buyuk", ad), os.path.join(vk, "cila", ad)) if os.path.exists(p)), ko.mutlak(kok, g["dosya"]))
+        kay[ad] = {"kaynak": ko.goreli(kok, kaynak), "ofset": float((buy.get(str(x["plan"])) or {}).get("ofset", 0.0)) if "buyuk" in kaynak else 0.0}
         if os.path.exists(dst) and os.path.getmtime(dst) >= os.path.getmtime(kaynak): continue
         if hizli or "buyuk" in kaynak: shutil.copyfile(kaynak, dst)
         else:
             ko.ffmpeg("-i", kaynak, "-vf", f"scale={W}:{H}:flags=lanczos,setsar=1", "-c:v", "libx264", "-preset", "fast", "-crf", "18",
                       "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", str(SR), dst)
+    ortak.atomik_yaz(kay_yol, kay)
 
 
 def v2(kok, argv):
@@ -74,7 +78,7 @@ def v2(kok, argv):
     for s in ct.model_segmentleri(m):
         e = {"kanal": s["kanal"], "segment_id": s["segment_id"], "bas": s["bas"], "sure": s["sure"]}
         if s["kanal"] == "Klipler":
-            e.update(plan=s["plan"], sira=s.get("sira"), kaynak=ko.goreli(kok, s["yol"]),
+            e.update(plan=s["plan"], sira=s.get("sira"), kaynak=ko.goreli(kok, s["yol"]), kaynak_ofset=s.get("ofset") or 0.0,
                      kaynak_aralik=None if s.get("kaynak_bas") is None else {"bas": s["kaynak_bas"], "sure": s["kaynak_sure"]})
         elif s["kanal"] == "Diyalog": e.update(replik=s.get("replik"), plan=s.get("plan"), kaynak=ko.goreli(kok, s["yol"]))
         elif s.get("yol"): e["kaynak"] = ko.goreli(kok, s["yol"])

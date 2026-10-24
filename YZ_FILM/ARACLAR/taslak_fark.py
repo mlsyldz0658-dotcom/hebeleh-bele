@@ -52,7 +52,8 @@ def fark(kok, proje, okunan):
         ea = s.get("kaynak_aralik") or {}
         if ea and d["kaynak_bas"] is not None and (abs(d["kaynak_bas"] - ea["bas"]) > TOL or abs(d["kaynak_sure"] - ea["sure"]) > TOL):
             out["klipler"].append({"plan": s.get("plan"), "segment_id": s["segment_id"], "degisim": "kirpildi", "eski": ea,
-                                   "yeni": {"bas": round(d["kaynak_bas"], 3), "sure": round(d["kaynak_sure"], 3)}})
+                                   "yeni": {"bas": round(d["kaynak_bas"], 3), "sure": round(d["kaynak_sure"], 3)},
+                                   "kaynak_ofset": float(s.get("kaynak_ofset") or 0.0)})
         if yeni_sira[s["segment_id"]] != kalan_eski[s["segment_id"]]:
             out["klipler"].append({"plan": s.get("plan"), "segment_id": s["segment_id"], "degisim": "tasindi",
                                    "eski_sira": eski_sira[s["segment_id"]], "yeni_sira": yeni_sira[s["segment_id"]]})
@@ -125,7 +126,7 @@ def plana_isle(kok, f):
         x = dz.get(k.get("plan"))
         if not x: continue
         if k["degisim"] == "kirpildi":
-            x["goruntu"]["kullanim"] = {"bas": ko.kare(k["yeni"]["bas"]), "sure": ko.kare(k["yeni"]["sure"])}
+            x["goruntu"]["kullanim"] = {"bas": ko.kare(k["yeni"]["bas"] + float(k.get("kaynak_ofset") or 0.0)), "sure": ko.kare(k["yeni"]["sure"])}
             x["goruntu"].update(kullanim_kaynak="kullanici", kullanim_kilit="kullanici", guven=1.0, gerekce="kullanıcının CapCut kırpması")
             kil.append({"plan": x["plan"], "alan": "kullanim", "kaynak": "kullanici"})
         elif k["degisim"] == "silindi":

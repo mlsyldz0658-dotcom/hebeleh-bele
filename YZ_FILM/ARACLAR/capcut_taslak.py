@@ -88,6 +88,7 @@ def model_kur(kok, kp, ad, yayin=False, klip_klasoru=None):
     siyah = os.path.join(vk, "siyah.png"); bant = os.path.join(vk, "sinema_bantlari.png")
     if not os.path.exists(siyah): _png(siyah, bant=False)
     if not os.path.exists(bant): _png(bant)
+    ofs = ortak.json_oku(os.path.join(vk, "klipler", "KAYNAK.json"), {}) or {}
     kan = {k: [] for k in ("Klipler", "Bantlar", "Kartlar", "Altyazi", "Diyalog", "Efekt", "Ambiyans", "Muzik", "NOTLAR")}
     for x in kp.get("planlar") or []:
         g = x["goruntu"]; u = g["kullanim"]
@@ -96,8 +97,9 @@ def model_kur(kok, kp, ad, yayin=False, klip_klasoru=None):
         if g.get("tur") == "yer_tutucu" and g.get("dosya"): kaynak = ko.mutlak(kok, g["dosya"])
         if not kaynak: kaynak = siyah
         foto = not kaynak.endswith(".mp4")
-        kan["Klipler"].append(_seg(ad, "Klipler", x["plan"], kaynak, x["cizelge_bas"], x["sure"], None if foto else u["bas"],
-                                   None if foto else u["sure"], ses=0.0, plan=x["plan"], sira=x.get("sira"), hiz=g.get("hiz", 1.0)))
+        o = float((ofs.get(os.path.basename(kaynak)) or {}).get("ofset", 0.0)) if kaynak.startswith(os.path.join(vk, "klipler")) else 0.0
+        kan["Klipler"].append(_seg(ad, "Klipler", x["plan"], kaynak, x["cizelge_bas"], x["sure"], None if foto else u["bas"] - o,
+                                   None if foto else u["sure"], ses=0.0, plan=x["plan"], sira=x.get("sira"), hiz=g.get("hiz", 1.0), ofset=o))
         p = pl.get(x["plan"], {})
         if not yayin:
             not_ = f"#{x['plan']}" + (f" · {p['amac']}" if p.get("amac") else "") + (f" · Duygu: {p['duygu']}" if p.get("duygu") else "")

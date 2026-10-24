@@ -566,7 +566,9 @@ def _kuyruk_maddeleri(kok, plan, en, karakterler, rapor):
     a = hs[0]; alan = a["alan"]
     sk = duzeltme.sifir_kredi(kok, plan, en["aday"], alan, kanit=a)
     if sk.get("yeni_aday"): return []                   # küçük düzeltme uygulandı: yeni aday sonraki G1 turunda ölçülür
-    try: c = duzeltme.madde_cumlesi(dict(a, nesne_ad=a.get("nesne")), plan, karakterler)
+    import istem_derle_gorsel as idg
+    nesne_ad = idg.Evren(kok).nesne_en(a["nesne"]) if a.get("nesne") else None
+    try: c = duzeltme.madde_cumlesi(dict(a, nesne_ad=nesne_ad), plan, karakterler)
     except duzeltme.DuzeltmeHatasi as e: c = None; print(f"!! CORRECTION kurulamadı ({plan['no']}): {e}", flush=True)
     return [{"plan": int(plan["no"]), "tur": "gorsel", "kaynak_kapi": "G1", "kaynak_rapor": rapor,
              "kok_neden": duzeltme.KOK_NEDEN.get(alan, "stil"), "seviye": "HATA", "alan": alan, "aday": [x["aday"] for x in [en]],

@@ -23,9 +23,9 @@ import ortak
 
 SURUM = "duzeltme 1.0"
 GORUNTU = {
-    "fazla_kisi": "CORRECTION: exactly {n} people in frame: {adlar}. No other people, faces or figures anywhere, including the background.",
-    "yanlis_kisi": "CORRECTION: the person on the {ucte_bir} of the frame is {ad} — {kimlik_en}.",
-    "kimlik": "CORRECTION: the person on the {ucte_bir} of the frame is {ad} — {kimlik_en}.",
+    "fazla_kisi": "CORRECTION: exactly {n} {insan} in frame: {adlar}. No other people, faces or figures anywhere, including the background.",
+    "yanlis_kisi": "CORRECTION: the person in the {ucte_bir} is {ad} — {kimlik_en}.",
+    "kimlik": "CORRECTION: the person in the {ucte_bir} is {ad} — {kimlik_en}.",
     "nesne_el": "CORRECTION: the {nesne} is in {ad}'s {EL} hand; {iyelik} {OBUR_EL} hand is {el_sekli_en}.",
     "bakis": "CORRECTION: {ad} faces toward frame {yon}, eyes on the {hedef}.",
     "isik": "CORRECTION: the only light source is the {kaynak} on frame {yon}; no fire, no candles, no other glow.",
@@ -178,16 +178,16 @@ def madde_cumlesi(m, plan, karakterler=None):
     ad = (karakterler.get(kis) or {}).get("ad") or (kis or "").title()
     kad = [k.get("id") for k in (plan.get("zanaat") or {}).get("kadrajdakiler") or []]
     if alan == "fazla_kisi":
-        return cumle(alan, n=len(kad), adlar=", ".join((karakterler.get(k) or {}).get("ad") or k.title() for k in kad))
+        return cumle(alan, n=len(kad), insan="person" if len(kad) == 1 else "people", adlar=", ".join((karakterler.get(k) or {}).get("ad") or k.title() for k in kad))
     if alan in ("yanlis_kisi", "kimlik", "ucte_bir"):
-        u = {"sol": "left third", "orta": "middle", "sag": "right third"}.get(
+        u = {"sol": "frame left third", "orta": "middle of the frame", "sag": "frame right third"}.get(
             __import__("olcum").ucte_bir_normal((der.get("kadraj_konumu") or {}).get(kis)) or "orta")
         return cumle("yanlis_kisi", ucte_bir=u, ad=ad, kimlik_en=(karakterler.get(kis) or {}).get("kimlik_en") or "as in the character reference")
     if alan == "kadraj_sirasi":
         return cumle(alan, sira=", then ".join((karakterler.get(k) or {}).get("ad") or k.title() for k in der.get("kadraj_sirasi") or kad))
     if alan == "nesne_el":
         el = m.get("beklenen") if isinstance(m.get("beklenen"), str) else (m.get("beklenen") or {}).get("el", "sag")
-        return cumle(alan, nesne=m.get("nesne_ad") or m.get("nesne") or "object", ad=ad, EL=EL_EN.get(el, "RIGHT"),
+        return cumle(alan, nesne=re.sub(r"^(a|an|the)\s+", "", str(m.get("nesne_ad") or m.get("nesne") or "object"), flags=re.I), ad=ad, EL=EL_EN.get(el, "RIGHT"),
                      iyelik=m.get("iyelik") or "the", OBUR_EL=EL_EN["sol" if el == "sag" else "sag"],
                      el_sekli_en=m.get("el_sekli_en") or "empty, fingers relaxed")
     if alan == "bakis":

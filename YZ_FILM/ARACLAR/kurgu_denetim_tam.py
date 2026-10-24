@@ -128,7 +128,7 @@ def diyalog(kok, kp, pl, E, olc, kullanici):
         if d.get("ekran_disi"): ust.append(x["plan"])
         for un in ust:                                       # B9: başkasının repliği ağzı oynayan yüzün üstüne konmaz
             y = dz.get(un)
-            if not y: continue
+            if not y or (un != x["plan"] and y["goruntu"].get("kaynak_klip") == x["plan"]): continue   # konuşanın kendi klibinin 2. parçası
             a0, a1 = max(bas, y["cizelge_bas"]), min(bit, ko.plan_sonu(y))
             if a1 - a0 < ko.KARE: continue
             std = _agiz_oynuyor(agiz, y, a0, a1)              # konuşan bu planda görünmüyor: kadrajdaki hiçbir ağız oynamamalı
@@ -158,7 +158,7 @@ def bolme(kp, d, E, olc, kullanici):
         arada = sum(ps[k]["sure"] for k in range(j + 1, i))
         atl0, atl1 = a["bas"] + a["sure"] + arada, b["bas"]                  # aradaki planların süresi sesle (L) duyulur; kalan atlanır
         for rid, r in (d.get("replikler") or {}).items():
-            if r.get("kaynak_plan") != kk: continue
+            if r.get("kaynak_plan") != kk or atl1 - atl0 < ko.KARE / 2: continue
             kes = [w for w in r.get("kelimeler") or [] if w["bas"] < atl1 - 1e-6 and w["bit"] > atl0 + 1e-6]
             if kes:
                 bek = a["bas"] + a["sure"] + arada

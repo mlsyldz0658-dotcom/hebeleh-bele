@@ -70,7 +70,11 @@ def _bolme_duzelt(planlar, pl, d):
         surer = any(r.get("kaynak_plan") == kk and (r.get("klip_zamani") or {}).get("bit", 0) > a["bas"] + a["sure"]
                     for r in (d.get("replikler") or {}).values())
         if surer:
-            x["goruntu"]["kullanim"]["bas"] = ko.kare(a["bas"] + planlar[j]["sure"] * float(planlar[j]["goruntu"]["hiz"]) + arada)
+            yb = ko.kare(a["bas"] + planlar[j]["sure"] * float(planlar[j]["goruntu"]["hiz"]) + arada)
+            ust = float(x["goruntu"]["klip_sn"]) - float(ko.esik("kullanim_son_pay_sn", 0.5))
+            x["goruntu"]["kullanim"]["bas"] = yb
+            x["goruntu"]["kullanim"]["sure"] = ko.kare(max(ko.KARE, min(x["goruntu"]["kullanim"]["sure"], ust - yb)))
+            if ust - yb < 0.5: x["goruntu"].setdefault("bayraklar", []).append({"madde": "bolme_pencere_dar", "neden": "kaynak klipte süre kalmadı"})
             x["goruntu"]["gerekce"] += "; senkron korumalı bölme (replik aradaki planın üstünden sürüyor)"
             x["sure"] = ko.kare(x["goruntu"]["kullanim"]["sure"] / float(x["goruntu"]["hiz"]))
 

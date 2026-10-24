@@ -53,6 +53,7 @@ def konusma_zarfi(kok, d, r, x):
     p = ko.replik_dosyasi(kok, r) if r else None
     if p:
         a, sr = ko.wav_oku(p)
+        if (r.get("yol_gercek") or r.get("yol_plan")) != "tts": a = a[int(float(r.get("dosya_ofset_sn") or 0.0) * sr):]
     else:
         klip = ko.mutlak(kok, x["goruntu"].get("dosya")); kz = d.get("klip_zamani") or {}
         a = ko.video_sesi(klip) if klip else None; sr = ko.SR
@@ -110,7 +111,7 @@ def denetle(kok, argv=()):
         if d.get("ekran_disi"): ust.append(x["plan"])
         for un in ust:
             y = dz.get(un); a = agiz.get(str(un))
-            if not y: continue
+            if not y or (un != x["plan"] and y["goruntu"].get("kaynak_klip") == x["plan"]): continue
             w0, w1 = max(bas, y["cizelge_bas"]), min(bit, ko.plan_sonu(y))
             if w1 - w0 < ko.KARE: continue
             if not a: olc.append(ko.m("S3.5_ekran_disi_agiz", "OLCULEMEDI", un, replik=d["replik"])); continue

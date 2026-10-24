@@ -102,6 +102,7 @@ class T05_SenkronJL(unittest.TestCase):
         kok = F.film_kur(); s = ko.sahneler(kok)
         p6 = json.loads(json.dumps(s["sahneler"][2])); p6.update(no=6, sira=4.5); p6["zanaat"]["kaynak_klip"] = 3
         p6["zanaat"]["kesme"] = {"tip": "duz"}; p6.pop("replik"); p6["_derlenir"].pop("replik_zaman")
+        s["sahneler"][2]["zanaat"]["kesme"]["ses_tasma_sn"] = 3.0
         s["sahneler"].insert(3, p6); ortak.atomik_yaz(os.path.join(kok, "SAHNELER.json"), s)
         d = ko.diyalog_oku(kok); d["replikler"]["R0001"]["klip_zamani"]["bit"] = 7.0
         d["replikler"]["R0001"]["kelimeler"] = F._kelimeler(d["replikler"]["R0001"]["senaryo_metin"], 2.0, 7.0); ko.diyalog_yaz(kok, d)
@@ -111,7 +112,7 @@ class T05_SenkronJL(unittest.TestCase):
         self.assertAlmostEqual(b["goruntu"]["kullanim"]["bas"], ko.kare(a["goruntu"]["kullanim"]["bas"] + a["sure"] + arada), places=2)
         _, r = kdt.denetle(kok, ["--film", kok])
         self.assertNotIn("S3.6_bolme_soz_kesisimi", [h["madde"] for h in r["hatalar"]])
-        kp = _kp(kok); b = ko.plan_bul(kp, 6); b["goruntu"]["kullanim"]["bas"] = ko.kare(b["goruntu"]["kullanim"]["bas"] + 0.8)
+        kp = _kp(kok); b = ko.plan_bul(kp, 6); b["goruntu"]["kullanim"]["bas"] = ko.kare(b["goruntu"]["kullanim"]["bas"] + 0.4)
         plan_kurgu.cizelgele(kp["planlar"]); kp["kurgu_surumu"] = ko.sonraki_surum(kok); ko.kurgu_plani_yaz(kok, kp)
         _, r = kdt.denetle(kok, ["--film", kok])
         self.assertIn("S3.6_bolme_soz_kesisimi", [h["madde"] for h in r["hatalar"]])     # atlanan aralık bir sözü kesiyor
@@ -183,7 +184,7 @@ def _taslak(kok):
 
 
 def _kullanici_duzenler(p, ripple=True, yazi=True, ses=None):
-    dc = os.path.join(p["klasor"], "draft_content.json"); ic = json.load(open(dc, encoding="utf-8"))
+    dc = os.path.join(p["klasor"], "draft_content.json"); ic = _j(dc)
     for t in ic["tracks"]:
         if t["name"] == "Klipler":
             sg = t["segments"]; s0 = sg[0]
@@ -207,7 +208,7 @@ class T12_TaslakFarki(unittest.TestCase):
         """12. Taslak farkı: kırpma, silme, taşıma bulunur; kullanıcı kırpması kilitlenir, sonraki kirp_oner ona dokunmaz."""
         kok = F.film_kur(); A, p = _taslak(kok)
         self.assertEqual(taslak_fark.main(A + ["--oz-denetim"]), 0)
-        dc = os.path.join(p["klasor"], "draft_content.json"); ic = json.load(open(dc, encoding="utf-8"))
+        dc = os.path.join(p["klasor"], "draft_content.json"); ic = _j(dc)
         kl = next(t for t in ic["tracks"] if t["name"] == "Klipler")
         a, b = kl["segments"][2], kl["segments"][3]                     # #3 ↔ #4 yer değiştirir
         a["target_timerange"]["start"], b["target_timerange"]["start"] = b["target_timerange"]["start"], a["target_timerange"]["start"]
@@ -339,6 +340,29 @@ class T17_CapcutKanallari(unittest.TestCase):
         self.assertEqual(capcut_film.giris(A + ["--yayin"]), 0)
         py = _j(kok, "KURGU", "son_capcut_projesi_yayin.json")
         self.assertFalse({"NOTLAR", "Altyazi"} & {x["kanal"] for x in py["segmentler"]})
+
+
+class T18_CilaBuyutKur3(unittest.TestCase):
+    def test_renk_cila_buyut_kur3(self):
+        """renk_cila: sahne içi ΔE eşleme düzeltir; buyut: yalnız kullanılan pencere (sahte Lanczos), 4K kapısı yapay zekâsız kapalı;
+        capcut_film büyütülmüş klipte kaynak aralığını pencere ofsetiyle kaydırır; KUR3 planı bir şey kurmadan kartı yazar."""
+        import renk_cila, buyut, kurulum_kur3
+        kok = F.film_kur(); A = _hazir(kok, ses=False)
+        ko.sahte_klip(os.path.join(kok, "SIRALI_VIDEO", "002.mp4"), 8.0, kutu=[(1.0, 1.6)], renk=170)
+        plan_kurgu.main(A)
+        k, rap = renk_cila.cila(kok, A); self.assertEqual(k, 0)
+        p1, p2 = rap["planlar"]["1"], rap["planlar"]["2"]
+        self.assertTrue(p1["kazanc"] or p2["kazanc"])
+        self.assertLess(max(p1["dE_sonra"], p2["dE_sonra"]), max(p1["dE_once"], p2["dE_once"]))
+        k, b = buyut.buyut(kok, A); self.assertEqual(k, 0); self.assertFalse(b["dort_k_uygun"])
+        x3 = ko.plan_bul(_kp(kok), 3); u = x3["goruntu"]["kullanim"]
+        self.assertLessEqual(ko.sure(ko.mutlak(kok, b["planlar"]["3"]["dosya"])), u["sure"] + 1.0 + 0.1)
+        self.assertEqual(capcut_film.giris(A), 0)
+        seg = next(x for x in _j(kok, "KURGU", "son_capcut_projesi.json")["segmentler"] if x["kanal"] == "Klipler" and x["plan"] == 3)
+        self.assertAlmostEqual(seg["kaynak_aralik"]["bas"] + seg["kaynak_ofset"], u["bas"], places=2)
+        plan = kurulum_kur3.kur3_plani()
+        self.assertEqual({o["ad"] for o in plan["ortamlar"]}, {"musetalk", "acestep", "buyutme"})
+        self.assertFalse(any("wav2lip" in json.dumps(o).lower() for o in plan["ortamlar"]))
 
 
 if __name__ == "__main__":

@@ -106,8 +106,13 @@ def cila(kok, argv=()):
                               "-preset", "fast", "-crf", "17", "-c:a", "copy", out)
                 except RuntimeError as e: print(f"!! #{no}: {e}", flush=True); return 1, None
                 L2, _ = olc(out, v["u"]["bas"], v["u"]["sure"])
-                kayit.update(dosya=ko.goreli(kok, out), dE_sonra=None if L2 is None else round(float(np.linalg.norm(L2 - ref_lab)), 2))
+                kayit.update(dosya=ko.goreli(kok, out)); kayit["_lab2"] = L2
             rap["planlar"][str(no)] = kayit
+        sonra = [rap["planlar"][str(i)].get("_lab2") for i in nos if rap["planlar"][str(i)].get("_lab2") is not None]
+        ref2 = np.median(sonra, axis=0) if sonra else None
+        for i in nos:                                       # işlenmiş grubun kendi medyanına uzaklık (sahne içi eşleme sonucu)
+            k = rap["planlar"][str(i)]; L2 = k.pop("_lab2", None)
+            if L2 is not None: k["dE_sonra"] = round(float(np.linalg.norm(L2 - ref2)), 2)
     if not ko.bayrak(argv, "--kuru"): ortak.atomik_yaz(os.path.join(hedef, "RENK_RAPORU.json"), rap)
     print(f"renk cila: {len(rap['planlar'])} plan · eşlenen {sum(1 for v in rap['planlar'].values() if v['kazanc'])}", flush=True)
     return 0, rap

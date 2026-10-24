@@ -374,7 +374,8 @@ def sahte_klip(yol, sure_=8.0, w=320, h=180, kutu=(), ton=(), sr=SR, ton_hz=220.
     t = np.arange(int(sure_ * sr)) / sr; a = np.zeros_like(t)
     for (b0, b1) in ton:
         m = (t >= b0) & (t < b1)
-        a[m] += 0.25 * np.sin(2 * np.pi * ton_hz * t[m]) * (0.6 + 0.4 * np.sin(2 * np.pi * 4.0 * t[m]))
+        zarf_ = 0.5 + 0.3 * np.sin(2 * np.pi * 2.3 * t[m]) + 0.2 * np.sin(2 * np.pi * 5.9 * t[m] + 1.0)   # hece benzeri, dönemsiz
+        a[m] += 0.25 * np.sin(2 * np.pi * ton_hz * t[m]) * np.clip(zarf_, 0.05, 1.0)
     if gurultu: a += gurultu * np.random.default_rng(1).standard_normal(len(a))
     wav_yaz(tmp_a, a, sr)
     try:

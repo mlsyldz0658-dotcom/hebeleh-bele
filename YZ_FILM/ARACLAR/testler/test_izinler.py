@@ -38,6 +38,9 @@ class Izinler(unittest.TestCase):
 
     def tearDown(self):
         os.environ.pop("GEMINI_API_KEY", None)
+        for p in (os.path.join(AYAR, "FILM_AYAR.json"), O0E):                 # ortak geçici veri kökü: öbür test modüllerini etkileme
+            if os.path.exists(p): os.replace(p, p + ".test_izinler")
+            if os.path.exists(p + ".onceki"): os.replace(p + ".onceki", p)
         if self.eski is not None: os.environ["GEMINI_API_KEY"] = self.eski
 
     def ayar(self, usd=0, ucretli=False):

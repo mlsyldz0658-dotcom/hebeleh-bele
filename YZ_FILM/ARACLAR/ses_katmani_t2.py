@@ -90,7 +90,7 @@ def ambiyans(kok, argv, kp, s, pl, dj, E, olc, sahte):
         else:
             olc.append(ko.m("S5_yatak_dosyasi", "HATA", None, sahne_grubu=sg, olcu=rel, kok_neden="efekt_eksik", neden="yatak dosyası yok"))
             onceki = None; continue
-        hedef = min(max(float(y.get("seviye_lufs") or ref - 15), ref - hi), ref - lo)
+        hedef = min(max(float(y.get("seviye_lufs") or ref - 15), ref - hi + 1.5), ref - lo - 1.5)    # aralığın içinde, kenardan 1,5 dB
         t0 = bas - onal; n = int((bit - t0 + (capraz if not devam else 0)) * ko.SR)
         if devam and onceki: parca = _dongu(np.roll(a, -onceki["konum"]), ko.SR, n)
         else: parca = _dongu(a, ko.SR, n)

@@ -152,6 +152,8 @@ def oner(kok, plan, klip, kelimeler=None, kusurlar=None, zincir=False, kilit=Non
     elif oncelik == "tepki_tepesi":
         d = _hedef_sure(plan, "tepki", E); tepe = float(np.argmax(e[1:]) + 1) / ko.FPS
         bas = tepe - d / 2; bit = bas + d; ger.append(f"tepki tepesi {tepe:.2f} sn ortalandı")
+        if bas < pen_bas: bas, bit = pen_bas, bit + (pen_bas - bas)
+        if bit > pen_bit: bas, bit = max(pen_bas, bas - (bit - pen_bit)), pen_bit
     elif oncelik == "durgun":
         d = _hedef_sure(plan, tip, E); n = max(1, int(d * ko.FPS)); i0, i1 = int(pen_bas * ko.FPS), int(pen_bit * ko.FPS) - n
         c = np.concatenate([[0.0], np.cumsum(e)]); en = min(range(i0, max(i0, i1) + 1), key=lambda i: c[min(i + n, len(e))] - c[min(i, len(e))])

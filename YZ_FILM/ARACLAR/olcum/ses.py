@@ -110,24 +110,36 @@ def _biquad(fs):
     return [v / a1[0] for v in b1], [v / a1[0] for v in a1], [v / a2[0] for v in b2], [v / a2[0] for v in a2]
 
 
-def _iir_fft(x, b, a, fs):
-    """İki kutuplu süzgeci frekans yanıtıyla uygular (numpy; scipy gerekmez). Kuyruk sönümü ≪ 1 sn; bloklar 1 sn ön payla."""
+_H = {}
+
+
+def _yanit(n, fs, sos):
+    """İki kutuplu süzgeç(ler)in rfft ızgarasındaki frekans yanıtı (önbellekli)."""
+    k = (n, fs, len(sos))
+    if k not in _H:
+        z = np.exp(-1j * np.pi * np.arange(n // 2 + 1) / (n // 2)); H = np.ones(n // 2 + 1, dtype=complex)
+        for b, a in sos: H *= (b[0] + b[1] * z + b[2] * z * z) / (a[0] + a[1] * z + a[2] * z * z)
+        if len(_H) > 8: _H.clear()
+        _H[k] = H
+    return _H[k]
+
+
+def _iir_fft(x, sos, fs):
+    """Süzgeçleri frekans yanıtıyla uygular (numpy; scipy gerekmez). Kuyruk sönümü ≪ 1 sn; bloklar 1 sn ön payla."""
     blok, on = 30 * fs, fs
-    out = np.empty_like(x, dtype=np.float64)
+    out = np.empty(len(x), dtype=np.float64)
     for s in range(0, len(x), blok):
         p0 = max(0, s - on); seg = x[p0:s + blok].astype(np.float64)
         n = 1 << int(math.ceil(math.log2(len(seg) + fs // 2)))
-        z = np.exp(-1j * np.pi * np.arange(n // 2 + 1) / (n // 2))
-        H = (b[0] + b[1] * z + b[2] * z * z) / (a[0] + a[1] * z + a[2] * z * z)
-        y = np.fft.irfft(np.fft.rfft(seg, n) * H, n)[:len(seg)]
+        y = np.fft.irfft(np.fft.rfft(seg, n) * _yanit(n, fs, sos), n)[:len(seg)]
         out[s:s + blok] = y[s - p0:]
     return out
 
 
 def k_agirlik(x, fs=SR):
-    b1, a1, b2, a2 = _biquad(fs)
+    b1, a1, b2, a2 = _biquad(fs); sos = ((b1, a1), (b2, a2))
     ch = [x] if x.ndim == 1 else [x[:, i] for i in range(x.shape[1])]
-    return [_iir_fft(_iir_fft(c, b1, a1, fs), b2, a2, fs) for c in ch]
+    return [_iir_fft(c, sos, fs) for c in ch]
 
 
 def _blok_guc(y, fs, pencere=0.4, adim=0.1):

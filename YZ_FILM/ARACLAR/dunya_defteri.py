@@ -509,8 +509,10 @@ def yeniden_yaz_kuyrugu(kok, olcumler, kapi="K0", asama="A07c"):
         if o.get("sahne"): konum["sahne"] = o["sahne"]
         if isinstance(o.get("plan"), int) and o["plan"] > 0: konum["plan"] = o["plan"]
         if not konum: continue
-        md.append({"konum": konum, "kapi": kapi, "madde": o["madde"], "kok_neden": o.get("kok_neden") or "nesne_zipladi",
-                   "yazar": "yonetmen", "oneri": o.get("neden") or o["madde"], "tur": po.gorev().get("tur_no") or 1})
+        kn = o.get("kok_neden") or "nesne_zipladi"
+        md.append({"konum": konum, "kapi": kapi, "madde": o["madde"], "kok_neden": po.kok_normal(kn),
+                   "yazar": "yonetmen", "oneri": (o.get("neden") or o["madde"]) + (f" [{kn}]" if po.kok_normal(kn) != kn else ""),
+                   "tur": po.gorev().get("tur_no") or 1})
     if not md: return None
     try: return kuyruk.yaz_ekle(kok, md, asama)
     except Exception as e: print(f"!! YENIDEN_YAZ yazılamadı: {e}", flush=True); return None

@@ -21,7 +21,7 @@ Bu görev bir **merdiven basamağıdır** (§1.5): önceki turların kapı rapor
 6. NE YOK: filmde hiç görünmeyecek öğeler (evrende olmayan teknoloji, yasak öğe).
 
 ## CIKTI
-- `CIKTI/oneri.md` — 10 başlık, başlıklar `## 1. Logline` biçiminde; son satır `OZET | eksen: <D|S|E|X> | konusan: <n> | kelime: <n>`
+- `CIKTI/oneri.md` — 10 başlık, başlıklar `## 1. Logline` biçiminde; son satır `OZET | eksen: <eksen> | konusan: <n> | kelime: <n>`
 - Merdiven turunda ayrıca `CIKTI/rapor.json` (yazılması gereken dosyalar ISTEM.md'de listelidir)
 
 ## Bitirmeden

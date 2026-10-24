@@ -108,6 +108,24 @@ def koy(d, yol, v):
     d[ps[-1]] = copy.deepcopy(v)
 
 
+# Kâğıt kurallarının ayrıntılı kök nedeni → veri/kok_neden.json'daki ad (kuyruk yalnız oradakileri kabul eder; ayrıntı maddede kalır).
+KOK_ESLEME = {"cift_konusan": "konusan_belirsiz", "diyalog_suresi": "diyalog_kopuk", "replik_uzun": "diyalog_kopuk", "replik": "diyalog_kopuk",
+              "filtre": "filtre_kelimesi", "ekranda_bilgi": "bilgi_ekranda_yok", "ilk_eylem": "gec_giris", "kurulum": "kurulum_yok",
+              "merak": "bilgi_eksik", "risk": "risk_belirsiz", "yogunluk": "ritim_tekduze", "sure": "uzun_plan", "plan_suresi": "uzun_plan",
+              "sahne_suresi": "uzun_plan", "zincir": "zincir_dikis", "yon": "ekran_yonu", "referans": "fazla_kisi", "ad": "ad_gec",
+              "adim_sayisi": "hikaye_adimi_ekranda_yok", "adim_suresi": "hikaye_adimi_ekranda_yok", "eksik_parametre": "hikaye_adimi_ekranda_yok",
+              "yasak_fiil": "hikaye_adimi_ekranda_yok", "konusurken_eylem": "hikaye_adimi_ekranda_yok", "bitis_tutmasi": "hikaye_adimi_ekranda_yok"}
+
+
+def kok_normal(kn, vars="hikaye_adimi_ekranda_yok"):
+    try:
+        gecerli = set((ortak.json_oku(os.path.join(VERI, "kok_neden.json"), {}) or {}).get("kok_nedenler") or {})
+    except Exception: gecerli = set()
+    if kn in gecerli: return kn
+    k = KOK_ESLEME.get(kn, vars)
+    return k if not gecerli or k in gecerli else vars
+
+
 def m(madde, seviye, plan=None, **ek):
     o = {"madde": madde, "seviye": seviye}
     if plan is not None: o["plan"] = plan

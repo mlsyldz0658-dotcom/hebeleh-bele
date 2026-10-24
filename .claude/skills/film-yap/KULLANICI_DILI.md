@@ -61,5 +61,5 @@ aktarmak · D diskini takmak · bir .bat dosyasına çift tıklamak.
 | kanca | (söylenmez; sorun varsa KURTARMA cümlesi) |
 
 ## §Söylenmeyenler
-Karar soruları ("hangisini istersin", "onaylıyor musun", "devam edeyim mi", "A mı B mi") · teknik iç ayrıntı (görev kimliği, JSON) ·
+Karar soruları YASAK ("hangisini istersin", "onaylıyor musun", "devam edeyim mi", "A mı B mi") · teknik iç ayrıntı (görev kimliği, JSON) ·
 anahtar ya da ayar içeriği · "başka hesapla deneyelim" · tahminî süre ya da kredi sayısını film.py'siz söylemek.

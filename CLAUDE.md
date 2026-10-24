@@ -6,6 +6,9 @@ Oturum başında "FİLM SETİ DURUMU" bağlamı gelir (kanca). Gelmediyse: `pyth
 - **Bulutta** (`ortam=bulut`; kanca yoksa: oturum Windows dışında açıldıysa) ve aktif film yoksa konu SORULMAZ, film başlatılmaz.
   Kullanıcı konu verse de yalnız şunu söyle: "Film seti senin bilgisayarında çalışır: Masaüstündeki FILM_SETI.bat'a çift tıkla
   ve konuyu orada yaz." Bulutta `film-yap` yalnız `--saglayici sahte` ile `ORNEK_*` denemesi koşar; geliştirme `/film-gelistir` ile sürer.
+- Kullanıcı "repo güncellendi", "güncelle" ya da "son hâli çek" derse: yerel değişiklik yoksa bulunduğun dalda `git pull` yap
+  (yerel değişiklik varsa hiçbir şeye dokunmadan söyle); sonra kaldığın yerden devam et. Güncellemeden sonra `O0a.json` yoksa
+  "ilk kurulum" istenmiş say.
 - Bu bilgisayarda `O0a.json` yoksa ve kullanıcı "ilk kurulum" yazarsa: `YZ_FILM/ARACLAR/CLAUDE.md` §İlk yerel oturum uygulanır.
 - Aktif film YOK ve kullanıcı konu vermediyse YALNIZ şunu sor: "Filmin konusu ne olsun? Bir cümle yeter
   (ör. ejderha yavrusunu saklayan avcı kadın). İstersen 'sen seç' yaz."

@@ -19,7 +19,7 @@ bir üretim hattı. Kullanıcıya yalnız konu sorulur; diğer kararları ekip v
 yürür; bulut oturumları geliştirme ve `sahte`/`kaset` testleri içindir (TASARIM D-12, D-45).
 
 ## Şu anki durum (24.10.2026)
-TASARIM §9'un bulutta yapılabilen adımları **0, 1, 3, 4, 5, 6, 7, 8, 10, 12–17** uygulandı (her biri `sahte`/`kaset` testleriyle; gerçek
+TASARIM §9'un bulutta yapılabilen adımları **0, 1, 3, 4, 5, 6, 7, 8, 10, 12–18** uygulandı (her biri `sahte`/`kaset` testleriyle; gerçek
 model ve servis çağrısı yok). Adım başına ana araçlar:
 - **0 PR-0 güvenlik:** `memmet.py` Flow uyarısında **her kipte** durur (`FLOW_KILIDI.json`, çıkış 7; doğrulamada 2; `_surum ≥ 2` → 4; varsayılan
   `elle`; 17.10 temposu kodda), `saglayicilar/flow.py` `Kisitlandi(kod)`, `veri_emniyet.py` + `kurulum.py --veri-emniyet` (eskiler `_ESKI/`'ye).
@@ -53,14 +53,24 @@ model ve servis çağrısı yok). Adım başına ana araçlar:
   `capcut_film` v2, `taslak_fark`, `capcut_yama`, `notlari_oku`, `renk_cila`, `buyut`, `arsivle.py`, `kurulum_kur3`.
 - **17 PR-13 yayın ve öğrenme:** `jenerik`, `shorts_mp4`, `yayin_paketi`, `yayin_analiz` (CSV), `kanal_teshis` (CSV), `ders_derle`,
   `ders_yedekle`, `evren_film_sonu` (`--film-sonu`, `--yedekle`, `--yedek-dogrula`).
+- **18 PR-14 kullanıcı yüzü ve CI:** §6.9'un bütün `.bat`'ları (`bat_yenile.py`: depo kökünde + `TELEGRAM_TEST`, `YOUTUBE_BAGLA`;
+  film klasöründe + `DURUM`, `VIDEO_GECE`, `ARSIVLE`, `YUKLE`; işleri `bat_isleri.py`'de. `VIDEO_GECE` yalnız gece izni + ölçülmüş Flow
+  kapasitesiyle düşünülür ve gece döngüsü `film.py video`'ya bağlanana kadar yalnız bilgi verir; `YOUTUBE_BAGLA`/`YUKLE` P2 bilgisi).
+  `BASLA_BURADAN.txt` son kullanıcı rehberi (§8.1 kartı + §8.2–8.5); kartı `kullanici_karti.py` `olcek.kart_md()`'den yazar
+  (`--yaz`, `--denetle`; girdiler sabit: 1800 sn, ölçüm yok). `00_BENI_OKU.txt`. `paketle.py` künye (`KUNYE.txt`, `LISANSLAR.json`'dan)
+  + sızıntı taraması (anahtar dosyaları okunmaz; zip içinde gizli adlı dolu girdi, profil, anahtar biçimli dizi → paket reddedilir,
+  silinmez, gizli `AYARLAR/_REDDEDILEN_PAKET/`'e taşınır). CI `.github/workflows/testler.yml`: `windows-latest` Py 3.10, `ubuntu-latest`
+  Py 3.10 ve 3.13; numpy, Pillow, PyYAML + ffmpeg; takım `testler/kos.py` ile modül/sınıf başına paralel süreçte (tek süreçte de
+  `python -m unittest discover -s ARACLAR/testler` aynı testleri koşar). `test_kullanici_yuzu`.
+  Bat ya da kart değişince: `python YZ_FILM/ARACLAR/kullanici_karti.py --yaz` (eşik dosyası değişirse kart testi bunu ister).
 
 **Bekleyen adımlar:**
 - **2 İlk yerel oturum** (aşağıda §İlk yerel oturum; kullanıcı `ilk kurulum` yazınca): veri kökü emniyeti, memmet3 aktarımı, Ö0-a.
 - **9 Ö0-1 yerel ölçümler** (b, c, d, e, g): `olcum0/` betikleri ve `film.py olcum0` **henüz depoda yok** (Ö0-a'nın `olcum0/kanca_deneme/`'si dahil).
 - **11 İlk filmin kâğıt aşaması** (gerçek ajanlarla A00–A09, yerel).
 - **12a Ö0-2 ölçümleri** (f, h, Ö0-b·V3).
-- **18 Kullanıcı yüzü ve CI:** kalan `.bat`'lar, `BASLA_BURADAN.txt` sözleşme kartı, `paketle.py` künye, CI (`windows-latest` + `ubuntu-latest`).
-- **19 İlk filmin yerel üretimi** (A10–A18).
+- **19 İlk filmin yerel üretimi** (A10–A18); burada gece kipi (`VIDEO_GECE.bat` → `film.py video --mod gece`, ölçülen kapasitenin
+  %80'i tavanıyla) bağlanır. CI'nın ilk gerçek Windows koşusu da henüz görülmedi (iş akışı bulutta yazıldı, yerelde 3.10 + 3.13 yeşil).
 
 **Bilinen açık riskler:**
 - Flow kapasitesi ölçülmedi (Ö0-b yok): `olcek.py`/BUT0 ölçüm olmadan her zaman **1800 sn** seçer; takvim tahminidir.

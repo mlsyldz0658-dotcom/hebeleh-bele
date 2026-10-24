@@ -1029,7 +1029,8 @@ def film_py(*arg, zaman_asimi=20):
 
 def o0a_var():
     y = yollar(); v = y.get("veri_kok")
-    return any(os.path.isfile(p) for p in ([os.path.join(v, "O0a.json"), os.path.join(v, "OLCUM0", "O0a.json")] if v else []))
+    return any(os.path.isfile(p) for p in ([os.path.join(v, "BILGI", "OLCUM0", "O0a.json"), os.path.join(v, "O0a.json"),
+                                            os.path.join(v, "OLCUM0", "O0a.json")] if v else []))
 
 
 def k_oturum_basi(g):

@@ -4,7 +4,9 @@ Kullanıcının isteğe bağlı, tek seferlik YouTube Studio dışa aktarımı (
 BASLA_BURADAN.txt'de) <veri>/GELENLER/KANAL/ klasörüne konur. Soru sorulmaz; veri yoksa sonuç "ölçülemedi"dir, film beklemez.
 Kullanım:
   python kanal_teshis.py [--csv <dosya.csv> ...] [--klasor <klasör>]
+  python kanal_teshis.py durum          salt okunur: O0g.json var mı
 Çıktı: <veri>/BILGI/KANAL_TESHIS.md (insan için; yapımcı ve yayin-paketcisi okur) + KANAL_TESHIS.json (yayin_analiz kanal ortalaması).
+  Ö0-g kaydı: <veri>/BILGI/OLCUM0/O0g.json + OLCUM0.json "O0g" (olcum0/ortak_o0; veri yoksa olculemedi: true, engeller: false).
 Teşhis (video başına ve kanal ortalaması): keşif (gösterim az) · paketleme (gösterim tıklama oranı düşük) · film (ortalama izlenme
   yüzdesi düşük). Sınırlar (tahmin; ilk filmlerle kalibre edilir): gösterim < 1000, TO < %4, izlenme < %30.
 CSV okuma esnektir: İngilizce ve Türkçe Studio başlıkları tanınır (Video title / Video başlığı, Impressions / Gösterimler,
@@ -180,8 +182,37 @@ def _metin_yaz(p, m):
     os.replace(p + ".tmp", p)
 
 
+def o0g_govdesi(t):
+    """Ö0-g sonucu (O0g.json): veri yoksa 'ölçülemedi' — film başlamasını hiçbir zaman engellemez (TASARIM §1.2 Ö0-g)."""
+    olc = t["genel_teshis"] == "ölçülemedi"
+    return {"durum": "bitti", "olculemedi": olc, "genel_teshis": t["genel_teshis"], "video_sayisi": t["video_sayisi"],
+            "kanal_ortalama": t["kanal_ortalama"], "trafik": t["trafik"], "dosyalar": t["dosyalar"], "engeller": False,
+            "rapor": "BILGI/KANAL_TESHIS.md",
+            "neden": "YouTube Studio CSV'si yok (GELENLER/KANAL/); isteğe bağlı" if olc else None}
+
+
+def o0g_yaz(t):
+    """olcum0/ortak_o0 ile O0g.json + OLCUM0.json "O0g" bölümü. Ö0 yazıcısı yoksa ya da yazamazsa sessizce geçer (Ö0-g engellemez)."""
+    try:
+        sys.path.insert(0, os.path.join(HERE, "olcum0"))
+        import ortak_o0 as o0
+        g = o0g_govdesi(t)
+        o0.yaz("g", g, ozet={k: g[k] for k in ("durum", "olculemedi", "genel_teshis", "video_sayisi", "engeller")}, arac=SURUM)
+        o0.deneme("g", "kanal_teshisi_csv", {"video": t["video_sayisi"]}, t["genel_teshis"],
+                  "veri yok → ölçülemedi; film beklemez" if g["olculemedi"] else "YouTube Studio CSV (D-24)")
+        return g
+    except Exception as e:
+        print(f"(Ö0-g kaydı yazılamadı: {type(e).__name__}; KANAL_TESHIS.md yeterli)")
+        return None
+
+
 def main(a):
     if "-h" in a or "--help" in a: print(__doc__); return BITTI
+    if a[:1] == ["durum"]:                                               # salt okunur (film.py olcum0 calis g durum)
+        try: v = ortak.json_oku(os.path.join(ortak.yollar()["veri_kok"], "BILGI", "OLCUM0", "O0g.json"), None)
+        except ortak.YolYok: v = None
+        print(json.dumps({"olcum": "Ö0-g", "durum": "bitti" if v else "yok", "olculemedi": (v or {}).get("olculemedi")}, ensure_ascii=False))
+        return BITTI
     try:
         y = ortak.yollar(); veri = y["veri_kok"]
         dos = [a[i + 1] for i, x in enumerate(a) if x == "--csv" and i + 1 < len(a)]
@@ -190,6 +221,7 @@ def main(a):
         t = teshis(dos)
         ortak.atomik_yaz(os.path.join(veri, "BILGI", "KANAL_TESHIS.json"), t)
         _metin_yaz(os.path.join(veri, "BILGI", "KANAL_TESHIS.md"), md(t))
+        o0g_yaz(t)
         print(f"Kanal teşhisi: {t['genel_teshis']} ({t['video_sayisi']} video) → BILGI/KANAL_TESHIS.md")
         return BITTI
     except ortak.YolYok as e:

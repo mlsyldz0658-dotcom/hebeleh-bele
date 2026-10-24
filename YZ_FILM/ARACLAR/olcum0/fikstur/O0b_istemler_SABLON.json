@@ -1,0 +1,108 @@
+{
+ "_UYARI": "ŞABLON / ÖRNEK — GERÇEK ÖLÇÜMDE KULLANILAMAZ. Kareler ve SHA1'ler uydurmadır. Gerçek 45 istemlik O0b_istemler_v1.json ilk yerel oturumda B3 karelerinden elle yazılır (olcum0/BENIOKU.md).",
+ "_sema": "O0b_istemler",
+ "fikstur_surum": "v1",
+ "sablon": true,
+ "yazar": "şablon (bulut geliştirme oturumu)",
+ "tarih": "2026-10-24",
+ "kaynak": {
+  "b3_kok": "<B3 klasörü — örnek>",
+  "kare_listesi": "örnek"
+ },
+ "istemler": [
+  {
+   "id": "O0B-001",
+   "gun": 1,
+   "deney": "ab",
+   "kollar": {
+    "istem_bicimi": "aralik",
+    "bekleme": "holds still",
+    "son_kare_ref": "yok",
+    "zincir_kare": null
+   },
+   "b3_plan": 12,
+   "kare": "SIRALI_GORSEL/012.jpg",
+   "kare_sha1": "0123456789abcdef",
+   "b3_denetim": "iki_tur_gecti",
+   "istem": "Static medium shot, the camera does not move. 0.5-3s: the hunter woman lifts her right hand and rests it flat on the wooden table. 3-6s: she turns her head toward the window on her left. 6-8s: she holds still. No music.",
+   "adimlar": [
+    {
+     "bas": 0.5,
+     "bit": 3.0,
+     "metin": "lifts her right hand and rests it flat on the wooden table"
+    },
+    {
+     "bas": 3.0,
+     "bit": 6.0,
+     "metin": "turns her head toward the window on her left"
+    }
+   ],
+   "klip_sn": 8,
+   "not": "örnek: aralik × holds still"
+  },
+  {
+   "id": "O0B-002",
+   "gun": 1,
+   "deney": "ab",
+   "kollar": {
+    "istem_bicimi": "sira",
+    "bekleme": "holds the pose, breathing",
+    "son_kare_ref": "yok",
+    "zincir_kare": null
+   },
+   "b3_plan": 17,
+   "kare": "SIRALI_GORSEL/017.jpg",
+   "kare_sha1": "fedcba9876543210",
+   "b3_denetim": "iki_tur_gecti",
+   "istem": "Static medium shot, the camera does not move. First the old blacksmith sets the hammer down on the anvil with his right hand, then he wipes his forehead with the back of his left hand. Then he holds the pose, breathing. No music.",
+   "adimlar": [
+    {
+     "bas": 0.5,
+     "bit": 3.5,
+     "metin": "sets the hammer down on the anvil with his right hand"
+    },
+    {
+     "bas": 3.5,
+     "bit": 6.5,
+     "metin": "wipes his forehead with the back of his left hand"
+    }
+   ],
+   "klip_sn": 8,
+   "not": "örnek: sira × holds the pose, breathing"
+  },
+  {
+   "id": "O0B-003",
+   "gun": 2,
+   "deney": "zincir",
+   "kollar": {
+    "istem_bicimi": "aralik",
+    "bekleme": "holds still",
+    "son_kare_ref": "var",
+    "zincir_kare": "dogal_1280x720"
+   },
+   "b3_plan": 13,
+   "kare": null,
+   "kare_sha1": null,
+   "b3_denetim": null,
+   "istem": "Static medium shot, the camera does not move. 0.5-3s: the hunter woman stands up from the wooden table. 3-6s: she walks two slow steps toward the window. 6-8s: she holds still. No music.",
+   "adimlar": [
+    {
+     "bas": 0.5,
+     "bit": 3.0,
+     "metin": "stands up from the wooden table"
+    },
+    {
+     "bas": 3.0,
+     "bit": 6.0,
+     "metin": "walks two slow steps toward the window"
+    }
+   ],
+   "klip_sn": 8,
+   "zincir": {
+    "kaynak": "O0B-001",
+    "kare_sn": 6.5
+   },
+   "not": "örnek: zincir; başlangıç karesi O0B-001 klibinin 6,5. saniyesinden (doğal 1280×720)"
+  }
+ ]
+}

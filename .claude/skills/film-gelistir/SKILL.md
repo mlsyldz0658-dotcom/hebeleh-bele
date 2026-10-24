@@ -41,11 +41,18 @@ kullanıcıdan yalnız fiziksel iş istenir. Python mutlak yolla çağrılır.
 3. memmet3-aktar (aşağıda).
 4. olcum0-a (aşağıda).
 ## 4. olcum0-a (Ö0-a: Claude Code davranışları)
-1. YZ_FILM/ARACLAR/olcum0/kanca_deneme/ kancalarını GEÇİCİ settings.local.json ile kur (asıl settings.json'a dokunma).
-2. TASARIM §10.3'teki 20 davranışı tek tek sına; her biri "çalışıyor / çalışmıyor + seçilen yedek" ile kapanır.
-3. <veri>/BILGI/OLCUM0/O0a.json'u yaz; geçici ayarı geri al (eski hâli _ESKI/'ye taşı, silme).
-4. Kanca nabzı çalışmıyorsa PR-3 birleştirilmez; erişim kancası güvenilmezse kör roller başsız claude -p yedeğine geçer (D-11, §10.3 #19).
-olcum0/ henüz depoda yoksa bu adım atlanır, O0a.json yazılmaz ve bu tek cümleyle söylenir.
+Koşucu: K = python YZ_FILM/ARACLAR/olcum0/kanca_deneme/o0a_kos.py (Python mutlak yolla; asıl settings.json'a HİÇ yazmaz).
+1. K kur → deneme kancaları GEÇİCİ settings.local.json'a EKLENİR (var olan yedeklenir), geçici o0a-sonda ajanı ve becerisi kurulur.
+   Kullanıcıdan tek fiziksel iş: Claude Code'u kapatıp aynı klasörde yeniden açmak (kancalar açılışta yüklenir).
+2. K sira → sıradaki davranışın yönergesi; yönergeyi AYNEN uygula, sonra K degerlendir <no>. Elle bilgi gerekirse
+   K kaydet <no> --alan ad=değer (ya da --sonuc calisiyor|calismiyor). K otomatik: #8 kanca süresi ve #19 başsız claude -p.
+   #11 en sondadır (kullanıcı Claude'u kapatır, `claude --continue "devam"` ile açar). #20 bir bulut oturumunda gözlenir.
+3. K bitir → <veri>/BILGI/OLCUM0/O0a.json (her davranış "çalışıyor / çalışmıyor + seçilen yedek"; ölçülmeyen "çalışmıyor + yedek")
+   ve geçici ayarı HER ZAMAN geri alır (kurulanlar <kayit>/_ESKI/'ye taşınır, silinmez). Çökme olursa: K geri_al
+   (süre dolunca SessionStart sondası da kendiliğinden geri alır). Deneme kuruluyken unittest koşma (geçici ajan/beceri test_adlar'ı kırar).
+4. Kanca nabzı çalışmıyorsa PR-3 birleştirilmez; erişim kancası güvenilmezse kör roller başsız claude -p yedeğine geçer (D-11, §10.3 #19);
+   o da tutmazsa talimat yalıtımı + habersizlik: dogrulanmadi BAYRAK, M12 ölçülemedi (O0a.json kararlar).
+olcum0/kanca_deneme/ depoda yoksa bu adım atlanır, O0a.json yazılmaz ve bu tek cümleyle söylenir.
 ## 5. memmet3-aktar
 1. Kullanıcının yerel memmet3 dosyasını (veri kökü emniyeti onu _ESKI/'ye taşıdıysa oradan) <veri>/GELISTIRME/memmet3/ altına KOPYALA.
 2. PR-0'ın bütün maddelerini uygula (D-02 a–g): her kipte uyarıda dur; elle kipindeki "sayfayı yenile, devam" yolunu ve gece kipindeki

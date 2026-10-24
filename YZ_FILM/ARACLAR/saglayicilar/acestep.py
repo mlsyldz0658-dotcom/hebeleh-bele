@@ -28,7 +28,15 @@ class AceStep(Saglayici):
 
     def kopru(self): return os.path.join(ARACLAR, "kopru", "acestep_kopru.py")
 
+    def o0c_dustu(self):
+        """Ö0-c: 4 GB kartta ipucu süresi kabul edilemediyse (ya da çalışmadıysa) acestep zincirden düşer (D-25; O0c.json acestep_zincirde)."""
+        import ortak
+        try: o = ortak.json_oku(os.path.join(ortak.yollar()["veri_kok"], "BILGI", "OLCUM0", "O0c.json"), {}) or {}
+        except ortak.YolYok: return False
+        return o.get("acestep_zincirde") is False
+
     def hazir(self):
+        if self.o0c_dustu(): return False, "Ö0-c: ACE-Step 4 GB kartta kabul edilemedi; zincirden düştü (kutuphane ana basamak, D-25)"
         py = self._py()
         if not (py and os.path.exists(py)): return False, "KUR3 ACE-Step ortamı yok (YOLLAR.json ortamlar.acestep)"
         if not os.path.exists(self.kopru()): return False, "ACE-Step köprüsü yok (kopru/acestep_kopru.py; P1)"

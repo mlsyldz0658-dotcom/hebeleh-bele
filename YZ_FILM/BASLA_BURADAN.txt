@@ -1,30 +1,163 @@
-YZ FİLM SETİ — ŞU AN NE DURUMDA? (24.10.2026)
-=============================================
+YZ FİLM SETİ — BAŞLA BURADAN
+============================
 
-Kısaca: Yeni film seti hazırlanıyor ve bitirilmek üzere. Henüz film çekmeye hazır değil.
-Şimdilik senin yapman gereken bir şey YOK.
+ESKİ YOLLAR EMEKLİ: MEMMET_BASLAT, MEMMET_SADECE_..., CAPCUT_PROJESI_OLUSTUR, FILM_HATTI ve YENI_FILM .bat'larını artık açma.
+Silinmediler, _ESKI klasörüne taşındılar (Masaüstündeki YZ_FILM'de kalanlar da ilk kurulumda _ESKI'ye taşınır).
+Eski anlatım: _ESKI\BASLA_BURADAN_eski_anlatim.txt (artık geçerli değil).
 
-1) YENİ SET HAZIRLANIYOR
-   Konudan bitmiş filme kadar kendi kendine yürüyen yeni sistem yazıldı ve denendi.
-   Ama denemeler yalnız "sahte" çalışmalarla yapıldı: gerçek Flow, gerçek ses ve gerçek
-   yapay zekâ henüz senin bilgisayarında denenmedi. Bu yüzden henüz film başlatma.
+KISACA
+  Sen yalnız filmin KONUSUNU söylersin (bir cümle). Gerisini ekip yapar ve sana "hangisi?" diye sormaz.
+  Senden yalnız elle yapılması gereken birkaç iş istenir (Flow'da GÖNDER'e basmak, bir klasörü Gemini'ye vermek gibi).
+  Bu işler ve tahmini sayıları aşağıdaki kartta yazılı.
 
-2) ESKİ .BAT'LAR EMEKLİ
-   Eski MEMMET_BASLAT, MEMMET_SADECE_..., CAPCUT_PROJESI_OLUSTUR, FILM_HATTI ve YENI_FILM
-   .bat'ları artık kullanılmıyor. Silinmedi: bu klasördekiler _ESKI klasörüne taşındı;
-   Masaüstündeki YZ_FILM klasöründe kalanlar da ilk kurulumda aynı şekilde _ESKI'ye taşınacak.
-   Lütfen onları çalıştırma.
-   Eski anlatım da kaybolmadı: _ESKI\BASLA_BURADAN_eski_anlatim.txt (artık geçerli değil).
+ŞU AN NE DURUMDA?
+  Set yazıldı ve "sahte" denemelerle sınandı. Sıradaki adım senin bilgisayarında İLK KURULUM (aşağıda Bölüm 2, adım 0b).
+  Ondan sonra ilk ölçüm turu ve ilk film gelir. Gerçek Flow, gerçek ses ve gerçek yapay zekâ henüz senin bilgisayarında denenmedi.
 
-3) SIRADAKİ ADIM: İLK KURULUM (zamanı sana haber verilecek)
-   Hazır olunca sana haber verilecek. O gün yapacağın şey kısa olacak:
-   Claude masaüstü uygulamasında Code sekmesini bu klasörde açıp yalnız şunu yazacaksın:
-       ilk kurulum
-   Gerisini Claude yapar; senden yalnız ekranda yazan fiziksel işler istenir.
-   Haber gelmeden bu adımı yapma.
+==========================================================================================================
+1) SÖZLEŞME KARTI — senden ne istenir, sistem ne yapmaz
+   (Sayılar elle yazılmadı: olcek.py hesapladı. 30 dakikalık ilk film için ve Flow'un günlük kapasitesi henüz
+   ölçülmeden yapılmış ihtiyatlı TAHMİNDİR. Her filmin başında güncel kart yeniden gösterilir.)
+==========================================================================================================
+----- SÖZLEŞME KARTI BAŞI (kullanici_karti.py yazar; elle değiştirme) -----
+SENDEN İSTENEN TEK KARAR: filmin konusu (bir cümle). Gerisini ekip karar verir; sana "hangisi?" diye sorulmaz.
+SENDEN İSTENEN FİZİKSEL İŞLER (30 dk'lık film için tahmini; film başında güncellenir):
+  • Flow'a Google ile giriş ve gerekirse "ben robot değilim" doğrulaması ............ kurulumda 1 kez + istendikçe
+  • Ücretsiz Gemini anahtarı almak ve AYARLAR'a koymak (filmi yayından önce bir "kulak"
+    dinlesin diye; para yok, soru değil) ................................................ kurulumda 1 kez (≈ 5–10 dk, tahmin)
+  • İlk kurulum ölçümü: 3 günde ≈ 10 / 15 / 20 video için GÖNDER (eski B3 planlarıyla
+    ölçüm; ≤ 540 kredi) ......................................................... yalnız ilk filmden önce
+  • Gemini paketlerini taşımak (klasörü Gemini'ye ver, gelen ZIP'i GELENLER'e at) ..... ≈ 15 paket (Gemini API bağlıysa 0)
+  • Video oturumları: VIDEO_YARI_OTOMATIK.bat'ı aç, Memmet hazırlayınca GÖNDER'e bas .. ≈ 457 kez, ≈ 46 gün, günde ≈ 0,2 saat (Flow'un günlük kapasitesi henüz ölçülmedi; ihtiyatlı varsayım)
+  • Görsel düzeltme oturumları (Flow görsel, aynı .bat; video günüyle aynı gün değil) .. ≈ 180 kez, ≈ 5–9 gün
+  • CapCut'ı kapatıp açmak (taslak güncellenince) ve sonunda 4K 24 fps dışa aktarmak .. ≈ 2–4 kez + 1 dışa aktarım
+  • Gemini müzik paketi (yalnız kütüphane yetmezse ve Gemini koşulları uygunsa) ....... ≈ 0 paket (çoğu filmde 0)
+  • D diskini takmak (arşiv ve yedek için, sistem isterse) ............................ ≈ 2 kez
+  • [arka plan uyandırması çalışmazsa (Ö0-a)] her işten sonra sohbete "tamam" yazmak ... ≈ 43 kez
+  • Flow uyarı verirse: GÖNDER'e BASMA, sayfayı YENİLEME; beklemek, en erken 30 dk
+    sonra elle 1 video denemek, UYARI_GECTI.bat ......................................... yalnız uyarı olursa
+  • Kredi biterse yüklemek ............................................................ yalnız gerekirse
+TAHMİNİ TOPLAM EL İŞİ: ≈ 17,4 saat · TAHMİNİ TAKVİM: ≈ 60–73 gün (Flow'un günlük güvenli kapasitesine bağlı; ölçülmedi)
+FLOW KREDİSİ: ≈ 5.478 kredi (taban 3.660 + kapı payı 1.098 + take 720); hesapta en az ≈ 6.087 olmalı.
+İSTERSEN (hiçbiri zorunlu değil, sistem beklemez): film hakkında not bırakmak (CapCut NOTLAR ya da sohbet), izinleri açmak (IZINLER.bat:
+gece çalışma, dolar harcama, Gemini'nin ücretli kullanımı, Flow kilitliyken Vertex, efekt indirme, YouTube bağlantısı, yükleme), kanal verisini
+YouTube Studio'dan CSV olarak vermek (adımlar bu dosyada).
+SİSTEM ASLA: Flow uyarısını atlatmaz, hızlandırmaz, sayfayı yenilemez, başka hesaba geçmez; anahtarlarını okumaz ya da yazdırmaz; dosya silmez
+(eski dosyaları _ESKI'ye taşır).
+----- SÖZLEŞME KARTI SONU -----
+
+==========================================================================================================
+2) BİR KEZ YAPILACAKLAR (KURULUM)
+==========================================================================================================
+  Veri klasörün Masaüstü\YZ_FILM olduğu gibi kalır. Set (programlar) Masaüstü\YZ_FILM_SET klasörüne iner.
+
+  0) Seti indir (yalnız bir kez):
+     - Bilgisayarında git yoksa önce git-scm.com'dan git'i kur (hep "Next" demen yeter).
+     - Başlat menüsüne "cmd" yaz, açılan siyah pencereye şu satırı yapıştır ve Enter'a bas:
+           git clone https://github.com/mlsyldz0658-dotcom/hebeleh-bele "%USERPROFILE%\Desktop\YZ_FILM_SET"
+     - Bir GitHub giriş penceresi açılırsa (depo özelse açılır) kendi GitHub hesabınla gir.
+     - ZIP olarak İNDİRME: ZIP ile kurulan sette GUNCELLE.bat çalışmaz.
+
+  0b) İlk kurulum (bir kez, Claude ile):
+     - Claude masaüstü uygulamasında Code sekmesini aç, klasör olarak Masaüstü\YZ_FILM_SET'i seç ve yalnız şunu yaz:
+           ilk kurulum
+     - Claude eski dosyaları _ESKI'ye taşır (silmez) ve neleri taşıdığını sana söyler. Senden yalnız ekranda yazan
+       elle işler istenir. Bu oturumda film başlamaz, sana konu sorulmaz.
+
+  1) Masaüstü\YZ_FILM_SET\KURULUM.bat'a çift tıkla. Soru sormaz; sonunda "ÇALIŞIYOR / ÇALIŞMIYOR" listesi ve
+     yukarıdaki kart çıkar. Python yoksa ne yapacağını ekranda yazar (kurarken "Add python.exe to PATH" kutusunu işaretle).
+  2) Kurulum "git yok" derse git'i kur (adım 0) ve KURULUM.bat'a yeniden çift tıkla.
+  3) FLOW_GIRIS.bat: açılan Chrome'da Flow'a KENDİ Google hesabınla bir kez gir. "Ben robot değilim" çıkarsa kendin çöz.
+     Başka hesap kullanma.
+  3b) Ücretsiz Gemini anahtarı (para yok; filmi yayından önce bir "kulak" ve "göz" dinlesin diye):
+     - Google AI Studio'da (aistudio.google.com) faturalandırma AÇMADAN bir API anahtarı al.
+     - Masaüstü\YZ_FILM\AYARLAR\gemini_anahtar.txt dosyasının İLK SATIRINA yapıştır, kaydet.
+     - GEMINI_TEST.bat'a çift tıkla. Sistem yalnız dosyanın var olduğuna ve tarihine bakar; anahtarı okumaz, yazdırmaz.
+  4) (İsteğe bağlı) Telegram: bot anahtarını Masaüstü\YZ_FILM\AYARLAR\telegram_bot.txt'ye yaz (1. satır anahtar,
+     2. satır sohbet numarası), TELEGRAM_TEST.bat'a çift tıkla. Haberler telefonuna gelir; yoksa masaüstüne gelir.
+  5) (İsteğe bağlı) Kanal verisi: YouTube Studio → Analytics → sağ üstte "Gelişmiş mod" → "Dışa aktar" →
+     "Virgülle ayrılmış değerler (.csv)". İnen dosyayı Masaüstü\YZ_FILM\GELENLER\KANAL klasörüne koy. Yoksa da olur.
+  6) İlk ölçüm turu (ilk filmden önce, yalnız bir kez): 3 günde ≈ 10 / 15 / 20 video için GÖNDER'e basarsın
+     (ilk Flow uyarısında ölçüm biter), 1 Gemini paketi taşırsın, CapCut'ı bir kez kapatıp açarsın. Her iş sana ayrıca söylenir.
+  7) (Gerekirse) Ek kurulum için Windows izin penceresi açılırsa onayla (KUR3.bat; yalnız sistem isterse).
+
+==========================================================================================================
+3) HER FİLM
+==========================================================================================================
+  - Masaüstündeki FILM_SETI.bat'a çift tıkla ve filmin konusunu tek cümleyle yaz (ör. "ejderha yavrusunu saklayan
+    avcı kadın"). İstersen "sen seç" yaz. Senden başka karar istenmez.
+  - Sistem sana yalnız BİLGİ verir (soru sormaz): "Konu kartı hazır", "Senaryo kilitlendi", "Animatik geçti" gibi.
+  - Gemini paketi hazır olunca: söylenen klasörü Gemini'ye ver, gelen ZIP'i filmin GELENLER klasörüne at. Sistem ZIP'i
+    kendisi görür ve devam eder (görmezse sohbete "tamam" yaz).
+  - Video zamanı gelince: VIDEO_YARI_OTOMATIK.bat'ı aç. Memmet her istemi hazırlar, GÖNDER'e SEN basarsın.
+  - Animatik ve filmin ilk 3 dakikası hazır olunca haber gelir; izlemek ve not bırakmak isteğe bağlıdır.
+  - Taslak hazır olunca: CapCut'ı kapatıp aç; en üstteki "YZ <FİLM> vN" taslağı yenisidir. İstersen not bırak.
+  - Sonunda: CapCut'tan 4K 24 fps dışa aktar, dosyayı filmin YAYIN klasörüne koy. Kapak, YouTube metinleri,
+    fragman ve 3 Short da YAYIN klasöründe hazırlanır. YouTube'a yüklemeyi şimdilik sen yaparsın.
+  - Bir şey sormak istersen sohbete yaz ("ne durumda?", "neden durdu?"); sistem yalnız cevap verir.
+  - Not ya da şikâyet yazarsan ("şu sahne kopuk", "ses kaymış") ekip bunu düzeltme olarak işler.
+    Kendi CapCut taslağına dokunulmaz; düzeltilmiş taslak yeni adla gelir.
+
+  .BAT DOSYALARI (hepsi çift tıklanır)
+    Set klasöründe (Masaüstü\YZ_FILM_SET):
+      KURULUM.bat ............ kurulum (her zaman yeniden çalıştırılabilir; soru sormaz)
+      FILM_SETI.bat .......... Claude'u doğru klasörde açar (Masaüstünde de bir kopyası var)
+      GUNCELLE.bat ........... seti günceller; sende değişiklik görürse hiçbir şeye dokunmadan durur ve söyler
+      FLOW_GIRIS.bat ......... Flow'a Google ile giriş
+      GEMINI_TEST.bat ........ Gemini anahtar dosyasını dener (içeriği okumaz)
+      TELEGRAM_TEST.bat ...... Telegram bildirimini dener (isteğe bağlı)
+      IZINLER.bat ............ izin paneli (aşağıda)
+      UYARI_GECTI.bat ........ Flow uyarısından sonra (yalnız aşağıdaki 4. bölümdeki şartla)
+      KUR3.bat ............... ek ortam kurulumu (yalnız sistem isterse)
+      VIDEO_YARI_OTOMATIK.bat  video oturumu (GÖNDER'e sen basarsın; Masaüstünde de var)
+      VIDEO_TOPLA.bat ........ gönderilmiş videoları indirir (yeni gönderim yapmaz; Masaüstünde de var)
+      YOUTUBE_BAGLA.bat ...... henüz yok (sonraki sürüm); açarsan yalnız bilgi verir
+    Her film klasöründe:
+      DEVAM.bat .............. Claude kullanım sınırı açılınca filmi sürdürür
+      DURUM.bat .............. filmin ne durumda olduğunu yazar (hiçbir şey başlatmaz)
+      DURDUR.bat ............. filmi durdurur (yeni iş başlamaz); sürdürmek için DEVAM.bat
+      VIDEO_YARI_OTOMATIK.bat, VIDEO_TOPLA.bat  yukarıdakilerle aynı, o film için
+      VIDEO_GECE.bat ......... gece çalışma: yalnız sen izin verirsen ve Flow kapasitesi ölçüldükten sonra; şimdilik kapalı
+      NOTLARI_OKU.bat, KONTROL.bat  notları okutur / dosyaları denetler
+      ARSIVLE.bat ............ isteğe bağlı elle arşiv (sistem arşivi kendisi yapar; dosyalar D diskine TAŞINIR, silinmez)
+      YUKLE.bat .............. YouTube'a yükleme: henüz yok (sonraki sürüm)
+      FILM_DENEME_SAHTE.bat .. kredisiz deneme (sahte görsel/video/ses)
+
+  İZİNLER (IZINLER.bat) — hepsi VARSAYILAN KAPALI; yalnız sen açarsan açılır, sistem açmanı istemez:
+    gece Flow çalışması · film başına dolar tavanı (varsayılan 0 = para harcanmaz) · Gemini'nin ücretli kullanımı ·
+    Flow kilitliyken Vertex (ücretli) · ücretsiz (CC0) ses efekti indirme · YouTube bağlantısı · yükleme ·
+    "onaylı" kip (animatik, ilk 3 dakika ve taslakta seni bekler; varsayılan "tam otomatik" hiç beklemez).
+
+==========================================================================================================
+4) BİR ŞEY TERS GİDERSE
+==========================================================================================================
+  FLOW "OLAĞAN DIŞI ETKİNLİK" UYARISI VERİRSE
+    Sistem her durumda kendiliğinden DURUR ve sana ACİL haber verir. Sen:
+      - GÖNDER'e BASMA.  - Sayfayı YENİLEME.  - Başka hesaba GEÇME.  - Pencereyi olduğu gibi bırak.
+      - Bekle. En erken 30 dakika sonra Flow'da ELLE tek bir video dene.
+      - O video sorunsuz giderse UYARI_GECTI.bat'a çift tıkla (yalnız o gün geçerli; o gün sistem daha yavaş gider,
+        ertesi günün ilk bloğu elle yapılır). Video yine uyarı verirse hiçbir şey yapma; Claude'a haber ver.
+      - Aynı hafta ikinci uyarı gelirse Flow 7 gün kilitli kalır; bu sürede kâğıt ve yerel işler sürer.
+  "BEN ROBOT DEĞİLİM" / DOĞRULAMA / FLOW OTURUMU DÜŞTÜ
+    Sistem bekler ve haber verir. Doğrulamayı Memmet'in açık Chrome penceresinde kendin çöz (ya da FLOW_GIRIS.bat),
+    sonra VIDEO_YARI_OTOMATIK.bat'ı yeniden aç. Sistem kaldığı tempodan sürer.
+  KREDİ BİTTİ
+    Sistem "X kredi gerekiyor" der; kaliteyi düşürmez. İstersen kredi yükle; sistem bakiyeyi kendisi görür ve sürer.
+  CLAUDE KULLANIM SINIRI DOLDU
+    Sınır açılınca film klasöründeki DEVAM.bat'a çift tıkla ya da sohbete "devam" yaz.
+  DİSK DOLDU
+    Sistem eski ara dosyaları kendisi D diskine taşır. D takılı değilse "D'yi tak" der; takman yeter.
+  FLOW UZUN SÜRE KİLİTLİ
+    Video bekler, diğer işler sürer. İstersen IZINLER.bat'tan "Flow kilitliyken Vertex" iznini ve dolar tavanını verebilirsin.
+
+==========================================================================================================
+5) SENİN HİÇ YAPMADIKLARIN (ekip karar verir)
+==========================================================================================================
+  Senaryo onayı · karakter ve mekân görünüşü · ses kadrosu · müzik seçimi · plan, animatik ve kurgu onayı · kapak ve başlık
+  seçimi · yeniden çekim · film süresi · hangi servisin kullanılacağı. Hepsi filmin KARAR_DEFTERI.md dosyasında gerekçesiyle
+  yazılıdır. Merak edersen sohbete sor; itiraz edersen yaz — itirazın kesin istek sayılır ve uygulanır.
 
 DEĞİŞMEYEN KURALLAR
-   - Flow "olağan dışı etkinlik" ya da doğrulama (reCAPTCHA) uyarısı verirse sistem her zaman durur
-     ve sana haber verir. Başka hesaba geçilmez.
-   - AYARLAR klasöründeki anahtar dosyalarını kimseyle paylaşma.
-   - Hiçbir şey kalıcı silinmez; eskiler _ESKI klasörüne taşınır.
+  - Flow uyarısı ya da doğrulama olursa sistem her zaman durur ve sana haber verir; atlatmaya çalışmaz, başka hesaba geçmez.
+  - AYARLAR klasöründeki anahtar dosyalarını kimseyle paylaşma. Sistem onları okumaz, yazdırmaz.
+  - Hiçbir şey kalıcı silinmez; eskiler _ESKI klasörüne taşınır.

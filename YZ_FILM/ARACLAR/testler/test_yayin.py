@@ -10,7 +10,7 @@ Ağ yok, kredi yok. Medya fikstürleri ffmpeg ile üretilir (ffmpeg yoksa medya 
   - evren --film-sonu (yalnız ekleme, kanon ihlali HATA, tekrar çalıştırma değişiklik yok), --yedekle (kopya; silme yok; AYARLAR
     yedeğe girmez; sha1), --yedek-dogrula, D takılı değil → ertelendi; robocopy komutunda /MIR yok.
 """
-import os, sys, json, glob, shutil, unittest, unittest.mock, subprocess, datetime, tempfile
+import os, sys, json, glob, shutil, unittest, unittest.mock, subprocess, datetime, tempfile, hashlib, inspect, time
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
 import _ortam
@@ -32,7 +32,26 @@ def ff(*a):
 
 
 def medya_kur():
+    """Medya fikstürü (≈ 20 sn ffmpeg) süreç başına bir kez. kos.py modülü sınıf sınıf koşturunca YZ_TEST_ONBELLEK ortak klasöründe
+    bir kez kurulur, öbür süreçler bitmesini bekleyip aynı dosyaları kullanır (içerik aynı tarif; testler kopyasını alır)."""
+    global MEDYA
     if not FFMPEG or os.path.isfile(os.path.join(MEDYA, "iyi.mp4")): return
+    ortak_kok = os.environ.get("YZ_TEST_ONBELLEK")
+    if not ortak_kok: return _medya_uret(MEDYA)
+    hedef = os.path.join(ortak_kok, "yayin_medya_" + hashlib.sha1(inspect.getsource(_medya_uret).encode()).hexdigest()[:10])
+    kilit, tamam = hedef + ".kilit", os.path.join(hedef, "TAMAM")
+    try:
+        os.makedirs(kilit)                                   # atomik: kuran tek süreç
+    except FileExistsError:
+        bas = time.time()
+        while not os.path.isfile(tamam) and time.time() - bas < 600: time.sleep(0.5)
+        if os.path.isfile(tamam): MEDYA = hedef; return
+        return _medya_uret(MEDYA)                            # kuran süreç düştüyse kendi kopyası
+    os.makedirs(hedef, exist_ok=True); _medya_uret(hedef)
+    open(tamam, "w").close(); MEDYA = hedef
+
+
+def _medya_uret(MEDYA):
     v = ["-f", "lavfi", "-i", f"testsrc2=s=320x180:r=24:d={SURE}", "-f", "lavfi", "-i", f"anoisesrc=d={SURE}:c=pink:r=48000:a=0.3"]
     enc = ["-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000"]
     ff(*v, "-filter_complex", "[1:a]loudnorm=I=-13.2:TP=-2.5:LRA=7,alimiter=limit=0.65:level=disabled[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "iyi.mp4"))

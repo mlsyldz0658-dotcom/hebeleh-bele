@@ -1,0 +1,35 @@
+{
+ "_aciklama": "Ö0-b istem fikstürünün şeması (TASARIM §1.2 Ö0-b). Denetleyici: fikstur_denetim.py. Gerçek dosya O0b_istemler_v1.json ilk yerel oturumda B3'ün iki tur denetimden geçmiş P1 karelerinden geliştirici Claude tarafından ELLE yazılır (olcum0/BENIOKU.md). Bu dosya JSON Schema değildir; alanları Türkçe tarif eder.",
+ "_sema": "O0b_istemler (sabit)",
+ "fikstur_surum": "v<N> (v1, v2 …). İstem metni değişirse yeni sürüm, yeni dosya; eskisi silinmez (_ESKI/).",
+ "sablon": "true = şablon/örnek (flow_deneme gerçek ölçümde REDDEDER) · false = gerçek fikstür (tam 45 istem)",
+ "yazar": "metin (ör. 'geliştirici Claude, ilk yerel oturum')",
+ "tarih": "YYYY-AA-GG",
+ "kaynak": {
+  "b3_kok": "bilgi: B3 klasörünün yeri (ölçümde flow_deneme hazirla --b3-kok ile verilir)",
+  "kare_listesi": "bilgi: hangi B3 P1 kareleri"
+ },
+ "istemler": [
+  {
+   "id": "O0B-NNN (001..045, tekrarsız)",
+   "gun": "1 | 2 | 3 — merdiven basamağı (o0b_gun_tavanlari 10/15/20); gün N'de tam o kadar istem (gerçek fikstürde)",
+   "deney": "ab | zincir",
+   "kollar": {
+    "istem_bicimi": "aralik ('0.5-3s: …' kalıbı istemde şart) | sira (aralık kalıbı yasak; 'First … then …')",
+    "bekleme": "'holds still' | 'holds the pose, breathing' (istem metninde BİREBİR geçer)",
+    "son_kare_ref": "ab: 'yok' · zincir: 'var' (başlangıç karesi = kaynak klibin gerçek karesi) | 'yok' (B3'ün planlı karesi)",
+    "zincir_kare": "ab ve son_kare_ref 'yok': null · son_kare_ref 'var': 'dogal_1280x720' | '1376x774_kirp3' (TASARIM Ç7)"
+   },
+   "b3_plan": "B3 plan numarası (bilgi)",
+   "kare": "ab ve zincir/yok: B3 kök klasörüne göre başlangıç karesi yolu (ör. SIRALI_GORSEL/012.jpg)",
+   "kare_sha1": "o karenin SHA1'i (≥ 8 hane, küçük hex)",
+   "b3_denetim": "'iki_tur_gecti' (yalnız eski iki tur denetimden geçmiş P1 kareleri)",
+   "istem": "Flow'a giden İngilizce hareket istemi, olduğu gibi (filtre/risk/yaş kelimesi YASAK; politika reddini kasıtlı tetikleyebilecek hiçbir şey yok)",
+   "adimlar": "[{bas, bit, metin}] 2–3 adım; ilk bas ≥ 0,5; son bit ≤ 7,0 (D-13); Ö0-b·V3 adım tutmayı bunlarla ölçer",
+   "klip_sn": "8 (sabit)",
+   "zincir": "yalnız deney 'zincir': {kaynak: 'O0B-NNN' (daha önceki GÜNDEKİ bir ab istemi), kare_sn: zincir karesinin saniyesi (son adım bitişi + 0,2 … 7,5; yalnız son_kare_ref 'var')}",
+   "not": "serbest metin (isteğe bağlı)"
+  }
+ ],
+ "onerilen_dagilim": "45 = gün 1: 10 ab · gün 2: 14 ab + 1 zincir(yok) · gün 3: 20 zincir. ab 24 = 2×2 hücre başına 6 (her kol 12). zincir 21: var 12 (doğal 6, kırpma 6) + yok 9. Kol başına < 12 olan A/B 'ölçülemedi → varsayılan' olur (bilerek kabul)."
+}

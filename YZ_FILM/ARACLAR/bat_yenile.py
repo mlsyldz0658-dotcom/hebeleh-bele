@@ -29,9 +29,10 @@ import ortak
 IM = "rem yz_film_set:bat_yenile"
 YASAK = "..\\..\\ARACLAR"
 DEPO_KOKU = ("FILM_SETI.bat", "GUNCELLE.bat", "FLOW_GIRIS.bat", "IZINLER.bat", "UYARI_GECTI.bat", "GEMINI_TEST.bat", "KUR3.bat",
-             "VIDEO_YARI_OTOMATIK.bat", "VIDEO_TOPLA.bat")
-FILM_KLASORU = ("DEVAM.bat", "DURDUR.bat", "KONTROL.bat", "NOTLARI_OKU.bat", "FILM_DENEME_SAHTE.bat", "VIDEO_YARI_OTOMATIK.bat",
-                "VIDEO_TOPLA.bat")
+             "TELEGRAM_TEST.bat", "YOUTUBE_BAGLA.bat", "VIDEO_YARI_OTOMATIK.bat", "VIDEO_TOPLA.bat")
+FILM_KLASORU = ("DEVAM.bat", "DURUM.bat", "DURDUR.bat", "KONTROL.bat", "NOTLARI_OKU.bat", "FILM_DENEME_SAHTE.bat",
+                "VIDEO_YARI_OTOMATIK.bat", "VIDEO_GECE.bat", "VIDEO_TOPLA.bat", "ARSIVLE.bat", "YUKLE.bat")
+P2 = ("YOUTUBE_BAGLA.bat", "YUKLE.bat")    # TASARIM §6.9 P2: üretilir, yalnız "henüz yok" bilgisini verir (bat_isleri.py)
 MASAUSTU = ("FILM_SETI.bat", "VIDEO_YARI_OTOMATIK.bat", "VIDEO_TOPLA.bat")   # masaüstüne de kopyalanır (aktif filmle çalışır)
 SABIT = ("KURULUM.bat",)          # depoya işlenmiş; üretilmez
 
@@ -73,6 +74,8 @@ def depo_batlari(python=None, araclar=None, depo=None):
         "UYARI_GECTI.bat": _metin("UYARI_GECTI.bat", [c("flow_yuk.py", "--uyari-gecti"), dur], '"%~dp0"'),
         "GEMINI_TEST.bat": _metin("GEMINI_TEST.bat", [bi("gemini-test"), dur], '"%~dp0"'),
         "KUR3.bat": _metin("KUR3.bat", [bi("kur3"), dur], '"%~dp0"'),
+        "TELEGRAM_TEST.bat": _metin("TELEGRAM_TEST.bat", [bi("telegram-test"), dur], '"%~dp0"'),
+        "YOUTUBE_BAGLA.bat": _metin("YOUTUBE_BAGLA.bat", [bi("youtube-bagla"), dur], '"%~dp0"'),
         "VIDEO_YARI_OTOMATIK.bat": _metin("VIDEO_YARI_OTOMATIK.bat", [bi("video-yari"), dur], '"%~dp0"'),
         "VIDEO_TOPLA.bat": _metin("VIDEO_TOPLA.bat", [bi("video-topla"), dur], '"%~dp0"'),
     }
@@ -85,12 +88,16 @@ def film_batlari(python=None, araclar=None, depo=None):
     return {
         "DEVAM.bat": _metin("DEVAM.bat", [bi("devam", f), "if errorlevel 1 (", "  pause", "  exit /b 4", ")",
                                           f'cd /d "{_bat(depo)}"', 'claude --continue "devam"'], None),
+        "DURUM.bat": _metin("DURUM.bat", [bi("durum", f), "pause"], None),
         "DURDUR.bat": _metin("DURDUR.bat", [bi("durdur", f), "pause"], None),
         "KONTROL.bat": _metin("KONTROL.bat", [c("kontrol.py", f), "pause"], None),
         "NOTLARI_OKU.bat": _metin("NOTLARI_OKU.bat", [c("notlari_oku.py", f), "pause"], None),
         "FILM_DENEME_SAHTE.bat": _metin("FILM_DENEME_SAHTE.bat", [bi("film-deneme", f), "pause"], None),
         "VIDEO_YARI_OTOMATIK.bat": _metin("VIDEO_YARI_OTOMATIK.bat", [bi("video-yari", f), "pause"], None),
+        "VIDEO_GECE.bat": _metin("VIDEO_GECE.bat", [bi("video-gece", f), "pause"], None),
         "VIDEO_TOPLA.bat": _metin("VIDEO_TOPLA.bat", [bi("video-topla", f), "pause"], None),
+        "ARSIVLE.bat": _metin("ARSIVLE.bat", [c("arsivle.py", "--film", f), "pause"], None),
+        "YUKLE.bat": _metin("YUKLE.bat", [bi("yukle", f), "pause"], None),
     }
 
 

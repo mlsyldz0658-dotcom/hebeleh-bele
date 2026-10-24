@@ -1,0 +1,45 @@
+{
+ "_aciklama": "Ö0-a GEÇİCİ deneme ayarı şablonu (o0a_kos.py kur doldurur ve var olan settings.local.json ile BİRLEŞTİRİR; o0a_kos.py bitir/geri_al eski hâline döndürür). Yalnız EKLER: gerçek kancalar (.claude/settings.json) aynen koşar; deny listesi ve güvenlik kancaları değişmez. Yer tutucular: {{PY}} mutlak Python (ileri eğik çizgi), {{SONDA}} o0a_sonda.py, {{KAYIT}} kayıt klasörü, {{YAZMA}} veri kökündeki deneme yazma klasörü (#7).",
+ "env": {"O0A_SONDA_ENV": "1", "O0A_KAYIT": "{{KAYIT}}"},
+ "permissions": {
+  "additionalDirectories": ["{{YAZMA}}"],
+  "allow": ["Bash(\"{{PY}}\" \"{{SONDA}}\" isaret *)"]
+ },
+ "hooks": {
+  "SessionStart": [{"matcher": "startup|resume|clear|compact", "hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" oturum_basi --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "UserPromptSubmit": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" istem --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "PreToolUse": [
+   {"matcher": "Bash|PowerShell", "hooks": [
+    {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" komut --giris A --kayit \"{{KAYIT}}\"", "timeout": 2, "onFailure": "block"},
+    {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" komut --giris B --kayit \"{{KAYIT}}\"", "timeout": 2},
+    {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" komut --giris C --kayit \"{{KAYIT}}\"", "timeout": 10},
+    {"type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/YZ_FILM/ARACLAR/olcum0/kanca_deneme/o0a_sonda.sh\" komut --giris bash --kayit \"{{KAYIT}}\"", "timeout": 10}]},
+   {"matcher": "Agent|Task", "hooks": [
+    {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" ajan --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]},
+   {"matcher": "Read|Write|Edit|MultiEdit|Glob|Grep", "hooks": [
+    {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" erisim --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}
+  ],
+  "PostToolUse": [{"matcher": "Agent|Task|Bash|PowerShell", "hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" arac_sonrasi --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "SubagentStart": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" ajan_basi --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "SubagentStop": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" ajan_bitti --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 30}]}],
+  "Stop": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" stop --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "StopFailure": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" hata --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "PreCompact": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" ozet_once --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "PostCompact": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" ozet_sonra --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "PostModelSwitch": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" model --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "Notification": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" bildirim --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}],
+  "PermissionRequest": [{"hooks": [
+   {"type": "command", "command": "\"{{PY}}\" \"{{SONDA}}\" izin_istegi --giris mutlak --kayit \"{{KAYIT}}\"", "timeout": 10}]}]
+ }
+}

@@ -16,6 +16,12 @@ Kullanım (her .bat tek bir alt komut çağırır; bat_yenile.py üretir):
                                                  film.py video açmaz (UYARI_GECTI.bat'a kadar). Açık VG görevi yoksa hiçbir şey açılmaz (2).
   python bat_isleri.py video-topla [<film>]      VIDEO_TOPLA.bat: memmet_topla.py <film> (yeni gönderim YOK; yalnız gönderilmişleri indirir)
   python bat_isleri.py kur3 [--kuru]             KUR3.bat: KUR3 kartını gösterir, kullanıcıya SORAR; "E" derse kurulum.py --kur3 --onay
+  python bat_isleri.py durum <film>              DURUM.bat: film.py ozet --kullanici (salt okunur)
+  python bat_isleri.py video-gece <film>         VIDEO_GECE.bat: yalnız gece izni + ölçülmüş Flow kapasitesiyle; gece döngüsü henüz bağlı
+                                                 değil → bilgi (4); hiçbir durumda gönderim yok
+  python bat_isleri.py telegram-test             TELEGRAM_TEST.bat: bildirim.py --test (anahtar yazdırılmaz)
+  python bat_isleri.py youtube-bagla | yukle <film>   YOUTUBE_BAGLA.bat / YUKLE.bat (P2): yalnız "henüz yok" bilgisi (4)
+  ARSIVLE.bat doğrudan arsivle.py --film <film> çağırır (isteğe bağlı elle arşiv; D-38).
 
 GUNCELLE kuralları ([SON] O-5, D-12): .git yoksa (ZIP kurulumu) kapalıdır, bilgi verir (4). İzlenen dosyada yerel değişiklik, yerel commit
 (ileri dal) ya da gelen değişikliğin üzerine yazacağı izlenmeyen/yok sayılan bir dosya varsa HİÇBİR ŞEYİ taşımadan durur, tek cümle söyler (2).
@@ -322,6 +328,57 @@ def kur3(kuru=False, sor=None, yaz=print):
     return subprocess.call([_python(), os.path.join(ortak.ARACLAR, "kurulum.py"), "--kur3", "--onay"])
 
 
+# ---------------------------------------------------------------- kalan .bat'lar (adım 18)
+def durum(film, yaz=print):
+    """DURUM.bat: filmin kısa özeti (film.py ozet --kullanici; salt okunur, hiçbir şey başlatmaz)."""
+    f = _film_coz(film)
+    if not f: yaz("Film klasörü bulunamadı."); return KULLANICI
+    r = subprocess.run([_python(), os.path.join(ortak.ARACLAR, "film.py"), "ozet", "--film", f, "--kullanici", "--json"],
+                       capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+    try: m = (json.loads(r.stdout or "{}") or {}).get("ozet")
+    except ValueError: m = None
+    yaz(m or "Özet alınamadı; Claude'a 'ne durumda' diye sorabilirsin.")
+    yaz("Bu pencere yalnız bilgi verir; hiçbir şey başlatmaz. Sorun için sohbete yaz.")
+    return TAMAM
+
+
+def gece_kosullari():
+    """VIDEO_GECE.bat ön koşulları: (açılır_mı, neden). Gece kipi yalnız kullanıcının IZINLER.bat'tan verdiği gece izniyle VE Flow'un
+    günlük uyarısız kapasitesi ölçüldükten sonra (gece tavanı ölçülen kapasitenin %80'i; D-39) düşünülür."""
+    if not izin_oku()["izinler"].get("gece_flow"):
+        return False, "Gece çalışma izni kapalı (varsayılan). İstersen IZINLER.bat'tan açabilirsin; açmazsan VIDEO_YARI_OTOMATIK.bat yeter."
+    import esikler, olcek
+    _, olculdu, _, _ = olcek.kapasite(esikler.yukle(), olcek.olcum_oku())
+    if not olculdu:
+        return False, ("Gece kipi Flow'un günlük güvenli kapasitesi ölçülene kadar kapalı (gece tavanı ölçülen kapasitenin %80'i). "
+                       "Şimdilik VIDEO_YARI_OTOMATIK.bat'ı kullan.")
+    return True, None
+
+
+def video_gece(film=None, yaz=print):
+    """VIDEO_GECE.bat: koşullar tutmazsa hiçbir şey açılmaz (2). Tutsa bile gece döngüsü film.py video'ya henüz bağlanmadı (film.py video
+    yalnız `elle` kipini koşar; TASARIM §9 adım 19): bilgi verir, Memmet açılmaz (4). Hiçbir durumda Flow'a gönderim yapılmaz."""
+    ok, neden = gece_kosullari()
+    if not ok: yaz(neden); return KULLANICI
+    yaz("Gece kipi henüz hazır değil (ilk filmin yerel üretiminde bağlanacak). Şimdilik VIDEO_YARI_OTOMATIK.bat'ı kullan.")
+    return ORTAM
+
+
+def telegram_test():
+    """TELEGRAM_TEST.bat: bildirim.py --test (anahtar dosyası yalnız bildirim.py'nin kodunda okunur, yazdırılmaz)."""
+    return subprocess.call([_python(), os.path.join(ortak.ARACLAR, "bildirim.py"), "--test"])
+
+
+P2_MESAJ = {"youtube-bagla": "YouTube bağlantısı henüz yok (sonraki sürüm). Kanal verisini istersen YouTube Studio'dan CSV olarak "
+                             "dışa aktarıp GELENLER\\KANAL klasörüne koyabilirsin (adımlar BASLA_BURADAN.txt'de).",
+            "yukle": "Otomatik yükleme henüz yok (sonraki sürüm). Filmi, kapağı ve metinleri YAYIN klasöründen YouTube Studio'ya "
+                     "kendin yükleyebilirsin."}
+
+
+def p2(ad, yaz=print):
+    yaz(P2_MESAJ[ad]); return ORTAM
+
+
 def main(a=None):
     a = sys.argv[1:] if a is None else list(a)
     if not a: print(__doc__); return ORTAM
@@ -336,6 +393,10 @@ def main(a=None):
         if k == "video-yari": return video_yari(arg(), "--kuru" in r)
         if k == "video-topla": return video_topla(arg(), "--kuru" in r)
         if k == "kur3": return kur3("--kuru" in r)
+        if k == "durum": return durum(arg())
+        if k == "video-gece": return video_gece(arg())
+        if k == "telegram-test": return telegram_test()
+        if k in P2_MESAJ: return p2(k)
         if k in ("durdur", "devam", "film-deneme") and arg():
             return {"durdur": durdur, "devam": devam, "film-deneme": film_deneme}[k](arg())
     except ortak.YolYok as e: print("!!", e); return ORTAM

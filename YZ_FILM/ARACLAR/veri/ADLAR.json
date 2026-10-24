@@ -255,7 +255,7 @@
  "bat": {
   "_aciklama": "§6.9. Hepsi ASCII + CRLF; bat_yenile.py üretir; Python ve betik mutlak yolla çağrılır.",
   "depo_koku": ["FILM_SETI.bat", "KURULUM.bat", "GUNCELLE.bat", "FLOW_GIRIS.bat", "IZINLER.bat", "UYARI_GECTI.bat", "TELEGRAM_TEST.bat",
-                "GEMINI_TEST.bat", "YOUTUBE_BAGLA.bat"],
+                "GEMINI_TEST.bat", "KUR3.bat", "YOUTUBE_BAGLA.bat"],
   "film_klasoru": ["DEVAM.bat", "DURUM.bat", "DURDUR.bat", "VIDEO_YARI_OTOMATIK.bat", "VIDEO_GECE.bat", "VIDEO_TOPLA.bat", "NOTLARI_OKU.bat",
                    "ARSIVLE.bat", "YUKLE.bat", "FILM_DENEME_SAHTE.bat", "KONTROL.bat"],
   "gecis": {"MEMMET_GIRIS.bat": "yeni_film.py artık üretmiyor; yerine depo kökünde FLOW_GIRIS.bat geldi (bat_yenile.py, PR-2b). Eski film klasörlerinde kalan kopyası _ESKI/'ye taşınır"},
@@ -267,7 +267,7 @@
   "kok": ["00_KONU.md", "HAZIRLIK.json", "SAHNELER.json", "DUNYA_DEFTERI.json", "FILM_DURUM.json", "KARAR_DEFTERI.md", "KAMERA_AGACI.json",
           "KAGIT_TAMAM.json", "URETIM_ONIZLEME.json", "URETIM_ONIZLEME.md", "BLOK_PLANI.json", "KREDI_DEFTERI.jsonl", "HIKAYE.json", "HIKAYE.md",
           "NOTLARIM.json", "NOT_CEVAPLARI.md", "FILM_SONU_RAPORU.md", "KANAL_TESHIS.md", "DUZELT.txt", "DUR", "FILM.kilit", "FILM_KAYIT.txt", "NOT_CEVAPLARI.json", "MEMMET_DURUM.json", "MEMMET_KAYIT.txt",
-          "_memmet_cikis.json", "_memmet_topla.json"],
+          "_memmet_cikis.json", "_memmet_topla.json", "O0B_OLCUM.json"],
   "_HIKAYE_ODASI": ["00_BRIFING.md", "00_BRIFING.md.sha1", "01_KONU_KARTI.json", "01_VARSAYIMLAR.md", "02_LOGLINELAR.md", "02_oneri_<eksen>.md",
                     "02_oneri_<eksen>.json", "03_juri_<rol>.json", "04_SECIM.json", "04_KULLANICIYA_OZET.md", "05_YAPI.json", "06_SENARYO_v<N>.json",
                     "06_SENARYO_v<N>.md", "DEGISIKLIK_v<N>.md", "DEGISIKLIK_v<N>.json", "08_DOKTOR_<tur>.md", "EVREN_TASLAK.json", "REPLIK_KABUL.json",

@@ -20,7 +20,7 @@ Kullanım (v2, görev defteri; ana Claude yalnız .claude/bin/film.py üzerinden
   python film.py ozet [--kisa | --uzun | --kullanici] [--json]          her zaman 0 ile çıkar
   python film.py surus ac | kapat [--soru | --gelistirme]
   python film.py notlar oku | isle                   kullanıcı notları (salt okunur) / not turunu (A16n) açar
-  python film.py beceri-denetim · olcum0 · asamalar --md|--json · esitle --gelistirme [...] · esitle (tam: P2)
+  python film.py beceri-denetim · olcum0 [calis <b|c|d|e|g> <alt komut …>] · asamalar --md|--json · esitle --gelistirme [...] · esitle (tam: P2)
   Ortak seçenekler: --film <ad|yol> (yoksa FILMLER/_AKTIF.json) · --json (makine çıktısı)
 
 Kullanım (v1, eski SAHNELER.json; davranış korunur):
@@ -1970,16 +1970,66 @@ def k_beceri_denetim(o):
     return subprocess.run([sys.executable, p] + o.rest).returncode, None
 
 
+OLCUM0_BETIK = {"b": "olcum0/flow_deneme.py", "c": "olcum0/ses_deneme.py", "d": "olcum0/capcut_deneme.py",
+                "e": "olcum0/gemini_deneme.py", "g": "kanal_teshis.py"}
+OLCUM0_NE = {"a": "Claude Code davranışları (ilk yerel oturum: /film-gelistir olcum0-a)",
+             "b": "Flow günlük uyarısız kapasite (merdiven 10/15/20; GÖNDER'e sen basarsın)",
+             "c": "ses dönüştürme kıyası ve yerel model süreleri", "d": "CapCut klon ve şifre denemesi (CapCut'ı iki kez aç-kapat)",
+             "e": "Gemini paketi ve ücretsiz API katmanı (1 paket)", "f": "Claude token ve seyirci gürültüsü (Ö0-2)",
+             "g": "kanal teşhisi (isteğe bağlı YouTube Studio CSV'si)", "h": "B3 44 kare kalibrasyon etiketleri (Ö0-2)"}
+OLCUM0_SALT_OKUR = ("durum", "denetle-fikstur")
+
+
+def _olcum0_gorevi(h, d):
+    """Bir Ö0 ölçümünün sistem görevi: {olcum, ne, durum, sonraki, komut, kullaniciya}. Betiğin durum_metni() salt okunur sorulur."""
+    g = {"olcum": f"Ö0-{h}", "ne": OLCUM0_NE[h], "durum": d, "paralel": True}
+    if h in ("a", "f", "h"):
+        g["sonraki"] = None; g["not"] = "geliştirme oturumunun işi (adım 2)" if h == "a" else "Ö0-2: ilgili araçlar ve kayıtlı Ö0-b klipleriyle (adım 12a)"
+        return g
+    b = os.path.join(HERE, OLCUM0_BETIK[h])
+    if not os.path.isfile(b): g.update(sonraki=None, eksik="betik henüz yok"); return g
+    g["komut"] = f"python .claude/bin/film.py olcum0 calis {h} <alt komut>"
+    if h in ("b", "d", "e"):
+        try:
+            sys.path.insert(0, os.path.join(HERE, "olcum0"))
+            m = __import__({"b": "flow_deneme", "d": "capcut_deneme", "e": "gemini_deneme"}[h])
+            r = m.durum_metni() or {}
+            g.update(sonraki=r.get("sonraki"), kullaniciya=r.get("kullaniciya"))
+            if h == "b": g["ayrinti"] = {k: r.get(k) for k in ("gun", "basamak", "klip", "olculen_gunluk_kapasite", "on_kosul_eksik") if k in r}
+        except Exception as e: g.update(sonraki=None, hata=str(e)[:160])
+    else: g["sonraki"] = "calis"
+    return g
+
+
 def k_olcum0(o):
+    """Ö0 sistem görevleri (TASARIM §1.2): Ö0-1 (b, c, d, e, g) ve Ö0-2 (f, h, Ö0-b·V3) ilk filmin kâğıt aşamalarıyla PARALEL yürür.
+    `olcum0` durum ve sıradaki görevler · `olcum0 calis <harf> <alt komut …>` ilgili betiği çalıştırır (çıkış kodu betiğinkidir)."""
     harfler = "abcdefgh"
+    sys.path.insert(0, os.path.join(HERE, "olcum0"))
+    try: import ortak_o0 as o0
+    except ImportError: o0 = None
     try: k = os.path.join(ortak.yollar()["veri_kok"], "BILGI", "OLCUM0")
     except ortak.YolYok: raise
-    durum = {f"Ö0-{h}": os.path.exists(os.path.join(k, f"O0{h}.json")) for h in harfler}
+    if o0 is not None: dd = {h: o0.durum(h) for h in harfler}
+    else: dd = {h: ("bitti" if os.path.exists(os.path.join(k, f"O0{h}.json")) else "yok") for h in harfler}
+    durum = {f"Ö0-{h}": dd[h] in ("bitti", "kapandi") for h in harfler}
+    ne = getattr(o, "ne", None) or "durum"; rest = list(getattr(o, "rest", None) or [])
+    if ne == "calis":
+        if not rest or rest[0] not in OLCUM0_BETIK:
+            return HATA, {"hata": "kullanım: film.py olcum0 calis <b|c|d|e|g> <alt komut …>", "betikler": OLCUM0_BETIK}
+        h = rest[0]; b = os.path.join(HERE, OLCUM0_BETIK[h])
+        if not os.path.isfile(b): return ORTAM, {"kullaniciya": f"{OLCUM0_BETIK[h]} henüz yok (TASARIM §9 adım 9)."}
+        if ortam() == "bulut" and (len(rest) < 2 or rest[1] not in OLCUM0_SALT_OKUR):
+            return ORTAM, {"olcum0": durum, "kullaniciya": "Ö0 ölçümleri yalnız kullanıcının bilgisayarında yapılır."}
+        return subprocess.run([sys.executable, b] + rest[1:]).returncode, None
     if all(durum.values()): return BITTI, {"olcum0": durum}
     if ortam() == "bulut": return ORTAM, {"olcum0": durum, "kullaniciya": "Ö0 ölçümleri yalnız kullanıcının bilgisayarında yapılır."}
     if not os.path.isdir(os.path.join(HERE, "olcum0")):
         return ORTAM, {"olcum0": durum, "kullaniciya": "olcum0/ betikleri henüz yok (TASARIM §9 adım 9)."}
-    return BITTI, {"olcum0": durum}
+    gorevler = [_olcum0_gorevi(h, dd[h]) for h in harfler if dd[h] not in ("bitti", "kapandi")]
+    return BITTI, {"olcum0": durum, "durumlar": {f"Ö0-{h}": dd[h] for h in harfler},
+                   "gorevler": gorevler, "not": "Ö0 ölçümleri ilk filmin kâğıt aşamalarıyla (A00–A09) paralel yürür; film onları beklemez "
+                                                "(Ö0-b yoksa BUT0 1800 sn seçer, D-05)."}
 
 
 def k_asamalar(o):
@@ -2033,7 +2083,8 @@ def _ayristirici():
     s.add_argument("--soru", action="store_true"); s.add_argument("--gelistirme", action="store_true"); s.set_defaults(f=k_surus)
     s = alt.add_parser("notlar", parents=[ortak_]); s.add_argument("ne", choices=["oku", "isle"]); s.set_defaults(f=k_notlar)
     s = alt.add_parser("beceri-denetim", parents=[ortak_]); s.add_argument("rest", nargs="*"); s.set_defaults(f=k_beceri_denetim)
-    alt.add_parser("olcum0", parents=[ortak_]).set_defaults(f=k_olcum0)
+    s = alt.add_parser("olcum0", parents=[ortak_]); s.add_argument("ne", nargs="?", default="durum", choices=["durum", "calis"])
+    s.add_argument("rest", nargs=argparse.REMAINDER); s.set_defaults(f=k_olcum0)
     s = alt.add_parser("asamalar", parents=[ortak_]); s.add_argument("--md", action="store_true"); s.set_defaults(f=k_asamalar)
     s = alt.add_parser("esitle", parents=[ortak_]); s.add_argument("--gelistirme", action="store_true")
     s.set_defaults(f=k_esitle)

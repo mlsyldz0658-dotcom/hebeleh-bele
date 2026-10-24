@@ -1,0 +1,50 @@
+# YZ Film Seti test takımı (TASARIM §6.10, §9 adım 18). Ağ ve kredi yok: bütün sağlayıcılar `sahte` / `kaset`.
+# Kullanıcının bilgisayarı Windows + Python 3.10'dur; ubuntu satırları bulut geliştirme ortamını ve yeni Python'u sınar.
+# Yalnız testlerin gerçekten kullandığı paketler kurulur: numpy, Pillow, PyYAML (iş akışı testi) + ffmpeg.
+# Takım modül başına ayrı süreçte paralel koşar (ARACLAR/testler/kos.py); aynı testler tek süreçte de koşar:
+#   cd YZ_FILM && python -m unittest discover -s ARACLAR/testler
+name: testler
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testler:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python: ['3.10', '3.13']
+        exclude:
+          - os: windows-latest
+            python: '3.13'
+    env:
+      CLAUDE_CODE_FORK_SUBAGENT: '0'
+      PYTHONIOENCODING: utf-8
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Paketler
+        run: python -m pip install numpy Pillow PyYAML
+      - name: Ortam
+        run: |
+          python --version
+          ffmpeg -version
+          git --version
+      - name: Test takimi
+        working-directory: YZ_FILM
+        run: python ARACLAR/testler/kos.py --sure

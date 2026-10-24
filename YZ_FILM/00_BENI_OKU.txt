@@ -1,13 +1,15 @@
 YZ FİLM SETİ
 ===========
 
-Önce BASLA_BURADAN.txt'yi oku: setin şu anki durumu ve sıradaki adım orada.
+Önce BASLA_BURADAN.txt'yi oku: senden ne istendiği (sözleşme kartı), kurulum adımları, her filmde ne olduğu
+ve bir şey ters giderse ne yapacağın orada.
 
-Yeni set hazırlanıyor; eski .bat'lar emekli (kullanma). Eski anlatım: _ESKI\00_BENI_OKU_eski_anlatim.txt (artık geçerli değil).
+Kısaca: sen yalnız filmin konusunu söylersin; gerisini ekip yapar. Başlamak için Masaüstündeki FILM_SETI.bat.
+Eski .bat'lar emekli (kullanma). Eski anlatım: _ESKI\00_BENI_OKU_eski_anlatim.txt (artık geçerli değil).
 
 KLASÖRLER
   ARACLAR\    programlar (dokunma)
   BILGI\      kararlar ve önemli notlar
-  FILMLER\    her film ayrı klasör
-  AYARLAR\    gizli anahtarlar (kimseyle paylaşma)
+  FILMLER\    her film ayrı klasör (içinde DEVAM, DURUM, DURDUR ve video .bat'ları)
+  AYARLAR\    gizli anahtarlar (kimseyle paylaşma; sistem onları okumaz, yazdırmaz)
   _ESKI\      emekliye ayrılan eski dosyalar (silinmedi)

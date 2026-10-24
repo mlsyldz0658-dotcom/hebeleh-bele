@@ -46,7 +46,7 @@ class Ortam(unittest.TestCase):
     def kur(self, **k):
         ag_cagrisi = []
         def ag(*a, **kw): ag_cagrisi.append(a); raise OSError("ağ yasak (test)")
-        cikti = lambda cmd, timeout=30: "2.1.305 (Claude Code)" if cmd[0] == "claude" else "git version 2.40"
+        cikti = lambda cmd, timeout=30: "2.1.305 (Claude Code)" if os.path.basename(cmd[0]) == "claude" else "git version 2.40"
         gercek_which = shutil.which                                   # CI'da Claude Code kurulu değil: varmış gibi gösterilir
         which = lambda ad, *a, **kw: os.path.join(self.kok, "bin", ad) if ad == "claude" else gercek_which(ad, *a, **kw)
         with mock.patch.object(kurulum.shutil, "which", which), mock.patch("socket.create_connection", ag), mock.patch("urllib.request.urlopen", ag), \

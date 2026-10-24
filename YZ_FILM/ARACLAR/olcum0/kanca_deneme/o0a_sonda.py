@@ -51,6 +51,14 @@ def ekle(kayit, olay):
     finally: os.close(fd)
 
 
+def yaz_stdout(metin):
+    """Kanca çıktısı HER ZAMAN UTF-8 bayt (Ö0-a #14: Windows'ta konsol kod sayfası cp1254/cp1252'ydi, Stop nedenindeki ü/ı/ş bozuldu).
+    JSON zaten ensure_ascii ile yalnız ASCII; düz metin için de bayt yazılır."""
+    b = metin.encode("utf-8")
+    try: sys.stdout.buffer.write(b); sys.stdout.buffer.flush()
+    except AttributeError: sys.stdout.write(metin); sys.stdout.flush()
+
+
 def aktif(kayit):
     d = _json(os.path.join(kayit, "DENEME_DURUMU.json"), {}) or {}
     if d.get("durum") not in ("kurulu", "kuruluyor"): return False, d
@@ -88,6 +96,22 @@ def dokum_ozeti(p):
     return o
 
 
+# Oturuma kullanıcı yazmadan gelen istemler (arka plan işi bildirimi, sistem hatırlatması): #2/#16 kendiliğinden uyanma ölçümü
+SISTEM_ISTEMI = re.compile(r"^\s*<(?:task-notification|system-reminder|bash-notification|background-task|agent-notification|"
+                           r"local-command-stdout|command-name|bash-stdout)\b|<task-id>|<task-notification>", re.I)
+
+
+def istem_turu(g):
+    """UserPromptSubmit girdisi gerçek kullanıcı mesajı mı ("kullanici") yoksa sistemin ürettiği bildirim mi ("sistem")."""
+    for k in ("isSynthetic", "is_synthetic", "isMeta", "is_meta"):
+        if g.get(k) is True: return "sistem"
+    koken = str(g.get("origin") or g.get("inbound_origin") or g.get("prompt_source") or "").lower()
+    if koken and koken not in ("user", "kullanici", "human"): return "sistem"
+    p = str(g.get("prompt") or "")
+    if not p.strip() or SISTEM_ISTEMI.search(p[:4000]): return "sistem"
+    return "kullanici"
+
+
 def kip_al(kayit):
     return _json(os.path.join(kayit, "SONDA_KIP.json"), {}) or {}
 
@@ -111,10 +135,16 @@ def kayit_kur(g, olay, giris):
         if komut: o["isaretler"] = sorted(set(ISARET.findall(komut)))
         fp = ti.get("file_path") or ti.get("path")
         if fp: o["dosya_adi"] = os.path.basename(str(fp))[:80]
+    if "effort" in g:                                   # Ö0-a #12: anahtar gelir ama değeri boş olabilir (None, "", {})
+        e = g.get("effort")
+        e = e.get("level") if isinstance(e, dict) else e
+        o["effort_anahtari"] = True; o["effort"] = (str(e).strip()[:20] or None) if e not in (None, "") else None
     if g.get("source"): o["kaynak"] = str(g["source"])[:20]
     if "stop_hook_active" in g: o["stop_hook_active"] = bool(g.get("stop_hook_active"))
     if g.get("trigger"): o["tetik"] = str(g["trigger"])[:20]
-    if olay == "istem": o["prompt_devam"] = str(g.get("prompt") or "").strip().lower() in ("devam", "devam et")
+    if olay == "istem":
+        o["prompt_devam"] = str(g.get("prompt") or "").strip().lower() in ("devam", "devam et")
+        o["istem_turu"] = istem_turu(g)                 # yalnız tür (kullanici | sistem); istem metni yazılmaz
     if olay == "bildirim": o["izin_mesaji"] = "permission" in str(g.get("message") or "").lower() or "izin" in str(g.get("message") or "").lower()
     if olay == "model":
         for a in ("model", "new_model", "previous_model", "old_model"):
@@ -173,7 +203,7 @@ def k_genel(argv):
     o["sure_ms"] = round((time.time() - bas) * 1000, 1)
     if o.get("sarmal_bas"): o["sarmal_sure_ms"] = round((time.time() - o["sarmal_bas"]) * 1000, 1)
     ekle(kayit, o)
-    if cikti is not None: sys.stdout.write(json.dumps(cikti, ensure_ascii=False))
+    if cikti is not None: yaz_stdout(json.dumps(cikti, ensure_ascii=True))
     return kod
 
 
@@ -187,7 +217,7 @@ def k_isaret(argv):
     ekle(kayit, dict(o, asama="bas"))
     if bekle > 0: time.sleep(min(bekle, 7200))
     ekle(kayit, dict(o, asama="bit", bekle_sn=bekle))
-    print("O0A işaret: %s (%s sn)" % (o["ad"], bekle))
+    yaz_stdout("O0A işaret: %s (%s sn)\n" % (o["ad"], bekle))
     return 0
 
 

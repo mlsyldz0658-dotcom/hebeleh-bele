@@ -162,7 +162,8 @@ class Kurulum:
                "kapalı: set ZIP ile kurulmuş (.git yok). Güncelleme için BASLA_BURADAN.txt'deki 'git clone' adımıyla yeniden kur")
 
     def claude(self):
-        s = _cikti(["claude", "--version"]) if shutil.which("claude") else None
+        c = ortak.claude_yolu()                 # Windows: gerçek claude.exe (npm claude.CMD liste argv'de CreateProcess'le açılmaz)
+        s = _cikti([c, "--version"]) if c else None
         v = surum_ayikla(s); self.rapor["claude"] = {"surum": ".".join(map(str, v)) if v else None,
                                                      "en_az": ".".join(map(str, CLAUDE_EN_AZ)), "uygun": bool(v and v >= CLAUDE_EN_AZ)}
         if not v: self.m(CALISMIYOR, "Claude Code", "bulunamadı: Claude Code'u kur (claude.ai/code); FILM_SETI.bat onu açar")

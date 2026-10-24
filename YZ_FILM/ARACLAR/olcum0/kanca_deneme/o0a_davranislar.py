@@ -28,13 +28,20 @@ def evet(v):
     return str(v).strip().lower() in ("1", "true", "evet", "e", "yes", "var", "calisiyor", "listede")
 
 
+def kullanici_istemi_mi(o):
+    """Gerçek kullanıcı istemi mi? Masaüstü uygulamasında arka plan işinin bildirimi oturuma UserPromptSubmit olarak (ör. <task-notification>)
+    gelir: sonda onu istem_turu "sistem" diye işaretler (o0a_sonda.istem_turu). İşaretsiz eski kayıt ihtiyatla kullanıcı sayılır."""
+    return o.get("olay") == "istem" and o.get("istem_turu") != "sistem"
+
+
 def uyandi_mi(ol, t_bit):
-    """Ana tur (Stop) iş bitmeden kapandıysa: iş bittikten sonraki ilk ana-oturum olayı kullanıcı istemi DEĞİLSE oturum kendiliğinden uyandı.
+    """Ana tur (Stop) iş bitmeden kapandıysa: iş bittikten sonraki ilk ana-oturum olayı GERÇEK kullanıcı istemi DEĞİLSE oturum kendiliğinden
+    uyandı (bildirimin kendisi istem olarak gelse de). Bildirim kancası (Notification, olay "bildirim") ana olay değildir: sayılmaz.
     Dönüş: True/False; ana tur iş bitmeden kapanmadıysa None (deneme geçersiz: tur bitirilmeden beklendi)."""
     if not [o for o in ol if o.get("olay") == "stop" and ana(o) and o.get("t", 0) < t_bit]: return None
     sonra = sorted([o for o in ol if o.get("t", 0) > t_bit and ana(o) and o.get("olay") in ANA_OLAYLAR], key=lambda o: o["t"])
     if not sonra: return False
-    return sonra[0]["olay"] != "istem"
+    return not kullanici_istemi_mi(sonra[0])
 
 
 def sonuc(ok, olcu, not_=""):
@@ -86,10 +93,15 @@ def d3(ol, bag):
 def d4(ol, bag):
     a = [o for o in ol if o.get("olay") == "ajan" and o.get("tool_name") in ("Agent", "Task")]
     if not a: return sonuc(None, {}, "PreToolUse Agent kaydı yok")
-    t = a[-1]
+    t = a[-1]; e = bag.get("elle") or {}
     olcu = {"subagent_type": t.get("subagent_type"), "name_gorunur": t.get("name_var"), "isolation_gorunur": t.get("isolation_var"),
-            "anahtarlar": t.get("ti_anahtarlar"), "fork": "ölçülmedi: fork kapalı tutulur (D-10; CLAUDE_CODE_FORK_SUBAGENT=0)"}
-    return sonuc(bool(t.get("subagent_type")) and bool(t.get("name_var")) and bool(t.get("isolation_var")), olcu)
+            "anahtarlar": t.get("ti_anahtarlar"), "fork": "ölçülmedi: fork kapalı tutulur (D-10; CLAUDE_CODE_FORK_SUBAGENT=0)",
+            "isolation_worktree": e.get("isolation") or None}
+    # Ö0-a bulgusu (ilk yerel oturum): Agent aracının şemasında `name` alanı YOK; `isolation: worktree` origin/main ref'i olmadığı için
+    # başarısız. Sistem ikisine de dayanmaz: kanca name/isolation verilen çağrıyı zaten reddeder (yalnız subagent_type + istem), görev
+    # bağlama istemdeki GOREV.json yolundandır. Karar yalnız subagent_type'ın görünmesine bağlıdır; name/isolation bilgi olarak kalır.
+    olcu["not_name_isolation"] = "bilgi: sistem name/isolation kullanmaz (kanca reddeder); karara girmez"
+    return sonuc(bool(t.get("subagent_type")), olcu)
 
 
 def d5(ol, bag):
@@ -161,25 +173,45 @@ def d11(ol, bag):
     ist = [x for x in ol if x.get("olay") == "istem" and x.get("t", 0) >= o.get("t", 0)]
     devam = bool(ist and ist[0].get("prompt_devam") and ist[0]["t"] - o["t"] <= 120)
     surdu = o.get("kaynak") == "resume" or (o.get("session_id") in onceki)
-    return sonuc(devam and surdu, {"kaynak": o.get("kaynak"), "ayni_oturum": o.get("session_id") in onceki, "ilk_mesaj_devam": devam})
+    # Ö0-a bulgusu: masaüstü uygulamasında sürdürme aynı konuşmayı açar ama ilk mesaj "devam" olmaz. Sistem ilk mesaja dayanmaz
+    # (kanca.py: resume'da OTURUM_SURDURULDU işareti; soru/dur olmayan ilk mesaj "devam" sayılır). Karar yalnız aynı oturumun sürmesi;
+    # ilk mesaj bilgi olarak kalır. DEVAM.bat (claude --continue) yedek yol olarak durur.
+    return sonuc(surdu, {"kaynak": o.get("kaynak"), "ayni_oturum": o.get("session_id") in onceki, "ilk_mesaj_devam": devam})
+
+
+def bos_mu(v):
+    """Değeri olmayan alan: None, boş/boşluk dizi, boş liste/sözlük (Ö0-a #12: effort anahtarı değersiz geldi)."""
+    return v is None or (isinstance(v, str) and not v.strip()) or (isinstance(v, (list, dict, tuple)) and not v)
+
+
+def effort_olcu(tum, elle):
+    """effort tanınıyor mu: elle değer (boş değilse) → kanca girdisinde değerli effort → anahtar var ama değer yok ("degersiz") → None.
+    "degersiz" ölçülemedi demektir: madde onunla çalışmıyor sayılmaz, olcu'da görünür (yedek: ajan dosyasındaki effort: high kalır,
+    kullanım kaydı film.py'nin varsayılanı "high"tır)."""
+    if not bos_mu(elle): return elle
+    kayit = [o for o in tum if o.get("effort_anahtari")]
+    if any(not bos_mu(o.get("effort")) for o in kayit): return True
+    return "degersiz" if kayit else None
 
 
 def d12(ol, bag):
-    tum = bag.get("tum") or ol; e = bag.get("elle") or {}; s = bag.get("sonuclar") or {}
+    tum = bag.get("tum") or ol; e = {k: v for k, v in (bag.get("elle") or {}).items() if not bos_mu(v)}; s = bag.get("sonuclar") or {}
     bas = [o for o in tum if o.get("olay") == "ajan_basi" and o.get("agent_type") == "o0a-sonda"]
     bit = [o for o in tum if o.get("olay") == "ajan_bitti" and o.get("agent_type") == "o0a-sonda" and o.get("dokum_var")]
     olcu = {"ajan_yuklendi_bilinmeyen_alanla": bool(bas) or bool(bit),
             "omitClaudeMd": (not any(o.get("claude_md_gorundu") for o in bit)) if bit else None,
             "maxTurns": ((s.get("3") or {}).get("olcu") or {}).get("maxturns_subagentstop"),
             "permissionMode": (((s.get("7") or {}).get("olcu") or {}).get("izin_sorusu") is False) if s.get("7") else None,
-            "effort": e.get("effort"), "beceri_hooks": ((s.get("9") or {}).get("olcu") or {}).get("beceri_kancasi_kostu"),
+            "effort": effort_olcu(tum, e.get("effort")), "beceri_hooks": ((s.get("9") or {}).get("olcu") or {}).get("beceri_kancasi_kostu"),
             "disable-model-invocation": e.get("disable_model_invocation"), "allowed-tools": e.get("allowed_tools"),
             "disallowed-tools": e.get("disallowed_tools")}
     bilinen = {k: v for k, v in olcu.items() if v is not None}
     eksik = [k for k, v in olcu.items() if v is None]
     if eksik: return sonuc(None, olcu, "eksik: " + ", ".join(eksik) + " (3, 7, 9 adımları ve kaydet --alan ile)")
-    taninmayan_ = [k for k, v in bilinen.items() if not (v is True or evet(v))]
+    olculemedi = [k for k, v in bilinen.items() if v == "degersiz"]
+    taninmayan_ = [k for k, v in bilinen.items() if k not in olculemedi and not (v is True or evet(v))]
     olcu["taninmayan"] = taninmayan_
+    if olculemedi: olcu["degersiz"] = olculemedi
     return sonuc(not taninmayan_, olcu)
 
 
@@ -270,8 +302,10 @@ KATALOG = [
                  "Sonra `o0a_kos.py degerlendir 3`."],
      "yedek": "Aşamalı devam yerine bölüm başına ayrı ajan görevi (film.py dilim); maxTurns'te kısmi çıktı film.py kurtar ile yeni göreve.", "f": d3},
     {"no": 4, "baslik": "PreToolUse Agent girdisinde subagent_type (fork dahil), name ve isolation görünür",
-     "adimlar": [f"Agent çağır: subagent_type o0a-sonda, name 'o0a-ad', isolation 'worktree'; istem: `{I} ajan-4 {K}` çalıştır.",
-                 "`o0a_kos.py degerlendir 4`. (Fork denenmez: CLAUDE_CODE_FORK_SUBAGENT=0 kalır.)"],
+     "adimlar": [f"Agent çağır: subagent_type o0a-sonda (araçta varsa name 'o0a-ad'; isolation VERME: worktree origin/main ister, "
+                 f"depoda yoksa başarısız olur); istem: `{I} ajan-4 {K}` çalıştır.",
+                 "`o0a_kos.py degerlendir 4`. (Fork denenmez: CLAUDE_CODE_FORK_SUBAGENT=0 kalır. name/isolation karara girmez: sistem "
+                 "kullanmaz.)"],
      "yedek": "Görünmeyen alan için kanca istemdeki görev yolundan bağlar; subagent_type yoksa ya da fork ise ajan kancası reddeder (D-10).", "f": d4},
     {"no": 5, "baslik": "onFailure: block ve timeout alanları komut kancasında çalışır (kasıtlı yavaş kanca)",
      "adimlar": [f"Bash: `{I} yavas-a O0A_YAVAS_A {K}` (A girişi 8 sn uyur; timeout 2, onFailure: block).",

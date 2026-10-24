@@ -11,6 +11,9 @@ Kullanım (depo kökünden; Python mutlak yolla):
   … o0a_kos.py durum                  20 maddenin durumu
   … o0a_kos.py bitir                  O0a.json'u yazar (ölçülmeyen madde "çalışmıyor + yedek") ve GERİ ALIR (try/finally)
   … o0a_kos.py geri_al                yalnız geri alma (çökme sonrası; tekrar koşmak zararsız)
+  … o0a_kos.py yeniden                ilk yerel oturum bulgularıyla düzeltilen maddeleri yeniden açar (O0a.json'daki öteki sonuçlar
+                                      korunur; #4, #11, #12 eldeki kayıtlardan yeniden değerlendirilir; #2, #7, #16, #19 yeniden ölçülür):
+                                      sonra kur → sira → otomatik → bitir (eski O0a.json _ESKI'ye kopyalanır, elle düzenlenmez)
 Seçenekler: --depo <depo kökü> (vars. bu dosyanın deposu) · --kayit <klasör> (vars. <veri>/BILGI/OLCUM0/O0a_deneme) · --python <mutlak yol>.
 Geri alma güvenceleri: (1) kur içinde hata → geri_al; (2) bitir try/finally; (3) DENEME_DURUMU.json son_gecerlilik dolunca her o0a_kos.py çağrısı ve
 SessionStart sondası geri alır; (4) asıl .claude/settings.json'a HİÇ yazılmaz (sha önce/sonra denetlenir; nabız bu yüzden bozulmaz).
@@ -24,7 +27,12 @@ for _p in (ARACLAR, OLCUM0, BURASI):
     if _p not in sys.path: sys.path.insert(0, _p)
 import o0a_davranislar as DV
 
-SURUM = "kanca_deneme 1.0"
+SURUM = "kanca_deneme 1.1"
+# İlk yerel oturumun (24.10.2026) bulgularıyla düzeltilen maddeler: O0a.json'da "çalışmıyor"sa yeniden açılır (o0a_kos.py yeniden).
+DUZELTILEN = {2: "uyanma: bildirim istemi kullanıcı sayılıyordu", 4: "name/isolation karara girmez", 7: "yazma ölçüsünü kimse yazmıyordu",
+              11: "ilk mesajın 'devam' olması gerekmez", 12: "effort anahtarı değersiz geldi", 16: "uyanma: bildirim istemi kullanıcı sayılıyordu",
+              19: "Windows claude.CMD + cmd.exe yönlendirmesi"}
+KAYITTAN = (4, 11, 12)                    # yalnız eldeki sonda kayıtlarıyla yeniden değerlendirilebilenler
 SONDA = os.path.join(BURASI, "o0a_sonda.py")
 SABLON = os.path.join(BURASI, "settings.local.sablon.json")
 AJAN_SABLON = os.path.join(BURASI, "ajan.sablon.md")
@@ -291,8 +299,20 @@ def bag(y, no):
     return {"elle": ((s.get(str(no)) or {}).get("elle") or {}), "otomatik": oto, "tum": olaylar(y), "sonuclar": s}
 
 
+def yazma_olc(y):
+    """#7'nin okuduğu ölçü: alt ajanın yazması istenen dosya ({YAZMA}/ajan_yazdi.txt = y.yazma) gerçekten var mı ve "o0a" içeriyor mu.
+    Değerlendirici (d7) OTOMATIK.json["7"]["dosya_var"]'ı okur; onu yazan tek yer burası (ilk yerel oturum bulgusu: kimse yazmıyordu)."""
+    p = os.path.join(y.yazma, "ajan_yazdi.txt")
+    var = os.path.isfile(p) and "o0a" in _metin_oku(p).lower()
+    oto = json_oku(y.otomatik, {}) or {}
+    oto["7"] = {"dosya_var": var, "dosya": os.path.basename(p), "zaman": simdi()}
+    json_yaz(y.otomatik, oto)
+    return oto["7"]
+
+
 def degerlendir(y, no):
     m = DV.madde(no); d = durum_oku(y)
+    if no == 7: yazma_olc(y)
     t0 = ((d.get("adimlar") or {}).get(str(no)) or {}).get("bas", d.get("kurulum_t", 0))
     tum = olaylar(y); ol = [o for o in tum if o.get("t", 0) >= float(t0 or 0)]
     r = m["f"](ol, bag(y, no))
@@ -405,12 +425,16 @@ KOR_ISTEM = ("Sırayla yap: (1) GIRDI/a.txt dosyasını Read ile oku ve içindek
              "En sonda YALNIZ şu JSON'u yaz: {\"dis_kod\": \"<okuduğun kod ya da null>\", \"claude_md_kod\": \"<kod ya da null>\"}")
 
 
-def kor_rol(calistir=subprocess.run, claude="claude", kok=None):
+def kor_rol(calistir=subprocess.run, claude=None, kok=None):
     """#19: başsız claude -p kör rol denemesi. Çalışma klasörü <veri> DIŞINDA geçici klasör; ANTHROPIC_API_KEY/AUTH_TOKEN alt sürece
-    verilmez (abonelikle çalışmalı). Anahtar ya da değer yazılmaz; yalnız varlık."""
+    verilmez (abonelikle çalışmalı). Anahtar ya da değer yazılmaz; yalnız varlık.
+    Windows (ilk yerel oturum bulgusu): shutil.which npm'in claude.CMD'sini verir; istemdeki <…> cmd.exe'de yönlendirme
+    sayıldı. Artık gerçek claude.exe çağrılır (ortak.claude_yolu) ve istem HER ZAMAN stdin'den gider (ortak.claude_komutu): argv'de
+    yalnız sabit bayraklar kalır, cmd.exe hiçbir kullanıcı metnini yorumlamaz."""
     r = random.Random(); kod = lambda: "".join(r.choice(string.ascii_uppercase + string.digits) for _ in range(8))
     k1, k2, k3 = "O0A-GIRDI-" + kod(), "O0A-CLAUDEMD-" + kod(), "O0A-DIS-" + kod()
-    claude = shutil.which(claude) or claude                       # Windows: claude.cmd PATHEXT ile bulunur
+    import ortak
+    claude = claude or ortak.claude_yolu() or "claude"
     kok = kok or tempfile.mkdtemp(prefix="o0a_kor_")
     is_ = os.path.join(kok, "is"); dis = os.path.join(kok, "dis")
     for p, m in ((os.path.join(is_, "GIRDI", "a.txt"), k1 + "\n"), (os.path.join(is_, "CLAUDE.md"), f"# Deneme\nGizli proje kodu: {k2}\n"),
@@ -421,7 +445,7 @@ def kor_rol(calistir=subprocess.run, claude="claude", kok=None):
     try: yardim = (calistir([claude, "--help"], capture_output=True, text=True, timeout=60).stdout or "")
     except Exception as e:
         return {"abonelik": False, "hata": f"claude bulunamadı ({type(e).__name__})", "kok": kok}
-    bay = ["-p", KOR_ISTEM, "--output-format", "json"]
+    bay = ["-p", "--output-format", "json"]                        # istem argv'de DEĞİL: stdin'den (claude_komutu)
     for f in ("--restricted", "--strict-mcp-config", "--no-session-persistence"):
         if f in yardim: bay.append(f)
     if "--tools" in yardim: bay += ["--tools", "Read,Write"]
@@ -430,10 +454,12 @@ def kor_rol(calistir=subprocess.run, claude="claude", kok=None):
     cikar = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")
     ek_env = {"CLAUDE_CODE_DISABLE_CLAUDE_MDS": "1", "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"}    # bellekten; yüklenmeme sentinel'le ölçülür
     env = {k: v for k, v in os.environ.items() if k not in cikar and not k.startswith("O0A_")}; env.update(ek_env)
-    o = {"komut": ["claude"] + [x if x != KOR_ISTEM else "<istem>" for x in bay], "ortam_degiskenleri": sorted(ek_env),
+    cmd, girdi = ortak.claude_komutu(bay, KOR_ISTEM, yol=claude)
+    o = {"komut": ["claude"] + bay, "istem_stdin": True, "calistirilan": os.path.basename(claude),
+         "kabuk_sarmalayici": ortak.claude_kabuktan_mi(claude), "ortam_degiskenleri": sorted(ek_env),
          "cikarilan": [k for k in cikar if k in os.environ], "kullanici_claude_md_var": os.path.isfile(os.path.join(os.path.expanduser("~"), ".claude", "CLAUDE.md")),
          "kok": kok, "zaman": simdi()}
-    try: p = calistir([claude] + bay, cwd=is_, capture_output=True, text=True, timeout=600, env=env)
+    try: p = calistir(cmd, input=girdi, cwd=is_, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600, env=env)
     except Exception as e:
         o.update(abonelik=False, hata=f"{type(e).__name__}"); return o
     metin = p.stdout or ""
@@ -451,7 +477,7 @@ def kor_rol(calistir=subprocess.run, claude="claude", kok=None):
     return o
 
 
-def otomatik(y, calistir=subprocess.run, claude="claude"):
+def otomatik(y, calistir=subprocess.run, claude=None):
     oto = json_oku(y.otomatik, {}) or {}
     oto["8"] = kanca_suresi(y, calistir); json_yaz(y.otomatik, oto)
     log(f"#8 kanca süresi: kanca.sh {oto['8']['kanca_sh_medyan_sn']} sn · kanca.py {oto['8']['kanca_py_medyan_sn']} sn")
@@ -498,9 +524,37 @@ def o0a_govdesi(y):
             "deneme": {"kurulum": d.get("kurulum_zamani"), "kayit": y.kayit, "olay_sayisi": len(tum), "arac_surum": SURUM}}
 
 
-def o0a_yaz(govde):
-    """ortak_o0.yaz (diğer Ö0 betikleriyle aynı zarf ve OLCUM0.json özeti)."""
+def yeniden(y):
+    """Düzeltilen maddeleri yeniden açar. O0a.json okunur, DEĞİŞTİRİLMEZ (bitir yenisini yazar; eskisi _ESKI'ye kopyalanır)."""
     import ortak_o0 as o0
+    s = sonuclar(y); eski = {str(d.get("no")): d for d in ((o0.oku("a") or {}).get("davranislar") or [])}
+    for k, d in eski.items():
+        if k not in s and not d.get("olculmedi"): s[k] = dict(d, kaynak=d.get("kaynak") or "O0a.json")
+    json_yaz(y.sonuclar, s)
+    acilan, kapanan = [], []
+    for no in sorted(DUZELTILEN):
+        r = s.get(str(no)) or {}
+        if r.get("sonuc") == DV.CALISIYOR: continue
+        if no in KAYITTAN:
+            try: kod, k = degerlendir(y, no)
+            except Exception: kod, k = 1, None
+            if kod == 0 and k and k.get("sonuc") == DV.CALISIYOR: kapanan.append(no); continue
+        s = sonuclar(y)
+        s[str(no)] = {"no": no, "baslik": DV.madde(no)["baslik"], "sonuc": None, "kaynak": "yeniden", "neden": DUZELTILEN[no],
+                      "onceki": {a: r.get(a) for a in ("sonuc", "kaynak", "olcu", "not", "yedek")}, "zaman": simdi()}
+        json_yaz(y.sonuclar, s); acilan.append(no)
+    log("Yeniden açılan: " + (", ".join(f"#{n}" for n in acilan) or "yok") + " · kayıtlardan çalışıyor: " +
+        (", ".join(f"#{n}" for n in kapanan) or "yok"))
+    if acilan: log("Sıradaki: o0a_kos.py kur → o0a_kos.py sira (her madde) → o0a_kos.py otomatik (#19) → o0a_kos.py bitir")
+    return 0, acilan, kapanan
+
+
+def o0a_yaz(govde):
+    """ortak_o0.yaz (diğer Ö0 betikleriyle aynı zarf ve OLCUM0.json özeti). Var olan O0a.json önce _ESKI'ye kopyalanır (kalıcı kayıp yok)."""
+    import ortak_o0 as o0
+    if os.path.isfile(o0.yol("a")):
+        h = os.path.join(os.path.dirname(o0.yol("a")), "_ESKI", time.strftime("O0a_%Y%m%d_%H%M%S.json"))
+        os.makedirs(os.path.dirname(h), exist_ok=True); shutil.copy2(o0.yol("a"), h)
     ozet = {"durum": "bitti", **{a: govde["kararlar"][a] for a in ("kanca_nabzi", "pr3_birlestirilebilir", "erisim_kancasi_guvenilir",
                                                                    "kor_rol_yolu", "kor_rapor_bayragi", "m12", "kart_tamam_satiri",
                                                                    "python_komut_bicimi")},
@@ -542,6 +596,7 @@ def main(argv):
     if k == "durum": return durum_yaz(y)
     if k == "otomatik": return otomatik(y)
     if k == "bitir": return bitir(y)
+    if k == "yeniden": return yeniden(y)[0]
     if k in ("adim", "degerlendir", "kaydet"):
         try: no = int(argv[1])
         except (IndexError, ValueError): log("!! davranış numarası (1–20)"); return 4

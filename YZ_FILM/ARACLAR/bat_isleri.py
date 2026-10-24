@@ -216,7 +216,7 @@ def devam(film, yaz=print):
     if os.path.exists(p):
         h = os.path.join(film, "_ESKI", time.strftime("DUR_%Y%m%d_%H%M%S")); os.makedirs(os.path.dirname(h), exist_ok=True)
         shutil.move(p, h)
-    if not shutil.which("claude"): yaz(CLAUDE_YOK); return ORTAM
+    if not ortak.claude_yolu(): yaz(CLAUDE_YOK); return ORTAM
     yaz("Film sürüyor: Claude Code açılıyor ve 'devam' yazıyor. Açılmazsa Masaüstündeki FILM_SETI.bat'a çift tıklayıp 'devam' yaz.")
     return TAMAM
 
@@ -227,7 +227,7 @@ CLAUDE_YOK = ("Claude Code bulunamadı. Claude Code'u kur (claude.ai/code), bu p
 def film_seti(yaz=print):
     try: ortak.yollar()
     except ortak.YolYok: yaz("Set henüz kurulmamış: önce setin klasöründeki KURULUM.bat'a çift tıkla."); return ORTAM
-    if not shutil.which("claude"): yaz(CLAUDE_YOK); return ORTAM
+    if not ortak.claude_yolu(): yaz(CLAUDE_YOK); return ORTAM
     yaz("Film seti açılıyor. Aktif film varsa kaldığı yerden sürer; yoksa yalnız filmin konusunu yaz.")
     return TAMAM
 

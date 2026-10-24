@@ -1,6 +1,6 @@
 {
  "_aciklama": "Ö0-a GEÇİCİ deneme ayarı şablonu (o0a_kos.py kur doldurur ve var olan settings.local.json ile BİRLEŞTİRİR; o0a_kos.py bitir/geri_al eski hâline döndürür). Yalnız EKLER: gerçek kancalar (.claude/settings.json) aynen koşar; deny listesi ve güvenlik kancaları değişmez. Yer tutucular: {{PY}} mutlak Python (ileri eğik çizgi), {{SONDA}} o0a_sonda.py, {{KAYIT}} kayıt klasörü, {{YAZMA}} veri kökündeki deneme yazma klasörü (#7).",
- "env": {"O0A_SONDA_ENV": "1", "O0A_KAYIT": "{{KAYIT}}"},
+ "env": {"O0A_SONDA_ENV": "1", "O0A_KAYIT": "{{KAYIT}}", "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
  "permissions": {
   "additionalDirectories": ["{{YAZMA}}"],
   "allow": ["Bash(\"{{PY}}\" \"{{SONDA}}\" isaret *)"]

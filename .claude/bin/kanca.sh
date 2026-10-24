@@ -20,7 +20,8 @@ else
   if [ "$guvenlik" = 1 ]; then echo "[film seti kancası] Python bulunamadı; işlem güvenlik için engellendi (KURULUM.bat)." >&2; exit 2; fi
   exit 0
 fi
-PYTHONIOENCODING=utf-8 "${CMD[@]}" "$K" "$@"
+export PYTHONUTF8=1 PYTHONIOENCODING=utf-8   # Ö0-a #14: Windows kod sayfasında Türkçe harfler bozulmasın
+"${CMD[@]}" "$K" "$@"
 rc=$?
 if [ "$rc" = 0 ] || [ "$rc" = 2 ]; then exit "$rc"; fi
 if [ "$guvenlik" = 1 ]; then echo "[film seti kancası] kanca $rc koduyla çıktı; işlem güvenlik için engellendi." >&2; exit 2; fi

@@ -84,8 +84,15 @@ def sha1(yol):
     except OSError: return None
 
 
+def _bayt_yaz(akis, metin):
+    """Kanca çıktısı HER ZAMAN UTF-8 bayt (Ö0-a #14: Windows'ta kod sayfası cp1254/cp1252 olunca Stop nedenindeki ü/ı/ş bozuldu).
+    PYTHONIOENCODING/PYTHONUTF8 verilmemiş olsa da (kanca doğrudan python ile çağrılsa da) doğru."""
+    try: akis.buffer.write(metin.encode("utf-8")); akis.buffer.flush()
+    except AttributeError: akis.write(metin); akis.flush()
+
+
 def cikti(veri):
-    sys.stdout.write(json.dumps(veri, ensure_ascii=False)); sys.stdout.flush()
+    _bayt_yaz(sys.stdout, json.dumps(veri, ensure_ascii=True))          # JSON yalnız ASCII (\u00fc): kod sayfasından bağımsız
 
 
 def reddet(olay, neden):
@@ -1000,6 +1007,7 @@ def k_ajan(g):
         return ret("yerlesik_ajan", "Film sürüşünde fork ve yerleşik ajan yok; yalnız görevdeki ajan tipi (subagent_type=<ajan>).")
     if tip not in kadro():
         return ret("kadro_disi", "Kadro dışı ajan: %s. Yalnız film.py sonraki'nin verdiği ajan tipi." % tip)
+    # Ö0-a #4: Agent aracında name alanı olmayabilir; isolation: worktree origin/main ister. Sistem ikisine de dayanmaz (yalnız ret).
     if ti.get("name") or ti.get("isolation") or ti.get("team_name"):
         return ret("parametre", "Agent çağrısında name/isolation verilmez; yalnız subagent_type ve istem AYNEN.")
     if not m:
@@ -1086,10 +1094,37 @@ def k_oturum_basi(g):
     n = json_oku(os.path.join(film, "_GOREV", "KANCA_NABZI.json"), {}) or {}
     s.append("Kanca nabzı: " + (("son %s" % n["zaman"]) if n.get("zaman") else "yok (ilk film.py basla'da yazılır)"))
     if orm == "bulut": s.append("BULUT (D-45): yalnız --saglayici sahte denemesi; gerçek üretim kullanıcının bilgisayarında.")
+    if kaynak == "resume":
+        surdurme_isaretle(film, g)
+        s.append("Oturum SÜRDÜRÜLDÜ (resume): ilk mesajın 'devam' olması gerekmez. Mesaj soru ise yalnız cevap; 'dur' ise dur; "
+                 "öteki her mesajda kaldığın yerden sür. Sürüş kullanıcı 'dur' dediği için kapalıysa açma: 'sürmek için devam yaz' bilgisini ver.")
     s.append("Sıradaki: python .claude/bin/film.py sonraki")
     s.append(KURAL_OZETI)
     s.append("Döngü: film-yap becerisi. Hafızana değil film.py'ye güven.")
     return baglam("SessionStart", "\n".join(s))
+
+
+# ---- sürdürme (Ö0-a #11: masaüstü uygulaması aynı konuşmayı sürdürür ama ilk mesaj "devam" olmaz) ------------------------
+SURDURME_GECERLI_SN = 12 * 3600
+
+
+def surdurme_yolu(film): return os.path.join(film, "_GOREV", "OTURUM_SURDURULDU.json")
+
+
+def surdurme_isaretle(film, g):
+    try: atomik_yaz(surdurme_yolu(film), {"session_id": g.get("session_id"), "t": time.time(), "zaman": simdi(), "kullanildi": False})
+    except Exception: pass
+
+
+def surdurme_ilk_mesaj_mi(film, g):
+    """Bu oturum resume ile açıldı ve bu, ondan sonraki İLK kullanıcı mesajı mı? Öyleyse işaret 'kullanildi' olur (silinmez)."""
+    p = surdurme_yolu(film); d = json_oku(p, {}) or {}
+    if not d or d.get("kullanildi") or time.time() - float(d.get("t") or 0) > SURDURME_GECERLI_SN: return False
+    if d.get("session_id") and g.get("session_id") and d["session_id"] != g["session_id"]: return False
+    d["kullanildi"] = True
+    try: atomik_yaz(p, d)
+    except Exception: pass
+    return True
 
 
 # ---- istem (kullanıcı mesajı sınıflaması) ----------------------------------------------------------------------------
@@ -1185,6 +1220,7 @@ def k_istem(g):
     sat = []
     if s["alt"] == "dur":
         if film:
+            surdurme_ilk_mesaj_mi(film, g)                              # sürdürme işareti tüketilir: sonraki mesaj "devam" sayılmaz
             film_py("surus", "kapat", "--film", film, "--json")
             kayit(film, olay="surus_kapat", neden="kullanici_dur")
             sat.append("Kullanıcı DURDUR dedi: otomatik sürüş kapandı. Yeni iş başlatma; kısa bilgi ver (ne durdu, devam için 'devam' yazması yeter).")
@@ -1202,9 +1238,13 @@ def k_istem(g):
                 sat.append("Film istendi ama konu yok: film başlatma. YALNIZ şunu sor (başka cümle eklenmez): '%s'" % TEK_SORU)
         return baglam("UserPromptSubmit", "\n".join(sat), ISTEM_BAGLAM_MAX)
     st = film_durum(film); sur = st.get("otomatik_surus") or {}
+    ilk_surdurme = surdurme_ilk_mesaj_mi(film, g)
     if not sur.get("acik", True) and sur.get("neden") in ("soru", "kullanici") and s["sinif"] != "soru" and \
             (s["alt"] == "devam" or s["sinif"] in ("konu", "not")):
         film_py("surus", "ac", "--film", film, "--json")
+    elif ilk_surdurme and s["sinif"] == "diger" and s["alt"] in (None, "devam") and not sur.get("acik", True) \
+            and sur.get("neden") == "soru":
+        film_py("surus", "ac", "--film", film, "--json")              # sürdürülen oturumun ilk mesajı devam sayılır (dur hariç)
     sat.append("[film: %s · aşama %s%s]" % (st.get("film") or os.path.basename(film), st.get("aktif_asama") or "?",
                                            " · bekleyen kullanıcı işi: " + ", ".join(st["bekleyen_kullanici"][:3])
                                            if st.get("bekleyen_kullanici") else ""))
@@ -1215,6 +1255,8 @@ def k_istem(g):
     elif s["sinif"] == "konu":
         sat.append("Aktif film var; yeni konu notu olarak işlenir (film-not) ya da kullanıcı yeni film istiyorsa film-yap kararı ekip verir.")
     else:
+        if ilk_surdurme and s["alt"] != "devam":
+            sat.append("Oturum sürdürüldü: bu ilk mesaj 'devam' sayılır (kaldığın yerden sür).")
         sat.append("Döngü: python .claude/bin/film.py sonraki (film-yap). Soru sorma.")
     return baglam("UserPromptSubmit", "\n".join(sat), ISTEM_BAGLAM_MAX)
 
@@ -1496,8 +1538,8 @@ def main(argv):
     except BaseException as e:                                          # D-11: kendi içinde kapalı başarısız
         if isinstance(e, SystemExit) and e.code in (0, None): return 0
         if olay in GUVENLIK or olay not in OLAYLAR:
-            sys.stderr.write("[film seti kancası] %s doğrulanamadı (%s); işlem güvenlik için engellendi. "
-                             "KURTARMA.md §Kanca.\n" % (olay or "?", type(e).__name__))
+            _bayt_yaz(sys.stderr, "[film seti kancası] %s doğrulanamadı (%s); işlem güvenlik için engellendi. "
+                      "KURTARMA.md §Kanca.\n" % (olay or "?", type(e).__name__))
             return 2
         return 0                                                         # bilgi kancaları açık başarısız
 

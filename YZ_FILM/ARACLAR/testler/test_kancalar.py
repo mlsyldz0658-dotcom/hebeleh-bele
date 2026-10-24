@@ -702,6 +702,49 @@ class TestIstemVeOturum(Ortam):
         r = subprocess.run([sys.executable, KANCA, "oturum_basi"], input=b'{"source":"startup"}', capture_output=True, env=e2)
         self.assertIn("ortam=bulut", json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"])
 
+    def test_surdurme_ilk_mesaj_devam_olmak_zorunda_degil(self):
+        """Ö0-a #11: masaüstü uygulamasında sürdürme aynı konuşmayı açar ama ilk mesaj 'devam' olmaz. resume işareti → soru/dur
+        olmayan ilk mesaj devam sayılır (soru yüzünden kapanmış sürüş açılır); 'dur'la kapanmış sürüş açılmaz; işaret bir kez."""
+        d = os.path.join(self.film, "FILM_DURUM.json")
+        for ilk, soru_kapali, acik_beklenen in (("merhaba", True, True), ("şunu da ekle sonra", True, True),
+                                                 ("neden durdu?", True, False), ("merhaba", False, False)):
+            self.surus(False, "soru" if soru_kapali else "kullanici")
+            t = baglam(kos("oturum_basi", {"source": "resume", "cwd": DEPO, "session_id": "s1"}, ortam="yerel"))
+            self.assertIn("SÜRDÜRÜLDÜ", t); self.assertTrue(os.path.isfile(kanca.surdurme_yolu(self.film)))
+            t = baglam(kos("istem", {"prompt": ilk, "session_id": "s1"}, ortam="yerel"))
+            self.assertEqual(jo(d)["otomatik_surus"]["acik"], acik_beklenen, (ilk, soru_kapali))
+            self.assertTrue(jo(kanca.surdurme_yolu(self.film))["kullanildi"])
+        self.surus(False, "soru"); kos("istem", {"prompt": "merhaba", "session_id": "s1"}, ortam="yerel")   # işaret tüketildi
+        self.assertFalse(jo(d)["otomatik_surus"]["acik"])
+        kos("oturum_basi", {"source": "resume", "cwd": DEPO, "session_id": "s1"}, ortam="yerel")
+        kos("istem", {"prompt": "merhaba", "session_id": "BASKA"}, ortam="yerel")                             # başka oturum
+        self.assertFalse(jo(d)["otomatik_surus"]["acik"])
+        kos("istem", {"prompt": "dur", "session_id": "s1"}, ortam="yerel")                                    # dur işareti tüketir
+        self.assertTrue(jo(kanca.surdurme_yolu(self.film))["kullanildi"])
+        kos("istem", {"prompt": "devam", "session_id": "s1"}, ortam="yerel")                                  # DEVAM yolu aynen
+        self.assertTrue(jo(d)["otomatik_surus"]["acik"])
+
+
+class TestUtf8(unittest.TestCase):
+    """Ö0-a #14: kanca çıktısı Windows kod sayfasından (cp1254/cp1252; burada en kötüsü ascii) bağımsız; kanca.sh PYTHONUTF8=1."""
+    def test_cikti_ve_hata_utf8(self):
+        kod = ("import importlib.util,sys; s=importlib.util.spec_from_file_location('k', %r); k=importlib.util.module_from_spec(s); "
+               "s.loader.exec_module(k); k.engelle_karar('Sıradaki görev: çalıştır, ü ö ç ğ ş ı'); k._bayt_yaz(sys.stderr, 'kancası ü')") % KANCA
+        r = subprocess.run([sys.executable, "-c", kod], capture_output=True, timeout=60,
+                           env=dict(os.environ, PYTHONIOENCODING="ascii", PYTHONUTF8="0"))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout.decode("ascii"))["reason"], "Sıradaki görev: çalıştır, ü ö ç ğ ş ı")
+        self.assertEqual(r.stderr.decode("utf-8"), "kancası ü")
+        sh = open(KANCA_SH, encoding="utf-8").read()
+        self.assertIn("export PYTHONUTF8=1 PYTHONIOENCODING=utf-8", sh)
+
+    def test_effort_degersiz_girdi_kancayi_bozmaz(self):
+        """Ö0-a #12: girdide effort anahtarı var, değeri yok (null/""/{}): bilgi kancaları 0 ile döner, hata vermez."""
+        for olay in ("ajan_basi", "ajan_bitti", "oturum_basi", "stop"):
+            for e in (None, "", {}):
+                r = kos(olay, {"hook_event_name": olay, "effort": e, "agent_type": "habersiz-seyirci", "session_id": "s"})
+                self.assertEqual(r[0], 0, (olay, e, r[2]))
+
 
 # ---- kapalı başarısızlık, ayarlar, süre ------------------------------------------------------------------------------------
 class TestKapaliBasarisiz(unittest.TestCase):

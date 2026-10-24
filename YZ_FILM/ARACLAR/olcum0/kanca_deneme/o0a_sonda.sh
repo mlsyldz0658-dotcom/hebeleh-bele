@@ -15,7 +15,8 @@ elif command -v python3 >/dev/null 2>&1; then CMD=(python3)
 elif command -v python >/dev/null 2>&1; then CMD=(python)
 else exit 0
 fi
-PYTHONIOENCODING=utf-8 "${CMD[@]}" "$K" "$@"
+export PYTHONUTF8=1 PYTHONIOENCODING=utf-8   # Ö0-a #14: Windows kod sayfasında Türkçe harfler bozulmasın
+"${CMD[@]}" "$K" "$@"
 rc=$?
 if [ "$rc" = 3 ]; then exit 3; fi
 exit 0

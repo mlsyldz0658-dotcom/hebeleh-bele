@@ -10,8 +10,10 @@
   sahneler_oku(kok)    SAHNELER.json'u okur; "_surum" ≥ 2 ise v1 araç onu işlemez, 4 ile çıkar ("Memmet v2 gerekli")
   atomik_yaz(yol, v)   JSON'u önce .tmp'ye yazıp yerine koyar (yarım dosya kalmaz; Windows'ta kilitliyse 3 kez dener)
   json_oku(yol, vars)  yoksa ya da bozuksa varsayılanı döndürür
+  claude_yolu()        Claude Code'un GERÇEK çalıştırılabiliri (Windows'ta claude.exe; npm'in claude.cmd'si cmd.exe'den geçer)
+  claude_komutu(argv, istem)  alt süreç için (komut listesi, stdin metni): kullanıcı/istem metni hiçbir zaman argv'de cmd.exe'ye gitmez
 """
-import os, sys, json, time
+import os, sys, json, time, re, shutil
 
 SURUM_CIKIS = 4   # ortam/sürüm uyuşmazlığı: bu araç bu dosyayı işleyemez
 ARACLAR = os.path.dirname(os.path.abspath(__file__))
@@ -116,3 +118,57 @@ def json_oku(yol, varsayilan=None):
     try:
         with open(yol, encoding="utf-8-sig") as f: return json.load(f)
     except (OSError, ValueError): return varsayilan
+
+
+# ---- Claude Code alt süreci (Ö0-a #19: Windows'ta claude.CMD + istemdeki <…> = cmd.exe yönlendirmesi) -------------------------------
+CLAUDE_NPM_EXE = os.path.join("node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe")
+_KABUK_UZANTI = (".cmd", ".bat")
+_CMD_HEDEF = re.compile(r'%~?dp0%?[\\/]*([^"%\r\n*]+?\.exe)\b', re.I)
+
+
+def claude_kabuktan_mi(yol):
+    """Bu yol cmd.exe'den geçen bir sarmalayıcı mı (.cmd/.bat)? Öyleyse argv'deki metin cmd.exe'de yorumlanır."""
+    return bool(yol) and str(yol).lower().endswith(_KABUK_UZANTI)
+
+
+def claude_yolu(which=None, nt=None, dosya_var=None, oku=None):
+    """Claude Code'un GERÇEK çalıştırılabiliri; bulunamazsa None. Windows sırası: PATH'te .exe → npm sarmalayıcısının (claude.cmd)
+    yanındaki node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe → sarmalayıcının içinde adı geçen .exe (node.exe değil) →
+    PATH'te claude.exe, %USERPROFILE%\\.local\\bin\\claude.exe (yerel kurucu) → son çare sarmalayıcının kendisi (claude_kabuktan_mi True:
+    çağıran istem metnini argv'de VERMEZ, claude_komutu stdin'den verir). which/nt/dosya_var/oku testler içindir."""
+    which = which or shutil.which; nt = (os.name == "nt") if nt is None else nt
+    dosya_var = dosya_var or os.path.isfile
+    def oku_(p):
+        try:
+            with open(p, encoding="utf-8", errors="replace") as f: return f.read(20000)
+        except OSError: return ""
+    oku = oku or oku_
+    w = which("claude")
+    if not nt: return w
+    import ntpath as P                                   # Windows yolu (testler Linux'ta da Windows biçimiyle sınar)
+    if w and str(w).lower().endswith(".exe"): return w
+    adaylar = []
+    if w:
+        d = P.dirname(w)
+        adaylar.append(P.join(d, CLAUDE_NPM_EXE.replace("/", "\\")))
+        if claude_kabuktan_mi(w):
+            for m in _CMD_HEDEF.finditer(oku(w)):
+                g = m.group(1).replace("/", "\\")
+                if P.basename(g).lower() != "node.exe": adaylar.append(P.join(d, g))
+    e = which("claude.exe")
+    if e: adaylar.append(e)
+    ev = os.environ.get("USERPROFILE") or os.path.expanduser("~")
+    adaylar.append(P.join(ev, ".local", "bin", "claude.exe"))
+    for a in adaylar:
+        if a and dosya_var(a): return a
+    return w
+
+
+def claude_komutu(argv, istem=None, yol=None):
+    """(komut listesi, stdin metni) ya da yol yoksa (None, None). İstem/kullanıcı metni HER ZAMAN stdin'den gider (claude -p istemi
+    stdin'den okur): .exe'de de .cmd'de de argv'de yalnız sabit bayraklar kalır; cmd.exe hiçbir kullanıcı metnini yorumlayamaz.
+    Liste biçimi (shell=False) zorunlu; kabuk dizesi kurulmaz."""
+    yol = yol or claude_yolu()
+    if not yol: return None, None
+    return [yol] + [str(x) for x in argv], istem
+

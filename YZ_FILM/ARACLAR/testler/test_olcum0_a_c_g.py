@@ -230,6 +230,83 @@ class KancaDeneme(_VeriKoku):
         self.assertEqual(f(temel + [{"olay": "stop", "t": 70}], self.bag())["sonuc"], "calisiyor")
         self.assertEqual(f(temel + [{"olay": "istem", "t": 200}, {"olay": "stop", "t": 210}], self.bag())["sonuc"], "calismiyor")
         self.assertIsNone(f([temel[0], temel[2], {"olay": "stop", "t": 61}], self.bag())["sonuc"])   # tur bitmeden beklendi
+        # ilk yerel oturum bulgusu (#2/#16): bildirim oturuma istem olarak gelir; yalnız GERÇEK kullanıcı istemi "uyanmadı" saydırır
+        self.assertEqual(f(temel + [{"olay": "istem", "istem_turu": "sistem", "t": 61}, {"olay": "stop", "t": 70}], self.bag())["sonuc"], "calisiyor")
+        self.assertEqual(f(temel + [{"olay": "istem", "istem_turu": "kullanici", "t": 200}], self.bag())["sonuc"], "calismiyor")
+        self.assertEqual(f(temel + [{"olay": "bildirim", "t": 61}, {"olay": "istem", "istem_turu": "kullanici", "t": 200}],
+                           self.bag())["sonuc"], "calismiyor")                                  # masaüstü bildirimi kullanıcı değildir
+        self.assertEqual(DV.KATALOG[15]["f"](
+            [dict(o, ad="arka-bash") if o.get("ad") else o for o in temel] + [{"olay": "istem", "istem_turu": "sistem", "t": 90}],
+            self.bag())["sonuc"], "calisiyor")
+
+    def test_sonda_istem_turu_bildirim_kullanici_degil(self):
+        self.kos.kur(self.y)
+        for g, tur in (({"prompt": "<task-notification>\n<task-id>b1</task-id>\n<status>completed</status>\n</task-notification>"}, "sistem"),
+                       ({"prompt": "  <system-reminder>arka plan işi bitti</system-reminder>"}, "sistem"),
+                       ({"prompt": "devam", "isSynthetic": True}, "sistem"), ({"prompt": ""}, "sistem"),
+                       ({"prompt": "devam"}, "kullanici"), ({"prompt": "ejderha yavrusunu saklayan <avcı> kadın"}, "kullanici")):
+            self.kancala("istem", dict(g, hook_event_name="UserPromptSubmit", session_id="s"))
+            self.assertEqual(self.olaylar()[-1]["istem_turu"], tur, g)
+        self.assertNotIn("task-notification", metin(self.y.olaylar)); self.assertNotIn("ejderha", metin(self.y.olaylar))
+
+    def test_sonda_stop_nedeni_utf8_kod_sayfasindan_bagimsiz(self):
+        """#14: Windows'ta kanca süreci cp1254/cp1252 (burada en kötüsü: ascii) stdout'la koşsa da Stop nedeni bozulmaz."""
+        self.kos.kur(self.y); self.kos.adim(self.y, 14)
+        kod, _ = 0, None
+        r = subprocess.run([sys.executable, SONDA, "stop", "--giris", "mutlak", "--kayit", self.kayit],
+                           input=json.dumps({"hook_event_name": "Stop", "session_id": "s"}).encode("utf-8"), capture_output=True,
+                           timeout=60, env=dict(os.environ, PYTHONIOENCODING="ascii", PYTHONUTF8="0"))
+        self.assertEqual(r.returncode, 0)
+        neden = json.loads(r.stdout.decode("utf-8"))["reason"]
+        self.assertIn("kapısı", neden); self.assertIn("çalıştır", neden)
+        r = subprocess.run([sys.executable, SONDA, "isaret", "utf8-deneme", "--kayit", self.kayit], capture_output=True, timeout=30,
+                           env=dict(os.environ, PYTHONIOENCODING="ascii", PYTHONUTF8="0"))
+        self.assertEqual(r.returncode, 0); self.assertIn("işaret", r.stdout.decode("utf-8"))
+        self.assertIn("PYTHONUTF8=1", metin(os.path.join(ARACLAR, "olcum0", "kanca_deneme", "o0a_sonda.sh")))
+        self.assertEqual(json_(self.kos.SABLON)["env"]["PYTHONUTF8"], "1")
+
+    def test_d7_yazma_olcusu_yazan_ve_okuyan_ayni(self):
+        """#7: değerlendirici OTOMATIK.json["7"]["dosya_var"]'ı okur; onu artık degerlendir 7 yazar (alt ajanın yazdığı {YAZMA} dosyası)."""
+        self.kos.kur(self.y); self.kos.adim(self.y, 7)
+        self.assertIn(self.kos.ileri(self.y.yazma) + "/ajan_yazdi.txt", self.kos.bicimle(self.DV.madde(7)["adimlar"][0], self.y))
+        t = time.time() + 1
+        ol = {"olay": "erisim", "tool_name": "Write", "agent_id": "a7", "dosya_adi": "ajan_yazdi.txt", "t": t}
+        with open(self.y.olaylar, "a", encoding="utf-8") as f: f.write(json.dumps(ol) + "\n")
+        self.assertEqual(self.kos.degerlendir(self.y, 7)[1]["sonuc"], "calismiyor")       # dosya yok
+        metin_yaz(os.path.join(self.y.yazma, "ajan_yazdi.txt"), "o0a")
+        kod, k = self.kos.degerlendir(self.y, 7)
+        self.assertEqual((kod, k["sonuc"], k["olcu"]["dosya_var"]), (0, "calisiyor", True))
+        self.assertTrue(json_(self.y.otomatik)["7"]["dosya_var"])
+
+    def test_d4_name_isolation_tolerans_d11_ilk_mesaj_devam_gerekmez(self):
+        DV = self.DV
+        a = {"olay": "ajan", "tool_name": "Agent", "subagent_type": "o0a-sonda", "name_var": False, "isolation_var": False, "t": 1}
+        r = DV.d4([a], self.bag()); self.assertEqual(r["sonuc"], "calisiyor"); self.assertFalse(r["olcu"]["name_gorunur"])
+        self.assertEqual(DV.d4([dict(a, subagent_type=None)], self.bag())["sonuc"], "calismiyor")
+        self.assertNotIn("isolation 'worktree'", " ".join(DV.madde(4)["adimlar"]))
+        tum = [{"olay": "komut", "session_id": "s1", "t": 1}]
+        ol = [{"olay": "oturum_basi", "kaynak": "resume", "session_id": "s1", "t": 10},
+              {"olay": "istem", "prompt_devam": False, "istem_turu": "kullanici", "t": 20}]
+        r = DV.d11(ol, self.bag(tum=tum + ol)); self.assertEqual(r["sonuc"], "calisiyor"); self.assertFalse(r["olcu"]["ilk_mesaj_devam"])
+        yeni = [{"olay": "oturum_basi", "kaynak": "startup", "session_id": "s2", "t": 10}]
+        self.assertEqual(DV.d11(yeni, self.bag(tum=tum + yeni))["sonuc"], "calismiyor")
+
+    def test_d12_effort_degersiz_anahtar(self):
+        DV = self.DV
+        s = {"3": {"olcu": {"maxturns_subagentstop": True}}, "7": {"olcu": {"izin_sorusu": False}}, "9": {"olcu": {"beceri_kancasi_kostu": True}}}
+        tum = [{"olay": "ajan_basi", "agent_type": "o0a-sonda", "effort_anahtari": True, "effort": None},
+               {"olay": "ajan_bitti", "agent_type": "o0a-sonda", "dokum_var": True, "claude_md_gorundu": False}]
+        elle = {"disable_model_invocation": "evet", "allowed_tools": "evet", "disallowed_tools": "evet", "effort": "  "}
+        r = DV.d12([], self.bag(tum=tum, elle=elle, sonuclar=s))
+        self.assertEqual(r["sonuc"], "calisiyor", r); self.assertEqual(r["olcu"]["effort"], "degersiz"); self.assertEqual(r["olcu"]["degersiz"], ["effort"])
+        tum[0]["effort"] = "high"
+        self.assertIs(DV.d12([], self.bag(tum=tum, elle=elle, sonuclar=s))["olcu"]["effort"], True)
+        self.assertIsNone(DV.d12([], self.bag(tum=tum[1:], elle=elle, sonuclar=s))["sonuc"])          # hiç bilgi yok: elle sorulur
+        self.kos.kur(self.y)
+        for e in (None, "", {"level": ""}, {"level": "high"}):
+            self.kancala("ajan_basi", {"hook_event_name": "SubagentStart", "agent_id": "a", "agent_type": "o0a-sonda", "effort": e})
+            o = self.olaylar()[-1]; self.assertTrue(o["effort_anahtari"])
+            self.assertEqual(o["effort"], "high" if e == {"level": "high"} else None, e)
 
     def test_d5_d18_zaman_asimi_ve_kod(self):
         DV = self.DV
@@ -279,6 +356,49 @@ class KancaDeneme(_VeriKoku):
         self.assertEqual(self.DV.d19([], self.bag(otomatik={"19": o}))["sonuc"], "calisiyor")
         sizdi = dict(o, claude_md_yuklendi=True)
         self.assertEqual(self.DV.d19([], self.bag(otomatik={"19": sizdi}))["sonuc"], "calismiyor")
+
+    def test_kor_rol_windows_claude_cmd_istem_cmd_exeden_gecmez(self):
+        """#19 (ilk yerel oturum): which('claude') → npm claude.CMD; istemdeki <…> cmd.exe'de yönlendirme oldu. Artık: claude.exe
+        varsa o çağrılır; yalnız .CMD varsa bile istem argv'de değil stdin'de."""
+        from unittest import mock
+        gorulen = []
+        def sahte(cmd, input=None, cwd=None, **k):
+            if cmd[1:] == ["--help"]: return subprocess.CompletedProcess(cmd, 0, "  --restricted\n", "")
+            gorulen.append((cmd, input))
+            return subprocess.CompletedProcess(cmd, 0, json.dumps({"result": "{}", "is_error": False}), "")
+        cmd_yolu = "C:\\Users\\Soysal\\AppData\\Roaming\\npm\\claude.CMD"
+        exe = "C:\\Users\\Soysal\\AppData\\Roaming\\npm\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe"
+        for var, beklenen in ((set(), cmd_yolu), ({exe}, exe)):
+            gercek_isfile = os.path.isfile
+            with mock.patch.object(ortak.os, "name", "nt"), \
+                    mock.patch("shutil.which", lambda ad, *a, **k: cmd_yolu if ad == "claude" else None), \
+                    mock.patch.object(ortak.os.path, "isfile", lambda p: p in var or (not p.startswith("C:\\") and gercek_isfile(p))):
+                self.assertEqual(ortak.claude_yolu(), beklenen)
+                o = self.kos.kor_rol(calistir=sahte, kok=tempfile.mkdtemp(dir=self.kok))
+            cmd, girdi = gorulen[-1]
+            self.assertEqual(cmd[0], beklenen); self.assertEqual(girdi, self.kos.KOR_ISTEM)
+            self.assertFalse([x for x in cmd if self.kos.KOR_ISTEM in x or "<" in x or ">" in x], cmd)
+            self.assertTrue(o["istem_stdin"]); self.assertEqual(o["kabuk_sarmalayici"], beklenen.endswith(".CMD"))
+
+    def test_yeniden_duzeltilen_maddeler_acilir_O0a_degismez(self):
+        """Ö0-a bulguları düzeltildi: çalışmıyor olan #2/#7/#16/#19 yeniden açılır, #4 eldeki kayıttan çalışıyor olur; öteki sonuçlar
+        korunur; kullanıcının O0a.json'u değişmez (bitir yenisini yazar, eskisi _ESKI'ye kopyalanır)."""
+        import ortak_o0
+        davr = [{"no": n, "baslik": "x", "sonuc": "calismiyor", "yedek": "y", "kaynak": "otomatik"} for n in range(1, 21)]
+        davr[0]["sonuc"] = "calisiyor"; davr[10]["sonuc"] = "calisiyor"
+        ortak_o0.yaz("a", {"durum": "bitti", "davranislar": davr, "kararlar": {}}); once = sha(ortak_o0.yol("a"))
+        os.makedirs(self.kayit, exist_ok=True)
+        with open(self.y.olaylar, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"olay": "ajan", "tool_name": "Agent", "subagent_type": "o0a-sonda", "name_var": False, "isolation_var": False, "t": 5}) + "\n")
+        kod, acilan, kapanan = self.kos.yeniden(self.y)
+        self.assertEqual(kod, 0); self.assertEqual(kapanan, [4]); self.assertEqual(acilan, [2, 7, 12, 16, 19])
+        s = self.kos.sonuclar(self.y)
+        self.assertEqual(s["1"]["sonuc"], "calisiyor"); self.assertEqual(s["11"]["sonuc"], "calisiyor")      # korunur
+        self.assertIsNone(s["19"]["sonuc"]); self.assertEqual(s["19"]["onceki"]["sonuc"], "calismiyor")
+        self.assertEqual(sha(ortak_o0.yol("a")), once)
+        self.kos.kur(self.y); self.assertEqual(self.kos.bitir(self.y), 0)
+        self.assertTrue(os.listdir(os.path.join(os.path.dirname(ortak_o0.yol("a")), "_ESKI")))           # eski O0a.json kopyalandı
+        self.assertEqual(ortak_o0.oku("a")["davranislar"][3]["sonuc"], "calisiyor")
 
     def test_kanca_suresi_sahte(self):
         o = self.kos.kanca_suresi(self.y, calistir=lambda *a, **k: subprocess.CompletedProcess(a, 0, b"", b""))
@@ -526,6 +646,58 @@ class KanalO0g(_VeriKoku):
         g = self.o0.oku("g")
         self.assertFalse(g["olculemedi"]); self.assertEqual(g["video_sayisi"], 2); self.assertNotEqual(g["genel_teshis"], "ölçülemedi")
         self.assertTrue([x for x in self.o0.ozet_oku()["denemeler"] if x["olcum"] == "Ö0-g"])
+
+
+class ClaudeYolu(unittest.TestCase):
+    """ortak.claude_yolu / claude_komutu: Windows'ta gerçek claude.exe; kullanıcı metni hiçbir zaman cmd.exe argv'sine girmez."""
+    NPM = "C:\\Users\\Soysal\\AppData\\Roaming\\npm"
+
+    def yol(self, which, var=(), icerik=""):
+        return ortak.claude_yolu(which=lambda ad: which.get(ad), nt=True, dosya_var=lambda p: p in set(var), oku=lambda p: icerik)
+
+    def test_cmd_yanindaki_npm_exe(self):
+        exe = self.NPM + "\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe"
+        self.assertEqual(self.yol({"claude": self.NPM + "\\claude.CMD"}, [exe]), exe)
+
+    def test_cmd_icindeki_hedef_node_exe_degil(self):
+        cmd = self.NPM + "\\claude.cmd"
+        icerik = '@IF EXIST "%~dp0\\node.exe" (\r\n  "%~dp0\\node.exe" %*\r\n)\r\n"%dp0%\\..\\claude-yerel\\claude.exe"   %*\r\n'
+        hedef = self.NPM + "\\..\\claude-yerel\\claude.exe"
+        self.assertEqual(self.yol({"claude": cmd}, [hedef, self.NPM + "\\node.exe"], icerik), hedef)
+
+    def test_path_exe_ve_yerel_kurucu(self):
+        self.assertEqual(self.yol({"claude": "C:\\x\\claude.EXE"}), "C:\\x\\claude.EXE")
+        self.assertEqual(self.yol({"claude": self.NPM + "\\claude.cmd", "claude.exe": "C:\\y\\claude.exe"}, ["C:\\y\\claude.exe"]), "C:\\y\\claude.exe")
+        self.assertIsNone(self.yol({}))
+
+    def test_yalniz_cmd_varsa_istem_stdinden(self):
+        cmd = self.NPM + "\\claude.cmd"
+        y = self.yol({"claude": cmd})
+        self.assertEqual(y, cmd); self.assertTrue(ortak.claude_kabuktan_mi(y))
+        istem = "konu: <avcı> & ejderha | ^%PATH%"
+        argv, girdi = ortak.claude_komutu(["-p", "--output-format", "json"], istem, yol=y)
+        self.assertEqual(argv, [cmd, "-p", "--output-format", "json"]); self.assertEqual(girdi, istem)
+        from unittest import mock
+        with mock.patch("shutil.which", lambda *a, **k: None), mock.patch.object(ortak.os.path, "isfile", lambda p: False):
+            self.assertEqual(ortak.claude_komutu(["-p"], "x"), (None, None))
+
+    def test_windows_disi_which(self):
+        self.assertEqual(ortak.claude_yolu(which=lambda ad: "/usr/bin/claude" if ad == "claude" else None, nt=False), "/usr/bin/claude")
+        self.assertFalse(ortak.claude_kabuktan_mi("/usr/bin/claude"))
+
+    def test_claude_cagiran_kod_ortak_cozucuyu_kullanir(self):
+        """Depoda claude'u alt süreçle çağıran ya da arayan her araç ortak.claude_yolu'ndan geçer (yalın "claude" argv'si yok)."""
+        import re
+        kotu = []
+        for kok, ds, fs in os.walk(ARACLAR):
+            ds[:] = [d for d in ds if d not in ("testler", "__pycache__")]
+            for f in fs:
+                if not f.endswith(".py"): continue
+                m = metin(os.path.join(kok, f))
+                for i, sat in enumerate(m.splitlines(), 1):
+                    if re.search(r"""\[\s*["']claude["']\s*,|which\(\s*["']claude["']\s*\)""", sat) and "ortak.py" not in f:
+                        kotu.append(f"{f}:{i}")
+        self.assertEqual(kotu, [])
 
 
 if __name__ == "__main__":

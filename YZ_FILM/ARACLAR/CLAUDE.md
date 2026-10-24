@@ -47,6 +47,16 @@ model ve servis çağrısı yok). Adım başına ana araçlar:
   ses sağlayıcıları.
 - **14 PR-10 animatik:** `zaman_cizelgesi_t1`, `kurgu_render --animatik/--bilgi-paketi`, `kor_paket_izleme`, `seyirci_topla`, `animatik_imza`
   (onaysız animatikte video kredisi yok), `kurgu_uygula`, `kurgu_denetim --kesme-simule`, `bildirim`, `izleyici`/`dinleyici` sağlayıcıları.
+- **2 (kısmen) memmet3 aktarımı birleşti (24.10):** yerel dal `yerel/memmet3-20261024-1346` birleştirildi; dosya yalnız başvuru olarak
+  `YZ_FILM/_ESKI/memmet3/` (BENIOKU.md; ilk satırı `raise SystemExit`; kanca `memmet_arsiv` `_ESKI/`/`GELISTIRME/` altındaki Memmet'i
+  her bağlamda reddeder). Koşan tek Memmet `ARACLAR/memmet.py`. memmet3, 34a9097'deki `memmet.py` + küçük arayüz ekleridir; ondan
+  `dokun`/`oku` üzerinden alınanlar: video modeli seçici (ayar menüsünde `button "Model"`, yoksa tek `arrow_drop_down` düğmesi →
+  `get_by_text(<model>, exact)`; model ayar yazısında görünmez, gezinmede sıfırlanır; bulunamazsa gönderim yok, 2), SAHNELER `en_boy`
+  16:9 | 9:16, MEMMET_AYAR (_surum ≥ 2) `video_model` / `gorsel_adet` (v1 x2 → `_ADAYLAR/NNN_b.jpg`), elle kipte referans sahnesinde
+  yüklenir, `MEMMET_OLCEK` (0.5–3). **Alınmayanlar:** Chrome arka plan yavaşlatma bayrakları (örtülü sekme insan sekmesinden farklı
+  koşar), modeli bulamayınca "seçili modelle devam" (bütçe/kalite tutmaz), sürümsüz ayar dosyasından model/adet; memmet3'ün kendi
+  notundaki `--hesap`, `--telefon`, beklemeyi kısaltma, uyarıda yenileme / F5, MEMMET_KONUM çoklu pencere (zaten alınmamıştı).
+  Testler `test_memmet_korkuluk` `Memmet3Aktarim` + `HerAn` model seçicili tarama. Kalan: Ö0-a (`O0a.json` yerelde).
 - **15 PR-11 video hattı:** `memmet.py` v2 (`--blok`, `--onizleme`; animatik ONAYLI değilse göndermez), `blok_plani`, `memmet_topla`, `yerel_is`,
   `kalite_denetim --klip`, `video_denetim`, `kare_zinciri`, `ses_donustur --hizala`, `memmet_yama`.
 - **16 PR-12 video sonrası ses ve kurgu:** `ses_karar`, `diyalog_esitle`, `dudak_denetim`, `muzik_yerlestir`, `plan_kurgu`, `kirp_oner`,
@@ -65,7 +75,9 @@ model ve servis çağrısı yok). Adım başına ana araçlar:
   Bat ya da kart değişince: `python YZ_FILM/ARACLAR/kullanici_karti.py --yaz` (eşik dosyası değişirse kart testi bunu ister).
 
 **Bekleyen adımlar:**
-- **2 İlk yerel oturum** (aşağıda §İlk yerel oturum; kullanıcı `ilk kurulum` yazınca): veri kökü emniyeti, memmet3 aktarımı, Ö0-a.
+- **2 İlk yerel oturum** (aşağıda §İlk yerel oturum; kullanıcı `ilk kurulum` yazınca): veri kökü emniyeti ve memmet3 aktarımı yapıldı
+  (24.10); Ö0-a'nın bulguları (Windows `claude.CMD`, bildirim/uyanma, #7 yazma ölçüsü, UTF-8, `effort`, `name`/`isolation`,
+  masaüstünde sürdürme) düzeltildi (§Ö0-a bulguları); Ö0-a yeniden koşulup `O0a.json` yerelde yazılır.
 - **9 Ö0-1 yerel ölçümler** (b, c, d, e, g): `olcum0/` betikleri ve `film.py olcum0` **henüz depoda yok** (Ö0-a'nın `olcum0/kanca_deneme/`'si dahil).
 - **11 İlk filmin kâğıt aşaması** (gerçek ajanlarla A00–A09, yerel).
 - **12a Ö0-2 ölçümleri** (f, h, Ö0-b·V3).
@@ -131,3 +143,25 @@ Bu oturumda film başlatılmaz, konu sorulmaz, Flow'a gönderim yapılmaz; kulla
    `O0a.json` yazma ve bunu tek cümleyle söyle.
 
 Her adımda: anahtar dosyaları okunmaz; kalıcı silme ve `robocopy /MIR` yok; Flow uyarısı görülürse dur ve haber ver.
+
+### Ö0-a bulguları (ilk yerel oturum, 24.10.2026) ve düzeltmeler
+- **#19 Windows `claude.CMD`:** `shutil.which("claude")` npm sarmalayıcısını verir; istemdeki `<…>` cmd.exe'de yönlendirme oldu.
+  `ortak.claude_yolu()` gerçek `claude.exe`'yi bulur (PATH'te .exe → `.cmd` yanında `node_modules\@anthropic-ai\claude-code\bin\claude.exe`
+  → `.cmd`'nin içinde adı geçen .exe → `%USERPROFILE%\.local\bin\claude.exe` → son çare `.cmd`); `ortak.claude_komutu()` istemi HER ZAMAN
+  stdin'den verir (argv'de yalnız sabit bayraklar). `o0a_kos.kor_rol`, `kurulum.py`, `bat_isleri.py` bunu kullanır; yeni kod yalın
+  `["claude", …]` ya da `which("claude")` yazmaz (test `ClaudeYolu`).
+- **#2/#16 uyanma:** arka plan işinin bildirimi oturuma istem olarak gelir (`<task-notification>` …); sonda `istem_turu`
+  (`kullanici` | `sistem`, metin yazılmaz) yazar, `uyandi_mi` yalnız gerçek kullanıcı istemini "uyanmadı" sayar.
+- **#7:** `degerlendir 7` alt ajanın yazdığı `{YAZMA}/ajan_yazdi.txt`'yi ölçüp `OTOMATIK.json["7"]`'ye yazar (önce kimse yazmıyordu).
+- **#14 UTF-8:** kanca ve sonda çıktısı UTF-8 bayt (JSON yalnız ASCII); `kanca.sh`/`o0a_sonda.sh` `PYTHONUTF8=1 PYTHONIOENCODING=utf-8`;
+  geçici `settings.local.json` env'i de.
+- **#12 `effort`:** kanca girdisinde anahtar var, değeri yok → `degersiz` (ölçülemedi; madde onunla çalışmıyor sayılmaz); boş elle değer
+  yok sayılır.
+- **#4:** Agent aracında `name` alanı yok; `isolation: worktree` `origin/main` olmadan başarısız. Sistem ikisini de kullanmaz (kanca
+  name/isolation verilen çağrıyı reddeder; görev bağlama istemdeki GOREV.json yolundan); karar yalnız `subagent_type`'a bakar,
+  yönerge isolation istemez.
+- **#11:** masaüstünde sürdürme aynı konuşmayı açar ama ilk mesaj "devam" olmaz. `kanca.py` resume'da `_GOREV/OTURUM_SURDURULDU.json`
+  işareti koyar; sonraki ilk mesaj soru/dur değilse devam sayılır (soru yüzünden kapanmış sürüş açılır; kullanıcının "dur"u açılmaz).
+  DEVAM.bat (`claude --continue`) yedek yol olarak kalır; d11 kararı yalnız aynı oturumun sürmesine bakar.
+- **Yeniden ölçüm (yerelde):** `o0a_kos.py yeniden` → `kur` → `sira` → `otomatik` → `bitir`. Kullanıcının `O0a.json`'u elle düzenlenmez;
+  `bitir` yenisini yazar, eskisini `_ESKI/`'ye kopyalar. Kararlar (`kor_rol_yolu`, `kart_tamam_satiri` …) yeni sonuçlardan yeniden hesaplanır.

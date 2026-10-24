@@ -1,0 +1,1 @@
+kroki.py --ciz kaset kaydı (PNG yok; geometri A07 kaseti)

@@ -1,0 +1,94 @@
+{
+ "kip": "plan",
+ "tur": 1,
+ "seyirci": 3,
+ "persona": "C",
+ "donen_seyirci": false,
+ "ilk2dk_devam": true,
+ "puanlar": {
+  "anlasilirlik": 9,
+  "akicilik": 9,
+  "merak": 9,
+  "duygu": 9,
+  "ritim": 9,
+  "ilk30": 9,
+  "GENEL": 9
+ },
+ "parti_puanlari": {
+  "P1": {
+   "GENEL": 9
+  },
+  "P2": {
+   "GENEL": 9
+  },
+  "P3": {
+   "GENEL": 10
+  }
+ },
+ "kopukluklar": [],
+ "sikilma": [],
+ "ilgi": [
+  {
+   "sahne": "S01",
+   "puan": 6
+  },
+  {
+   "sahne": "S02",
+   "puan": 7
+  },
+  {
+   "sahne": "S03",
+   "puan": 8
+  },
+  {
+   "sahne": "S04",
+   "puan": 9
+  },
+  {
+   "sahne": "S05",
+   "puan": 6
+  },
+  {
+   "sahne": "S06",
+   "puan": 7
+  },
+  {
+   "sahne": "S07",
+   "puan": 8
+  },
+  {
+   "sahne": "S08",
+   "puan": 9
+  },
+  {
+   "sahne": "S09",
+   "puan": 6
+  },
+  {
+   "sahne": "S10",
+   "puan": 7
+  },
+  {
+   "sahne": "S11",
+   "puan": 8
+  },
+  {
+   "sahne": "S12",
+   "puan": 9
+  }
+ ],
+ "acik_sorular": [
+  "Kuzeydeki ışık neydi?"
+ ],
+ "ozet_parti": "Kadın bir ejderha yavrusunu saklar; ağabeyi onu avlar.",
+ "karakterler": [
+  {
+   "ad_ya_da_tarif": "kürk yakalı kadın",
+   "kim": "avcı",
+   "adi_nereden": "R0001"
+  }
+ ],
+ "kahraman_ne_kaybedebilir": "yavruyu ve hayatını",
+ "devam_olasiligi": 0.8,
+ "devam": true
+}

@@ -1,0 +1,16 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07c",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "kredi 1.0 (kaset)",
+  "esik_surum": null,
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:00:00+00:00",
+  "ortam": "bulut"
+ },
+ "taslak": true,
+ "plan": 33,
+ "flow_kredi": 396
+}

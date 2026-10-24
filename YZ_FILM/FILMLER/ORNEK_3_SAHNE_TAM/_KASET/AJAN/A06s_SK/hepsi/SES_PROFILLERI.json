@@ -1,0 +1,82 @@
+{
+ "_surum": 1,
+ "karakterler": {
+  "sera": {
+   "karakter": "sera",
+   "cinsiyet": "kadin",
+   "yas_bandi": "yetiskin",
+   "aksan": "british",
+   "aksan_ayrinti": "northern_english",
+   "perde": "orta_dusuk",
+   "tini": [
+    "low",
+    "husky"
+   ],
+   "tempo": "olculu",
+   "enerji": "sakin_kararli",
+   "veo_ses_tarifi": "in a low, husky female voice with a northern English accent",
+   "ses_etiketi_tr": "alçak, boğuk kadın sesi",
+   "etiket_ailesi": [
+    "whispers",
+    "softly",
+    "firmly"
+   ],
+   "kaynak": "HIKAYE.json karakterler.sera.ses_karakteri"
+  },
+  "brann": {
+   "karakter": "brann",
+   "cinsiyet": "erkek",
+   "yas_bandi": "yetiskin",
+   "aksan": "british",
+   "aksan_ayrinti": "scottish",
+   "perde": "dusuk",
+   "tini": [
+    "deep",
+    "steady"
+   ],
+   "tempo": "kesik",
+   "enerji": "otoriter",
+   "veo_ses_tarifi": "in a deep, steady male voice with a Scottish accent",
+   "ses_etiketi_tr": "derin, kararlı erkek sesi",
+   "etiket_ailesi": [
+    "shouting",
+    "coldly",
+    "firmly"
+   ],
+   "kaynak": "HIKAYE.json karakterler.brann.konusma_tarzi"
+  },
+  "oda": {
+   "karakter": "oda",
+   "cinsiyet": "erkek",
+   "yas_bandi": "yasli",
+   "aksan": "irish",
+   "aksan_ayrinti": "irish",
+   "perde": "orta",
+   "tini": [
+    "gravelly",
+    "slow"
+   ],
+   "tempo": "agir",
+   "enerji": "sakin",
+   "veo_ses_tarifi": "in a gravelly, slow male voice with an Irish accent",
+   "ses_etiketi_tr": "çakıllı, ağır erkek sesi",
+   "etiket_ailesi": [
+    "softly",
+    "wearily"
+   ],
+   "kaynak": "HIKAYE.json karakterler.oda.konusma_tarzi"
+  },
+  "kit": {
+   "karakter": "kit",
+   "tur": "yaratik",
+   "kit": {
+    "evre1": {
+     "nefes": [],
+     "cigirma": [],
+     "homurtu": []
+    }
+   },
+   "not": "yaratık dönüştürücüye ve Veo konuşmasına girmez; CC0 katmanlı kit (A10c)"
+  }
+ }
+}

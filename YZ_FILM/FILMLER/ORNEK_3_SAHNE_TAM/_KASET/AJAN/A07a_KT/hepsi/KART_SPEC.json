@@ -1,0 +1,44 @@
+{
+ "_surum": 1,
+ "kartlar": [
+  {
+   "id": "sera/k1",
+   "karakter": "sera",
+   "kostum": "k1",
+   "gorunumler": [
+    "on",
+    "yan",
+    "uc_ceyrek"
+   ]
+  },
+  {
+   "id": "brann/k1",
+   "karakter": "brann",
+   "kostum": "k1",
+   "gorunumler": [
+    "on",
+    "yan",
+    "uc_ceyrek"
+   ]
+  },
+  {
+   "id": "oda/k1",
+   "karakter": "oda",
+   "kostum": "k1",
+   "gorunumler": [
+    "on",
+    "yan",
+    "uc_ceyrek"
+   ]
+  },
+  {
+   "id": "kit/evre1",
+   "karakter": "kit",
+   "tur": "yaratik",
+   "gorunumler": [
+    "yan",
+    "on"
+   ]
+  }
+ ]
+}

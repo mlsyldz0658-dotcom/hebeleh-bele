@@ -1,0 +1,318 @@
+{
+ "sahne_grubu": "S02",
+ "planlar": [
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.9
+   },
+   "amac": "Oda ağaçların arasından çıkıp düdüğü Sera'ya veriyor.",
+   "zanaat": {
+    "kod": "S02-P01",
+    "sahne_grubu": "S02",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "oda",
+      "tur": "fiziksel",
+      "fiil": "kadraja_girer",
+      "yon": "kadraj_solu"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 4.8,
+      "ozne": "oda",
+      "tur": "fiziksel",
+      "fiil": "uzanir",
+      "govde": "sag_el",
+      "hedef": "sera"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Oda ağaçların arasından çıkıp düdüğü Sera'ya veriyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "amac": "oda konuşur: R0004",
+   "zanaat": {
+    "kod": "S02-P02",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "oda",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "oda",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0004",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "oda konuşur: R0004",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   },
+   "replik": {
+    "id": "R0004"
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "amac": "sera konuşur: R0005",
+   "zanaat": {
+    "kod": "S02-P03",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0005",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0005",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   },
+   "replik": {
+    "id": "R0005"
+   }
+  }
+ ]
+}

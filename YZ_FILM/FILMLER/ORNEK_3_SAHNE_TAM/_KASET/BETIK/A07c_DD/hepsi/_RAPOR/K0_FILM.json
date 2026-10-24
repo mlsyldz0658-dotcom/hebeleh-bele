@@ -1,0 +1,215 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07c",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "dunya_defteri 1.0",
+  "esik_surum": "esikler 1.0",
+  "sonuc": "BAYRAK",
+  "zaman": "2026-10-24T00:25:10+00:00",
+  "ortam": "bulut"
+ },
+ "kapi": "K0",
+ "kapsam": "FILM",
+ "tur": 1,
+ "sonuc": "BAYRAK",
+ "ozet": {
+  "plan": 33,
+  "gec": 21,
+  "bayrak": 12,
+  "hata": 0,
+  "olculemedi": 0
+ },
+ "hatalar": [],
+ "bayraklar": [
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 1,
+   "adim": "a1",
+   "olcu": "diz_coker",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 1,
+   "adim": "a2",
+   "olcu": "el_kaydirir",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 5,
+   "adim": "a1",
+   "olcu": "kadraja_girer",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 5,
+   "adim": "a2",
+   "olcu": "uzanir",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 8,
+   "adim": "a1",
+   "olcu": "iter",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 10,
+   "adim": "a1",
+   "olcu": "ceker",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 13,
+   "adim": "a1",
+   "olcu": "yurur",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 15,
+   "adim": "a1",
+   "olcu": "kaldirir",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 17,
+   "adim": "a1",
+   "olcu": "kaldirir",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 20,
+   "adim": "a1",
+   "olcu": "sondurur",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 22,
+   "adim": "a1",
+   "olcu": "diz_coker",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 24,
+   "adim": "a1",
+   "olcu": "yurur",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 26,
+   "adim": "a1",
+   "olcu": "kaldirir",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  },
+  {
+   "madde": "etkisiz_fiziksel_adim",
+   "plan": 31,
+   "adim": "a1",
+   "olcu": "yurur",
+   "kural": "K0.5",
+   "neden": "durumu değiştirmesi beklenen fiziksel adımın etki'si yok",
+   "seviye": "BAYRAK"
+  }
+ ],
+ "sahne_uclari": {
+  "S01": {
+   "giris": "418696ba",
+   "cikis": "418696ba",
+   "hikaye_esit": true
+  },
+  "S02": {
+   "giris": "418696ba",
+   "cikis": "418696ba",
+   "hikaye_esit": true
+  },
+  "S03": {
+   "giris": "82705aad",
+   "cikis": "82705aad",
+   "hikaye_esit": true
+  },
+  "S04": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S05": {
+   "giris": "30d62c86",
+   "cikis": "30d62c86",
+   "hikaye_esit": true
+  },
+  "S06": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S07": {
+   "giris": "ec5c3a58",
+   "cikis": "ec5c3a58",
+   "hikaye_esit": true
+  },
+  "S08": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  },
+  "S09": {
+   "giris": "30d62c86",
+   "cikis": "30d62c86",
+   "hikaye_esit": true
+  },
+  "S10": {
+   "giris": "d56ec28f",
+   "cikis": "d56ec28f",
+   "hikaye_esit": true
+  },
+  "S11": {
+   "giris": "d56ec28f",
+   "cikis": "d56ec28f",
+   "hikaye_esit": true
+  },
+  "S12": {
+   "giris": "2fa8af0d",
+   "cikis": "2fa8af0d",
+   "hikaye_esit": true
+  }
+ }
+}

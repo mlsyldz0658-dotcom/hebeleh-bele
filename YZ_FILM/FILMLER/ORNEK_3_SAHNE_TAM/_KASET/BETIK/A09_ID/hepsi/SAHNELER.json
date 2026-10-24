@@ -1,0 +1,6227 @@
+{
+ "_surum": 2,
+ "_sema": "sahneler_v2",
+ "_uretim": {
+  "asama": "A09",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "istem_derle 1.0",
+  "esik_surum": null,
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:25:10+00:00",
+  "ortam": "bulut"
+ },
+ "film": "ORNEK_3_SAHNE_TAM",
+ "baslik": "FROSTHOLLOW",
+ "altyazi_dili": null,
+ "karakterler": {
+  "sera": {
+   "ref": "01_KARAKTERLER/sera.jpg",
+   "ses": null,
+   "ses_adi": null,
+   "evren": "EVREN/FROSTHOLLOW/karakterler/sera",
+   "kostum_varsayilan": "k1"
+  },
+  "brann": {
+   "ref": "01_KARAKTERLER/brann.jpg",
+   "ses": null,
+   "ses_adi": null,
+   "evren": "EVREN/FROSTHOLLOW/karakterler/brann",
+   "kostum_varsayilan": "k1"
+  },
+  "oda": {
+   "ref": "01_KARAKTERLER/oda.jpg",
+   "ses": null,
+   "ses_adi": null,
+   "evren": "EVREN/FROSTHOLLOW/karakterler/oda",
+   "kostum_varsayilan": "k1"
+  },
+  "kit": {
+   "ref": "01_KARAKTERLER/kit.jpg",
+   "ses": null,
+   "ses_adi": null,
+   "evren": "EVREN/FROSTHOLLOW/karakterler/kit",
+   "kostum_varsayilan": "k1"
+  }
+ },
+ "mekanlar": {
+  "kale_kapisi": {
+   "evren": "EVREN/FROSTHOLLOW/mekanlar/kale_kapisi@1",
+   "kurulumlar": {}
+  },
+  "kulube": {
+   "evren": "EVREN/FROSTHOLLOW/mekanlar/kulube@1",
+   "kurulumlar": {}
+  },
+  "magara_agzi": {
+   "evren": "EVREN/FROSTHOLLOW/mekanlar/magara_agzi@1",
+   "kurulumlar": {}
+  },
+  "patika": {
+   "evren": "EVREN/FROSTHOLLOW/mekanlar/patika@1",
+   "kurulumlar": {}
+  }
+ },
+ "sahne_gruplari": {
+  "S01": {
+   "hikaye": {
+    "sahne": "S01",
+    "parti": 1
+   },
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 1,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 4,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S01.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S01.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_magara_agzi_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_magara_agzi",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S02": {
+   "hikaye": {
+    "sahne": "S02",
+    "parti": 1
+   },
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 2,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 3,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S02.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S02.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_magara_agzi_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_magara_agzi",
+    "gecis": {
+     "capraz_sn": 0.0,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": true
+    },
+    "kalabalik": null
+   }
+  },
+  "S03": {
+   "hikaye": {
+    "sahne": "S03",
+    "parti": 1
+   },
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 3,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S03.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S03.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "IC_kulube_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "ic_kulube",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S04": {
+   "hikaye": {
+    "sahne": "S04",
+    "parti": 1
+   },
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 4,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 3,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S04.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S04.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "IC_kulube_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "ic_kulube",
+    "gecis": {
+     "capraz_sn": 0.0,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": true
+    },
+    "kalabalik": null
+   }
+  },
+  "S05": {
+   "hikaye": {
+    "sahne": "S05",
+    "parti": 2
+   },
+   "mekan": "patika",
+   "zaman": {
+    "gun": 5,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S05.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S05.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_patika_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_patika",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S06": {
+   "hikaye": {
+    "sahne": "S06",
+    "parti": 2
+   },
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 6,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S06.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S06.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "IC_kulube_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "ic_kulube",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S07": {
+   "hikaye": {
+    "sahne": "S07",
+    "parti": 2
+   },
+   "mekan": "kale_kapisi",
+   "zaman": {
+    "gun": 7,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 3,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S07.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S07.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_kale_kapisi_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_kale_kapisi",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S08": {
+   "hikaye": {
+    "sahne": "S08",
+    "parti": 2
+   },
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 8,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S08.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S08.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "IC_kulube_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "ic_kulube",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S09": {
+   "hikaye": {
+    "sahne": "S09",
+    "parti": 3
+   },
+   "mekan": "patika",
+   "zaman": {
+    "gun": 9,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S09.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S09.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_patika_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_patika",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S10": {
+   "hikaye": {
+    "sahne": "S10",
+    "parti": 3
+   },
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 10,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 2,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S10.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S10.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_magara_agzi_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_magara_agzi",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  },
+  "S11": {
+   "hikaye": {
+    "sahne": "S11",
+    "parti": 3
+   },
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 11,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 5,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S11.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S11.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "DIS_magara_agzi_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "dis_magara_agzi",
+    "gecis": {
+     "capraz_sn": 0.0,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": true
+    },
+    "kalabalik": null
+   }
+  },
+  "S12": {
+   "hikaye": {
+    "sahne": "S12",
+    "parti": 3
+   },
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 12,
+    "gun_saati": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "sure_hedef_sn": 20,
+   "plan_hedef": 3,
+   "kalip": "serbest",
+   "eksen": [],
+   "kamera_tarafi": null,
+   "isik": {
+    "ana": "ay",
+    "dolgu": null,
+    "arka": null
+   },
+   "yasaklar": [
+    "no other people"
+   ],
+   "giris_durumu": "HIKAYE.json#S12.giris_durumu",
+   "cikis_durumu": "HIKAYE.json#S12.cikis_durumu",
+   "_derlenir": {
+    "ana_kareler": [
+     "KAM1"
+    ],
+    "yasak_ardisik": []
+   },
+   "ses": {
+    "yatak": {
+     "dosya": null,
+     "etiket": "IC_kulube_gece_kar",
+     "seviye_lufs": -34.5,
+     "dongu": true,
+     "katmanlar": [
+      {
+       "ad": "hava_kar",
+       "dosya": null,
+       "kazanc_db": -12,
+       "kaynak": "defter:hava=kar"
+      }
+     ]
+    },
+    "oda_yaniti": "ic_kulube",
+    "gecis": {
+     "capraz_sn": 0.75,
+     "one_alma_sn": null,
+     "zaman_surekli_onceki": false
+    },
+    "kalabalik": null
+   }
+  }
+ },
+ "sahneler": [
+  {
+   "no": 1,
+   "sira": 1,
+   "parti": 1,
+   "referans": [
+    "sera",
+    "oda"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Oda holds still; Kit holds still. 0.5-2.5s: Sera lowers onto one knee. 2.8-4.8s: Sera's left hand slides 20 cm to the snow. 4.8-8s: Sera holds still. Sound: a soft touch, cloth rustling, wind over snow. No music.",
+   "amac": "Sera mağara ağzında diz çöküp kardaki ışığı açıyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.9
+   },
+   "zanaat": {
+    "kod": "S01-P01",
+    "sahne_grubu": "S01",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "diz_coker",
+      "govde": "iki_diz"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 4.8,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "el_kaydirir",
+      "govde": "sol_el",
+      "yon": "yana",
+      "hedef": "kar",
+      "olcu": "20cm"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera mağara ağzında diz çöküp kardaki ışığı açıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E1a",
+       "adim": "a1",
+       "kategori": "kumas",
+       "malzeme": "zemin:kar",
+       "an": "bit",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      },
+      {
+       "id": "E1b",
+       "adim": "a2",
+       "kategori": "nesne_temas",
+       "malzeme": "oge:kar",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: a soft touch, cloth rustling, wind over snow. No music.",
+     "sessizlik": {
+      "tip": "muziksiz",
+      "bas_sn": 0.0,
+      "sure_sn": 4.0,
+      "neden": "soguk_acilis"
+     },
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.9,
+    "kesme_nokta_sn": 5.4,
+    "kadraj_sirasi": [
+     "sera",
+     "oda",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "oda"
+    ],
+    "hikaye": {
+     "vurus": "soguk_acilis",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [
+      "m01"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "3124391b"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 2,
+   "sira": 2,
+   "parti": 1,
+   "referans": [
+    "oda",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Oda lifts their chin slightly. 1.9-4.6s: Oda says, in a gravelly, slow male voice with an Irish accent: \"Sera, they ride with torches tonight.\" 4.6-8s: Oda holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "oda konuşur: R0001",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.7
+   },
+   "zanaat": {
+    "kod": "S01-P02",
+    "sahne_grubu": "S01",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "oda",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.6,
+      "ozne": "oda",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0001",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S01-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "oda konuşur: R0001",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.7,
+    "kesme_nokta_sn": 5.2,
+    "kadraj_sirasi": [
+     "oda",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "oda",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "soguk_acilis",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [
+      "m01"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0001": [
+      1.9,
+      4.6
+     ]
+    },
+    "ton_fiili_en": "says",
+    "seviye": "normal",
+    "muzik_ipucu": null,
+    "istem_ozeti": "a08f06a7"
+   },
+   "replik": {
+    "id": "R0001",
+    "karakter": "oda",
+    "metin": "Sera, they ride with torches tonight.",
+    "teslim": "normal",
+    "tasidigi": [
+     "o01"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Sera, they ride with torches tonight.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 3,
+   "sira": 3,
+   "parti": 1,
+   "referans": [
+    "sera",
+    "oda"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Oda listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-4.6s: Sera whispers, in a low, husky female voice with a northern English accent: \"Easy now. Nobody burns you tonight.\" 4.6-8s: Sera holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0002",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.7
+   },
+   "zanaat": {
+    "kod": "S01-P03",
+    "sahne_grubu": "S01",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.6,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0002",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S01-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0002",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.7,
+    "kesme_nokta_sn": 5.2,
+    "kadraj_sirasi": [
+     "sera",
+     "oda"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "oda"
+    ],
+    "hikaye": {
+     "vurus": "soguk_acilis",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [
+      "m01"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0002": [
+      1.9,
+      4.6
+     ]
+    },
+    "ton_fiili_en": "whispers",
+    "seviye": "fisilti",
+    "muzik_ipucu": null,
+    "istem_ozeti": "d80f9be6"
+   },
+   "replik": {
+    "id": "R0002",
+    "karakter": "sera",
+    "metin": "Easy now. Nobody burns you tonight.",
+    "teslim": "fisilti",
+    "tasidigi": [
+     "o01"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Easy now.",
+      "tr": ""
+     },
+     {
+      "en": "Nobody burns you tonight.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 4,
+   "sira": 4,
+   "parti": 1,
+   "referans": [
+    "oda",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Oda lifts their chin slightly. 1.9-6.6s: Oda says coldly, in a gravelly, slow male voice with an Irish accent: \"The king's law is fire for every dragon and every keeper.\" 6.6-8s: Oda holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "oda konuşur: R0003",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 6.7
+   },
+   "zanaat": {
+    "kod": "S01-P04",
+    "sahne_grubu": "S01",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "oda",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 6.6,
+      "ozne": "oda",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0003",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S01-P03",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "oda konuşur: R0003",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 6.7,
+    "kesme_nokta_sn": 7.2,
+    "kadraj_sirasi": [
+     "oda",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "oda",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "soguk_acilis",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [
+      "m01"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0003": [
+      1.9,
+      6.6
+     ]
+    },
+    "ton_fiili_en": "says coldly",
+    "seviye": "normal",
+    "muzik_ipucu": "M01",
+    "istem_ozeti": "5b3c00c4"
+   },
+   "replik": {
+    "id": "R0003",
+    "karakter": "oda",
+    "metin": "The king's law is fire for every dragon and every keeper.",
+    "teslim": "soguk",
+    "tasidigi": [
+     "o02"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "The king's law is fire for every dragon and every keeper.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 5,
+   "sira": 5,
+   "parti": 1,
+   "referans": [
+    "oda",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Sera holds still. 0.5-2.5s: Oda enters from frame left. 2.8-4.8s: Oda extends their empty right arm toward Sera, fingers stopping above it. 4.8-8s: Oda holds still. Sound: footsteps on snow, cloth rustling, wind over snow. No music.",
+   "amac": "Oda ağaçların arasından çıkıp düdüğü Sera'ya veriyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.9
+   },
+   "zanaat": {
+    "kod": "S02-P01",
+    "sahne_grubu": "S02",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "oda",
+      "tur": "fiziksel",
+      "fiil": "kadraja_girer",
+      "yon": "kadraj_solu"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 4.8,
+      "ozne": "oda",
+      "tur": "fiziksel",
+      "fiil": "uzanir",
+      "govde": "sag_el",
+      "hedef": "sera"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Oda ağaçların arasından çıkıp düdüğü Sera'ya veriyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E5a",
+       "adim": "a1",
+       "kategori": "ayak",
+       "malzeme": "zemin:kar",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      },
+      {
+       "id": "E5b",
+       "adim": "a2",
+       "kategori": "kumas",
+       "malzeme": "kostum:oda/k1",
+       "an": "bas",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: footsteps on snow, cloth rustling, wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.9,
+    "kesme_nokta_sn": 5.4,
+    "kadraj_sirasi": [
+     "oda",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "oda",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m03"
+     ],
+     "merak_kapat": [
+      "m01"
+     ],
+     "kurulum": [
+      "kur_duduk"
+     ],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": "M01",
+    "istem_ozeti": "6cfc5c29"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 6,
+   "sira": 6,
+   "parti": 1,
+   "referans": [
+    "oda",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Oda lifts their chin slightly. 1.9-5.8s: Oda says softly, in a gravelly, slow male voice with an Irish accent: \"One note, and it will rest. Keep this close.\" 5.8-8s: Oda holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "oda konuşur: R0004",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "zanaat": {
+    "kod": "S02-P02",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "oda"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "oda",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "oda",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "oda",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0004",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "oda konuşur: R0004",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.9,
+    "kesme_nokta_sn": 6.4,
+    "kadraj_sirasi": [
+     "oda",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "oda",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m03"
+     ],
+     "merak_kapat": [
+      "m01"
+     ],
+     "kurulum": [
+      "kur_duduk"
+     ],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0004": [
+      1.9,
+      5.8
+     ]
+    },
+    "ton_fiili_en": "says softly",
+    "seviye": "yumusak",
+    "muzik_ipucu": "M01",
+    "istem_ozeti": "886fa8a1"
+   },
+   "replik": {
+    "id": "R0004",
+    "karakter": "oda",
+    "metin": "One note, and it will rest. Keep this close.",
+    "teslim": "yumusak",
+    "tasidigi": [
+     "o03"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "One note, and it will rest.",
+      "tr": ""
+     },
+     {
+      "en": "Keep this close.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 7,
+   "sira": 7,
+   "parti": 1,
+   "referans": [
+    "sera",
+    "oda"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Oda listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-3.8s: Sera says, in a low, husky female voice with a northern English accent: \"Why help me, Oda?\" 3.8-8s: Sera holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0005",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S02-P03",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "oda",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0005",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "oda": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0005",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera",
+     "oda"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "oda"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m03"
+     ],
+     "merak_kapat": [
+      "m01"
+     ],
+     "kurulum": [
+      "kur_duduk"
+     ],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0005": [
+      1.9,
+      3.8
+     ]
+    },
+    "ton_fiili_en": "says",
+    "seviye": "normal",
+    "muzik_ipucu": "M01",
+    "istem_ozeti": "12bc6c62"
+   },
+   "replik": {
+    "id": "R0005",
+    "karakter": "sera",
+    "metin": "Why help me, Oda?",
+    "teslim": "normal",
+    "tasidigi": [
+     "o03"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Why help me, Oda?",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 8,
+   "sira": 8,
+   "parti": 1,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Kit holds still. 0.5-2.5s: Sera pushes the cabin door with her hand. 2.8-3.8s: Sera exhales sharply through the nose. 3.8-8s: Sera holds still. Sound: a door creaking, a soft breath, muffled wind over snow. No music.",
+   "amac": "Sera kapıyı kalasla kapatıyor; yavru sepette.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S03-P01",
+    "sahne_grubu": "S03",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "iter",
+      "govde": "iki_el",
+      "hedef": "kapi"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "nefes_verir",
+      "govde": "bas"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera kapıyı kalasla kapatıyor; yavru sepette.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E8a",
+       "adim": "a1",
+       "kategori": "kapi",
+       "malzeme": "oge:kapi",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      },
+      {
+       "id": "E8b",
+       "adim": "a2",
+       "kategori": "nefes",
+       "malzeme": "ses:sera",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: a door creaking, a soft breath, muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [
+      "m02"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "67c656f0"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 9,
+   "sira": 9,
+   "parti": 1,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Kit listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-5.4s: Sera whispers, in a low, husky female voice with a northern English accent: \"You stay quiet. We both live that way.\" 5.4-8s: Sera holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "sera konuşur: R0006",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.5
+   },
+   "zanaat": {
+    "kod": "S03-P02",
+    "sahne_grubu": "S03",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.4,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0006",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S03-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0006",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.5,
+    "kesme_nokta_sn": 6.0,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [
+      "m02"
+     ],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0006": [
+      1.9,
+      5.4
+     ]
+    },
+    "ton_fiili_en": "whispers",
+    "seviye": "fisilti",
+    "muzik_ipucu": null,
+    "istem_ozeti": "a0580778"
+   },
+   "replik": {
+    "id": "R0006",
+    "karakter": "sera",
+    "metin": "You stay quiet. We both live that way.",
+    "teslim": "fisilti",
+    "tasidigi": [
+     "o01"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "You stay quiet.",
+      "tr": ""
+     },
+     {
+      "en": "We both live that way.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 10,
+   "sira": 10,
+   "parti": 1,
+   "referans": [
+    "sera",
+    "brann"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Brann holds still. 0.5-2.5s: Sera pulls the cabin door 15 cm with her right hand. 2.8-3.8s: Sera's eyes shift to the fence. 3.8-8s: Sera holds still. Sound: a door creaking, muffled wind over snow. No music.",
+   "amac": "Sera kapıyı bir el aralığı açıyor; çitte kaptan.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S04-P01",
+    "sahne_grubu": "S04",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "brann",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "ceker",
+      "govde": "sag_el",
+      "hedef": "kapi",
+      "olcu": "15cm"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "bakis_kaydirir",
+      "hedef": "cit"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera kapıyı bir el aralığı açıyor; çitte kaptan.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E10a",
+       "adim": "a1",
+       "kategori": "kapi",
+       "malzeme": "oge:kapi",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: a door creaking, muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera",
+     "brann"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "brann"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": "M02",
+    "istem_ozeti": "0ed23280"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 11,
+   "sira": 11,
+   "parti": 1,
+   "referans": [
+    "brann",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Brann lifts their chin slightly. 1.9-5.4s: Brann says coldly, in a deep, steady male voice with a Scottish accent: \"Open the door, Sera. The king sent me.\" 5.4-8s: Brann holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "brann konuşur: R0007",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.5
+   },
+   "zanaat": {
+    "kod": "S04-P02",
+    "sahne_grubu": "S04",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.4,
+      "ozne": "brann",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0007",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S04-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "brann konuşur: R0007",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.5,
+    "kesme_nokta_sn": 6.0,
+    "kadraj_sirasi": [
+     "brann",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0007": [
+      1.9,
+      5.4
+     ]
+    },
+    "ton_fiili_en": "says coldly",
+    "seviye": "normal",
+    "muzik_ipucu": "M02",
+    "istem_ozeti": "acd500a7"
+   },
+   "replik": {
+    "id": "R0007",
+    "karakter": "brann",
+    "metin": "Open the door, Sera. The king sent me.",
+    "teslim": "soguk",
+    "tasidigi": [
+     "o04"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Open the door, Sera.",
+      "tr": ""
+     },
+     {
+      "en": "The king sent me.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 12,
+   "sira": 12,
+   "parti": 1,
+   "referans": [
+    "sera",
+    "brann"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Brann listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-5s: Sera says coldly, in a low, husky female voice with a northern English accent: \"Then the king can knock himself, Brann.\" 5-8s: Sera holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "sera konuşur: R0008",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.1
+   },
+   "zanaat": {
+    "kod": "S04-P03",
+    "sahne_grubu": "S04",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "brann",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.0,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0008",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S04-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0008",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.1,
+    "kesme_nokta_sn": 5.6,
+    "kadraj_sirasi": [
+     "sera",
+     "brann"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "brann"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0008": [
+      1.9,
+      5.0
+     ]
+    },
+    "ton_fiili_en": "says coldly",
+    "seviye": "normal",
+    "muzik_ipucu": "M02",
+    "istem_ozeti": "a5625af5"
+   },
+   "replik": {
+    "id": "R0008",
+    "karakter": "sera",
+    "metin": "Then the king can knock himself, Brann.",
+    "teslim": "soguk",
+    "tasidigi": [
+     "o04"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Then the king can knock himself, Brann.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 13,
+   "sira": 13,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. 0.5-2.5s: walks forward. 2.8-3.8s: turns her head toward the pack. 3.8-8s: holds still. Sound: footsteps on snow, wind over snow. No music.",
+   "amac": "Sera ağır çantayla sırt yolunda yürüyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S05-P01",
+    "sahne_grubu": "S05",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "yurur",
+      "yon": "ileri"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "basini_cevirir",
+      "hedef": "canta"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera ağır çantayla sırt yolunda yürüyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E13a",
+       "adim": "a1",
+       "kategori": "ayak",
+       "malzeme": "zemin:kar",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: footsteps on snow, wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "f28184c5"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 14,
+   "sira": 14,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. 0.5-1.5s: lifts her chin slightly. 1.9-5s: Sera says, in a low, husky female voice with a northern English accent: \"Two more days to the high cave.\" 5-8s: holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0009",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.1
+   },
+   "zanaat": {
+    "kod": "S05-P02",
+    "sahne_grubu": "S05",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.0,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0009",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S05-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0009",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.1,
+    "kesme_nokta_sn": 5.6,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0009": [
+      1.9,
+      5.0
+     ]
+    },
+    "ton_fiili_en": "says",
+    "seviye": "normal",
+    "muzik_ipucu": null,
+    "istem_ozeti": "4748d5d7"
+   },
+   "replik": {
+    "id": "R0009",
+    "karakter": "sera",
+    "metin": "Two more days to the high cave.",
+    "teslim": "normal",
+    "tasidigi": [
+     "o05"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Two more days to the high cave.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 15,
+   "sira": 15,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Kit holds still. 0.5-2.5s: Sera raises her right hand to shoulder height. 2.8-3.8s: Sera exhales sharply through the nose. 3.8-8s: Sera holds still. Sound: cloth rustling, a soft breath, muffled wind over snow. No music.",
+   "amac": "Sera düdüğü bir kez çalıyor; yavru sakinleşiyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S06-P01",
+    "sahne_grubu": "S06",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "kaldirir",
+      "govde": "sag_el",
+      "olcu": "omuz_hizasi"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "nefes_verir",
+      "govde": "bas"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera düdüğü bir kez çalıyor; yavru sakinleşiyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E15a",
+       "adim": "a1",
+       "kategori": "kumas",
+       "malzeme": "kostum:sera/k1",
+       "an": "bas",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      },
+      {
+       "id": "E15b",
+       "adim": "a2",
+       "kategori": "nefes",
+       "malzeme": "ses:sera",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: cloth rustling, a soft breath, muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": "M03",
+    "istem_ozeti": "7937df31"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 16,
+   "sira": 16,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Kit listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-4.6s: Sera says softly, in a low, husky female voice with a northern English accent: \"There. One note, like Oda said.\" 4.6-8s: Sera holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "sera konuşur: R0010",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.7
+   },
+   "zanaat": {
+    "kod": "S06-P02",
+    "sahne_grubu": "S06",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.6,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0010",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S06-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0010",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.7,
+    "kesme_nokta_sn": 5.2,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0010": [
+      1.9,
+      4.6
+     ]
+    },
+    "ton_fiili_en": "says softly",
+    "seviye": "yumusak",
+    "muzik_ipucu": "M03",
+    "istem_ozeti": "1e3b27b6"
+   },
+   "replik": {
+    "id": "R0010",
+    "karakter": "sera",
+    "metin": "There. One note, like Oda said.",
+    "teslim": "yumusak",
+    "tasidigi": [
+     "o03"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "There.",
+      "tr": ""
+     },
+     {
+      "en": "One note, like Oda said.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 17,
+   "sira": 17,
+   "parti": 2,
+   "referans": [
+    "brann"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. 0.5-2.5s: raises their left hand to shoulder height. 2.8-3.8s: lifts their chin. 3.8-8s: holds still. Sound: cloth rustling, wind over snow. No music.",
+   "amac": "Brann kale kapısında fermanı okuyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S07-P01",
+    "sahne_grubu": "S07",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "brann",
+      "tur": "fiziksel",
+      "fiil": "kaldirir",
+      "govde": "sol_el",
+      "olcu": "omuz_hizasi"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Brann kale kapısında fermanı okuyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E17a",
+       "adim": "a1",
+       "kategori": "kumas",
+       "malzeme": "kostum:brann/k1",
+       "an": "bas",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: cloth rustling, wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "brann"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann"
+    ],
+    "hikaye": {
+     "vurus": "orta_nokta",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "91417ef3"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 18,
+   "sira": 18,
+   "parti": 2,
+   "referans": [
+    "brann"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. 0.5-1.5s: lifts their chin slightly. 1.9-5.8s: Brann shouts, in a deep, steady male voice with a Scottish accent: \"Any hand that hides a dragon burns with it!\" 5.8-8s: holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "brann konuşur: R0011",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "zanaat": {
+    "kod": "S07-P02",
+    "sahne_grubu": "S07",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "brann",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0011",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S07-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "brann konuşur: R0011",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.9,
+    "kesme_nokta_sn": 6.4,
+    "kadraj_sirasi": [
+     "brann"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann"
+    ],
+    "hikaye": {
+     "vurus": "orta_nokta",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0011": [
+      1.9,
+      5.8
+     ]
+    },
+    "ton_fiili_en": "shouts",
+    "seviye": "bagirma",
+    "muzik_ipucu": null,
+    "istem_ozeti": "f198a0fe"
+   },
+   "replik": {
+    "id": "R0011",
+    "karakter": "brann",
+    "metin": "Any hand that hides a dragon burns with it!",
+    "teslim": "bagirma",
+    "tasidigi": [
+     "o02"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Any hand that hides a dragon burns with it!",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 19,
+   "sira": 19,
+   "parti": 2,
+   "referans": [],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium shot. 0.5-8s: holds still. Sound: wind over snow. No music.",
+   "amac": "Search every cabin on the ridge. (ekran dışı ses)",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.3
+   },
+   "zanaat": {
+    "kod": "S07-P03",
+    "sahne_grubu": "S07",
+    "plan_tipi": "ekleme",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM3",
+     "kadraj": "O",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": null
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {},
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S07-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": {
+     "replik": "R0012",
+     "karakter": "brann",
+     "kaynak": "tts",
+     "bas_sn": 0.3,
+     "sure_sn": 2.7
+    },
+    "ekranda_bilgi": "Search every cabin on the ridge. (ekran dışı ses)",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "insansiz": true,
+    "ses": {
+     "diyalog": {
+      "yol": "tts",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.3,
+    "kesme_nokta_sn": 3.8,
+    "kadraj_sirasi": [],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [],
+    "hikaye": {
+     "vurus": "orta_nokta",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0012": [
+      0.8,
+      3.5
+     ]
+    },
+    "ton_fiili_en": "says",
+    "seviye": "normal",
+    "muzik_ipucu": "M04",
+    "istem_ozeti": "742bbcad"
+   },
+   "replik": {
+    "id": "R0012",
+    "karakter": "brann",
+    "metin": "Search every cabin on the ridge.",
+    "teslim": "normal",
+    "tasidigi": [
+     "o06"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Search every cabin on the ridge.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 20,
+   "sira": 20,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. 0.5-2.5s: leans in and blows out the flame of the oil lamp. 2.8-3.8s: turns her head toward the window. 3.8-8s: holds still. Sound: a flame flaring, muffled wind over snow. No music.",
+   "amac": "Sera lambayı söndürüp dinliyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S08-P01",
+    "sahne_grubu": "S08",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "sondurur",
+      "govde": "sag_el",
+      "hedef": "lamba"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "basini_cevirir",
+      "hedef": "pencere"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera lambayı söndürüp dinliyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E20a",
+       "adim": "a1",
+       "kategori": "ates",
+       "malzeme": "nesne:lamba",
+       "an": "bit",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: a flame flaring, muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": "i01",
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": "M04",
+    "istem_ozeti": "d38dcc6e"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 21,
+   "sira": 21,
+   "parti": 2,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. 0.5-1.5s: lifts her chin slightly. 1.9-5.8s: Sera whispers, in a low, husky female voice with a northern English accent: \"He knows the path. He taught it to me.\" 5.8-8s: holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "sera konuşur: R0013",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "zanaat": {
+    "kod": "S08-P02",
+    "sahne_grubu": "S08",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0013",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S08-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0013",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.9,
+    "kesme_nokta_sn": 6.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": "i01",
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0013": [
+      1.9,
+      5.8
+     ]
+    },
+    "ton_fiili_en": "whispers",
+    "seviye": "fisilti",
+    "muzik_ipucu": "M04",
+    "istem_ozeti": "9cbe80c0"
+   },
+   "replik": {
+    "id": "R0013",
+    "karakter": "sera",
+    "metin": "He knows the path. He taught it to me.",
+    "teslim": "fisilti",
+    "tasidigi": [
+     "o06"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "He knows the path.",
+      "tr": ""
+     },
+     {
+      "en": "He taught it to me.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 22,
+   "sira": 22,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. 0.5-2.5s: lowers onto one knee. 2.8-3.8s: swallows once, mouth closed. 3.8-8s: holds still. Sound: cloth rustling, wind over snow. No music.",
+   "amac": "Sera boş, yırtık çantanın yanında diz çöküyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S09-P01",
+    "sahne_grubu": "S09",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "diz_coker",
+      "govde": "iki_diz"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "yutkunur",
+      "govde": "bas"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera boş, yırtık çantanın yanında diz çöküyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E22a",
+       "adim": "a1",
+       "kategori": "kumas",
+       "malzeme": "zemin:kar",
+       "an": "bit",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: cloth rustling, wind over snow. No music.",
+     "sessizlik": {
+      "tip": "muziksiz",
+      "bas_sn": 0.0,
+      "sure_sn": 10.0,
+      "neden": "en_karanlik"
+     },
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "en_karanlik",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "15339f9c"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 23,
+   "sira": 23,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. 0.5-1.5s: lifts her chin slightly. 1.9-4.2s: Sera whispers, in a low, husky female voice with a northern English accent: \"No. Not you. Not now.\" 4.2-8s: holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0014",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.3
+   },
+   "zanaat": {
+    "kod": "S09-P02",
+    "sahne_grubu": "S09",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.2,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0014",
+      "cumleler": [
+       0,
+       1,
+       2
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S09-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0014",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.3,
+    "kesme_nokta_sn": 4.8,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "en_karanlik",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 6,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0014": [
+      1.9,
+      4.2
+     ]
+    },
+    "ton_fiili_en": "whispers",
+    "seviye": "fisilti",
+    "muzik_ipucu": null,
+    "istem_ozeti": "9e9f8f1a"
+   },
+   "replik": {
+    "id": "R0014",
+    "karakter": "sera",
+    "metin": "No. Not you. Not now.",
+    "teslim": "fisilti",
+    "tasidigi": [
+     "o07"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "No.",
+      "tr": ""
+     },
+     {
+      "en": "Not you.",
+      "tr": ""
+     },
+     {
+      "en": "Not now.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 24,
+   "sira": 24,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Kit holds still. 0.5-2.5s: Sera walks forward. 2.8-3.8s: Sera's eyes shift to Kit. 3.8-8s: Sera holds still. Sound: footsteps on snow, wind over snow. No music.",
+   "amac": "Sera izleri mağaraya kadar izliyor; büyümüş ejderha kalkıyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S10-P01",
+    "sahne_grubu": "S10",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "yurur",
+      "yon": "ileri"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "bakis_kaydirir",
+      "hedef": "kit"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera izleri mağaraya kadar izliyor; büyümüş ejderha kalkıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E24a",
+       "adim": "a1",
+       "kategori": "ayak",
+       "malzeme": "zemin:kar",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: footsteps on snow, wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "8edbc420"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 25,
+   "sira": 25,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Kit listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-4.6s: Sera says softly, in a low, husky female voice with a northern English accent: \"You grew while I wasn't looking.\" 4.6-8s: Sera holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0015",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.7
+   },
+   "zanaat": {
+    "kod": "S10-P02",
+    "sahne_grubu": "S10",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.6,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0015",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S10-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0015",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.7,
+    "kesme_nokta_sn": 5.2,
+    "kadraj_sirasi": [
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 8,
+     "merak_ac": [],
+     "merak_kapat": [],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0015": [
+      1.9,
+      4.6
+     ]
+    },
+    "ton_fiili_en": "says softly",
+    "seviye": "yumusak",
+    "muzik_ipucu": "M05",
+    "istem_ozeti": "52072c25"
+   },
+   "replik": {
+    "id": "R0015",
+    "karakter": "sera",
+    "metin": "You grew while I wasn't looking.",
+    "teslim": "yumusak",
+    "tasidigi": [
+     "o08"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "You grew while I wasn't looking.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 26,
+   "sira": 26,
+   "parti": 3,
+   "referans": [
+    "brann",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. Sera holds still; Kit holds still. 0.5-2.5s: Brann raises their left hand to raised above the head. 2.8-3.8s: Brann's brows draw together. 3.8-8s: Brann holds still. Sound: cloth rustling, wind over snow. No music.",
+   "amac": "Brann mağara ağzında meşalesini kaldırıyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S11-P01",
+    "sahne_grubu": "S11",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "kit",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "brann",
+      "tur": "fiziksel",
+      "fiil": "kaldirir",
+      "govde": "sol_el",
+      "olcu": "bas_ustu"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "kas_catar",
+      "govde": "kaslar"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Brann mağara ağzında meşalesini kaldırıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E26a",
+       "adim": "a1",
+       "kategori": "kumas",
+       "malzeme": "kostum:brann/k1",
+       "an": "bas",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: cloth rustling, wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "brann",
+     "sera",
+     "kit"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "doruk",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [
+      "m02"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [
+      "kur_duduk"
+     ],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "462d2d1b"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 27,
+   "sira": 27,
+   "parti": 3,
+   "referans": [
+    "brann",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Brann lifts their chin slightly. 1.9-5s: Brann says coldly, in a deep, steady male voice with a Scottish accent: \"Step aside, Sera. I won't ask twice.\" 5-8s: Brann holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "brann konuşur: R0016",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.1
+   },
+   "zanaat": {
+    "kod": "S11-P02",
+    "sahne_grubu": "S11",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.0,
+      "ozne": "brann",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0016",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S11-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "brann konuşur: R0016",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.1,
+    "kesme_nokta_sn": 5.6,
+    "kadraj_sirasi": [
+     "brann",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "doruk",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [
+      "m02"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [
+      "kur_duduk"
+     ],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0016": [
+      1.9,
+      5.0
+     ]
+    },
+    "ton_fiili_en": "says coldly",
+    "seviye": "normal",
+    "muzik_ipucu": null,
+    "istem_ozeti": "cf4c3f16"
+   },
+   "replik": {
+    "id": "R0016",
+    "karakter": "brann",
+    "metin": "Step aside, Sera. I won't ask twice.",
+    "teslim": "soguk",
+    "tasidigi": [
+     "o09"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Step aside, Sera.",
+      "tr": ""
+     },
+     {
+      "en": "I won't ask twice.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 28,
+   "sira": 28,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static close-up shot. 0.5-1.5s: listens silently, mouth closed; swallows once, mouth closed. 1.8-2.8s: lifts her chin. 2.8-8s: holds still. Sound: wind over snow. No music.",
+   "amac": "sera dinler",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 2.9
+   },
+   "zanaat": {
+    "kod": "S11-P03",
+    "sahne_grubu": "S11",
+    "plan_tipi": "tepki",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM5",
+     "kadraj": "Y",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "yutkunur",
+      "govde": "bas"
+     },
+     {
+      "id": "a2",
+      "bas": 1.8,
+      "bit": 2.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S11-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "L",
+     "ses_tasma_sn": 1.0
+    },
+    "ekran_disi_ses": {
+     "replik": "R0016",
+     "karakter": "brann",
+     "kaynak": "plan:S11-P02",
+     "bas_sn": 0.0,
+     "sure_sn": 1.0
+    },
+    "ekranda_bilgi": "sera dinler",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6,
+    "ses": {
+     "diyalog": null,
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 2.9,
+    "kesme_nokta_sn": 3.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "doruk",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [
+      "m02"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [
+      "kur_duduk"
+     ],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": null,
+    "istem_ozeti": "97c28526"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 29,
+   "sira": 29,
+   "parti": 3,
+   "referans": [
+    "sera",
+    "brann"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Brann listens silently, mouth closed. 0.5-1.5s: Sera lifts her chin slightly. 1.9-5s: Sera shouts, in a low, husky female voice with a northern English accent: \"Then don't ask. Look at it, Brann.\" 5-8s: Sera holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "sera konuşur: R0017",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.1
+   },
+   "zanaat": {
+    "kod": "S11-P04",
+    "sahne_grubu": "S11",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "brann",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.0,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0017",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S11-P03",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0017",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.1,
+    "kesme_nokta_sn": 5.6,
+    "kadraj_sirasi": [
+     "sera",
+     "brann"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera",
+     "brann"
+    ],
+    "hikaye": {
+     "vurus": "doruk",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [
+      "m02"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [
+      "kur_duduk"
+     ],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0017": [
+      1.9,
+      5.0
+     ]
+    },
+    "ton_fiili_en": "shouts",
+    "seviye": "bagirma",
+    "muzik_ipucu": null,
+    "istem_ozeti": "0ffa0aa7"
+   },
+   "replik": {
+    "id": "R0017",
+    "karakter": "sera",
+    "metin": "Then don't ask. Look at it, Brann.",
+    "teslim": "bagirma",
+    "tasidigi": [
+     "o09"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Then don't ask.",
+      "tr": ""
+     },
+     {
+      "en": "Look at it, Brann.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 30,
+   "sira": 30,
+   "parti": 3,
+   "referans": [
+    "brann",
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. Sera listens silently, mouth closed. 0.5-1.5s: Brann lifts their chin slightly. 1.9-4.6s: Brann whispers, in a deep, steady male voice with a Scottish accent: \"It's beautiful. Go. Before they come.\" 4.6-8s: Brann holds still, mouth closed. Sound: wind over snow. No music.",
+   "amac": "brann konuşur: R0018",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.7
+   },
+   "zanaat": {
+    "kod": "S11-P05",
+    "sahne_grubu": "S11",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "brann"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "brann",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "brann",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 4.6,
+      "ozne": "brann",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0018",
+      "cumleler": [
+       0,
+       1,
+       2
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "brann": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S11-P04",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "brann konuşur: R0018",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.7,
+    "kesme_nokta_sn": 5.2,
+    "kadraj_sirasi": [
+     "brann",
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "brann",
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": "doruk",
+     "hedef_duygu": "gerilim",
+     "yogunluk": 9,
+     "merak_ac": [],
+     "merak_kapat": [
+      "m02"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [
+      "kur_duduk"
+     ],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0018": [
+      1.9,
+      4.6
+     ]
+    },
+    "ton_fiili_en": "whispers",
+    "seviye": "fisilti",
+    "muzik_ipucu": "M06",
+    "istem_ozeti": "37a7b683"
+   },
+   "replik": {
+    "id": "R0018",
+    "karakter": "brann",
+    "metin": "It's beautiful. Go. Before they come.",
+    "teslim": "fisilti",
+    "tasidigi": [
+     "o09"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "It's beautiful.",
+      "tr": ""
+     },
+     {
+      "en": "Go.",
+      "tr": ""
+     },
+     {
+      "en": "Before they come.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 31,
+   "sira": 31,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static wide shot. 0.5-2.5s: walks forward. 2.8-3.8s: draws one slow breath, shoulders rising. 3.8-8s: holds still. Sound: footsteps on the ground, a soft breath, muffled wind over snow. No music.",
+   "amac": "Bahar suyu kulübenin önünden akıyor; Sera dışarı çıkıyor.",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "zanaat": {
+    "kod": "S12-P01",
+    "sahne_grubu": "S12",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "yurur",
+      "yon": "ileri"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "derin_nefes_alir",
+      "govde": "gogus"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Bahar suyu kulübenin önünden akıyor; Sera dışarı çıkıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": null,
+     "efektler": [
+      {
+       "id": "E31a",
+       "adim": "a1",
+       "kategori": "ayak",
+       "malzeme": "zemin:kulube",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      },
+      {
+       "id": "E31b",
+       "adim": "a2",
+       "kategori": "nefes",
+       "malzeme": "ses:sera",
+       "an": "orta",
+       "kaynak_tercih": "klip",
+       "yedek": "kutuphane",
+       "seviye_db_diyaloga_gore": -6.5
+      }
+     ],
+     "flow_sound": "Sound: footsteps on the ground, a soft breath, muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 3.9,
+    "kesme_nokta_sn": 4.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m04"
+     ],
+     "merak_kapat": [
+      "m03"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "muzik_ipucu": "M07",
+    "istem_ozeti": "5a0a1497"
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 32,
+   "sira": 32,
+   "parti": 3,
+   "referans": [
+    "sera"
+   ],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium close-up shot. 0.5-1.5s: lifts her chin slightly. 1.9-5.8s: Sera says softly, in a low, husky female voice with a northern English accent: \"Spring came. We kept our word, both of us.\" 5.8-8s: holds still, mouth closed. Sound: muffled wind over snow. No music.",
+   "amac": "sera konuşur: R0019",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "zanaat": {
+    "kod": "S12-P02",
+    "sahne_grubu": "S12",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0019",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S12-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0019",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "ses": {
+     "diyalog": {
+      "yol": "veo_donustur",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 5.9,
+    "kesme_nokta_sn": 6.4,
+    "kadraj_sirasi": [
+     "sera"
+    ],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "tam",
+    "dinleyen_agiz": null,
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [
+     "sera"
+    ],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m04"
+     ],
+     "merak_kapat": [
+      "m03"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0019": [
+      1.9,
+      5.8
+     ]
+    },
+    "ton_fiili_en": "says softly",
+    "seviye": "yumusak",
+    "muzik_ipucu": "M07",
+    "istem_ozeti": "e5790b2c"
+   },
+   "replik": {
+    "id": "R0019",
+    "karakter": "sera",
+    "metin": "Spring came. We kept our word, both of us.",
+    "teslim": "yumusak",
+    "tasidigi": [
+     "o10"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "Spring came.",
+      "tr": ""
+     },
+     {
+      "en": "We kept our word, both of us.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  },
+  {
+   "no": 33,
+   "sira": 33,
+   "parti": 3,
+   "referans": [],
+   "gorsel_istem": null,
+   "hareket_istem": "Static medium shot. 0.5-8s: holds still. Sound: muffled wind over snow. No music.",
+   "amac": "The ice in the north is glowing again. (ekran dışı ses)",
+   "duygu": "gerilim",
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.1
+   },
+   "zanaat": {
+    "kod": "S12-P03",
+    "sahne_grubu": "S12",
+    "plan_tipi": "ekleme",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM3",
+     "kadraj": "O",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": null
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {},
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S12-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": {
+     "replik": "R0020",
+     "karakter": "oda",
+     "kaynak": "tts",
+     "bas_sn": 0.3,
+     "sure_sn": 3.5
+    },
+    "ekranda_bilgi": "The ice in the north is glowing again. (ekran dışı ses)",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7,
+    "insansiz": true,
+    "ses": {
+     "diyalog": {
+      "yol": "tts",
+      "yol_neden": null,
+      "seviye_ozel": null
+     },
+     "efektler": [],
+     "flow_sound": "Sound: muffled wind over snow. No music.",
+     "sessizlik": null,
+     "dis_katman_db": null
+    }
+   },
+   "_derlenir": {
+    "sure_sn": 4.1,
+    "kesme_nokta_sn": 4.6,
+    "kadraj_sirasi": [],
+    "kamera_tarafi": null,
+    "agiz_gorunur": "yok",
+    "dinleyen_agiz": "kapali",
+    "ayna_yasak": true,
+    "gorunmesi_gerekenler": [],
+    "hikaye": {
+     "vurus": null,
+     "hedef_duygu": "gerilim",
+     "yogunluk": 7,
+     "merak_ac": [
+      "m04"
+     ],
+     "merak_kapat": [
+      "m03"
+     ],
+     "kurulum": [],
+     "kullanim_bilgi": [],
+     "ironi": null,
+     "risk": "Sera yakalanırsa yavruyla birlikte yakılır"
+    },
+    "replik_zaman": {
+     "R0020": [
+      0.8,
+      4.3
+     ]
+    },
+    "ton_fiili_en": "says",
+    "seviye": "normal",
+    "muzik_ipucu": "M07",
+    "istem_ozeti": "14e2eea5"
+   },
+   "replik": {
+    "id": "R0020",
+    "karakter": "oda",
+    "metin": "The ice in the north is glowing again.",
+    "teslim": "normal",
+    "tasidigi": [
+     "o11"
+    ],
+    "veo_metin": null,
+    "cumleler": [
+     {
+      "en": "The ice in the north is glowing again.",
+      "tr": ""
+     }
+    ]
+   },
+   "uretim": {
+    "istem_bicimi": "aralik"
+   }
+  }
+ ]
+}

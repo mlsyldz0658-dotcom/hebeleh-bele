@@ -1,0 +1,72 @@
+{
+ "_surum": 1,
+ "sahne_grubu": "S07",
+ "hikaye_sahne": "S07",
+ "ses": {
+  "yatak": {
+   "dosya": null,
+   "etiket": "DIS_kale_kapisi_gece_kar",
+   "seviye_lufs": -34.5,
+   "dongu": true,
+   "katmanlar": [
+    {
+     "ad": "hava_kar",
+     "dosya": null,
+     "kazanc_db": -12,
+     "kaynak": "defter:hava=kar"
+    }
+   ]
+  },
+  "oda_yaniti": "dis_kale_kapisi",
+  "gecis": {
+   "capraz_sn": 0.75,
+   "one_alma_sn": null,
+   "zaman_surekli_onceki": false
+  },
+  "kalabalik": null
+ },
+ "planlar": {
+  "17": {
+   "diyalog": null,
+   "efektler": [
+    {
+     "id": "E17a",
+     "adim": "a1",
+     "kategori": "kumas",
+     "malzeme": "kostum:brann/k1",
+     "an": "bas",
+     "kaynak_tercih": "klip",
+     "yedek": "kutuphane",
+     "seviye_db_diyaloga_gore": -6.5
+    }
+   ],
+   "flow_sound": "Sound: cloth rustling, wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "18": {
+   "diyalog": {
+    "yol": "veo_donustur",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "19": {
+   "diyalog": {
+    "yol": "tts",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  }
+ },
+ "_sahip": "ses-tasarimcisi",
+ "gerekce": "taslak incelendi; yatak ve efektler sahneye uygun"
+}

@@ -1,0 +1,26 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07a",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "plan_denetim (kaset)",
+  "esik_surum": "esikler 1.0",
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:00:00+00:00",
+  "ortam": "bulut"
+ },
+ "kapi": "HARITA",
+ "kapsam": "FILM",
+ "tur": 1,
+ "sonuc": "GEC",
+ "ozet": {
+  "plan": 3,
+  "gec": 3,
+  "bayrak": 0,
+  "hata": 0,
+  "olculemedi": 0
+ },
+ "hatalar": [],
+ "bayraklar": []
+}

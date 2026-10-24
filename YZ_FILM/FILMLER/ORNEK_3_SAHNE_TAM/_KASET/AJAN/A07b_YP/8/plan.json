@@ -1,0 +1,178 @@
+{
+ "sahne_grubu": "S08",
+ "planlar": [
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.9
+   },
+   "amac": "Sera lambayı söndürüp dinliyor.",
+   "zanaat": {
+    "kod": "S08-P01",
+    "sahne_grubu": "S08",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM1",
+     "kadraj": "G",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.5,
+      "ozne": "sera",
+      "tur": "fiziksel",
+      "fiil": "sondurur",
+      "govde": "sag_el",
+      "hedef": "lamba"
+     },
+     {
+      "id": "a2",
+      "bas": 2.8,
+      "bit": 3.8,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "basini_cevirir",
+      "hedef": "pencere"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Sera lambayı söndürüp dinliyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 5.9
+   },
+   "amac": "sera konuşur: R0013",
+   "zanaat": {
+    "kod": "S08-P02",
+    "sahne_grubu": "S08",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "OY",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "sera"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "sera",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "sera",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.9,
+      "bit": 5.8,
+      "ozne": "sera",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0013",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "sera": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gergin",
+       "bit": "gergin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S08-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": null,
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "sera konuşur: R0013",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 9
+   },
+   "replik": {
+    "id": "R0013"
+   }
+  }
+ ]
+}

@@ -1,0 +1,72 @@
+{
+ "_surum": 1,
+ "sahne_grubu": "S04",
+ "hikaye_sahne": "S04",
+ "ses": {
+  "yatak": {
+   "dosya": null,
+   "etiket": "IC_kulube_gece_kar",
+   "seviye_lufs": -34.5,
+   "dongu": true,
+   "katmanlar": [
+    {
+     "ad": "hava_kar",
+     "dosya": null,
+     "kazanc_db": -12,
+     "kaynak": "defter:hava=kar"
+    }
+   ]
+  },
+  "oda_yaniti": "ic_kulube",
+  "gecis": {
+   "capraz_sn": 0.0,
+   "one_alma_sn": null,
+   "zaman_surekli_onceki": true
+  },
+  "kalabalik": null
+ },
+ "planlar": {
+  "10": {
+   "diyalog": null,
+   "efektler": [
+    {
+     "id": "E10a",
+     "adim": "a1",
+     "kategori": "kapi",
+     "malzeme": "oge:kapi",
+     "an": "orta",
+     "kaynak_tercih": "klip",
+     "yedek": "kutuphane",
+     "seviye_db_diyaloga_gore": -6.5
+    }
+   ],
+   "flow_sound": "Sound: a door creaking, muffled wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "11": {
+   "diyalog": {
+    "yol": "veo_donustur",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: muffled wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  },
+  "12": {
+   "diyalog": {
+    "yol": "veo_donustur",
+    "yol_neden": null,
+    "seviye_ozel": null
+   },
+   "efektler": [],
+   "flow_sound": "Sound: muffled wind over snow. No music.",
+   "sessizlik": null,
+   "dis_katman_db": null
+  }
+ },
+ "_sahip": "ses-tasarimcisi",
+ "gerekce": "taslak incelendi; yatak ve efektler sahneye uygun"
+}

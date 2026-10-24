@@ -1,0 +1,279 @@
+{
+ "_sahip": "ses-tasarimcisi",
+ "film": "ORNEK_3_SAHNE_TAM",
+ "kaplama_hedef": [
+  0.4,
+  0.65
+ ],
+ "leitmotifler": {
+  "LM_SERA": {
+   "karakter": "sera",
+   "ana": true,
+   "enstruman": "solo wooden flute",
+   "ton": "D dorian",
+   "bpm": 72,
+   "olcu": "3/4",
+   "notalar": [
+    [
+     "D5",
+     1.0
+    ],
+    [
+     "F5",
+     0.5
+    ],
+    [
+     "E5",
+     0.5
+    ],
+    [
+     "C5",
+     1.0
+    ],
+    [
+     "D5",
+     2.0
+    ],
+    [
+     "A4",
+     1.0
+    ],
+    [
+     "D5",
+     2.0
+    ]
+   ],
+   "donusumler": {
+    "tehdit": {
+     "enstruman": "low strings",
+     "ton": "D minor",
+     "bpm": 60
+    },
+    "zafer": {
+     "enstruman": "full orchestra",
+     "ton": "F major",
+     "bpm": 84
+    }
+   },
+   "yazan": "ses-tasarimcisi muzik (kaset)"
+  }
+ },
+ "ipuclari": [
+  {
+   "id": "M01",
+   "tur": "tema",
+   "motif": "LM_SERA",
+   "donusum": "sade",
+   "duygu": "gerilim>sefkat",
+   "giris": {
+    "olay": "replik_sonu",
+    "replik": "R0002",
+    "ofset_sn": 0.3,
+    "rampa_sn": 2.0
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S02",
+    "rampa_sn": 3.0,
+    "tasma_sn": 0.0
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -18.0,
+    "diyalog_alti_db": 14
+   },
+   "istem_en": "Intimate underscore, solo wooden flute over soft strings, D dorian, 72 BPM, 3/4, tender then uneasy, no vocals, no choir.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M02",
+   "tur": "doku",
+   "duygu": "gerilim",
+   "giris": {
+    "olay": "sahne_basi",
+    "sahne_grubu": "S04",
+    "ofset_sn": 0.0,
+    "rampa_sn": 1.5
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S04",
+    "rampa_sn": 2.0
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -19.0,
+    "diyalog_alti_db": 15
+   },
+   "istem_en": "Low sustained cello drone with distant wind, slow pulse, tense and quiet, no vocals, no melody lead.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M03",
+   "tur": "tema",
+   "motif": "LM_SERA",
+   "donusum": "sade",
+   "duygu": "sefkat",
+   "giris": {
+    "olay": "sahne_basi",
+    "sahne_grubu": "S06",
+    "ofset_sn": 0.5,
+    "rampa_sn": 2.0
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S06",
+    "rampa_sn": 2.5
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -18.0,
+    "diyalog_alti_db": 14
+   },
+   "istem_en": "Warm solo wooden flute melody with soft harp, D dorian, 72 BPM, 3/4, gentle and close, no vocals.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M04",
+   "tur": "aksiyon",
+   "motif": "LM_SERA",
+   "donusum": "tehdit",
+   "duygu": "tehdit",
+   "giris": {
+    "olay": "replik_sonu",
+    "replik": "R0011",
+    "ofset_sn": 0.2,
+    "rampa_sn": 1.0
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S08",
+    "rampa_sn": 3.0
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -17.0,
+    "diyalog_alti_db": 13
+   },
+   "istem_en": "Low strings and timpani, D minor, 60 BPM, menacing march building slowly, no vocals, no choir.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M05",
+   "tur": "doku",
+   "duygu": "umut",
+   "giris": {
+    "olay": "adim_basi",
+    "plan": 24,
+    "adim": "a2",
+    "ofset_sn": 0.0,
+    "rampa_sn": 2.0
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S10",
+    "rampa_sn": 2.0
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -18.0,
+    "diyalog_alti_db": 14
+   },
+   "istem_en": "Rising string harmonics and soft horn swell, slow and wondrous, no vocals.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M06",
+   "tur": "tema",
+   "motif": "LM_SERA",
+   "donusum": "zafer",
+   "duygu": "zafer",
+   "giris": {
+    "olay": "replik_sonu",
+    "replik": "R0017",
+    "ofset_sn": 0.3,
+    "rampa_sn": 1.0
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S11",
+    "rampa_sn": 3.0,
+    "tasma_sn": 1.5
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -16.5,
+    "diyalog_alti_db": 12
+   },
+   "istem_en": "Full orchestra statement of a flute theme, F major, 84 BPM, 3/4, triumphant and warm, no vocals, no choir.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  },
+  {
+   "id": "M07",
+   "tur": "doku",
+   "duygu": "huzur>merak",
+   "giris": {
+    "olay": "adim_basi",
+    "plan": 31,
+    "adim": "a1",
+    "ofset_sn": 0.0,
+    "rampa_sn": 2.5
+   },
+   "cikis": {
+    "olay": "sahne_sonu",
+    "sahne_grubu": "S12",
+    "rampa_sn": 3.0,
+    "tasma_sn": 1.5
+   },
+   "seviye": {
+    "diyalogsuz_lufs": -19.0,
+    "diyalog_alti_db": 15
+   },
+   "istem_en": "Soft spring ambience with celesta and sustained strings, calm then curious, no vocals.",
+   "saglayici": [
+    "acestep",
+    "kutuphane"
+   ],
+   "aday": 3,
+   "hit": [],
+   "secilen": null,
+   "olcum": null
+  }
+ ]
+}

@@ -635,8 +635,8 @@ class Kum:
         sys.path.insert(0, os.path.join(depo, "YZ_FILM", "ARACLAR"))
         import ortak
         y = ortak.varsayilan_yollar(self.veri)
-        for k in ("ayarlar", "filmler", "hesap"):
-            if y.get(k): os.makedirs(y[k], exist_ok=True)
+        for k in ("AYARLAR", "FILMLER", "HESAP"): os.makedirs(os.path.join(self.veri, k), exist_ok=True)
+        self.filmler = os.path.join(self.veri, "FILMLER")
         y["capcut_taslak"] = os.path.join(self.kok, "CAPCUT_YOK")
         self.yollar = os.path.join(self.kok, "YOLLAR.json")
         atomik_yaz(self.yollar, y); self.y = y
@@ -714,7 +714,7 @@ def _s1(K, A):
     A("film-yap tek soruyu harfiyen ve 'başka cümle eklenmez' kuralıyla taşır", TEK_SORU in sk and "başka cümle eklenmez" in sk, "")
     k, j, out = K.f("ozet")
     A("film.py ozet: aktif film yok", k == 0 and "konu bekleniyor" in ((j or {}).get("ozet") or out), (j or {}).get("ozet") or out[:80])
-    A("film açılmadı", not glob.glob(os.path.join(K.y["filmler"], "F*")), "")
+    A("film açılmadı", not glob.glob(os.path.join(K.filmler, "F*")), "")
 
 
 def _s2(K, A):

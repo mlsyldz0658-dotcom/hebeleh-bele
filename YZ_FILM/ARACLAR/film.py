@@ -1368,7 +1368,8 @@ class Defter:
     def kaset(self, kapi, tur_no):
         k = ortak.json_oku(self.yol("_KASET", f"{kapi}.json"))
         if not isinstance(k, dict): return {"sonuc": "GEC", "hatalar": []}
-        return (k.get("turlar") or {}).get(str(tur_no)) or {"sonuc": k.get("sonuc", "GEC"), "hatalar": k.get("hatalar", [])}
+        return (k.get("turlar") or {}).get(str(tur_no)) or {"sonuc": k.get("sonuc", "GEC"), "hatalar": k.get("hatalar", []),
+                                                            "plato": k.get("plato")}
 
     def kapi_raporu(self, g):
         k = self.kaset(g["kapi"], g["tur_no"]); s = _sonuc(k.get("sonuc", "GEC"))

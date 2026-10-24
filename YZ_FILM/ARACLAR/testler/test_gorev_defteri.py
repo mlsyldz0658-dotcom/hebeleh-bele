@@ -459,5 +459,357 @@ class GercekKayit(Ortam):
                          "tamam")
 
 
+# ---- birleştirme turu (TUM_ISTEKLER: film.py / hat/asamalar.py maddeleri) ------------------------------------------------
+class YerelFilm(unittest.TestCase):
+    """Sahte OLMAYAN film (sağlayıcı yok, ortam yerel): animatik kapısı gerçek imzayla sorulur."""
+    def setUp(self):
+        film._IMZA_DOSYA.clear()
+        self.env = unittest.mock.patch.dict(os.environ, {"YZ_FILM_ORTAM": "yerel"}); self.env.start()
+        self.ad = "Y_" + self._testMethodName[-40:]
+        shutil.rmtree(os.path.join(_ortam.VERI, "FILMLER", self.ad), ignore_errors=True)
+        kod, r = calistir("yeni", "--konu", "Ejderha yavrusunu saklayan avcı kadın", "--ad", self.ad)
+        self.assertEqual(kod, 0, r); self.kok = r["yol"]; self.d = film.Defter(self.kok)
+
+    def tearDown(self): self.env.stop(); film._IMZA_DOSYA.clear()
+
+    def k(self, *a): return calistir(*a, "--film", self.ad)
+
+    def gorevler(self, asama=None):
+        gs = [oku(p) for p in glob.glob(os.path.join(self.kok, "_GOREV", "*", "GOREV.json"))]
+        return [g for g in gs if asama is None or g["asama"] == asama]
+
+    def aktif_yap(self, kod):
+        a = HAT.asama(kod)
+        return unittest.mock.patch.object(film.Defter, "aktif", lambda d: (a, d.coz(a)))
+
+
+class AnimatikKapisi(YerelFilm):
+    """Kullanıcının kesin şartı: onaylı animatik (ANIMATIK/ONAY.json ONAYLI, imza güncel) yoksa video kredisi harcayan aşama
+    (A13 BUT2, A14a, A14) görev AÇMAZ — sahte kipte değil, gerçek filmde."""
+    def test_imzasiz_video_gorevi_acilmaz(self):
+        self.assertFalse(self.d.sahte)
+        for kod in ("A13", "A14a", "A14"):
+            with self.aktif_yap(kod), unittest.mock.patch.object(film, "disk_bos_gb", lambda y: 500.0), \
+                    unittest.mock.patch.object(film, "flow_kilitli", lambda: False):
+                k, r = self.k("sonraki")
+            self.assertEqual((k, r["tur"]), (6, "kapi"), (kod, r))
+            self.assertIn("Animatik onaylı değil", r["kullaniciya"])
+            self.assertEqual(self.gorevler(kod), [], kod)                      # hiçbir video görevi kurulmadı
+        self.assertEqual(oku(os.path.join(self.kok, "FILM_DURUM.json"))["animatik"]["durum"], "bekliyor")
+
+    def test_a12_bitti_demek_yetmez_imza_sart(self):
+        # A12'nin defterde "tamam" görünmesi gerçek filmde yetmez (sahte kural yalnız sahte kipte)
+        with unittest.mock.patch.object(film.Defter, "coz", lambda d, a: {"durum": "tamam"}):
+            ok, neden = self.d.video_acilabilir()
+        self.assertFalse(ok); self.assertIn("ONAYLI", neden)
+
+    def test_bayat_ya_da_bozuk_imza_kapali(self):
+        ortak.atomik_yaz(os.path.join(self.kok, "ANIMATIK", "ONAY.json"), {"durum": "ONAYLI", "imza": "uydurma", "tur": 1,
+                                                                          "dosyalar": {}, "ozetler": {}})
+        ok, neden = self.d.video_acilabilir()
+        self.assertFalse(ok, neden)
+        with unittest.mock.patch.dict(sys.modules, {"animatik_imza": None}):   # araç açılmazsa kapalı başarısız
+            self.assertFalse(self.d.video_acilabilir()[0])
+
+    def test_onayli_imzayla_acilir(self):
+        import animatik_imza
+        with self.aktif_yap("A13"), unittest.mock.patch.object(film, "disk_bos_gb", lambda y: 500.0), \
+                unittest.mock.patch.object(animatik_imza, "dogrula", lambda f: (True, None, "abc")):
+            k, r = self.k("sonraki")
+            self.assertEqual(r["tur"], "betik", r)
+            self.assertTrue(self.gorevler("A13"))
+            st = film.durum_hesapla(self.d)
+        self.assertEqual(st["animatik"]["durum"], "ONAYLI"); self.assertEqual(st["animatik"]["imza"], "abc")
+
+    def test_sahte_kipte_a12_durumu(self):
+        with unittest.mock.patch.object(film.Defter, "sahte", True), \
+                unittest.mock.patch.object(film.Defter, "coz", lambda d, a: {"durum": "calisiyor"}):
+            self.assertEqual(self.d.video_acilabilir(), (False, "A12 bitmedi"))
+
+
+class VideoDongusu(YerelFilm):
+    """film.py video (VIDEO_YARI_OTOMATIK.bat): blok_plani --imza → memmet --blok sonraki --onizleme <imza> --mod elle; 0 dışı
+    kodda HEMEN durur (Flow uyarısında Memmet yeniden açılmaz)."""
+    def kos(self, memmet_kodlari, bitir_sonra=None):
+        cagri = []
+        def arac(arac, args, yakala=False):
+            cagri.append((arac, list(args)))
+            if arac == "blok_plani.py": return unittest.mock.Mock(returncode=0, stdout="0123456789ab\n")
+            n = sum(1 for a, _ in cagri if a == "memmet.py")
+            if bitir_sonra and n >= bitir_sonra: yaz(os.path.join(self.kok, "KUNYE", "BLOK_HEPSI.bitti"), "1")
+            return unittest.mock.Mock(returncode=memmet_kodlari[min(n, len(memmet_kodlari)) - 1])
+        with unittest.mock.patch.object(film, "_arac_kos", arac), unittest.mock.patch.object(film, "flow_kilitli", lambda: False), \
+                unittest.mock.patch.object(film.Defter, "video_acilabilir", lambda d: (True, None)):
+            k, r = self.k("video", "--blok", "*")
+        return k, r, cagri
+
+    def test_flow_uyarisinda_bir_kez_ve_dur(self):
+        k, r, cagri = self.kos([7])
+        self.assertEqual(k, 7); self.assertIn("UYARI_GECTI", r["kullaniciya"])
+        self.assertEqual([a for a, _ in cagri].count("memmet.py"), 1)            # yeniden açılmadı
+        m = next(x for a, x in cagri if a == "memmet.py")
+        self.assertEqual(m[1:], ["--blok", "sonraki", "--onizleme", "0123456789ab", "--mod", "elle"])
+
+    def test_dogrulamada_dur(self):
+        k, r, cagri = self.kos([0, 2])
+        self.assertEqual(k, 2); self.assertEqual([a for a, _ in cagri].count("memmet.py"), 2)
+
+    def test_bloklar_bitince_biter(self):
+        k, r, cagri = self.kos([0, 0, 0], bitir_sonra=2)
+        self.assertEqual(k, 0, r); self.assertEqual([a for a, _ in cagri].count("memmet.py"), 2)
+
+    def test_imzasiz_animatik_ve_kilit(self):
+        with unittest.mock.patch.object(film, "_arac_kos", lambda *a, **k: self.fail("araç çağrılmamalı")), \
+                unittest.mock.patch.object(film, "flow_kilitli", lambda: False):
+            k, r = self.k("video")
+        self.assertEqual(k, 6); self.assertIn("Animatik", r["kullaniciya"])
+        with unittest.mock.patch.object(film, "_arac_kos", lambda *a, **k: self.fail("araç çağrılmamalı")), \
+                unittest.mock.patch.object(film, "flow_kilitli", lambda: True):
+            self.assertEqual(self.k("video")[0], 7)
+
+    def test_vg_gorevi_komutu_tasir(self):
+        a = HAT.asama("A14"); s = next(x for x in a.gorevler if x.kod == "VG")
+        g = self.d.gorev_kur(a, s, "A14@s1/t1/g1/VG/1", 1, 1, None, 1, None, None, "x")
+        self.assertEqual(g["komut"][1:], ["video", "--blok", "*", "--film", self.kok])
+        self.assertTrue(g["komut"][0].endswith(os.path.join(".claude", "bin", "film.py")))
+
+
+class GirdiKopyasi(YerelFilm):
+    def kur(self, kod, s, persona=None, kip=None, i=1, tur=1):
+        a = HAT.asama(kod)
+        return self.d.gorev_kur(a, s, f"{kod}@s1/t{tur}/g0/{s.kod}/{i}", 1, tur, None, i, kip, persona, "x")
+
+    def test_kor_paket_klasoru_persona_ve_eslestirici(self):
+        p = os.path.join(self.kok, "_KOR_PAKET", "kagit_ilk2dk_t1")
+        gizli = "ANAH" + "TAR.json"
+        for ad in ("ILK2DK_A.md", "ILK2DK_B.md", "P0/kare.jpg", "ESLESTIRICI/" + gizli, gizli): yaz(os.path.join(p, ad), "x")
+        s = next(x for x in HAT.asama("A06").gorevler if x.kod == "IK")
+        g = self.kur("A06", s, persona="A", kip="ilk2dk")
+        gd = os.path.join(self.kok, "_GOREV", g["id"], "GIRDI")
+        self.assertTrue(os.path.isfile(os.path.join(gd, "ILK2DK_A.md"))); self.assertTrue(os.path.isfile(os.path.join(gd, "P0", "kare.jpg")))
+        self.assertFalse(os.path.exists(os.path.join(gd, "ILK2DK_B.md")))
+        self.assertFalse(os.path.exists(os.path.join(gd, "ESLESTIRICI"))); self.assertFalse(os.path.exists(os.path.join(gd, gizli)))
+        self.assertNotIn("DERSLER.md", " ".join(g["girdi"]))
+
+    def test_eslestirici_kendi_paketini_ve_seyirci_raporunu_alir(self):
+        gizli = "ANAH" + "TAR.json"
+        yaz(os.path.join(self.kok, "_KOR_PAKET", "kagit_t1", "ESLESTIRICI", gizli), "{}")
+        yaz(os.path.join(self.kok, "_RAPOR", "SEYIRCI", "kagit_t1", "s2_rapor.json"), "{}")
+        s = next(x for x in HAT.asama("A06").gorevler if x.kod == "OE")
+        g = self.kur("A06", s, i=2, kip="ozet")
+        self.assertEqual(sorted(g["girdi"]), sorted(["GIRDI/" + gizli, "GIRDI/s2_rapor.json"]))
+
+    def test_g1_kor_paketi_ornek_numarasiyla(self):
+        yaz(os.path.join(self.kok, "_KOR_PAKET", "g1_t1", "2", "g01.jpg"), "x")
+        yaz(os.path.join(self.kok, "_KOR_PAKET", "g1_t1", "2", "SORULAR.json"), "{}")
+        yaz(os.path.join(self.kok, "_KOR_PAKET", "g1_t1", "1", "g09.jpg"), "x")
+        s = next(x for x in HAT.asama("A11").gorevler if x.kod == "KG")
+        g = self.kur("A11", s, i=2, kip="g1")
+        self.assertEqual(sorted(g["girdi"]), ["GIRDI/SORULAR.json", "GIRDI/g01.jpg"])
+
+    def test_son_surum_ve_glob(self):
+        for n in (1, 3, 10, 102): yaz(os.path.join(self.kok, "_HIKAYE_ODASI", f"06_SENARYO_v{n}.json"), json.dumps({"n": n}))
+        self.assertEqual(film.girdi_cozumle(self.kok, "son:_HIKAYE_ODASI/06_SENARYO_v*.json")[0][1], "06_SENARYO_v102.json")
+        self.assertEqual(len(film.girdi_cozumle(self.kok, "_HIKAYE_ODASI/06_SENARYO_v*.json")), 4)
+        self.assertNotEqual(self.d.dosya_imza(["_HIKAYE_ODASI/06_SENARYO_v*.json"]), self.d.dosya_imza(["_YOK/*.json"]))
+
+    def test_yazar_sozlukleri_girdide(self):
+        s = next(x for x in HAT.asama("A07b").gorevler if x.kod == "YP")
+        yaz(os.path.join(self.kok, "_YONETMEN", "DILIM", "G1.json"), "{}")
+        g = self.kur("A07b", s, kip="plan")
+        for ad in ("GIRDI/G1.json", "GIRDI/fiil_sozlugu.json", "GIRDI/plan_sozlukleri.json", "GIRDI/ifade_sozlugu.json"):
+            self.assertIn(ad, g["girdi"])
+
+    def test_istem_md_esikleri_doldurur(self):
+        s = next(x for x in HAT.asama("A03").gorevler if x.kod == "HM")
+        g = self.kur("A03", s, persona="D")
+        m = film._bayt(os.path.join(self.kok, "_GOREV", g["id"], "ISTEM.md")).decode("utf-8")
+        self.assertIn("A03", m); self.assertNotIn("{{", m)
+        import beceri_denetim
+        def boz(*a, **k): raise beceri_denetim.SablonHatasi("bilinmeyen yer tutucu")
+        with unittest.mock.patch.object(beceri_denetim, "sablon_doldur", boz):
+            with self.assertRaises(film.Hata) as c: self.kur("A03", s, persona="S", i=2)
+        self.assertEqual(c.exception.kod, film.HATA); self.assertIn("şablonu", str(c.exception))
+
+    def test_karakter_adedi_son_senaryodan(self):
+        yaz(os.path.join(self.kok, "_HIKAYE_ODASI", "06_SENARYO_v1.json"), json.dumps({"karakterler": {"a": {}, "b": {}}}))
+        yaz(os.path.join(self.kok, "_HIKAYE_ODASI", "06_SENARYO_v2.json"), json.dumps({"karakterler": {"a": {}, "b": {}, "c": {}}}))
+        self.assertEqual(self.d.adet("karakter"), 3)
+
+    def test_degersiz_film_secenegine_film_yolu(self):
+        gd = os.path.join(self.kok, "_GOREV", "A09-DN-001"); os.makedirs(gd, exist_ok=True)
+        cagri = []
+        with unittest.mock.patch.object(film.subprocess, "run", lambda a, **k: cagri.append(a) or unittest.mock.Mock(returncode=0)):
+            self.d.betik_kos({"id": "A09-DN-001", "arac": "istem_denetim.py", "argumanlar": ["--film"]})
+            self.d.betik_kos({"id": "A09-DN-001", "arac": "dilim.py", "argumanlar": ["--asama", "A07b"]})
+        self.assertEqual(cagri[0][2:], ["--film", self.kok]); self.assertEqual(cagri[1][-2:], ["--film", self.kok])
+
+    def test_evren_ozeti_ic_betik(self):
+        self.assertEqual(self.d.ic_evren_ozeti({"id": "A01-EO-001"}), 0)
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "_HIKAYE_ODASI", "EVREN_OZETI.md")))
+
+
+class Nabiz(YerelFilm):
+    def nabiz(self, **k):
+        ayar = os.path.join(ortak.DEPO_KOK, ".claude", "settings.json")
+        sha = __import__("hashlib").sha1(film._bayt(ayar)).hexdigest() if os.path.isfile(ayar) else None
+        n = {"zaman": film.simdi(), "yazan": "kanca.komut", "kanca_sha": {}, "ayar_sha": {"settings.json": sha}, "fork_kapali": True}
+        n.update(k); ortak.atomik_yaz(os.path.join(self.kok, "_GOREV", "KANCA_NABZI.json"), n)
+
+    def test_fork_kapali_ve_ayar_ozeti(self):
+        self.nabiz(); self.assertTrue(self.d.nabiz_tamam())
+        self.nabiz(fork_kapali=False); self.assertFalse(self.d.nabiz_tamam())
+        self.nabiz(ayar_sha={"settings.json": "0" * 40}); self.assertFalse(self.d.nabiz_tamam())
+        n = {"zaman": film.simdi(), "yazan": "kanca.komut"}                       # kancanın nabzında fork alanı yoksa geçersiz
+        ortak.atomik_yaz(os.path.join(self.kok, "_GOREV", "KANCA_NABZI.json"), n); self.assertFalse(self.d.nabiz_tamam())
+
+
+class Kaset(unittest.TestCase):
+    """--saglayici kaset: ajan ve betik görevleri yalnız film.py ile (test yaması olmadan) kasetten yürür (§6.10, D-41)."""
+    def setUp(self):
+        film._IMZA_DOSYA.clear()
+        self.env = unittest.mock.patch.dict(os.environ, {"YZ_FILM_ORTAM": "bulut"}); self.env.start()
+        self.ad = "KASET_" + self._testMethodName[-30:]
+        shutil.rmtree(os.path.join(_ortam.VERI, "FILMLER", self.ad), ignore_errors=True)
+        kod, r = calistir("yeni", "--konu", "ejderha yavrusunu saklayan avcı kadın", "--ad", self.ad, "--saglayici", "kaset")
+        self.assertEqual(kod, 0, r)                                              # bulutta kaset de açılır (D-45)
+        self.kok = r["yol"]
+        shutil.copytree(os.path.join(os.path.dirname(ARACLAR), "FILMLER", "ORNEK_3_SAHNE", "_KASET"), os.path.join(self.kok, "_KASET"))
+
+    def tearDown(self): self.env.stop()
+
+    def k(self, *a): return calistir(*a, "--film", self.ad)
+
+    def test_a00_a03_yalniz_film_py(self):
+        asamalar = []
+        with unittest.mock.patch.object(film, "disk_bos_gb", lambda y: 500.0):
+            for _ in range(80):
+                kod, r = self.k("sonraki")
+                a = (r.get("asama") or "").split(" ")[0]
+                if not asamalar or asamalar[-1] != a: asamalar.append(a)
+                if a == "A04": break
+                self.assertIn(r["tur"], ("ajan", "betik"), r)
+                for g in r["gorevler"]:
+                    kc, rc = self.k("calis", g["id"]); self.assertEqual(kc, 0, (g, rc))
+        self.assertEqual(asamalar, ["A00", "A01", "A02", "A03", "A04"])
+        gs = [oku(p) for p in glob.glob(os.path.join(self.kok, "_GOREV", "*", "GOREV.json"))]
+        self.assertTrue(all(g["durum"] == "bitti" for g in gs if g["asama"] != "A04"))
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "_HIKAYE_ODASI", "02_oneri_X.md")))
+        self.assertTrue(os.path.isfile(os.path.join(self.kok, "_HIKAYE_ODASI", "02_LOGLINELAR.md")))
+        b0 = next(g for g in gs if g["asama"] == "A01" and "-B0-" in g["id"])
+        self.assertEqual(oku(os.path.join(self.kok, "_RAPOR", "BUT0_FILM.json"))["_uretim"]["gorev"], b0["id"])
+
+    def test_kasetsiz_kredili_gercek_arac_kosmaz(self):
+        d = film.Defter(self.kok)
+        g = {"id": "A10b-TL-001", "asama": "A10b", "tur_no": 1, "anahtar": "A10b@s1/t1/g0/TL/1", "arac": "ses_sec.py",
+             "argumanlar": ["--telaffuz"], "kredili": True, "persona": None, "kip": None}
+        with self.assertRaises(film.Hata) as c: d.betik_kos(g)
+        self.assertEqual(c.exception.kod, film.ORTAM)
+
+
+class Birlestirme(Ortam):
+    """MINI kayıt (sahte): bitir --gecersiz, bekle hatırlatma bildirimi, sıralı çift, koşullu görev, plato, hedef maddeleri."""
+    def ilk(self, kod):
+        for _ in range(200):
+            k, r = self.k("sonraki")
+            if (r.get("asama") or "").startswith(kod) or r["tur"] not in ("ajan", "betik", "kullanici_eylemi"): return k, r
+            if r["tur"] == "ajan":
+                self.nabiz(); self.k("basla", ",".join(g["id"] for g in r["gorevler"]))
+                for g in r["gorevler"]: self.ajan(g["id"])
+            else:
+                for g in r["gorevler"]: self.assertEqual(self.k("calis", g["id"])[0], 0)
+        self.fail("ulaşılamadı")
+
+    def test_bitir_gecersiz_yeni_deneme(self):
+        k, r = self.ilk("A01")
+        while r["tur"] != "ajan":
+            for g in r["gorevler"]: self.k("calis", g["id"])
+            k, r = self.k("sonraki")
+        gid = r["gorevler"][0]["id"]; self.nabiz(); self.k("basla", gid)
+        k2, r2 = self.k("bitir", gid, "--gecersiz", "2 düzeltme sonrası şema HATA'sı")
+        self.assertEqual((k2, r2["durum"]), (0, "gecersiz"))
+        g = oku(os.path.join(self.kok, "_GOREV", gid, "GOREV.json"))
+        self.assertEqual(g["durum"], "gecersiz"); self.assertIn("şema", g["gecersiz_neden"])
+        k3, r3 = self.k("sonraki")
+        yeni = r3["gorevler"][0]["id"]; self.assertNotEqual(yeni, gid)
+        self.assertEqual(oku(os.path.join(self.kok, "_GOREV", yeni, "GOREV.json"))["onceki"], gid)
+
+    def test_bekle_hatirlatmasi_bildirim(self):
+        k, r = self.ilk("A10d")
+        while r["tur"] != "kullanici_eylemi":
+            for g in r["gorevler"]: self.k("calis", g["id"])
+            k, r = self.k("sonraki")
+        gid = r["gorevler"][0]["id"]; p = os.path.join(self.kok, "_GOREV", gid, "GOREV.json")
+        g = oku(p); g["zaman"]["basla"] = "2020-01-01T00:00:00+00:00"; ortak.atomik_yaz(p, g)
+        import bildirim
+        with unittest.mock.patch.object(bildirim, "gonder") as gon:
+            self.assertEqual(self.k("bekle", "--kullanici", gid, "--kez", "1", "--aralik", "0")[0], 8)
+        gon.assert_called_once()
+        self.assertEqual(gon.call_args[0][0], "kullanici_isi"); self.assertTrue(gon.call_args[0][1].startswith("Hatırlatma: "))
+        self.assertEqual(gon.call_args[1]["anahtar"], gid)
+        with unittest.mock.patch.object(bildirim, "gonder", side_effect=RuntimeError("ağ yok")):   # bildirim hatası beklemeyi bozmaz
+            g = oku(p); g["hatirlatma"] = "2020-01-01T00:00:00+00:00"; ortak.atomik_yaz(p, g)
+            self.assertEqual(self.k("bekle", "--kullanici", gid, "--kez", "1", "--aralik", "0")[0], 8)
+
+    def test_sirali_cift_dilim_yenilenir(self):
+        ortak.atomik_yaz(os.path.join(self.kok, "_YONETMEN", "DILIM.json"),
+                         {"gruplar": [{"i": 1, "grup": "G1", "bagimli": None}, {"i": 2, "grup": "G2", "bagimli": "G1"}]})
+        k, r = self.ilk("A07b")
+        self.assertEqual(r["tur"], "ajan")
+        self.assertEqual([g["id"].split("-")[1] for g in r["gorevler"]], ["YP"])   # G2, G1 bitmeden verilmez
+        cagri = []
+        orj = film.subprocess.run
+        def run(a, **kw):
+            if os.path.basename(a[1]) != "dilim.py": return orj(a, **kw)
+            cagri.append(a); yaz(os.path.join(self.kok, "_YONETMEN", "DILIM", "G2.json"), '{"yenilendi": true}')
+            return unittest.mock.Mock(returncode=0, stdout="")
+        self.nabiz(); self.k("basla", r["gorevler"][0]["id"]); self.ajan(r["gorevler"][0]["id"])
+        with unittest.mock.patch.object(film.subprocess, "run", run):
+            k, r2 = self.k("sonraki")
+        self.assertEqual(r2["tur"], "ajan"); gid = r2["gorevler"][0]["id"]
+        self.assertEqual(len(cagri), 1); self.assertEqual(cagri[0][2:6], ["--asama", "A07b", "--grup", "2"])
+        self.assertEqual(oku(os.path.join(self.kok, "_GOREV", gid, "GIRDI", "G2.json")), {"yenilendi": True})
+        with unittest.mock.patch.object(film.subprocess, "run", run):
+            self.k("sonraki")
+        self.assertEqual(len(cagri), 1)                                          # bir kez
+
+    def test_terminal_hedef_maddeleri_film_hatasi_degil(self):
+        d = film.Defter(self.kok); a = HAT.asama("A06")
+        son = {"sonuclar": ["HATA"], "hatalar": [{"madde": "genel_hedef", "hedef": True, "sahne": "P1", "seviye": "HATA"},
+                                                 {"madde": "genel_hedef", "hedef": True, "sahne": "FILM", "seviye": "HATA"}]}
+        t = d.terminal(a, "durdu", son, 0, 1, 2)
+        self.assertEqual((t["karar"], t["durdu"]), ("durdu", []))
+        son["hatalar"].append({"madde": "kritik", "seviye": "HATA"})
+        self.assertEqual(d.terminal(a, "durdu", son, 0, 1, 2)["karar"], "kapi6")
+
+    def test_plato_dogrudan_doktor(self):
+        ortak.atomik_yaz(os.path.join(self.kok, "_KASET", "HS_KAGIT.json"),
+                         {"sonuc": "KISMI", "plato": True, "hatalar": [{"madde": "genel_medyan", "seviye": "ORTA"}]})
+        r = self.surucu(); self.assertEqual(r["tur"], "bitti", r)
+        gs = [g for g in self.gorevler() if g["asama"] == "A06"]
+        t2 = [g for g in gs if g["tur_no"] == 2]
+        self.assertTrue(t2 and all(g["merdiven"] == 0 for g in t2))                # tur 2 olağan değil: doktor basamağı
+        mb = [g for g in t2 if g["anahtar"].split("/")[3] == "MB"]
+        self.assertEqual([(g["ajan"], g["kip"]) for g in mb], [("yapimci", "doktor")])
+        self.assertTrue(mb[0].get("plato_basamagi"))
+
+    def test_kosullu_grup_atlanir_ve_flow_reddi_onarim_acar(self):
+        kayit = (MINI[0], Asama("A14", "Video", "test", (G("konu", "A00", "00_KONU.md"),), ("x",), (R("V2", "_RAPOR/V2_FILM_t{tur}.json"),),
+                                None, "her_ikisi", 1, (HEDEF_ALTI,), None,
+                                (HAT._flow_onarim(0),
+                                 B("VD", "video_denetim.py", grup=1, cikti=("_RAPOR/V2_FILM_t{tur}.json",), kapi="V2"))))
+        HAT.ASAMALAR = kayit; HAT._DIZIN = {a.kod: a for a in kayit}; film._IMZA_DOSYA.clear()
+        r = self.surucu(); self.assertEqual(r["tur"], "bitti", r)
+        gs = [g for g in self.gorevler() if g["asama"] == "A14"]
+        atla = [g for g in gs if "-ATLA-" in g["id"]]
+        self.assertEqual(len(atla), 1); self.assertEqual(atla[0]["durum"], "bitti")
+        self.assertFalse([g for g in gs if "-FO-" in g["id"]])
+        d = film.Defter(self.kok); a = HAT.asama("A14"); s = a.gorevler[0]
+        self.assertFalse(d.kosul_tamam(a, s))
+        ortak.atomik_yaz(os.path.join(self.kok, "_RAPOR", "FLOW_B01.json"),
+                         {"kapi": "FLOW", "hatalar": [{"madde": "filtre_red", "plan": 4, "seviye": "HATA"}]})
+        self.assertTrue(d.kosul_tamam(a, s))
+
+
 if __name__ == "__main__":
     unittest.main()

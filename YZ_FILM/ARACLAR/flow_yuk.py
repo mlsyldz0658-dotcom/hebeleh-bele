@@ -7,7 +7,8 @@ Kullanım:
                                               şimdi bu gönderime izin var mı? çıkış 0 izinli · 8 bekle · 7 kilitli · 5 elle gerekli
   python flow_yuk.py --uyari-gecti [--elle-video-basarili]
                                               UYARI_GECTI.bat: Flow kilidini aşağıdaki şartlarla kaldırır; şart yoksa nedenini yazar (7).
-                                              --elle-video-basarili yoksa soru sorar ("Flow'da ELLE 1 video denedin, başarılı oldu mu?").
+                                              YALNIZ KULLANICI: etkileşimli konsol (TTY) şart; "ben kullanıcıyım" yazılarak onaylanır.
+                                              TTY değilse (ajan, betik, boru) hiçbir şey yapmaz, 7. --elle-video-basarili yoksa soru da sorar.
 Kodda:  import flow_yuk as fy
   fy.izinli_mi("video", "elle") → {"izinli", "kod", "nedenler", "bekle_bitis"} · fy.gonderim_kaydet("video", "elle", film=..., plan=...)
   fy.blok_bitti("gece") → mola düştü mü · fy.kilit_durumu() · fy.uyari_kaydet(film, mesaj) · fy.hesap_gozlem(eposta=...)
@@ -145,11 +146,27 @@ def _hesap_o_an(kok, t):
 BOS_TEMPO = {"_surum": TEMPO_SURUM, "son_gonderim": 0, "sonraki_izin": 0, "mola_bitis": 0, "gonderim_sayaci": 0, "parti_sayaci": 0}
 
 
+TEMPO_BELIRSIZ_BEKLEME_SN = 30 * 60     # tempo dosyası bozuk/eksikken (geçmiş varken) en uzun mola kadar beklenir (kapalı başarısız)
+
+
 def tempo_oku(kok=None):
-    """FLOW_TEMPO.json (v1 Memmet ya da v2). Yoksa ya da bozuksa sıfır sayaçlar."""
-    T = ortak.json_oku(tempo_yolu(kok), None)
-    T = dict(T) if isinstance(T, dict) else {}
-    for k, v in BOS_TEMPO.items(): T.setdefault(k, v)
+    """FLOW_TEMPO.json (v1 Memmet ya da v2). Yoksa ve FLOW_YUK geçmişi de yoksa sıfır sayaçlar (taze hesap). Bozuksa ya da geçmiş
+    varken yoksa bekleme SIFIRLANMAZ: son bilinen gönderimden (ya da bozuk dosyanın tarihinden) en uzun mola kadar beklenir."""
+    p = tempo_yolu(kok); T = ortak.json_oku(p, None)
+    if isinstance(T, dict):
+        T = dict(T)
+        for k, v in BOS_TEMPO.items(): T.setdefault(k, v)
+        return T
+    T = dict(BOS_TEMPO)
+    gecmis = [z for z in (_satir_zaman(r) for r in yuk_oku(kok)) if z]
+    if os.path.exists(p):                                   # bozuk dosya: tarihinden (ve son gönderimden) en uzun mola
+        try: dz = os.path.getmtime(p)
+        except OSError: dz = time.time()
+        taban = max([dz] + gecmis)
+    elif gecmis: taban = max(gecmis)                         # silinmiş dosya: geçmişten
+    else: return T
+    T.update(son_gonderim=max(gecmis) if gecmis else 0, sonraki_izin=taban + TEMPO_BELIRSIZ_BEKLEME_SN, gonderim_sayaci=len(gecmis),
+             _belirsiz=True)
     return T
 
 
@@ -189,9 +206,10 @@ def tempo(kip, kok=None, E=None, simdi=None, ek=None):
     return t
 
 
-def tempo_durumu(kip="elle", kok=None, E=None, simdi=None):
-    """Sonraki izinli zaman ve molalar (memmet.TEMPO anlamıyla): kalan bekleme, sıradaki molaya kalan gönderim/parti."""
-    simdi = _simdi(simdi); T = tempo_oku(kok); t = tempo(kip, kok, E, simdi)
+def tempo_durumu(kip="elle", kok=None, E=None, simdi=None, ek=None):
+    """Sonraki izinli zaman ve molalar (memmet.TEMPO anlamıyla): kalan bekleme, sıradaki molaya kalan gönderim/parti.
+    ek (ör. MEMMET_AYAR) yalnız yavaşlatır."""
+    simdi = _simdi(simdi); T = tempo_oku(kok); t = tempo(kip, kok, E, simdi, ek)
     hedef = max(float(T.get("sonraki_izin") or 0), float(T.get("mola_bitis") or 0),
                 float(T.get("son_gonderim") or 0) + (t["gonderim_arasi_sn"][0] if T.get("son_gonderim") else 0))
     n, p = t.get("mola_kac_gonderimde", 0), t.get("mola_kac_partide", 0)
@@ -233,9 +251,10 @@ def gonderim_kaydet(tur, kip, film=None, plan=None, cikti_sayisi=None, hesap=Non
     if tur not in TURLER: raise YukHatasi(f"tur gorsel|video olmalı: {tur!r}")
     E = _e(E, kok); simdi = _simdi(simdi); rnd = rnd or random; t = tempo(kip, kok, E, simdi, ek)
     hesap = _kimlik(kimlik=hesap) if hesap else hesap_durumu(kok).get("hesap_kimligi")
+    T = tempo_oku(kok)                         # bu gönderimden ÖNCEKİ durum (yeni satır "geçmiş" sayılmasın)
+    T.pop("_belirsiz", None)
     _jsonl_ekle(yuk_yolu(kok), {"zaman": _iso(simdi), "zaman_epoch": round(simdi, 3), "hesap": hesap, "film": film, "tur": tur,
                                 "plan": plan, "mod": kip, "cikti_sayisi": cikti_sayisi})
-    T = tempo_oku(kok)
     T["son_gonderim"] = simdi; T["gonderim_sayaci"] = int(T.get("gonderim_sayaci") or 0) + 1; T["kip"] = kip
     T["sonraki_izin"] = max(float(T.get("sonraki_izin") or 0), simdi + rnd.uniform(*t["gonderim_arasi_sn"]))
     n = t.get("mola_kac_gonderimde", 0)
@@ -249,9 +268,10 @@ def gonderim_kaydet(tur, kip, film=None, plan=None, cikti_sayisi=None, hesap=Non
     return T
 
 
-def blok_bitti(kip, kok=None, E=None, simdi=None, rnd=None):
-    """Parti/blok sonu (memmet.parti_bitti anlamı). Mola düştüyse True. Elle biten blok 'ertesi gün ilk blok elle' şartını kapatır."""
-    E = _e(E, kok); simdi = _simdi(simdi); rnd = rnd or random; t = tempo(kip, kok, E, simdi)
+def blok_bitti(kip, kok=None, E=None, simdi=None, rnd=None, ek=None):
+    """Parti/blok sonu (memmet.parti_bitti anlamı). Mola düştüyse True. Elle biten blok 'ertesi gün ilk blok elle' şartını kapatır.
+    ek (ör. MEMMET_AYAR parti_mola_dk, mola_kac_partide) yalnız yavaşlatır."""
+    E = _e(E, kok); simdi = _simdi(simdi); rnd = rnd or random; t = tempo(kip, kok, E, simdi, ek)
     T = tempo_oku(kok); n = t.get("mola_kac_partide", 0); T["parti_sayaci"] = int(T.get("parti_sayaci") or 0) + 1
     mola = bool(n and T["parti_sayaci"] % n == 0)
     if mola: T["mola_bitis"] = max(float(T.get("mola_bitis") or 0), simdi + rnd.uniform(*t["parti_mola_dk"]) * 60)
@@ -400,7 +420,7 @@ def _ilk_blok_elle_bekliyor(T, simdi):
     return isinstance(ie, dict) and not ie.get("tamam") and bool(ie.get("tarih"))
 
 
-def izinli_mi(tur, kip="elle", kok=None, E=None, simdi=None):
+def izinli_mi(tur, kip="elle", kok=None, E=None, simdi=None, ek=None):
     """Şimdi bu hesaptan bir Flow gönderimine izin var mı? kod: 0 izinli · 7 kilitli · 5 elle gerekli · 8 bekle (bekle_bitis'e kadar)."""
     if tur not in TURLER: raise YukHatasi(f"tur gorsel|video olmalı: {tur!r}")
     E = _e(E, kok); simdi = _simdi(simdi); nedenler = []
@@ -412,7 +432,7 @@ def izinli_mi(tur, kip="elle", kok=None, E=None, simdi=None):
     if kip != "elle" and _ilk_blok_elle_bekliyor(T, simdi):
         return {"izinli": False, "kod": KIP_ELLE, "bekle_bitis": None,
                 "nedenler": ["UYARI_GECTI sonrası ilk blok elle gider: gece kipi bu blok bitene kadar kapalı."]}
-    bitis = [tempo_durumu(kip, kok, E, simdi)["sonraki_izin"]]
+    bitis = [tempo_durumu(kip, kok, E, simdi, ek)["sonraki_izin"]]
     if bitis[0] > simdi: nedenler.append(f"Tempo/mola: sonraki gönderim {_metin(bitis[0])}.")
     if tur == "gorsel":
         g = gunluk_sayim(kok, simdi)["gorsel"]
@@ -460,6 +480,23 @@ def _yazdir(d):
         print(f"  {tur}: {'izinli' if i['izinli'] else '; '.join(i['nedenler'])}")
 
 
+ONAY_SOZU = ("ben kullanıcıyım", "ben kullaniciyim")
+
+
+def tty_mi():
+    try: return bool(sys.stdin and sys.stdin.isatty() and sys.stdout and sys.stdout.isatty())
+    except (AttributeError, ValueError, OSError): return False
+
+
+def kullanici_onayi():
+    """UYARI_GECTI yalnız kullanıcının işidir: etkileşimli konsol (stdin ve stdout TTY) ve elle yazılan onay sözü şart.
+    Ajan, betik ya da boru (TTY yok) → False; bayraklar (--ben-kullaniciyim dahil) bunu atlatmaz."""
+    if not tty_mi(): return False
+    try: c = input("Bu kilidi SEN mi kaldırıyorsun? Onaylamak için 'ben kullanıcıyım' yaz: ").strip().lower()
+    except (EOFError, OSError): return False
+    return c in ONAY_SOZU
+
+
 def main(argv):
     a = list(argv); kip = "elle"
     if "--kip" in a:
@@ -476,9 +513,13 @@ def main(argv):
             d = izinli_mi(a[1], kip)
             print("izinli" if d["izinli"] else "\n".join(d["nedenler"]))
             return d["kod"]
-        if a[0] == "--uyari-gecti" and set(a[1:]) <= {"--elle-video-basarili"}:
+        if a[0] == "--uyari-gecti" and set(a[1:]) <= {"--elle-video-basarili", "--ben-kullaniciyim"}:
+            if not kullanici_onayi():
+                print("Kilidi yalnız sen kaldırırsın: UYARI_GECTI.bat'ı kendin çift tıklayıp aç ve soruları yanıtla. "
+                      "(Etkileşimli konsol yok: hiçbir şey yapılmadı.)")
+                return KILITLI
             evet = "--elle-video-basarili" in a
-            if not evet and sys.stdin and sys.stdin.isatty():
+            if not evet:
                 c = input("Flow'da ELLE 1 video denedin ve sorunsuz oldu mu? (E/H): ").strip().lower()
                 evet = c in ("e", "evet", "y", "yes")
             d = uyari_gecti(evet)

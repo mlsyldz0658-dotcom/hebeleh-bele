@@ -142,6 +142,24 @@ class EsitleGelistirme(unittest.TestCase):
         self.assertEqual(self.kos("--push-yok")[0], 0)
         self.assertEqual(len([d for d in self.dallar() if d.startswith("yerel/")]), 2)
 
+    def test_P7_ayar_ve_anahtar_adlari_alinmaz_json_anahtari_taranir_veri_yollardan(self):
+        G = "GELISTIRME/"
+        for ad in ("FILM_AYAR.json", "memmet3/MEMMET_AYAR.json", "eski_AYAR_yedek.json", "telegram_bot.txt", "gemini_anahtar.txt"):
+            yaz(self.veri, G + ad, "{}\n")
+        alinan, atlanan = eg.sec(os.path.join(self.veri, "GELISTIRME"))
+        for ad in ("FILM_AYAR.json", "memmet3/MEMMET_AYAR.json", "eski_AYAR_yedek.json", "telegram_bot.txt", "gemini_anahtar.txt"):
+            self.assertNotIn(ad, alinan); self.assertIn(ad, [r for r, _ in atlanan])
+        gizli = "AQ.Ab8RN6Lx2kQ9vZp7TwYcD4"                                      # AYARLAR/*.json içindeki anahtar değeri
+        yaz(self.veri, "AYARLAR/FILM_AYAR.json", '{"gemini": {"anahtar": "%s"}, "yol": "C:/Users/x/Desktop"}\n' % gizli)
+        yaz(self.veri, G + "memmet3/deneme.py", "K = '%s'\n" % gizli)
+        kod, out = self.kos("--push-yok")
+        self.assertEqual(kod, 3, out); self.assertNotIn(gizli, out); self.assertEqual(self.dallar(), {"ana"})
+        import ortak
+        from unittest import mock
+        with mock.patch.object(ortak, "yollar", return_value={"veri_kok": self.veri}), \
+                mock.patch.dict(os.environ, {"YZ_FILM_VERI": os.path.join(self.tmp, "BASKA")}):
+            self.assertEqual(eg.veri_koku(), self.veri)                             # veri kökü YOLLAR.json'dan (ortak.yollar)
+
 
 if __name__ == "__main__":
     unittest.main()

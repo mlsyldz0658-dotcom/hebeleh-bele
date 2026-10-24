@@ -5,7 +5,7 @@ Memmet'in sayfada yaptığı her işlemi (tıklama, yazma, tuş, gezinme, fare, 
 kutuyu_temizle sahte sayfaya karşı GERÇEKTEN koşar. Kural: uyarı görünür olduktan sonra sayfayı değiştiren işlem sayısı 0.
 Çalıştırma: python -m unittest discover -s ARACLAR/testler     (YZ_FILM klasöründen)
 """
-import os, sys, re, ast, json, time, shutil, tempfile, unittest, io, contextlib, subprocess, threading
+import os, sys, re, ast, json, time, random, shutil, tempfile, unittest, io, contextlib, subprocess, threading
 from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
@@ -32,12 +32,12 @@ class SahteSayfa:
         self.kutu = ""; self.islemler = []; self.yazilanlar = []; self.gonder_tiklaninca = None; self.ihlal = []
         self.keyboard = _Klavye(self); self.mouse = _Fare(self)
         self.an = 0; self.tetik_an = None; self.bicim = "govde"; self.gorunur = False; self.kaplama = False; self.okuma_hatasi = False
-        self.kaplama_tikta = False       # bir sonraki tıklama sırasında uyarı katmanı belirir (tıklama zaman aşımına düşer)
+        self.kaplama_tikta = False       # bir sonraki tıklama/gezinme sırasında uyarı katmanı belirir (işlem zaman aşımına düşer)
         self.secim = {}; self.menu_acik = False; self.kitaplik = set(); self.yukleniyor = 0; self.yuklenecek = []
         self.secici_acik = False; self.secilen = None; self.liste_acik = False; self.ekli = 0; self.odak = None; self.tumu_secili = False
         self.eposta = "Google Hesabı: Mara (mara.deneme@example.com)"; self.girisli = True
         self.sonuc = None; self.kart_sira = []; self.hover_oldu = False; self.gonderilen = []
-        self.gecikmeler = []; self.sanal = None; self.kaydirma = 0
+        self.gecikmeler = []; self.sanal = None; self.kaydirma = 0; self.mut_anlar = []
 
     # ---- uyarı görünürlüğü
     @property
@@ -58,11 +58,11 @@ class SahteSayfa:
 
     def _bas(self, ad, degistirir):
         if degistirir:
-            self.islemler.append(ad)
+            self.islemler.append(ad); self.mut_anlar.append(self.an)
             if self.gorunur: self.ihlal.append(ad)
             if self.kaplama and ad.split(":")[0] in ("click", "fill", "type", "press", "hover", "scroll", "mouse"):
                 self._son(); raise ZAMAN_ASIMI("Timeout 7000ms exceeded: <div class=overlay> intercepts pointer events")
-            if self.kaplama_tikta and ad.startswith("click"):
+            if self.kaplama_tikta and ad.split(":")[0] in ("click", "goto"):
                 self.kaplama_tikta = False; self.uyari_goster("kaplama"); self._son()
                 raise ZAMAN_ASIMI("Timeout 7000ms exceeded: <div role=dialog> intercepts pointer events")
 
@@ -87,6 +87,7 @@ class SahteSayfa:
         k = dict(self.kart)
         if k.get("video_url_hover") and self.hover_oldu: k["video_url"] = k["video_url_hover"]
         k.setdefault("hata_metni", k.get("metin", "")); k.setdefault("hata_ogesi", False)
+        if k.get("var"): k.setdefault("sira", 0)
         return k
 
     def ayar_metni(self):
@@ -100,7 +101,10 @@ class SahteSayfa:
     def evaluate(self, js, *a):
         self._bas("evaluate:olay", bool(DEGISTIREN.search(js)))
         try: return self._js(js, *a)
-        finally: self._son()
+        finally:
+            # dokun()'un işlemden hemen önceki son okuması işlemle bitişik sayılır: okuma ile işlem arasındaki mikro saniyelik
+            # yarış hiçbir denetimle kapatılamaz; onun dışındaki HER an (bütün öteki okumalar, yazmalar, beklemeler) sınanır.
+            if "memmet:metin son" not in js: self._son()
 
     def _js(self, js, *a):
         if "slice(0, 20000)" in js: return self.govde[:20000]                      # PR-0'ın kesen okuması (C2)
@@ -243,7 +247,7 @@ class Korkuluk(unittest.TestCase):
 
     def _uyu(self, sn):
         self.uykular.append(sn)
-        if len(self.uykular) > 500: raise AssertionError("Memmet durmadı: sonsuz bekleme (uyarı fark edilmedi)")
+        if len(self.uykular) > 20000: raise AssertionError("Memmet durmadı: sonsuz bekleme (uyarı fark edilmedi)")
         if self.uyku_tetik: self.uyku_tetik()
 
     def memmet(self, kip="elle"):
@@ -465,7 +469,9 @@ class BlokV2(unittest.TestCase):
                         mock.patch.object(memmet, "AYAR_DOSYA", os.path.join(ay, "MEMMET_AYAR.json")),
                         mock.patch.object(memmet, "FILM_AYAR", os.path.join(ay, "FILM_AYAR.json")),
                         mock.patch.object(memmet, "uyu", self._uyu),
-                        mock.patch.object(memmet.Memmet, "bildir", lambda m, msg, acil=False: self.bildirimler.append(msg))]
+                        mock.patch.object(memmet.Memmet, "bildir", lambda m, msg, acil=False: self.bildirimler.append(msg)),
+                        # animatik imzası (P5) ayrı testli (Imza sınıfı): burada fikstürün imzası geçerli sayılır
+                        mock.patch("animatik_imza.dogrula", return_value=(True, None, "imza_test"))]
         for y in self.yamalar: y.start()
         self.bildirimler = []; self.uykular = []; self.uyku_tetik = None; self.sayfa = SahteSayfa()
         self.doc = VF.film_kur(self.kok, [VF.plan(n) for n in (1, 2, 3)])
@@ -477,7 +483,7 @@ class BlokV2(unittest.TestCase):
 
     def _uyu(self, sn):
         self.uykular.append(sn)
-        if len(self.uykular) > 500: raise AssertionError("Memmet durmadı: sonsuz bekleme")
+        if len(self.uykular) > 20000: raise AssertionError("Memmet durmadı: sonsuz bekleme")
         if self.uyku_tetik: self.uyku_tetik()
 
     def blok_kur(self):
@@ -756,6 +762,512 @@ class BlokV2(unittest.TestCase):
         self.assertEqual(c.exception.kod, "olagandisi"); self.assertEqual(len(self.sayfa.islemler), self.uyari_aninda)
 
 
+# ==================================================================== Güvenlik incelemesi (24.10): C1–C10, P1–P8 — önce kırmızı, sonra yeşil
+HAZIR_GORSEL = {"var": True, "yuzde": False, "gorsel_url": "https://flow-content.google/image/a", "gorsel_id": "m1",
+                "gorseller": [{"id": "m1", "url": "https://flow-content.google/image/a"}], "metin": "plan"}
+HAZIR_HOVER = {"var": True, "yuzde": False, "video_kutusu": True, "video_url": None, "metin": "plan",
+               "video_url_hover": "https://flow-content.google/video/0f0e0d0c-0b0a-0908-0706-050403020100"}
+
+
+class _Taban(unittest.TestCase):
+    """Ortak kurulum: geçici AYARLAR/HESAP, sahte uyku (gerçek bekleme yok), bildirim kaydı."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(); self.ay = os.path.join(self.tmp, "AYARLAR"); os.makedirs(self.ay)
+        self.hesap = os.path.join(self.tmp, "HESAP")
+        self.yamalar = [mock.patch.object(memmet, "AYARLAR", self.ay), mock.patch.object(memmet, "HESAP", self.hesap),
+                        mock.patch.object(memmet, "AYAR_DOSYA", os.path.join(self.ay, "MEMMET_AYAR.json")),
+                        mock.patch.object(memmet, "FILM_AYAR", os.path.join(self.ay, "FILM_AYAR.json")),
+                        mock.patch.object(memmet, "uyu", self._uyu),
+                        mock.patch.object(memmet.Memmet, "bildir", lambda m, msg, acil=False: self.bildirimler.append(msg)),
+                        mock.patch("animatik_imza.dogrula", return_value=(True, None, "imza_test"))]
+        for y in self.yamalar: y.start()
+        self.bildirimler = []; self.uykular = []; self.sayfa = SahteSayfa(); self.kullanici_basar = True
+        json.dump({"izinler": {"gece_flow": True}}, open(os.path.join(self.ay, "FILM_AYAR.json"), "w", encoding="utf-8"))
+
+    def tearDown(self):
+        for y in self.yamalar: y.stop()
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _uyu(self, sn):
+        self.uykular.append(sn)
+        if len(self.uykular) > 20000: raise AssertionError("Memmet durmadı: sonsuz bekleme")
+        s = self.sayfa
+        if self.kullanici_basar and s.kutu and sn == 2 and not s.gorunur: s.gonderildi()     # elle: kullanıcı GÖNDER'e basar
+        s.okuma()                                                                         # bekleme de bir "an"dır
+
+    def v1_film(self, kok):
+        os.makedirs(kok, exist_ok=True)
+        plan = {"film": "KORKULUK", "karakterler": {"mara": {"ref": "01_KARAKTERLER/mara.jpg"}},
+                "sahneler": [{"no": n, "parti": 1, "referans": ["mara"], "gorsel_istem": f"Scene {n} wide shot of a quiet valley at dawn.",
+                              "hareket_istem": f"Scene {n} camera holds. No music."} for n in (1, 2)]}
+        json.dump(plan, open(os.path.join(kok, "SAHNELER.json"), "w", encoding="utf-8"))
+        VF.gorsel_yaz(os.path.join(kok, "01_KARAKTERLER", "mara.jpg"), 5)
+        return kok
+
+    def v2_film(self, kok, n=2):
+        doc = VF.film_kur(kok, [VF.plan(i) for i in range(1, n + 1)])
+        with contextlib.redirect_stdout(io.StringIO()): BP, kod = blok_plani.plan_kur(kok, hesap_kok=memmet.HESAP)
+        self.assertEqual(kod, 0)
+        return doc, BP["onizleme_imza"]
+
+    def memmet_v2(self, kok, imza, kip="gece"):
+        with contextlib.redirect_stdout(io.StringIO()):
+            m = memmet.Memmet(kok, {"mod": kip, "blok": "B01", "onizleme": imza}); m.on_kosullar(); m.blok_dogrula()
+        m.page = self.sayfa; m.A["ayni_anda"] = 1; m.blok_denetimleri = lambda *a, **k: None
+        m.indir = lambda url, hedef: open(hedef, "wb").write(b"\0" * 20000)
+        return m
+
+    def memmet_v1(self, kok, kip="elle"):
+        with contextlib.redirect_stdout(io.StringIO()): m = memmet.Memmet(kok, {"mod": kip, "asama": "gorsel"})
+        m.page = self.sayfa; m.indir = lambda url, hedef: open(hedef, "wb").write(b"\0" * 20000)
+        return m
+
+    def akis(self, m, v2=True):
+        """Gerçek sıra: giriş denetimi → hesap → proje → aşama/blok → son denetim. Durdur kodunu döndürür (yoksa None)."""
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                m.giris_kontrol(); m.hesap_denetle(); m.projeye_git()
+                if v2: m.blok_asama()
+                else: m.asama("gorsel", m.sahneler())
+                m.son_denetim()
+        except memmet.Durdur as e: return e.kod
+        return None
+
+
+class Inceleme(_Taban):
+    # ---------------------------------------------------------------- C1: yükleme beklemesi sırasında uyarı
+    def test_C1_T10_yukleme_beklerken_uyari_sonra_tiklama_yok(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok, "elle")
+        s = self.sayfa
+        asil = s._js
+        def js(j, *a):
+            r = asil(j, *a)
+            if "batch-container *" in j and r is True and not s.gorunur: s.uyari_goster("govde")   # yükleme yüzdeleri sürerken
+            return r
+        s._js = js
+        self.assertEqual(self.akis(m, v2=False), "olagandisi")
+        self.assertEqual(s.ihlal, [], "uyarıdan sonra sayfada işlem yapıldı")
+        self.assertIn("set_input_files", s.islemler)
+
+    def test_C1_T10_v2_yukleme_beklerken_uyari(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok); m = self.memmet_v2(kok, imza, "gece")
+        s = self.sayfa; s.sonuc = dict(HAZIR); asil = s._js
+        def js(j, *a):
+            r = asil(j, *a)
+            if "batch-container *" in j and r is True and not s.gorunur: s.uyari_goster("toast")
+            return r
+        s._js = js
+        self.assertEqual(self.akis(m), "olagandisi"); self.assertEqual(s.ihlal, [])
+        self.assertNotIn("click:button:Oluşturmaya başla", s.islemler)
+
+    # ---------------------------------------------------------------- C2: 20.000 karakter kesmesi, role=alert/dialog
+    def test_C2_T10_uzun_sayfa_sonundaki_uyari_ve_toast_gorulur(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok)
+        self.sayfa.govde = DOLGU + UYARI
+        with self.assertRaises(memmet.Durdur) as c: m.kontrol_noktasi()
+        self.assertEqual(c.exception.kod, "olagandisi")
+        self.sayfa = SahteSayfa(); m.page = self.sayfa; m.uyari_goruldu = False; self.sayfa.uyarilar = ["Unusual traffic from your network"]
+        with self.assertRaises(memmet.Durdur) as c: m.kontrol_noktasi()
+        self.assertEqual(c.exception.kod, "olagandisi")
+        self.sayfa = SahteSayfa(); m.page = self.sayfa; m.uyari_goruldu = False
+        self.sayfa.govde = DOLGU + " Robot olmadığınızı doğrulayın"
+        with self.assertRaises(memmet.Durdur) as c: m.kontrol_noktasi()
+        self.assertEqual(c.exception.kod, "dogrulama")
+        self.sayfa.govde = DOLGU + " Not enough credits"
+        with self.assertRaises(memmet.Durdur) as c: m.kontrol_noktasi()
+        self.assertEqual(c.exception.kod, "kredi")
+
+    def test_C2_T10_metin_js_gercek_dom_benzeri_tam_okur(self):
+        """Sayfa metni JS'i (kesmesiz; role=alert/dialog/aria-live ve açık shadow kökleri) node ile küçük bir DOM taklidinde koşar."""
+        import shutil as sh
+        if not sh.which("node"): self.skipTest("node yok")
+        js = memmet.METIN_JS
+        self.assertNotRegex(js, r"slice\(|substring\(|substr\(", "sayfa metni kesilmez")
+        dom = r"""
+const uzun = 'Scene prompt text '.repeat(1200) + process.argv[2];
+function el(t, cocuk) { return {innerText: t, textContent: t, shadowRoot: null, getAttribute: () => null,
+  querySelectorAll: () => cocuk || []}; }
+const alert = el(process.argv[3]);
+const golge = {children: [el(process.argv[4])], querySelectorAll: (s) => s === '*' ? [] : []};
+const host = Object.assign(el(''), {shadowRoot: golge});
+global.document = {body: el(uzun), querySelectorAll: (s) => s === '*' ? [host] : (s.includes('role=alert') ? [alert] : [])};
+const f = eval('(' + require('fs').readFileSync(0, 'utf8') + ')');
+process.stdout.write(f());"""
+        p = os.path.join(self.tmp, "dom.js"); open(p, "w", encoding="utf-8").write(dom)
+        r = subprocess.run(["node", p, "UNUSUAL ACTIVITY sonda", "toast: olağan dışı etkinlik", "gölge: verify it's you"],
+                           input=js, capture_output=True, text=True, timeout=30)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        t = memmet.norm(r.stdout)
+        self.assertGreater(len(t), 21000); self.assertIn("unusual activity sonda", t)
+        self.assertIn("olağan dışı etkinlik", t); self.assertIn("verify it's you", t)
+
+    # ---------------------------------------------------------------- C3: sonuç beklemesinde uyarı → hover/fare yok
+    def test_C3_T10_sonuc_beklerken_uyari_hover_yok(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok); m = self.memmet_v2(kok, imza, "gece")
+        s = self.sayfa; s.sonuc = dict(HAZIR_HOVER)
+        bekleme = []
+        def tik(): bekleme.append(1)
+        s.gonder_tiklaninca = tik
+        asil = self._uyu
+        def uyu(sn):
+            if bekleme and sn >= 2 and not s.gorunur: s.uyari_goster("govde")        # bekle(4, 7) sırasında
+            asil(sn)
+        with mock.patch.object(memmet, "uyu", uyu):
+            self.assertEqual(self.akis(m), "olagandisi")
+        self.assertEqual(s.ihlal, []); self.assertNotIn("hover", s.islemler); self.assertNotIn("mouse", s.islemler)
+
+    def test_C3_video_adresi_hover_oncesi_denetler(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok); m = self.memmet_v2(kok, imza, "gece")
+        self.sayfa.kart = dict(HAZIR_HOVER); self.sayfa.uyari_goster("toast")
+        with self.assertRaises(memmet.Durdur) as c: m.video_adresi("plan")
+        self.assertEqual(c.exception.kod, "olagandisi"); self.assertEqual(self.sayfa.ihlal, [])
+
+    # ---------------------------------------------------------------- C4: uyarı istisnaya yol açarsa da 7 + kilit
+    def calistir_v2(self, kok, imza, kip="gece"):
+        def hazirla(m): m.page = self.sayfa; m.indir = lambda url, hedef: open(hedef, "wb").write(b"\0" * 20000); m.blok_denetimleri = lambda *a, **k: None
+        t0 = time.time()
+        with mock.patch.object(memmet.Memmet, "chrome_ac", hazirla), contextlib.redirect_stdout(io.StringIO()), \
+                self.assertRaises(SystemExit) as c:
+            memmet.main([kok, "--blok", "B01", "--onizleme", imza, "--mod", kip])
+        self.assertLess(time.time() - t0, 10)
+        return c.exception.code
+
+    def test_C4_T10_uyari_katmani_tiklamayi_zaman_asimina_dusurur_7_ve_kilit(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok)
+        self.sayfa.sonuc = dict(HAZIR); self.sayfa.kaplama_tikta = True        # ilk tıklamada uyarı katmanı belirir, tıklama zaman aşımı
+        self.assertEqual(self.calistir_v2(kok, imza), 7)
+        self.assertEqual(json.load(open(memmet.kilit_yolu(), encoding="utf-8"))["neden"], "olagandisi")
+        self.assertEqual(self.sayfa.ihlal, [])
+        self.assertEqual(json.load(open(os.path.join(kok, "_memmet_cikis.json"), encoding="utf-8"))["cikis"], 7)
+
+    def test_C4_T10_uyari_okuma_hatasina_yol_acarsa_7(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok)
+        s = self.sayfa; s.okuma_hatasi = True
+        s.gonder_tiklaninca = lambda: s.uyari_goster("kaplama")              # gönderimden sonra uyarı: kart okuması istisna verir
+        self.assertEqual(self.calistir_v2(kok, imza), 7)
+        self.assertTrue(os.path.exists(memmet.kilit_yolu())); self.assertEqual(s.ihlal, [])
+
+    def test_C4_T10_topla_uyari_istisnasi_7_ve_kilit(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok); m = self.memmet_v2(kok, imza, "gece")
+        m.A["video_zaman_asimi_sn"] = -1; self.sayfa.sonuc = {"var": True, "yuzde": True, "metin": "%10"}
+        with contextlib.redirect_stdout(io.StringIO()): m.blok_asama()
+        m.D["proje_url"] = PROJE; m.save(); memmet.flow_kilidi_birak()
+        self.sayfa = s = SahteSayfa(); s.kaplama_tikta = True; s.okuma_hatasi = True
+        asil = memmet.Memmet.chrome_ac
+        with mock.patch.object(memmet.Memmet, "chrome_ac", lambda m: setattr(m, "page", s)), contextlib.redirect_stdout(io.StringIO()):
+            kod = memmet_topla.main([kok])
+        self.assertEqual(kod, 7); self.assertEqual(s.ihlal, [])
+        self.assertEqual(json.load(open(memmet.kilit_yolu(), encoding="utf-8"))["neden"], "olagandisi")
+
+    # ---------------------------------------------------------------- C5: doğrulama sayfasındayken gezinme yok
+    def test_C5_T10_dogrulama_varken_goto_yok(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F"))
+        for kur in (lambda s: setattr(s, "recaptcha", True), lambda s: setattr(s, "govde", "Verify it's you"),
+                    lambda s: setattr(s, "url", "https://accounts.google.com/v3/signin/challenge")):
+            self.sayfa = SahteSayfa(); kur(self.sayfa); m = self.memmet_v1(kok)
+            with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c: m.giris_kontrol()
+            self.assertEqual(c.exception.kod, "dogrulama"); self.assertNotIn("goto", self.sayfa.islemler)
+        self.sayfa = SahteSayfa(); self.sayfa.recaptcha = True; m = self.memmet_v1(kok)    # --giris de reCAPTCHA'da durur
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c: m.giris_kontrol(bekle_giris=True)
+        self.assertEqual(c.exception.kod, "dogrulama"); self.assertNotIn("goto", self.sayfa.islemler)
+
+    # ---------------------------------------------------------------- C6: FLOW.kilit uzun beklemelerde tazelenir; Windows PID
+    def test_C6_kilit_uzun_beklemede_tazelenir(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok)
+        memmet.flow_kilidi_al("F")
+        try:
+            def eskit():
+                k = json.load(open(memmet.flow_kilit_yolu(), encoding="utf-8")); k["zaman"] = time.time() - 3600
+                memmet._atomik(memmet.flow_kilit_yolu(), k); m._tazele = 0
+            taze = lambda: time.time() - json.load(open(memmet.flow_kilit_yolu(), encoding="utf-8"))["zaman"] < 60
+            eskit(); m.bekle_izle(130); self.assertTrue(taze(), "uzun beklemede kilit tazelenmedi")
+            eskit(); memmet.flow_yuk.gonderim_kaydet("gorsel", "elle", kok=memmet.HESAP)
+            T = memmet.flow_yuk.tempo_oku(memmet.HESAP); T["mola_bitis"] = time.time() + 900; memmet._atomik(memmet.tempo_yolu(), T)
+            with contextlib.redirect_stdout(io.StringIO()): m.tempo_bekle()
+            self.assertTrue(taze(), "tempo molasında kilit tazelenmedi")
+            eskit(); self.sayfa.kutu = "x"; self.sayfa.odak = "pm"; self.kullanici_basar = False
+            n = [0]
+            def uyu(sn):
+                n[0] += 1
+                if n[0] > 50: self.sayfa.kutu = ""
+            with mock.patch.object(memmet, "uyu", uyu), mock.patch.object(memmet.Memmet, "kontrol_noktasi", lambda m, **k: None):
+                m.A["kip"] = "elle"
+                with contextlib.redirect_stdout(io.StringIO()): m.gonder_bekle(self.sayfa.locator(".ProseMirror"), "x")
+            self.assertTrue(taze(), "elle GÖNDER beklemesinde kilit tazelenmedi")
+        finally: memmet.flow_kilidi_birak()
+
+    def test_C6_kilit_arka_planda_tazelenir(self):
+        with mock.patch.object(memmet, "FLOW_KILIT_TAZELE_SN", 0.05):
+            memmet.flow_kilidi_al("F")
+            try:
+                k = json.load(open(memmet.flow_kilit_yolu(), encoding="utf-8")); k["zaman"] = time.time() - 3600
+                memmet._atomik(memmet.flow_kilit_yolu(), k)
+                for _ in range(40):
+                    time.sleep(0.05)
+                    if time.time() - json.load(open(memmet.flow_kilit_yolu(), encoding="utf-8"))["zaman"] < 5: break
+                self.assertLess(time.time() - json.load(open(memmet.flow_kilit_yolu(), encoding="utf-8"))["zaman"], 5)
+            finally: memmet.flow_kilidi_birak()
+        self.assertFalse(os.path.exists(memmet.flow_kilit_yolu()))
+
+    def test_C6_windows_pid_openprocess(self):
+        class K32:
+            def __init__(self, acik, kod=259, hata=0): self.acik, self.kod, self.hata = acik, kod, hata
+            def OpenProcess(self, erisim, miras, pid): return 77 if self.acik else 0
+            def GetExitCodeProcess(self, h, p): p._obj.value = self.kod; return 1
+            def CloseHandle(self, h): return 1
+        self.assertTrue(memmet._pid_yasiyor_nt(1234, K32(True)))
+        self.assertFalse(memmet._pid_yasiyor_nt(1234, K32(True, kod=0)))                    # çıkmış süreç
+        self.assertFalse(memmet._pid_yasiyor_nt(1234, K32(False), son_hata=lambda: 87))     # ERROR_INVALID_PARAMETER: yok
+        self.assertTrue(memmet._pid_yasiyor_nt(1234, K32(False), son_hata=lambda: 5))       # erişim reddi: var sayılır
+
+    # ---------------------------------------------------------------- C7: v1 video gönderimi yok; zaman aşımında yeniden gönderim yok
+    def test_C7_v1_video_gonderilmez_chrome_acilmaz(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); acilan = []
+        for ek in (["--asama", "video"], []):
+            with mock.patch.object(memmet.Memmet, "chrome_ac", lambda m: acilan.append(1)), contextlib.redirect_stdout(io.StringIO()), \
+                    self.assertRaises(SystemExit) as c:
+                memmet.main([kok, *ek] if ek else [kok, "--asama", "video", "--mod", "elle"])
+            self.assertEqual(c.exception.code, 4)
+        self.assertEqual(acilan, [])
+        m = self.memmet_v1(kok)
+        with self.assertRaises(memmet.Durdur) as c: m.asama("video", m.sahneler())
+        self.assertEqual(c.exception.kod, "surum")
+
+    def test_C7_v1_gorsel_zaman_asiminda_yeniden_gondermez(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok, "gece"); m.A["gorsel_zaman_asimi_sn"] = -1
+        self.sayfa.sonuc = {"var": True, "yuzde": True, "metin": "%40"}
+        self.assertIsNone(self.akis(m, v2=False))
+        self.assertEqual(self.sayfa.islemler.count("click:button:Oluşturmaya başla"), 2, "plan başına tek gönderim")
+        self.assertNotIn("goto", self.sayfa.islemler[self.sayfa.islemler.index("click:button:Oluşturmaya başla"):])
+        self.assertEqual({v.get("gorsel_durum") for v in m.D["sahne"].values()}, {"zaman_asimi"})
+        m2 = self.memmet_v1(kok, "gece"); self.sayfa.islemler.clear()                          # yeniden açılışta da gönderilmez
+        self.assertIsNone(self.akis(m2, v2=False))
+        self.assertNotIn("click:button:Oluşturmaya başla", self.sayfa.islemler)
+
+    def test_C7_zaman_asimi_ayari_kisaltamaz(self):
+        json.dump({"_surum": 2, "video_zaman_asimi_sn": 5, "gorsel_zaman_asimi_sn": 3}, open(memmet.AYAR_DOSYA, "w", encoding="utf-8"))
+        a = memmet.ayar("elle")
+        self.assertEqual((a["video_zaman_asimi_sn"], a["gorsel_zaman_asimi_sn"]), (360, 180))
+        json.dump({"_surum": 2, "video_zaman_asimi_sn": 900}, open(memmet.AYAR_DOSYA, "w", encoding="utf-8"))
+        self.assertEqual(memmet.ayar("elle")["video_zaman_asimi_sn"], 900)
+
+    # ---------------------------------------------------------------- C10: FILM_AYAR / öğrenilen kurallar ve MEMMET_AYAR yavaşlatır
+    def test_C10_film_ayar_ve_ogrenilen_sikilastirir(self):
+        json.dump({"izinler": {"gece_flow": True}, "esikler": {"flow_tempo_1710": {"elle": {"ayni_anda": 1, "gonderim_arasi_sn": [9, 20]}}}},
+                  open(memmet.FILM_AYAR, "w", encoding="utf-8"))
+        a = memmet.ayar("elle")
+        self.assertEqual((a["ayni_anda"], a["gonderim_arasi_sn"]), (1, [9, 20]), "FILM_AYAR'ın sıkı temposu yok sayıldı")
+        with mock.patch.object(memmet.flow_yuk, "tempo", return_value=dict(memmet.TEMPO["elle"], ayni_anda=1, gonderim_arasi_sn=[9, 20], carpan=1.0)):
+            a = memmet.ayar("elle")
+        self.assertEqual((a["ayni_anda"], a["gonderim_arasi_sn"]), (1, [9, 20]))
+
+    def test_C10_memmet_ayar_parti_molasi_ve_tempo_durumu(self):
+        json.dump({"_surum": 2, "parti_mola_dk": [40, 60], "gonderim_arasi_sn": [20, 40]}, open(memmet.AYAR_DOSYA, "w", encoding="utf-8"))
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok, "gece")
+        with contextlib.redirect_stdout(io.StringIO()): m.parti_bitti(); m.parti_bitti()
+        T = memmet.flow_yuk.tempo_oku(memmet.HESAP)
+        self.assertGreaterEqual(T["mola_bitis"] - time.time(), 40 * 60 - 5, "MEMMET_AYAR parti molası uygulanmadı")
+        memmet._atomik(memmet.tempo_yolu(), {"son_gonderim": time.time(), "sonraki_izin": 0, "mola_bitis": 0})
+        self.uykular.clear()
+        with contextlib.redirect_stdout(io.StringIO()): m.tempo_bekle()
+        self.assertGreaterEqual(sum(self.uykular), 19, "tempo_durumu MEMMET_AYAR yavaşlatmasını görmedi")
+
+    # ---------------------------------------------------------------- P1: istemdeki hata kelimesi kartı reddedilmiş saydırmaz
+    def test_P1_istemdeki_hata_kelimesi_red_sayilmaz(self):
+        kok = os.path.join(self.tmp, "F"); doc, _ = self.v2_film(kok)
+        for p in doc["sahneler"]: p["hareket_istem"] = p["hareket_istem"].replace("No music.", "The engine failed; policy sign. No music.")
+        VF.sahneler_yaz(kok, doc)
+        with contextlib.redirect_stdout(io.StringIO()): BP, _ = blok_plani.plan_kur(kok, hesap_kok=memmet.HESAP)
+        m = self.memmet_v2(kok, BP["onizleme_imza"], "gece"); m.A["video_zaman_asimi_sn"] = -1
+        # sırada bekleyen kart: yüzde yok, sonuç yok; kart metni istemi içerir (hata kelimeleri istemde), açık hata ögesi yok
+        self.sayfa.gonder_tiklaninca = lambda: setattr(self.sayfa, "kart", {"var": True, "yuzde": False, "hata_ogesi": False,
+                                                                           "metin": memmet.norm(self.sayfa.gonderilen[-1]), "hata_metni": ""})
+        with contextlib.redirect_stdout(io.StringIO()): o = m.blok_asama()
+        self.assertEqual(o["reddedilen"], []); self.assertEqual(o["hata"], [])
+        self.assertEqual(self.sayfa.islemler.count("click:button:Oluşturmaya başla"), 2, "yedek istem gönderilmedi")
+        self.assertEqual(sorted(o["zaman_asimi"]), [1, 2])
+
+    # ---------------------------------------------------------------- P2: memmet_topla kolay "kayıp" demez
+    def test_P2_topla_kart_var_sonuc_yok_surer_sanal_listede_kaydirir(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok); m = self.memmet_v2(kok, imza, "gece")
+        m.A["video_zaman_asimi_sn"] = -1; self.sayfa.sonuc = {"var": True, "yuzde": True, "metin": "%10"}
+        with contextlib.redirect_stdout(io.StringIO()): m.blok_asama()
+        m.D["proje_url"] = PROJE; m.save(); memmet.flow_kilidi_birak()
+        s = SahteSayfa(); s.kart = {"var": True, "yuzde": False, "metin": "plan"}          # kart var, sonuç yok, hata yok
+        with mock.patch.object(memmet.Memmet, "girisli", lambda m: True), contextlib.redirect_stdout(io.StringIO()):
+            kod, oz = memmet_topla.topla(kok, sayfa=s)
+        self.assertEqual((kod, oz["kayip"], sorted(oz["suren"])), (8, [], [1, 2]))
+        s = SahteSayfa(); s.kart = dict(HAZIR); s.sanal = 3                                  # sanal liste: kart 3 kaydırmadan sonra DOM'da
+        with mock.patch.object(memmet.Memmet, "girisli", lambda m: True), \
+                mock.patch.object(memmet.Memmet, "indir", lambda m, u, h: open(h, "wb").write(b"\0" * 20000)), contextlib.redirect_stdout(io.StringIO()):
+            kod, oz = memmet_topla.topla(kok, sayfa=s)
+        self.assertEqual((kod, oz["kayip"], sorted(oz["indirilen"])), (0, [], [1, 2]))
+        self.assertIn("evaluate:olay", s.islemler)
+
+    # ---------------------------------------------------------------- P3: port ayardan alınmaz; hesap okunamazsa uyarı geçmişinde dur
+    def test_P3_port_ayardan_alinmaz_hesap_okunamazsa_durur(self):
+        json.dump({"_surum": 2, "port": 9222}, open(memmet.AYAR_DOSYA, "w", encoding="utf-8"))
+        self.assertEqual(memmet.ayar("elle")["port"], 9333)
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok); self.sayfa.eposta = ""
+        with contextlib.redirect_stdout(io.StringIO()): self.assertIsNone(m.hesap_denetle())       # geçmiş yok: ölçülemedi, sürer
+        memmet.kilit_yaz("F", "uyarı"); shutil.move(memmet.kilit_yolu(), memmet.kilit_yolu() + ".eski")
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c: m.hesap_denetle()
+        self.assertEqual(c.exception.kod, "hesap"); self.assertEqual(memmet.CIKIS["hesap"], 2)
+
+    # ---------------------------------------------------------------- P4: HESAP ortam değişkeniyle taşınmaz; bozuk/eksik tempo bekletir
+    def test_P4_hesap_veri_degiskeniyle_tasinmaz(self):
+        asil = memmet.ortak.yollar()["hesap"]
+        with mock.patch.dict(os.environ, {"YZ_FILM_VERI": os.path.join(self.tmp, "BASKA")}):
+            y = memmet.ortak.yollar()
+        self.assertEqual(y["hesap"], asil); self.assertEqual(y["veri_kok"], os.path.join(self.tmp, "BASKA"))
+
+    def test_P4_bozuk_ya_da_eksik_tempo_bekletir(self):
+        os.makedirs(memmet.HESAP, exist_ok=True)
+        open(memmet.tempo_yolu(), "w").write("{bozuk")
+        self.assertGreater(memmet.flow_yuk.tempo_durumu("elle", kok=memmet.HESAP)["kalan_sn"], 60)
+        os.remove(memmet.tempo_yolu())
+        self.assertEqual(memmet.flow_yuk.tempo_durumu("elle", kok=memmet.HESAP)["kalan_sn"], 0)       # geçmiş yok: taze
+        memmet.flow_yuk._jsonl_ekle(memmet.flow_yuk.yuk_yolu(memmet.HESAP), {"zaman_epoch": time.time() - 30, "tur": "video", "mod": "elle"})
+        self.assertGreater(memmet.flow_yuk.tempo_durumu("elle", kok=memmet.HESAP)["kalan_sn"], 60)    # geçmiş var: sıfırlanmaz
+
+    # ---------------------------------------------------------------- P5: animatik imzası gerçekten doğrulanır; sahte film gönderilmez
+    def test_P5_imza_dogrulanir_sahte_film_gonderilmez(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok)
+        with mock.patch("animatik_imza.dogrula", return_value=(False, "animatik ONAYLI değil (imza yok)", None)):
+            with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c:
+                memmet.Memmet(kok, {"mod": "elle", "blok": "B01", "onizleme": imza}).blok_dogrula()
+            self.assertEqual(c.exception.kod, "imza")
+        for sag in ("sahte", "kaset"):
+            memmet._atomik(os.path.join(kok, "HAZIRLIK.json"), {"film": "F", "saglayici": sag})
+            with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c:
+                memmet.Memmet(kok, {"mod": "elle", "blok": "B01", "onizleme": imza}).blok_dogrula()
+            self.assertEqual(c.exception.kod, "ortam")
+
+    # ---------------------------------------------------------------- P8: yazma gecikmesi sabit
+    def test_P8_yazma_gecikmesi_sabit(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok, "gece")
+        self.sayfa.sonuc = dict(HAZIR_GORSEL)
+        self.assertIsNone(self.akis(m, v2=False))
+        pm = [g for g in self.sayfa.gecikmeler if g is not None]
+        self.assertTrue(pm); self.assertEqual(set(pm), {memmet.YAZMA_GECIKMESI_MS})
+        kaynak = open(os.path.join(ARACLAR, "memmet.py"), encoding="utf-8").read()
+        self.assertNotRegex(kaynak, r"delay\s*=\s*random")
+
+    # ---------------------------------------------------------------- yapısal: sayfayı değiştiren her çağrı tek korumalı yardımcıdan
+    def test_atlatma_yok_dogrudan_sayfa_islemi_yok(self):
+        """memmet.py ve memmet_topla.py'de tıklama/yazma/tuş/gezinme/fare/dosya/evaluate çağrıları yalnız Memmet.dokun ve Memmet.oku
+        içinde: yeni kod uyarı denetimini unutamaz."""
+        yasak = {"click", "dblclick", "fill", "type", "press", "press_sequentially", "insert_text", "goto", "reload", "go_back",
+                 "go_forward", "hover", "move", "down", "up", "wheel", "tap", "check", "uncheck", "set_checked", "select_option",
+                 "select_text", "set_input_files", "scroll_into_view_if_needed", "dispatch_event", "focus", "blur", "drag_to",
+                 "drag_and_drop", "evaluate", "evaluate_handle", "eval_on_selector", "eval_on_selector_all", "add_script_tag",
+                 "add_init_script", "set_content", "bring_to_front"}
+        for ad in ("memmet.py", "memmet_topla.py"):
+            agac = ast.parse(open(os.path.join(ARACLAR, ad), encoding="utf-8").read())
+            izinli = set()
+            for f in ast.walk(agac):
+                if isinstance(f, ast.FunctionDef) and f.name in ("dokun", "oku"):
+                    izinli |= {id(n) for n in ast.walk(f)}
+            bulunan = []
+            for n in ast.walk(agac):
+                if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in yasak and id(n) not in izinli:
+                    if n.func.attr == "move" and isinstance(n.func.value, ast.Name) and n.func.value.id == "shutil": continue
+                    bulunan.append(f"{ad}:{n.lineno} .{n.func.attr}(")
+            self.assertEqual(bulunan, [], "korumasız sayfa işlemi")
+        m = memmet.Memmet.__new__(memmet.Memmet); m.page = SahteSayfa()
+        for js in ("() => document.body.click()", "() => el.dispatchEvent(new Event('x'))", "() => window.scrollTo(0, 0)"):
+            with self.assertRaises(RuntimeError): m.oku(js)                       # okuma yardımcısı değiştiren JS'i reddeder
+
+    def test_T10_dokun_uyari_goruldukten_sonra_hic_islem_yok(self):
+        kok = self.v1_film(os.path.join(self.tmp, "F")); m = self.memmet_v1(kok)
+        self.sayfa.uyari_goster("toast")
+        with self.assertRaises(memmet.Durdur): m.dokun(self.sayfa.goto, memmet.FLOW)
+        self.sayfa.uyarilar.clear(); self.sayfa.gorunur = False                 # uyarı kaybolsa bile (bir kez görüldü) işlem yok
+        with self.assertRaises(memmet.Durdur) as c: m.dokun(self.sayfa.goto, memmet.FLOW)
+        self.assertEqual(c.exception.kod, "olagandisi"); self.assertEqual(self.sayfa.islemler, [])
+
+    def test_T10_son_denetim_bitiste_uyari_7(self):
+        kok = os.path.join(self.tmp, "F"); _, imza = self.v2_film(kok)
+        self.sayfa.sonuc = dict(HAZIR)
+        asil = memmet.Memmet.blok_bitir
+        def bitir(m):
+            o = asil(m); self.sayfa.uyari_goster("toast"); return o              # son sayfa işinden sonra uyarı
+        with mock.patch.object(memmet.Memmet, "blok_bitir", bitir):
+            self.assertEqual(self.calistir_v2(kok, imza), 7)
+        self.assertEqual(self.sayfa.ihlal, [])
+
+
+class HerAn(_Taban):
+    """Uyarı HER AN belirebilir: gerçekçi sahte sayfada akışın her anından (her sayfa çağrısı ve her bekleme) sonra uyarı görünür
+    kılınır; görünür olduktan sonra sayfayı değiştiren işlem sayısı her kipte 0 olmalı ve Memmet olagandisi ile durmalı."""
+    def sablonlar(self):
+        if getattr(self, "_s", None): return self._s
+        d = os.path.join(self.tmp, "SABLON"); v1 = self.v1_film(os.path.join(d, "V1"))
+        v2 = os.path.join(d, "V2"); _, imza = self.v2_film(v2)
+        self._s = (v1, v2, imza); return self._s
+
+    def tek(self, tur, kip, tetik=None, bicim="govde"):
+        v1, v2, imza = self.sablonlar()
+        d = tempfile.mkdtemp(dir=self.tmp); kok = shutil.copytree(v1 if tur == "v1" else v2, os.path.join(d, "F"))
+        random.seed(1)                                       # aynı akış: anlar her koşuda aynı sırada
+        self.sayfa = SahteSayfa(); self.sayfa.tetik_an = tetik; self.sayfa.bicim = bicim; self.uykular = []
+        self.sayfa.sonuc = dict(HAZIR_GORSEL if tur == "v1" else HAZIR_HOVER)
+        with mock.patch.object(memmet, "HESAP", os.path.join(d, "HESAP")):
+            m = self.memmet_v1(kok, kip) if tur == "v1" else self.memmet_v2(kok, imza, kip)
+            m.A["ayni_anda"] = 1
+            return self.akis(m, v2=(tur == "v2")), self.sayfa
+
+    @staticmethod
+    def anlar(s, seyrek):
+        """Sınanacak anlar: sayfayı değiştiren HER işlemin hemen öncesindeki 4 an ve sonrası (en riskli pencere; okumalar, bekleme
+        dilimleri dahil) + bütün akış boyunca her `seyrek` anda bir (bekleme dilimlerinin çoğu aynı türden okumadır)."""
+        y = set(range(1, s.an + 1, seyrek)) | {s.an}
+        for a in s.mut_anlar: y |= {x for x in range(a - 3, a + 2) if 1 <= x <= s.an}
+        return sorted(y)
+
+    def tara(self, tur, kip, bicimler=(("govde", 1), ("toast", 2), ("kaplama", 2))):
+        kod, s = self.tek(tur, kip)
+        self.assertIsNone(kod, f"mutlu yol durdu: {kod}"); self.assertGreater(s.islemler.count("type"), 0)
+        n = s.an; anlar = self.anlar(s, 97)
+        self.assertGreater(len(s.mut_anlar), 30)
+        for bicim, adim in bicimler:
+            for t in anlar[::adim]:
+                kod, s = self.tek(tur, kip, t, bicim)
+                self.assertTrue(s.gorunur, (bicim, t))
+                if t >= n:                                   # son okumadan (son denetim) sonra: süreç bitmiştir, işlem yok
+                    self.assertEqual(s.ihlal, []); continue
+                self.assertEqual(s.ihlal, [], f"{tur}/{kip}/{bicim}: an {t}/{n}'de beliren uyarıdan sonra sayfa işlemi")
+                self.assertEqual(kod, "olagandisi", f"{tur}/{kip}/{bicim}: an {t}/{n}")
+
+    def test_T10_her_an_v1_elle(self): self.tara("v1", "elle")
+    def test_T10_her_an_v1_gece(self): self.tara("v1", "gece")
+    def test_T10_her_an_v2_elle(self): self.tara("v2", "elle")
+    def test_T10_her_an_v2_gece(self): self.tara("v2", "gece")
+
+    def test_T10_her_an_topla(self):
+        v1, v2, imza = self.sablonlar()
+        d0 = os.path.join(self.tmp, "TOPLA_SABLON"); kok0 = shutil.copytree(v2, os.path.join(d0, "F"))
+        with mock.patch.object(memmet, "HESAP", os.path.join(d0, "HESAP")):
+            m = self.memmet_v2(kok0, imza, "gece"); m.A["video_zaman_asimi_sn"] = -1
+            self.sayfa.sonuc = {"var": True, "yuzde": True, "metin": "%10"}
+            with contextlib.redirect_stdout(io.StringIO()): m.blok_asama()
+            m.D["proje_url"] = PROJE; m.save(); memmet.flow_kilidi_birak()
+        def tek(t=None, bicim="govde"):
+            d = tempfile.mkdtemp(dir=self.tmp); kok = shutil.copytree(kok0, os.path.join(d, "F"))
+            random.seed(1); s = SahteSayfa(); s.kart = dict(HAZIR_HOVER); s.sanal = 1; s.tetik_an = t; s.bicim = bicim; self.sayfa = s
+            with mock.patch.object(memmet, "HESAP", os.path.join(d, "HESAP")), \
+                    mock.patch.object(memmet.Memmet, "indir", lambda m, u, h: open(h, "wb").write(b"\0" * 20000)), \
+                    contextlib.redirect_stdout(io.StringIO()):
+                try: return memmet_topla.topla(kok, sayfa=s)[0], s
+                except memmet.Durdur as e: return e.kod, s
+        kod, s = tek(); self.assertEqual(kod, 0); n = s.an; anlar = self.anlar(s, 13)
+        for bicim, adim in (("govde", 1), ("toast", 2), ("kaplama", 2)):
+            for t in anlar[::adim]:
+                kod, s = tek(t, bicim)
+                if t >= n: self.assertEqual(s.ihlal, []); continue
+                self.assertEqual(s.ihlal, [], f"topla/{bicim}: an {t}/{n}"); self.assertEqual(kod, "olagandisi", f"topla/{bicim}: an {t}/{n}")
+
+
 class Yama(unittest.TestCase):
     """memmet_yama.py: memmet-bakımcı onarımının korkulukları."""
     def setUp(self): self.kaynak = open(os.path.join(ARACLAR, "memmet.py"), encoding="utf-8").read()
@@ -782,10 +1294,12 @@ class Yama(unittest.TestCase):
             ('"unusual traffic", ', '', "uyari_kelimeleri_buyur"),
             ('HATA_KELIMELERI = ["politika", ', 'HATA_KELIMELERI = ["unusual", "politika", ', "uyari_kelimeleri_buyur"),
             ("import os, sys, re, json", "import pyautogui\nimport os, sys, re, json", "yasak_cagri"),
-            ("            raise Durdur(\"Flow uyarı verdi", "            self.page.goto(FLOW)\n            raise Durdur(\"Flow uyarı verdi", "yeniden_deneme_artmaz"),
+            ("            self.uyari_goruldu = True\n", "            self.uyari_goruldu = True\n            self.page.goto(FLOW)\n", "yeniden_deneme_artmaz"),
+            ("            self.uyari_goruldu = True\n", "            self.uyari_goruldu = True\n            self.dokun(self.page.goto, FLOW)\n",
+             "yeniden_deneme_artmaz"),
             ('args = {"asama": "hepsi", "mod": "elle"}', 'args = {"asama": "hepsi", "mod": "gece"}', "mod_varsayilan_elle"),
             ('"olagandisi": 7, "kilitli": 7', '"olagandisi": 2, "kilitli": 7', "mod_varsayilan_elle"),
-            ("        d = flow_yuk.tempo_durumu(self.A[\"kip\"], kok=HESAP)", "        d = {\"sonraki_izin\": 0}", "flow_tempo_okunur"),
+            ("        d = flow_yuk.tempo_durumu(self.A[\"kip\"], kok=HESAP, ek=self.tempo_ek())", "        d = {\"sonraki_izin\": 0}", "flow_tempo_okunur"),
             ('TEMPO = {\n', 'TEMPO = {\n    "gunduz": {"gonderim_arasi_sn": [6, 15], "ayni_anda": 2, "mola_kac_gonderimde": 8, "gonderim_mola_dk": [3, 6], '
                          '"mola_kac_partide": 0, "parti_mola_dk": [0, 0]},\n', "tempo_yalniz_yavaslar"),
         ]

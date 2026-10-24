@@ -264,6 +264,27 @@ class Komut(Taban):
             self.assertEqual(self.calistir("--uyari-gecti")[0], 7)                      # soru cevapsız → ret
             self.assertEqual(self.calistir("--uyari-gecti", "--elle-video-basarili")[0], 7)   # 30 dk dolmadı
         self.assertEqual(self.calistir("--bilinmeyen")[0], 4)
+
+    def test_uyari_gecti_yalniz_kullanici_tty(self):
+        """C8: kilidi ajan kaldıramaz. TTY yoksa (ajan, betik, boru) --elle-video-basarili ve --ben-kullaniciyim ile bile hiçbir şey
+        yapılmaz (7); TTY'de 'ben kullanıcıyım' yazılmadıkça uyari_gecti çağrılmaz."""
+        fy.uyari_kaydet("F", "uyarı", kok=self.kok, E=self.E)
+        cagri = []
+        sahte = lambda evet, **k: (cagri.append(evet), {"sonuc": "kaldirildi", "gecerli_gun": "bugün", "carpan": 1.5, "nedenler": []})[1]
+        class Tty(io.StringIO):
+            def isatty(self): return True
+        with mock.patch.object(fy, "uyari_gecti", sahte):
+            with mock.patch("sys.stdin", io.StringIO("ben kullanıcıyım\nE\n")):
+                for ek in ((), ("--elle-video-basarili",), ("--elle-video-basarili", "--ben-kullaniciyim")):
+                    self.assertEqual(self.calistir("--uyari-gecti", *ek)[0], 7, ek)
+            self.assertEqual(cagri, [], "TTY yokken uyari_gecti çağrıldı")
+            with mock.patch("sys.stdin", Tty("evet\nE\n")), mock.patch.object(fy, "tty_mi", lambda: True):
+                self.assertEqual(self.calistir("--uyari-gecti", "--ben-kullaniciyim")[0], 7)    # onay sözü yanlış
+            self.assertEqual(cagri, [])
+            with mock.patch("sys.stdin", Tty("ben kullanıcıyım\nE\n")), mock.patch.object(fy, "tty_mi", lambda: True):
+                self.assertEqual(self.calistir("--uyari-gecti")[0], 0)
+            self.assertEqual(cagri, [True])
+        self.assertTrue(os.path.exists(fy.kilit_yolu(self.kok)), "sahte uyari_gecti: gerçek kilide dokunulmadı")
         kod, metin = self.calistir(); self.assertEqual(kod, 0); self.assertIn("KİLİTLİ", metin)
         kod, metin = self.calistir("--json"); self.assertTrue(json.loads(metin)["kilit"]["kilitli"])
 

@@ -5,9 +5,11 @@ Kullanım:
         KREDI_DEFTERI.jsonl'daki gönderim satırlarını MEMMET_DURUM.json işleri ve KUNYE/ ile eşler; açık kalanları Flow projesinde
         istem metniyle arar: hazırsa indirir (SIRALI_VIDEO/NNN.mp4 + KUNYE/NNN.json), sürüyorsa bırakır, bulunamazsa "kayip" yazar
         (kayıp iş kuyruktan, bütçe noktasından geçerek BİR kez yeniden gönderilir; bu araç göndermez). Biten blokların işaretini yazar.
+        "Kayıp" yalnız sanal liste baştan sona kaydırılıp kart hiç bulunamadıysa; kart var ama sonuç yoksa iş SÜRÜYOR sayılır (8).
   --kuru: Flow'u açmadan yalnız açık işleri listeler.
 Kurallar:
-  - Hiçbir zaman istem yazmaz, GÖNDER'e basmaz, sayfayı yenilemez. Flow uyarısı → her durumda anında dur, kilit, 7.
+  - Hiçbir zaman istem yazmaz, GÖNDER'e basmaz, sayfayı yenilemez. Flow uyarısı → her durumda anında dur, kilit, 7 (uyarının yol açtığı
+    beklenmeyen hatada da). Sayfadaki her işlem (gezinme, kaydırma, üstüne gelme) memmet.Memmet.dokun kapısından geçer.
   - FLOW_KILIDI varken açılmaz (7): uyarıdan sonraki toplama, kilit UYARI_GECTI.bat ile kalktıktan sonradır.
   - Doğrulama / oturum düşmesi → beklemez, 2. Aynı hesapta başka Memmet açıksa 8.
 Çıkış kodları: 0 açık iş kalmadı · 2 durdu (doğrulama/giriş) · 7 Flow uyarısı/kilit · 8 hâlâ süren iş var ya da başka Memmet açık.
@@ -25,11 +27,32 @@ SURUM = "memmet_topla 1.0"
 def proje_ac(m):
     """Yalnız kayıtlı projeye gider (yeni proje AÇMAZ, yazmaz). Proje yoksa False."""
     if not m.D.get("proje_url"): return False
-    m.kontrol_noktasi()
-    m.page.goto(m.D["proje_url"], wait_until="domcontentloaded")
-    m.page.wait_for_selector(".ProseMirror", timeout=45000); m.bekle(2, 4)
+    m.dokun(m.page.goto, m.D["proje_url"], wait_until="commit")
+    m.bekle_ogeyi(".ProseMirror", 45); m.bekle(2, 4)
     m.kontrol_noktasi(); m.yukari()
     return True
+
+
+KAYDIR_JS = """() => { const k = document.getElementById('main-content') || document.scrollingElement;
+    const once = k.scrollTop; k.scrollBy(0, Math.max(400, k.clientHeight * 0.8));
+    return {son: k.scrollTop === once || k.scrollTop + k.clientHeight >= k.scrollHeight - 2}; }"""
+KAYDIR_MAX = 60
+
+
+def kutu_ara(m, istem):
+    """Sanal listede kartı arar: görünmüyorsa liste sonuna kadar kaydırır (dokun), her adımda okur; sonunda başa döner."""
+    r = m.kutu_bul(istem)
+    if r.get("var"): return r
+    try:
+        for _ in range(KAYDIR_MAX):
+            d = m.dokun(m.page.evaluate, KAYDIR_JS)
+            m.bekle(0.8, 1.2)
+            r = m.kutu_bul(istem)
+            if r.get("var") or not isinstance(d, dict) or d.get("son", True): break
+        if not r.get("var"): r = m.kutu_bul(istem)
+    finally:
+        m.yukari()
+    return r
 
 
 def _is(k, d, m):
@@ -61,9 +84,9 @@ def topla(root, sayfa=None, kuru=False):
             if not d.get("istem"): _kayip(m, k, d, ozet, "istem metni kaydı yok (eşlenemez)"); continue
             m.D["isler"].setdefault(k, {"plan": d["plan"], "tur": d["tur"], "istem": d["istem"], "durum": d["durum"], "blok": d.get("blok")})
             m.blok_id = d.get("blok") or m.D["isler"][k].get("blok")
-            r = m.kutu_bul(d["istem"])
+            r = kutu_ara(m, d["istem"])
             if r.get("var"): m.olagandisi_denetle(r.get("metin", ""))
-            if not r.get("var"): _kayip(m, k, d, ozet, "Flow projesinde bulunamadı"); continue
+            if not r.get("var"): _kayip(m, k, d, ozet, "Flow projesinde bulunamadı (liste sonuna kadar kaydırıldı)"); continue
             if r.get("yuzde"): ozet["suren"].append(d["plan"]); continue
             hazir = r.get("video_kutusu") if d["tur"] == "video" else r.get("gorsel_url")
             if hazir:
@@ -71,13 +94,16 @@ def topla(root, sayfa=None, kuru=False):
                     if m.indir_v2({"j": _is(k, d, m), "istem": d["istem"], "t": time.time()}, r): ozet["indirilen"].append(d["plan"]); continue
                 except Exception as e: m.log(f"{d['plan']:03d} indirilemedi: {str(e)[:80]}")
                 ozet["suren"].append(d["plan"]); continue
-            metin = r.get("metin", "")
-            durum = "filtre_red" if any(x in metin for x in memmet.FILTRE_KELIMELERI) else \
-                    ("hata" if any(x in metin for x in memmet.HATA_KELIMELERI) else None)
+            durum = "filtre_red" if m.red_mi(r, memmet.FILTRE_KELIMELERI) else ("hata" if m.red_mi(r, memmet.HATA_KELIMELERI) else None)
             if durum:
                 m.D["isler"][k]["durum"] = durum; m.save(); ozet["reddedilen" if durum == "filtre_red" else "hata"].append(d["plan"])
-            else: _kayip(m, k, d, ozet, "sonuç yok")
+            else: ozet["suren"].append(d["plan"])          # kart var, sonuç ve açık hata yok: iş sürüyor (kayıp DEĞİL)
+        m.son_denetim()
         return _bitir(m, acik, ozet)
+    except Exception:
+        u = memmet.uyari_var_mi(m)          # beklenmeyen hata uyarının kendisinden olabilir: önce salt okunur
+        if u: raise Durdur(u, kod="olagandisi")
+        raise
     finally:
         m.kapat(); memmet.flow_kilidi_birak()
 
@@ -109,6 +135,8 @@ def main(argv):
         print(json.dumps(ozet, ensure_ascii=False)); return kod
     except Durdur as e:
         return memmet.bitir(None, root, e.kod, str(e))
+    except Exception as e:
+        print("!! beklenmeyen hata:", str(e)[:200]); memmet.cikis_yaz(root, "beklenmeyen", "memmet_topla beklenmeyen hata"); return 1
 
 
 if __name__ == "__main__":

@@ -121,6 +121,16 @@ class KuruKurulum(Ortam):
         self.assertIn("ai84_anahtar.txt", out3); self.assertIn("içerik gösterilmedi", out3)
         self.assertEqual(json.loads(gd)["olculemedi"], True)
 
+    def test_C9_depo_anahtar_sablonlari_yoksa_bos_olusur(self):
+        """Anahtar şablonları git'te izlenmez (.gitignore): yeni klonda yoksa kurulum BOŞ olarak oluşturur; varsa dokunmaz."""
+        a = os.path.join(self.depo, "YZ_FILM", "AYARLAR")
+        for ad in kurulum.DEPO_ANAHTAR_SABLONLARI: os.replace(os.path.join(a, ad), os.path.join(self.kok, ad + ".kenara"))
+        K = kurulum.Kurulum(veri=self.veri, depo=self.depo, kuru=True)
+        sessiz(K.yollar_ve_emniyet); sessiz(K.anahtarlar)
+        for ad in kurulum.DEPO_ANAHTAR_SABLONLARI:
+            self.assertTrue(os.path.isfile(os.path.join(a, ad)), ad); self.assertEqual(os.path.getsize(os.path.join(a, ad)), 0)
+        self.assertEqual(set(kurulum.DEPO_ANAHTAR_SABLONLARI), {"ai84_anahtar.txt", "telegram_bot.txt"})
+
     def test_gemini_anahtar_yoksa_kullanici_isi(self):
         kod, out = sessiz(bat_isleri.gemini_test)
         self.assertEqual(kod, 2); self.assertIn("AI Studio", out)

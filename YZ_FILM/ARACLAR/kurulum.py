@@ -44,6 +44,8 @@ CLAUDE_EN_AZ = (2, 1, 302)             # TASARIM D-11 (doğrulanacak)
 ANA_PYTHON = (3, 10)
 # Depodaki YZ_FILM/AYARLAR'da bulunabilecek anahtar dosyaları: depoda BOŞ kalmalı (§5.6). Veri kökündekiler yalnız denetlenir.
 ANAHTAR_DESENI = re.compile(r"anahtar|_bot\.txt$|token|oauth|secret|api_?key|\.key$", re.I)
+# Depodaki boş anahtar şablonları: git'te İZLENMEZ (.gitignore: /YZ_FILM/AYARLAR/*); yeni klonda yoksa kurulum BOŞ oluşturur.
+DEPO_ANAHTAR_SABLONLARI = ("ai84_anahtar.txt", "telegram_bot.txt")
 VERI_ANAHTARLARI = {"ai84_anahtar.txt": "AI84.pro (ElevenLabs) anahtarı — seslendirme",
                     "gemini_anahtar.txt": "ücretsiz Gemini API anahtarı — filmi yayından önce dinleyen 'kulak' (§8.2 adım 3b)",
                     "telegram_bot.txt": "Telegram bot anahtarı — telefon bildirimi (isteğe bağlı; yalnız tarihi denetlenir)"}
@@ -185,6 +187,10 @@ class Kurulum:
 
     def anahtarlar(self):
         self.baslik("4/9 Anahtar dosyaları (içerik açılmaz, yazdırılmaz; yalnız var/boş ve tarih)")
+        da = os.path.join(self.depo, "YZ_FILM", "AYARLAR"); os.makedirs(da, exist_ok=True)
+        for ad in DEPO_ANAHTAR_SABLONLARI:                         # yoksa boş şablon (içerik açılmaz; var olana dokunulmaz)
+            p = os.path.join(da, ad)
+            if not os.path.lexists(p): open(p, "w", encoding="utf-8").close()
         dolu = depo_anahtar_denetimi(self.depo)
         self.rapor["depo_anahtar_dolu"] = dolu
         self.m(CALISMIYOR if dolu else CALISIYOR, "depodaki anahtar dosyaları",

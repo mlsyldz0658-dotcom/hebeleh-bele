@@ -57,6 +57,24 @@ class Arsivle(unittest.TestCase):
         for k in (arsivle.robocopy_komutu("a", "b"), arsivle.robocopy_komutu("a", "b", ["x.mp4"])):
             self.assertNotIn("/" + "MIR", [x.upper() for x in k]); self.assertTrue({"/MOV", "/MOVE"} & set(k))
 
+    def test_P9_arsivdeki_ayni_adli_dosyanin_ustune_yazilmaz(self):
+        """Taşıma kalıcı silme değildir ama arşivde aynı adlı dosya varsa üzerine YAZILMAZ: kaynak yerinde kalır, rapor bilgi verir."""
+        kok = self.kur(); eski = arsivle.arsiv_koku
+        import tempfile
+        ayri = tempfile.mkdtemp(dir=ortak.yollar()["veri_kok"])                     # öteki testlerin arşivine karışmaz
+        arsivle.arsiv_koku = lambda: os.path.join(ayri, "ARSIV")
+        self.addCleanup(setattr, arsivle, "arsiv_koku", eski)
+        _, r0 = arsivle.arsivle(kok, ["--kuru"])
+        hedef = os.path.join(r0["hedef"], "KURGU", "_onbellek", "seg_serbest.mp4")
+        _yaz(hedef, b"ARSIVDEKI_ESKI" * 10)
+        k, r = arsivle.arsivle(kok, [])
+        self.assertEqual(k, 0)
+        with open(hedef, "rb") as f: self.assertEqual(f.read(), b"ARSIVDEKI_ESKI" * 10, "arşivdeki dosyanın üzerine yazıldı")
+        self.assertTrue(os.path.exists(self.serbest), "üzerine yazılamayan kaynak silinmiş/taşınmış")
+        self.assertIn("KURGU/_onbellek/seg_serbest.mp4", r["atlanan_arsivde_var"]); self.assertNotIn("KURGU/_onbellek/seg_serbest.mp4", r["tasinan"])
+        for kmt in (arsivle.robocopy_komutu("a", "b"), arsivle.robocopy_komutu("a", "b", ["x.mp4"])):
+            self.assertTrue({"/XC", "/XN", "/XO"} <= set(kmt), kmt)                          # robocopy de üzerine yazmaz
+
     def test_d_takili_degil_bekle(self):
         kok = self.kur(); eski = arsivle.arsiv_koku
         arsivle.arsiv_koku = lambda: os.path.join(ortak.yollar()["veri_kok"], "YOK_DISK", "ARSIV")

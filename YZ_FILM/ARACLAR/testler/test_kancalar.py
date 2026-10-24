@@ -292,6 +292,93 @@ class TestKomut(Ortam):
         self.assertIn('"kural": "gizli"', k); self.assertNotIn("GIZLI_IZ_123", k); self.assertNotIn("ai84_anahtar", k)
 
 
+class TestGuvenlikInceleme(Ortam):
+    """Güvenlik incelemesi (24.10) C8 ve P6: kilit/uyarı dosyalarına dokunma, --uyari-gecti, robocopy /MOV(E), geri dönüşsüz git,
+    dosya boşaltma, /dev/null'a taşıma, heredoc silme, python -m memmet / runpy, --giris yalnız gerçek argüman; yollar bilinmezken
+    AYARLAR kapalı."""
+    V = "C:/Users/Soysal/Desktop/YZ_FILM"
+
+    def test_C8_kilit_ve_uyari_dosyalarina_dokunulmaz(self):
+        self.surus(False, "gelistirme")
+        h = os.path.join(self.veri, "HESAP")
+        for c in (f"mv {self.V}/HESAP/FLOW_KILIDI.json {self.V}/HESAP/_ESKI/x.json", f"mv {h}/FLOW_KILIDI.json /tmp/k.json",
+                  f"cp /tmp/bos.json {h}/FLOW_KILIDI.json", f"rm {h}/FLOW_UYARILARI.jsonl", f"truncate -s0 {h}/FLOW_UYARILARI.jsonl",
+                  f"echo '{{}}' > {h}/HESAP_DURUMU.json", f"Move-Item {h}\\FLOW_KILIDI.json $env:TEMP", f"mv {h}/FLOW.kilit /tmp/",
+                  f"sed -i 's/olagandisi/x/' {h}/FLOW_KILIDI.json", f"mv {h} {self.veri}/HESAP_ESKI",
+                  f"python3 -c \"import os; os.replace('{h}/FLOW_KILIDI.json', '/tmp/x')\"",
+                  f"python3 - <<'EOF'\nimport os, shutil\nshutil.move(os.path.join('{h}', 'FLOW_KILIDI.json'), '/tmp/x')\nEOF",
+                  f"bash -c 'mv {h}/FLOW_KILIDI.json /tmp/'", f"echo '{{}}' > {h}/FLOW_TEMPO.json"):
+            self.assertTrue(reddedildi(kos("komut", bash(c))), c)
+        for p in (os.path.join(h, "FLOW_KILIDI.json"), os.path.join(h, "FLOW_UYARILARI.jsonl"), os.path.join(h, "HESAP_DURUMU.json"),
+                  os.path.join(h, "FLOW_TEMPO.json")):
+            self.assertTrue(reddedildi(kos("erisim", yaz_(p))), p)
+            self.assertTrue(reddedildi(kos("erisim", {"tool_name": "Edit", "tool_input": {"file_path": p, "old_string": "a", "new_string": "b"},
+                                                     "cwd": DEPO})), p)
+        for c in (f"cat {h}/FLOW_KILIDI.json", "python YZ_FILM/ARACLAR/flow_yuk.py --json", f"ls -la {h}",
+                  "git commit -m 'FLOW_KILIDI.json ve HESAP_DURUMU.json: kanca korur'", "grep -rn FLOW_KILIDI YZ_FILM/ARACLAR | head"):
+            self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+        self.assertFalse(reddedildi(kos("erisim", oku_(os.path.join(h, "FLOW_KILIDI.json")))))
+
+    def test_C8_uyari_gecti_yalniz_kullanici(self):
+        self.surus(False, "gelistirme")
+        for c in ("python YZ_FILM/ARACLAR/flow_yuk.py --uyari-gecti --elle-video-basarili", "py -3.10 YZ_FILM\\ARACLAR\\flow_yuk.py --uyari-gecti",
+                  "echo E | python YZ_FILM/ARACLAR/flow_yuk.py --uyari-gecti", "python -m flow_yuk --uyari-gecti",
+                  "python YZ_FILM/ARACLAR/flow_yuk.py --uyari-gecti --ben-kullaniciyim",
+                  "python3 -c \"import flow_yuk; flow_yuk.uyari_gecti(True)\"", "cmd /c UYARI_GECTI.bat", ".\\UYARI_GECTI.bat",
+                  "start \"\" \"C:\\Users\\Soysal\\Desktop\\YZ_FILM_SET\\UYARI_GECTI.bat\"",
+                  "python3 - <<'EOF'\nimport flow_yuk\nflow_yuk.main(['--uyari-gecti', '--elle-video-basarili'])\nEOF"):
+            self.assertTrue(reddedildi(kos("komut", bash(c))), c)
+        for c in ("git commit -m 'UYARI_GECTI.bat yalnız kullanıcı'", "cat UYARI_GECTI.bat", "grep -n uyari-gecti YZ_FILM/ARACLAR/flow_yuk.py",
+                  "python YZ_FILM/ARACLAR/flow_yuk.py --izin video"):
+            self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+
+    def test_C8_robocopy_tasima_ve_geri_donussuz_git(self):
+        self.surus(False, "gelistirme")
+        for c in (r"robocopy C:\a D:\b /MOVE /E", r"robocopy C:\a D:\b x.mp4 /MOV", r"robocopy a b /e /move /r:1",
+                  "git reset --hard HEAD", "git reset --hard", "git checkout -- .", "git checkout -- YZ_FILM/ARACLAR/memmet.py", "git checkout .",
+                  "git stash drop", "git stash clear", "git clean -f", "git clean -fdx", "git restore YZ_FILM/ARACLAR/memmet.py",
+                  "truncate -s0 film/SIRALI_VIDEO/001.mp4", "truncate -s 0 a.mp4", ": > film/SIRALI_VIDEO/001.mp4", "> film/SIRALI_VIDEO/001.mp4",
+                  "cp /dev/null film/SIRALI_VIDEO/001.mp4", "mv film/SIRALI_VIDEO/001.mp4 /dev/null", "move film\\001.mp4 NUL",
+                  "find film -name '*.mp4' -exec mv {} /dev/null \\;", "Clear-Content film\\a.txt",
+                  "python3 - <<EOF\nimport os; os.remove('x')\nEOF", "python3 - <<'EOF'\nimport shutil\nshutil.rmtree('FILMLER')\nEOF",
+                  "python3 <<EOF\nfrom pathlib import Path\nPath('a.mp4').unlink()\nEOF"):
+            self.assertTrue(reddedildi(kos("komut", bash(c))), c)
+        for c in ("git checkout -b claude/yeni", "git checkout claude/x", "git reset HEAD~1 --soft", "git restore --staged a.py",
+                  "git stash", "git stash list", "git rm --cached YZ_FILM/AYARLAR/ai84_anahtar.txt",
+                  "git rm --cached YZ_FILM/AYARLAR/telegram_bot.txt", "echo x >> notlar.txt", "mv eski.json _ESKI/eski.json",
+                  "python3 - <<'EOF'\nprint('os.remove yok')\nEOF".replace("os.remove yok", "merhaba"), "robocopy C:\\a D:\\b /E"):
+            self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+
+    def test_C8_memmet_dolambacli_calistirma_ve_giris(self):
+        self.surus(False, "gelistirme")
+        ortak.atomik_yaz(self.kilit, {"neden": "olagandisi"})
+        try:
+            for c in ("cd YZ_FILM/ARACLAR && python -m memmet F --blok B01",
+                      "python3 -c \"import runpy,sys; sys.argv=['m','F','--blok','B01']; runpy.run_path('YZ_FILM/ARACLAR/memmet.py')\"",
+                      "python3 -c \"import memmet; memmet.main(['F', '--blok', 'B01'])\"",
+                      "python3 - <<'EOF'\nimport sys; sys.path.insert(0, 'YZ_FILM/ARACLAR')\nimport memmet\nmemmet.main(['F'])\nEOF",
+                      "python YZ_FILM/ARACLAR/memmet.py F --blok B01 --onizleme abc --giris_degil # --giris",
+                      "python YZ_FILM/ARACLAR/memmet.py F --blok B01 && echo --giris",
+                      "python YZ_FILM/ARACLAR/memmet.py F --mod gece '--giris'x", "py YZ_FILM\\ARACLAR\\memmet.py F --blok B01"):
+                self.assertTrue(reddedildi(kos("komut", bash(c))), c)
+            for c in ("python YZ_FILM/ARACLAR/memmet.py F --giris", "python YZ_FILM/ARACLAR/memmet.py --film F --bakiye",
+                      "python3 -m py_compile YZ_FILM/ARACLAR/memmet.py"):
+                self.assertFalse(reddedildi(kos("komut", bash(c))), c)
+        finally: os.remove(self.kilit)
+
+    def test_P6_yollar_bilinmezken_ayarlar_kapali(self):
+        yok = {"YZ_FILM_YOLLAR": os.path.join(_ortam.KOK, "YOK_YOLLAR.json")}
+        for p in ("/srv/baska/YZ_FILM/AYARLAR/FILM_AYAR.json", "C:\\Users\\Soysal\\Desktop\\YZ_FILM\\AYARLAR\\gemini_anahtar.txt",
+                  os.path.join(self.veri, "AYARLAR", "FILM_AYAR.json")):
+            self.assertTrue(reddedildi(kos("erisim", oku_(p), ek_env=yok)), p)
+        self.assertFalse(reddedildi(kos("erisim", oku_("/srv/baska/YZ_FILM/AYARLAR/OKU_BENI.txt"), ek_env=yok)))
+        gr = {"tool_name": "Grep", "tool_input": {"pattern": "key", "path": "/srv/baska/YZ_FILM/AYARLAR"}, "cwd": DEPO}
+        self.assertTrue(reddedildi(kos("erisim", gr, ek_env=yok)))
+        self.assertTrue(reddedildi(kos("komut", bash("cp -r C:/Users/Soysal/Desktop/YZ_FILM /tmp/yedek"), ek_env=yok)))
+        self.assertTrue(reddedildi(kos("komut", bash("tar czf a.tgz C:/Users/Soysal/Desktop/YZ_FILM"), ek_env=yok)))
+        self.assertFalse(reddedildi(kos("erisim", oku_(os.path.join(ARACLAR, "ortak.py")), ek_env=yok)))
+
+
 # ---- ajan --------------------------------------------------------------------------------------------------------------
 class TestAjan(Ortam):
     def test_ret_kurallari(self):

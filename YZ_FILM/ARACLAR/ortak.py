@@ -4,6 +4,8 @@
                        Dosya yoksa açık hata (YolYok: "önce KURULUM.bat"). YZ_FILM_YOLLAR ortam değişkeni başka bir dosyayı
                        gösterebilir (testler); YZ_FILM_VERI yalnız veri kökünü değiştirir (veri kökü sarmalayıcısı).
                        Türetilmiş anahtarlar: ayarlar, filmler, hesap (hepsi veri kökü altında), araclar (depo).
+                       hesap (Flow kilidi, tempo, günlük sayılar: Google hesabına bağlı) HER ZAMAN YOLLAR.json'daki veri kökünden
+                       türer; YZ_FILM_VERI onu taşıyamaz (taşınsaydı aynı hesap için kilit ve molalar sıfırlanırdı).
   yollar_yaz(...)      YOLLAR.json'u soru sormadan yazar (varsayılan veri kökü: Masaüstü/YZ_FILM)
   sahneler_oku(kok)    SAHNELER.json'u okur; "_surum" ≥ 2 ise v1 araç onu işlemez, 4 ile çıkar ("Memmet v2 gerekli")
   atomik_yaz(yol, v)   JSON'u önce .tmp'ye yazıp yerine koyar (yarım dosya kalmaz; Windows'ta kilitliyse 3 kez dener)
@@ -61,10 +63,10 @@ def yollar():
         raise YolYok(f"YOLLAR.json yok ya da bozuk ({yollar_dosyasi()}). Önce KURULUM.bat'ı çalıştır "
                      "(ya da: python kurulum.py --yollar).")
     y = dict(y)
+    hesap = os.path.join(y["veri_kok"], "HESAP")           # hesap düzeyi durum: ortam değişkeniyle taşınmaz
     if os.environ.get("YZ_FILM_VERI"): y["veri_kok"] = os.environ["YZ_FILM_VERI"]
     v = y["veri_kok"]
-    y.update(ayarlar=os.path.join(v, "AYARLAR"), filmler=os.path.join(v, "FILMLER"), hesap=os.path.join(v, "HESAP"),
-             araclar=ARACLAR)
+    y.update(ayarlar=os.path.join(v, "AYARLAR"), filmler=os.path.join(v, "FILMLER"), hesap=hesap, araclar=ARACLAR)
     return y
 
 

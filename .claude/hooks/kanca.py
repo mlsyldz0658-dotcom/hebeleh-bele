@@ -6,9 +6,13 @@ Kullanım (Claude Code çağırır; girdi stdin'de JSON, çıktı stdout'ta JSON
 Olaylar (alt komutlar):
   erisim        PreToolUse Read|Glob|Grep|Write|Edit|NotebookEdit: gizli dosya (iki kök) reddi; alt ajan yalnız bağlı görev klasörü
                 (rolüne göre), ileri bölüm reddi; sürüşte makine sahipli dosyaya yazma ve 200 KB üstü Read reddi.        KAPALI BAŞARISIZ
-  komut         PreToolUse Bash|PowerShell: gizli dosya, robocopy /MIR, kalıcı silme (_gecici/ ve geçici klasör hariç),
+  komut         PreToolUse Bash|PowerShell: gizli dosya, robocopy /MIR /PURGE /MOV /MOVE, kalıcı silme (_gecici/ ve geçici klasör
+                hariç; git reset --hard, checkout --, restore, stash drop/clear, clean -f, truncate, `: > dosya`, /dev/null'a taşıma,
+                yorumlayıcı kodunda — -c ya da heredoc — silme), Flow hesap dosyalarına (FLOW_KILIDI, FLOW_UYARILARI, HESAP_DURUMU,
+                FLOW_TEMPO, FLOW_YUK, FLOW.kilit, HESAP/) dokunma, --uyari-gecti / UYARI_GECTI.bat (yalnız kullanıcı),
                 pyautogui/pynput/SendKeys/stealth/captcha; kie.ai yalnız gerçek kullanımda (adres, API çağrısı, anahtar, kurulum;
-                adın metinde geçmesi serbest); Flow kilidiyken Memmet; sürüşte doğrudan memmet.py, git push,
+                adın metinde geçmesi serbest); Flow kilidiyken Memmet (python -m memmet, runpy, import memmet dahil; --giris/--bakiye
+                yalnız memmet.py'nin GERÇEK argümanıysa serbest); sürüşte doğrudan memmet.py, git push,
                 git add -A, makine sahipli dosyaya kabuktan yazma; yerelde main/master'a push. `film.py basla` görünce
                 KANCA NABZI yazar (<film>/_GOREV/KANCA_NABZI.json; film.py basla ≤ 15 sn'lik nabız ister).          KAPALI BAŞARISIZ
   ajan          PreToolUse Agent: sürüşte kadro dışı / fork / yerleşik ajan, name/isolation, `calisiyor` olmayan görev, paralel
@@ -25,6 +29,8 @@ Olaylar (alt komutlar):
 Kapalı başarısızlık (D-11): güvenlik olaylarında beklenmeyen her hata → stderr + çıkış 2 (çağrı engellenir). Ağır içe aktarma yok
 (subprocess yalnız gereken olayda, tembel). Gizli bilgi yazılmaz: kayıtta komut metni yok, yalnız kural adı ve dosya adı.
 Sürüş = aktif film var ve FILM_DURUM.otomatik_surus.acik (film.py surus kapat --gelistirme ile geliştirme serbest).
+Yollar çözülemezse (YOLLAR.json yok/bozuk) kapalı başarısız: AYARLAR bileşenli her yol gizli sayılır, veri kökü için varsayılan
+kökler (Masaüstü/YZ_FILM, C:/Users/Soysal/Desktop/YZ_FILM) kullanılır.
 """
 import os, sys, re, json, time, hashlib
 
@@ -201,9 +207,12 @@ def norm(p, cwd=None):
     """Karşılaştırma biçimi: mutlak, sembolik bağ çözülmüş, '/' ayraçlı, küçük harf (Windows büyük/küçük harf duyarsız)."""
     if not p: return ""
     s = str(p).replace("\\", "/")
-    if not (os.path.isabs(s) or re.match(r"^[A-Za-z]:/", s)): s = os.path.join(cwd or os.getcwd(), s)
-    try: s = os.path.realpath(s)
-    except (OSError, ValueError): s = os.path.abspath(s)
+    surucu = bool(re.match(r"^[A-Za-z]:/", s))
+    if not (os.path.isabs(s) or surucu): s = os.path.join(cwd or os.getcwd(), s)
+    if surucu and os.name != "nt": s = re.sub(r"/+", "/", s)            # Windows yolu Windows dışında göreli sanılıp cwd'ye eklenmez
+    else:
+        try: s = os.path.realpath(s)
+        except (OSError, ValueError): s = os.path.abspath(s)
     s = s.replace("\\", "/")
     if len(s) > 1: s = s.rstrip("/")
     return s.lower()
@@ -228,10 +237,33 @@ def desen_re(d):
     return _RE[d]
 
 
-def yer_tutucu(d, gorev=None):
+VARSAYILAN_VERI_KOKLERI = ("C:/Users/Soysal/Desktop/YZ_FILM",)
+
+
+def veri_kokleri():
+    """Bilinen veri kökü; yollar çözülemezse (kapalı başarısız) varsayılan kökler."""
+    v = yollar().get("veri_kok")
+    if v: return [v]
+    out = [os.path.join(os.path.expanduser("~"), "Desktop", "YZ_FILM")] + list(VARSAYILAN_VERI_KOKLERI)
+    return list(dict.fromkeys(out))
+
+
+def yollar_bilinmiyor(): return not yollar().get("veri_kok")
+
+
+def yer_tutucular(d, gorev=None):
+    """'{veri_kok}/AYARLAR/**' → normalleştirilmiş desenler (veri kökü bilinmiyorsa varsayılan köklerin her biri için)."""
+    out = []
+    for v in (veri_kokleri() if "{veri_kok}" in d else [None]):
+        x = yer_tutucu(d, gorev, v)
+        if x: out.append(x)
+    return out
+
+
+def yer_tutucu(d, gorev=None, veri=None):
     """'{veri_kok}/AYARLAR/**' → normalleştirilmiş desen; değeri bilinmeyen yer tutucuda None."""
     y = yollar()
-    deg = {"veri_kok": y.get("veri_kok"), "depo_kok": DEPO, "gorev": gorev}
+    deg = {"veri_kok": veri or y.get("veri_kok"), "depo_kok": DEPO, "gorev": gorev}
     for k, v in deg.items():
         if "{%s}" % k in d:
             if not v: return None
@@ -241,8 +273,8 @@ def yer_tutucu(d, gorev=None):
 
 def eslesir(yol_n, desenler, gorev=None):
     for d in desenler or ():
-        dd = yer_tutucu(d, gorev)
-        if dd and desen_re(dd).match(yol_n): return d
+        for dd in yer_tutucular(d, gorev):
+            if desen_re(dd).match(yol_n): return d
     return None
 
 
@@ -259,17 +291,21 @@ def kurallar():
 
 def gizli_mi(yol_n):
     k = kurallar()
-    return bool(eslesir(yol_n, k.get("gizli"))) and not eslesir(yol_n, k.get("gizli_istisna"))
+    if eslesir(yol_n, k.get("gizli_istisna")): return False
+    if eslesir(yol_n, k.get("gizli")): return True
+    return yollar_bilinmiyor() and bool(re.search(r"(^|/)ayarlar(/|$)", yol_n))      # kapalı başarısız: her AYARLAR gizli
+
+
+def hesap_korumali(yol_n): return bool(eslesir(yol_n, kurallar().get("hesap_korumali")))
 
 
 def gizli_klasor_icerir(kok_n):
     """Arama kökü (Grep yolu) veri kökündeki AYARLAR'ı içeriyor ya da herhangi bir AYARLAR'ın içinde mi."""
     for d in kurallar().get("gizli_klasorler") or ():
-        dd = yer_tutucu(d)
-        if not dd: continue
-        if kok_n == dd or kok_n.startswith(dd + "/"): return True               # AYARLAR'ın kendisi ya da içi
-        if "{veri_kok}" in d and dd.startswith(kok_n.rstrip("/") + "/"): return True   # veri AYARLAR'ının üst klasörü
-    return False
+        for dd in yer_tutucular(d):
+            if kok_n == dd or kok_n.startswith(dd + "/"): return True               # AYARLAR'ın kendisi ya da içi
+            if "{veri_kok}" in d and dd.startswith(kok_n.rstrip("/") + "/"): return True   # veri AYARLAR'ının üst klasörü
+    return yollar_bilinmiyor() and bool(re.search(r"(^|/)ayarlar(/|$)", kok_n))     # kapalı başarısız
 
 
 def makine_sahipli(yol_n): return bool(eslesir(yol_n, kurallar().get("makine_sahipli")))
@@ -378,6 +414,10 @@ def k_erisim(g):
         if tur == "arama" and gizli_klasor_icerir(p):
             kayit(film, olay="ret", kural="gizli_arama", arac=arac)
             return reddet("erisim", "Bu arama AYARLAR klasörünü kapsıyor; anahtar dosyalarında arama yapılmaz. Daha dar bir klasör ver.")
+        if tur == "yazma" and hesap_korumali(p):
+            kayit(film, olay="ret", kural="hesap_dosyasi", arac=arac, dosya=os.path.basename(p))
+            return reddet("erisim", "Flow hesap dosyaları (FLOW_KILIDI, FLOW_UYARILARI, HESAP_DURUMU, FLOW_TEMPO, FLOW_YUK, FLOW.kilit) "
+                                    "elle değiştirilmez. Kilidi yalnız kullanıcı UYARI_GECTI.bat ile kaldırır.")
     if agent_id:
         return erisim_alt_ajan(g, film, arac, yollar_, cwd, str(agent_id), agent_type)
     if surus_acik(film):
@@ -473,6 +513,118 @@ YAZMA_KABUK = re.compile(r">>?|\btee\b|out-file|set-content|add-content|\bcp\b|\
                          r"open\([^)]*['\"][wa]", re.I)
 MEMMET_KOS = re.compile(r"(?:^|[\s\"'(&;|])(?:[\w:\\/.\-]*[\\/])?(?:python[\d.]*|py|python[\d.]*\.exe|py\.exe)(?:\s+-[\w.]+)*\s+"
                         r"[\"']?(?:[^\s\"']*[\\/])?memmet\.py\b", re.I)
+# memmet'i dolambaçlı çalıştırma: python -m memmet, runpy/importlib/exec ile memmet.py, kodda import memmet
+MEMMET_DOLAYLI = re.compile(r"\bpy(?:thon[\d.]*)?(?:w)?(?:\.exe)?\b[^|&;\n]*?\s-m\s*[\"']?memmet\b"
+                            r"|(?:runpy|run_path|run_module|import_module|__import__|exec\s*\(|spec_from_file_location|SourceFileLoader)"
+                            r"[\s\S]{0,400}?memmet(?!_topla|_yama)\b"
+                            r"|memmet(?!_topla|_yama)(?:\.py)?[\"']?[\s\S]{0,400}?(?:runpy|run_path|exec\s*\(|spec_from_file_location)"
+                            r"|(?:^|[\s;(\"'])(?:import\s+memmet\b(?!_)|from\s+memmet\s+import\b)", re.I)
+# Flow hesap düzeyi dosyaları: yalnız Memmet/flow_yuk yazar; ajan taşımaz, kopyalamaz, silmez, boşaltmaz, düzenlemez
+HESAP_DOSYA = re.compile(r"FLOW_KILIDI|FLOW_UYARILARI|HESAP_DURUMU|FLOW_TEMPO\.json|FLOW_YUK\.jsonl|FLOW\.kilit|(?:^|[\\/])HESAP[\\/]?$")
+UYARI_GECTI = re.compile(r"uyari[-_]gecti|ben[-_]kullan", re.I)
+KOD_YAZMA = re.compile(r"remove|unlink|rename|replace|move|rmtree|truncate|open\s*\(|write|dump|atomik|copy|uyari_gecti|touch", re.I)
+KOD_SILME = re.compile(r"shutil\.rmtree|rmtree\s*\(|os\.remove|os\.unlink|\.unlink\s*\(|os\.rmdir|\.rmdir\s*\(|os\.removedirs|"
+                       r"\.truncate\s*\(|os\.truncate|send2trash", re.I)
+SALT_OKUR = OKUMA - {"sed", "awk"}
+
+
+def _kod_parcalari(t, govdeler):
+    """Yorumlayıcıya giden kod: -c/-e değerleri + heredoc gövdeleri."""
+    return [t[i + 1] for i, x in enumerate(t[:-1]) if x in ("-c", "-e", "-E", "-r", "-Command", "-command")] + [str(g) for g in govdeler]
+
+
+def _segmentler(cmd, derinlik=0):
+    """(segment, heredoc gövdeleri) — kabuk -c ve komut ikameleri açılarak."""
+    out = []
+    for seg, g in parcala(cmd):
+        out.append((seg, g))
+        if derinlik < 3:
+            for x in ikameler(seg) + [y for b in g if isinstance(b, AcikGovde) for y in ikameler(b)]:
+                out += _segmentler(x, derinlik + 1)
+            t = kelimeler(seg)
+            if program(t) in KABUK_PROG:
+                for i, x in enumerate(t[1:], 1):
+                    if x.lower() in ("-c", "/c", "/k", "-command"): out += _segmentler(" ".join(t[i + 1:]), derinlik + 1); break
+                if g and not [x for x in _sec_arg(t) if not x.startswith("<<")]:
+                    for gv in g: out += _segmentler(gv, derinlik + 1)
+    return out
+
+
+def hesap_dosyasina_dokunur(cmd):
+    """Komut Flow hesap dosyalarını değiştiriyor mu (taşıma, kopyalama üstüne, silme, boşaltma, düzenleme, kodda yazma)?
+    Okuma, listeleme, arama ve commit mesajı serbest."""
+    for seg, g in _segmentler(cmd):
+        t = kelimeler(seg); p = program(t)
+        if any(HESAP_DOSYA.search(x) for x in _yonlendirme_hedefleri(t)): return True
+        if re.search(r">>?\s*[\"']?[^\s\"']*(?:FLOW_KILIDI|FLOW_UYARILARI|HESAP_DURUMU|FLOW_TEMPO|FLOW_YUK|FLOW\.kilit)", seg): return True
+        if YORUMLAYICI.match(p):
+            if any(HESAP_DOSYA.search(k) and KOD_YAZMA.search(k) for k in _kod_parcalari(t, g)): return True
+            if any(HESAP_DOSYA.search(x) for x in _sec_arg(t, ("-c", "-e", "-E", "-r", "-m"))): return True
+            continue
+        if not any(HESAP_DOSYA.search(x) for x in t[1:]): continue
+        if p in METIN_PROG or p in ARAMA or p in SALT_OKUR: continue
+        if p in ("sed", "awk", "perl") and not any(x.startswith("-i") or x == "--in-place" for x in t[1:]): continue
+        if p in LISTE and not re.search(r"-exec|-delete|-ok\b", seg): continue
+        if p == "git" and len(t) > 1 and t[1] in ("commit", "log", "grep", "show", "status", "diff", "check-ignore", "ls-files"): continue
+        return True
+    return False
+
+
+def uyari_gecti_cagrisi(cmd):
+    """Ajan kilidi kaldıramaz: flow_yuk --uyari-gecti / --ben-kullaniciyim, -m flow_yuk, kodda uyari_gecti, UYARI_GECTI.bat çalıştırma."""
+    for seg, g in _segmentler(cmd):
+        t = kelimeler(seg); p = program(t)
+        if UYARI_GECTI.search(p): return True                                  # ./UYARI_GECTI.bat
+        if p in METIN_PROG or p in ARAMA or p in SALT_OKUR or (p == "git" and len(t) > 1 and t[1] in ("commit", "log", "grep", "show", "diff")):
+            continue
+        if YORUMLAYICI.match(p):
+            if any(UYARI_GECTI.search(k) for k in _kod_parcalari(t, g)): return True
+            if any(x in ("--uyari-gecti", "--ben-kullaniciyim") for x in t): return True
+            continue
+        if p in LISTE and not re.search(r"-exec|-ok\b", seg): continue
+        if any(UYARI_GECTI.search(x) for x in t[1:]): return True                # cmd /c, start, call, & .\UYARI_GECTI.bat
+    return False
+
+
+def geri_donussuz(cmd):
+    """Kalıcı veri kaybı (kalıcı silme dışında): geri dönüşsüz git, dosya boşaltma, /dev/null'a taşıma, kodda silme."""
+    for seg, g in _segmentler(cmd):
+        t = kelimeler(seg); p = program(t)
+        if p == "git" and len(t) > 1:
+            a = t[1]; r = t[2:]
+            if a == "reset" and "--hard" in r: return "git reset --hard"
+            if a == "checkout" and ("--" in r or "." in r or any(x in ("-f", "--force") for x in r)): return "git checkout -- (değişiklikleri siler)"
+            if a == "restore" and not ("--staged" in r and "--worktree" not in r and "-W" not in r): return "git restore (değişiklikleri siler)"
+            if a == "stash" and r[:1] and r[0] in ("drop", "clear"): return "git stash " + r[0]
+        if p == "truncate" and not all(silme_serbest(x) for x in _sec_arg(t, ("-s", "--size", "-r", "--reference"))): return "truncate"
+        if p in ("clear-content", "clc"): return "Clear-Content"
+        m = re.match(r"^\s*(?:(?::|true)\s*)?>(?![>&])\s*[\"']?([^\s\"';&|]+)", seg)
+        if m and not silme_serbest(m.group(1)) and m.group(1).lower() not in ("/dev/null", "nul"): return "dosya boşaltma (: > dosya)"
+        if p in ("cp", "copy", "copy-item", "cpi") and any(x.lower() in ("/dev/null", "nul") for x in t[1:2]): return "dosya boşaltma (cp /dev/null)"
+        if p == "cat" and "/dev/null" in t[1:2] and _yonlendirme_hedefleri(t): return "dosya boşaltma (cat /dev/null >)"
+        if any(x.lower() in ("/dev/null", "nul", "$null") for x in _sec_arg(t)) and \
+                (p in ("mv", "move", "move-item", "mi", "ren", "rename-item") or (p == "find" and "-exec" in t)):
+            return "/dev/null'a taşıma (kalıcı silme)"
+        if YORUMLAYICI.match(p) and any(KOD_SILME.search(k) for k in _kod_parcalari(t, g)): return "yorumlayıcı kodunda silme"
+    return None
+
+
+def memmet_cagrilari(cmd):
+    """(memmet çalışıyor mu, hepsi yalnız --giris/--bakiye mi). --giris yalnız memmet.py'nin GERÇEK argümanıysa sayılır
+    (yorumdan, başka segmentten, tırnak içi birleşik metinden değil); dolaylı çalıştırma (-m, runpy, import) hiç serbest değil."""
+    kos_, serbest = False, True
+    for seg, g in _segmentler(cmd):
+        if re.search(r"py_compile|-m\s+unittest", seg): continue              # yalnız derleme/test segmenti serbest
+        if MEMMET_DOLAYLI.search(seg + "\n" + "\n".join(str(x) for x in g)): return True, False
+        if not MEMMET_KOS.search(" " + seg): continue
+        kos_ = True; t = kelimeler(seg)
+        i = next((j for j, x in enumerate(t) if re.search(r"(?:^|[\\/])memmet\.py$", x, re.I)), None)
+        arg = []
+        for x in (t[i + 1:] if i is not None else []):
+            if x.startswith("#"): break
+            arg.append(x)
+        if not any(x in ("--giris", "--bakiye") for x in arg): serbest = False
+    return kos_, (kos_ and serbest)
 
 
 def kelimeler(seg):
@@ -658,6 +810,7 @@ def gizli_segment(seg, govdeler, cwd, derinlik=0):
                    "config", "tag", "switch", "merge", "rebase", "cherry-pick", "restore", "worktree"):
             return False
         if alt == "diff" and "--stat" in t: return False
+        if alt == "rm" and "--cached" in t: return False                    # yalnız dizinden çıkarır (içerik açılmaz, dosya yerinde kalır)
         if alt == "commit":                                                 # mesaj metni serbest; -F dosyası ve yol argümanı denetlenir
             f = [t[i + 1] for i, x in enumerate(t[:-1]) if x in ("-F", "--file")]
             return any(sir_yol_mu(x) for x in f + _sec_arg(t, ("-m", "--message", "-F", "--file", "-C", "-c", "--author",
@@ -727,9 +880,21 @@ def k_komut(g, kaynak="ayar"):
         return ret("gizli", "AYARLAR ve anahtar dosyaları okunmaz, kopyalanmaz, yazdırılmaz (yalnız varlığı denetlenir: ls/dir).")
     if re.search(r"\brobocopy\b[^\n|;&]*\s/(mir|purge)\b", cmd, re.I):
         return ret("robocopy_mir", "robocopy /MIR ve /PURGE yasak (kalıcı silme). Eskiler _ESKI/'ye taşınır.")
+    if re.search(r"\brobocopy\b[^\n|;&]*\s/(mov|move)\b", cmd, re.I):
+        return ret("robocopy_tasi", "robocopy /MOV ve /MOVE yalnız arsivle.py'nin kendi içinden (üzerine yazmadan) çalışır; elle yok. "
+                                    "Arşiv için: python YZ_FILM/ARACLAR/arsivle.py --film <film>.")
     if re.search(r"\bpy(?:thon[\d.]*)?(?:\.exe)?\b[^|&]*\s-c\b", cmd, re.I) and \
             re.search(r"shutil\.rmtree|os\.remove|os\.unlink|\.unlink\(|os\.rmdir|rmtree\(", cmd):
         return ret("silme", "Kalıcı silme yok (python -c ile silme). Eskiler _ESKI/'ye taşınır.")
+    if hesap_dosyasina_dokunur(cmd):
+        return ret("hesap_dosyasi", "Flow hesap dosyalarına (FLOW_KILIDI, FLOW_UYARILARI, HESAP_DURUMU, FLOW_TEMPO, FLOW_YUK, FLOW.kilit, "
+                                    "HESAP/) dokunulmaz: taşıma, kopyalama, silme, boşaltma, düzenleme yok. Kilidi yalnız kullanıcı "
+                                    "UYARI_GECTI.bat ile kaldırır.")
+    if uyari_gecti_cagrisi(cmd):
+        return ret("uyari_gecti", "Flow kilidini yalnız KULLANICI kaldırır (UYARI_GECTI.bat, kendi konsolunda onaylayarak). Ajan "
+                                  "--uyari-gecti çalıştırmaz. Kullanıcıya haber ver.")
+    gd = geri_donussuz(cmd)
+    if gd: return ret("silme", "Kalıcı veri kaybı yok (%s). Eskiler _ESKI/'ye taşınır." % gd)
     for seg in segler:
         t = kelimeler(seg)
         s = silme_kontrol(seg, t)
@@ -742,8 +907,7 @@ def k_komut(g, kaynak="ayar"):
                                                                 or re.match(r"\s*git\s+(grep|log|diff|show)\b", s))]
     if kie:
         return ret("kie_ai", "kie.ai kullanılmaz (adres, API çağrısı, anahtar, kurulum yok); başka servis ya da hesap yok (Flow kuralı).")
-    memmet = bool(MEMMET_KOS.search(cmd)) and not re.search(r"py_compile|-m\s+unittest", cmd)
-    memmet_serbest = bool(re.search(r"--(giris|bakiye)\b", cmd))
+    memmet, memmet_serbest = memmet_cagrilari(cmd)
     if memmet and flow_kilitli() and not memmet_serbest:
         return ret("flow_kilidi", "Flow kilidi var: gönderim yapılmaz (her kipte). Kilidi yalnız kullanıcı UYARI_GECTI.bat ile kaldırır.")
     surus = surus_acik(film)

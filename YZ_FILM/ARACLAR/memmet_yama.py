@@ -9,7 +9,8 @@ Korkuluklar (hepsi birden; biri tutmazsa KAL):
   3. tempo yalnız yavaşlar: TEMPO aralıkları eleman eleman küçülmez, ayni_anda büyümez, mola sıklığı seyrekleşmez (0 = kapalı kalır),
      yeni kip eklenmez ("gündüz otomatik" yok); MEMMET_AYAR yalnız yavaşlatır (sikilastir/_yavas çağrısı kalır)
   4. uyarı kelimeleri yalnız büyür (OLAGANDISI_KELIMELERI, DOGRULAMA_KELIMELERI ⊇ eski); HATA_KELIMELERI'nde "olağan/unusual" yok
-  5. yeniden deneme ve sayfa yenileme artmaz: goto / reload çağrıları, kuyruk.append/insert ve range(N) deneme sayıları büyümez
+  5. yeniden deneme ve sayfa yenileme artmaz: goto / reload başvuruları (dokun kapısından geçenler dahil), kuyruk.append/insert ve
+     range(N) deneme sayıları büyümez
   6. uyarıdan sonra HER KİPTE sayfa işlemi 0: test_memmet_korkuluk (T10 elle, gece, doğrulama, v2 blok) yamalı kopyada yeniden koşar
   7. --mod varsayılanı elle; CIKIS olagandisi = 7, dogrulama = 2
   8. FLOW_TEMPO okuması kalır (flow_yuk.tempo_durumu, tempo_bekle(tur) çağrıları azalmaz)
@@ -77,6 +78,11 @@ def _cagri_say(agac, ad):
                ((isinstance(n.func, ast.Attribute) and n.func.attr == ad) or (isinstance(n.func, ast.Name) and n.func.id == ad)))
 
 
+def _oznitelik_say(agac, ad):
+    """`.goto` / `.reload` başvuruları: doğrudan çağrı da, dokun(self.page.goto, …) ile kapıdan geçen çağrı da sayılır."""
+    return sum(1 for n in ast.walk(agac) if isinstance(n, ast.Attribute) and n.attr == ad)
+
+
 def _kuyruk_say(agac):
     return sum(1 for n in ast.walk(agac) if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in ("append", "insert")
                and isinstance(n.func.value, ast.Name) and n.func.value.id == "kuyruk")
@@ -95,7 +101,7 @@ def olcu(kaynak):
     agac = ast.parse(kaynak)
     return {"TEMPO": _sabit(agac, "TEMPO") or {}, "OLAGANDISI": _sabit(agac, "OLAGANDISI_KELIMELERI") or [],
             "DOGRULAMA": _sabit(agac, "DOGRULAMA_KELIMELERI") or [], "HATA": _sabit(agac, "HATA_KELIMELERI") or [],
-            "CIKIS": _sabit(agac, "CIKIS") or {}, "goto": _cagri_say(agac, "goto"), "reload": _cagri_say(agac, "reload"),
+            "CIKIS": _sabit(agac, "CIKIS") or {}, "goto": _oznitelik_say(agac, "goto"), "reload": _oznitelik_say(agac, "reload"),
             "kuyruk": _kuyruk_say(agac), "range": _range_toplam(agac), "tempo_durumu": kaynak.count("flow_yuk.tempo_durumu("),
             "tempo_bekle_tur": kaynak.count("self.tempo_bekle(tur)"), "sikilastir": _cagri_say(agac, "sikilastir"),
             "mod_varsayilan": len(re.findall(r'["\']mod["\']\s*:\s*["\']elle["\']', kaynak)) + len(re.findall(r'get\(\s*["\']mod["\']\s*,\s*["\']elle["\']\s*\)', kaynak))}

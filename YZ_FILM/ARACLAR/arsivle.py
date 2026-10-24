@@ -11,7 +11,8 @@ Taşınanlar (<arsiv>/<film>/<aynı göreli yol>; <arsiv> = YOLLAR.json "arsiv",
 Taşınmayanlar (testli): son taslağın bağlı olduğu yollar (draft_content.json path'leri), açık kuyruk maddelerinin (bekliyor/gönderildi)
 girdileri, dışa aktarılmamış iş (yayın dosyası yoksa son kurgu sürümü ve stemler). Atlananlar da listelenir.
 Yöntem: Windows'ta robocopy /MOV (dosya) ya da /E /MOVE (klasör); ayna bayrağı ASLA kullanılmaz (kaynakta olmayanı hedefte silerdi).
-Başka sistemde shutil.move. Kalıcı silme yok. Taşınanların listesi kullanıcıya BİLGİ olarak verilir (_RAPOR/ARSIV_<zaman>.json).
+Başka sistemde shutil.move. Kalıcı silme yok. Arşivde AYNI ADLI dosya varsa üzerine yazılmaz: önceden denetlenir, kaynak yerinde kalır
+(rapor: atlanan_arsivde_var); robocopy'ye de /XC /XN /XO verilir (değişmiş/yeni/eski hiçbir hedef dosyanın üzerine yazılmaz). Taşınanların listesi kullanıcıya BİLGİ olarak verilir (_RAPOR/ARSIV_<zaman>.json).
 D takılı değilse 8 BEKLE + tek fiziksel iş "D'yi tak" (film.py bekle --kullanici diski yoklar).
 Çıkış kodları: 0 tamam · 1 taşıma hatası · 2 film yok · 8 BEKLE (arşiv diski takılı değil).
 """
@@ -101,24 +102,37 @@ def disa_aktarildi(kok): return bool(glob.glob(os.path.join(kok, "YAYIN", "*_4K.
 def robocopy_komutu(kaynak_dir, hedef_dir, dosyalar=None):
     """Taşıma komutu: dosya listesi → /MOV; klasör → /E /MOVE. Ayna bayrağı hiçbir koşulda eklenmez."""
     k = ["robocopy", kaynak_dir, hedef_dir] + (list(dosyalar) if dosyalar else []) + (["/MOV"] if dosyalar else ["/E", "/MOVE"]) + \
-        ["/R:1", "/W:1", "/NP", "/NFL", "/NDL"]
+        ["/XC", "/XN", "/XO", "/R:1", "/W:1", "/NP", "/NFL", "/NDL"]          # hedefte aynı adlı dosya varsa üzerine yazma
     assert YASAK_BAYRAK not in [x.upper() for x in k]
     return k
 
 
-def tasi(kok, dosyalar, hedef_kok):
+def tasi(kok, dosyalar, hedef_kok, arsivde_var=None):
+    """Dosyaları arşive taşır; arşivde aynı adlı dosya varsa ONA DOKUNMAZ (kaynak yerinde kalır, arsivde_var listesine yazılır).
+    Taşındı sayılan her dosya: kaynakta yok VE hedefte var (doğrulanır)."""
+    arsivde_var = [] if arsivde_var is None else arsivde_var
     gruplar = {}
     for p in dosyalar: gruplar.setdefault(os.path.dirname(p), []).append(os.path.basename(p))
     tasinan = []
     for d, adlar in sorted(gruplar.items()):
         hedef = os.path.join(hedef_kok, os.path.relpath(d, kok)); os.makedirs(hedef, exist_ok=True)
+        bos = []
+        for a in adlar:
+            if os.path.lexists(os.path.join(hedef, a)): arsivde_var.append(ko.goreli(kok, os.path.join(d, a)))
+            else: bos.append(a)
         if os.name == "nt":
-            for i in range(0, len(adlar), 50):
-                r = subprocess.run(robocopy_komutu(d, hedef, adlar[i:i + 50]), capture_output=True, text=True)
+            for i in range(0, len(bos), 50):
+                r = subprocess.run(robocopy_komutu(d, hedef, bos[i:i + 50]), capture_output=True, text=True)
                 if r.returncode >= 8: raise RuntimeError(f"robocopy {r.returncode}: {d}")
         else:
-            for a in adlar: shutil.move(os.path.join(d, a), os.path.join(hedef, a))
-        tasinan += [ko.goreli(kok, os.path.join(d, a)) for a in adlar]
+            for a in bos:
+                h = os.path.join(hedef, a)
+                if os.path.lexists(h): continue                      # arada belirdiyse dokunulmaz (aşağıda arsivde_var)
+                shutil.move(os.path.join(d, a), h)
+        for a in bos:
+            g = ko.goreli(kok, os.path.join(d, a))
+            if not os.path.exists(os.path.join(d, a)) and os.path.exists(os.path.join(hedef, a)): tasinan.append(g)
+            elif g not in arsivde_var: arsivde_var.append(g)
     return tasinan
 
 
@@ -141,10 +155,11 @@ def arsivle(kok, argv=()):
         if not disa and os.path.abspath(p).startswith(os.path.abspath(son_v) + os.sep): atl_d.append(ko.goreli(kok, p)); continue
         tasinacak.append(p)
     boyut = sum(os.path.getsize(p) for p in tasinacak) / 1e6
-    tasinan = [] if kuru else tasi(kok, tasinacak, hedef_kok)
+    arsivde_var = []
+    tasinan = [] if kuru else tasi(kok, tasinacak, hedef_kok, arsivde_var)
     rap = {"_uretim": ko.po.zarf("A16", SURUM), "hedef": hedef_kok, "kuru": kuru, "yontem": "robocopy /MOV · /E /MOVE" if os.name == "nt" else "shutil.move",
            "tasinan": tasinan if not kuru else [ko.goreli(kok, p) for p in tasinacak], "boyut_mb": round(boyut, 1),
-           "atlanan_bagli": atl_b, "atlanan_kuyruk": atl_k, "atlanan_disa_aktarilmamis": atl_d}
+           "atlanan_bagli": atl_b, "atlanan_kuyruk": atl_k, "atlanan_disa_aktarilmamis": atl_d, "atlanan_arsivde_var": arsivde_var}
     ortak.atomik_yaz(os.path.join(kok, "_RAPOR", f"ARSIV_{time.strftime('%Y%m%d-%H%M%S')}.json"), rap)
     ne = "taşınacak" if kuru else "D'ye taşındı"
     print(f"Bilgi: {ne}: {len(rap['tasinan'])} dosya ({boyut:.0f} MB) → {hedef_kok}. "

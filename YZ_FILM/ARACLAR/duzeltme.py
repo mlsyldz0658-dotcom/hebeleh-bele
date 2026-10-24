@@ -16,7 +16,7 @@ Kurallar: çıplak left/right yazılmaz (her zaman "<ad>'s RIGHT hand" ya da "fr
 Çıkış kodları: 0 tamam · 1 HATA (bilinmeyen alan, eksik değer) · 2 film/kuyruk yok · 4 kullanım.
 """
 import os, sys, re, json, shutil, hashlib, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -194,7 +194,8 @@ def madde_cumlesi(m, plan, karakterler=None):
         b = (der.get("bakis_kadrajda") or {}).get(kis)
         return cumle(alan, ad=ad, yon=YON_EN.get(b, "left"), hedef=m.get("hedef") or "other person")
     if alan in ("isik", "lab"):
-        return cumle("isik", kaynak=m.get("kaynak") or "main light", yon=YON_EN.get(der.get("isik_kadrajda"), "left"))
+        import kroki
+        return cumle("isik", kaynak=m.get("kaynak") or "main light", yon=YON_EN.get(kroki.isik_yonu(der.get("isik_kadrajda")), "left"))
     if alan in ("yasak_oge", "ne_yok"):
         oge = m.get("oge") or ", ".join(m.get("kor") or []) or "the extra element"
         return cumle("yasak_oge", oge=oge)

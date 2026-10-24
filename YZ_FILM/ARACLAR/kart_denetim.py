@@ -19,7 +19,7 @@ Kurallar (§7.2 KART, [GS2] §4.7.2):
 Çıkış kodları: 0 tamam (kapı sonucu raporda) · 1 girdi/program hatası · 2 aday ya da KART_ISTEMLERI yok · 4 kullanım.
 """
 import os, sys, re, json, glob, itertools
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

@@ -241,6 +241,33 @@ def _cagri_adi(n):
     return None, (f.id if isinstance(f, ast.Name) else None)
 
 
+class FilmDosyalariEk(unittest.TestCase):
+    def test_son_tur_adlari(self):
+        """film.py ajanının istediği dosya adları ADLAR film_dosyalari'nda (birleştirme son turu)."""
+        with open(os.path.join(ARACLAR, "veri", "ADLAR.json"), encoding="utf-8") as f: fd = json.load(f)["film_dosyalari"]
+        for kl, ad in (("_HIKAYE_ODASI", "EVREN_OZETI.md"), ("_HIKAYE_ODASI", "06_SENARYO_v1<NN>.json"),
+                       ("_YONETMEN", "KART_ISTEGI_P<n>.json"), ("_YONETMEN", "ONARIM_f<n>.json"),
+                       ("_RAPOR", "G1/HAKEM_G1_t<n>.json"), ("_SES", "SES_TASARIMI_G<i>.md"), ("_SES", "SES_G<i>.json")):
+            self.assertIn(ad, fd[kl], (kl, ad))
+
+
+class StdoutKorumasi(unittest.TestCase):
+    def test_reconfigure_korumali(self):
+        """sys.stdout.reconfigure her araçta korumalı (hasattr ya da try): stdout StringIO'ya yönlendirilmişken araç içe alınabilir."""
+        kotu = []
+        for kok, ds, fs in os.walk(ARACLAR):
+            ds[:] = [d for d in ds if d not in ("__pycache__", "testler")]
+            for f in fs:
+                if not f.endswith(".py"): continue
+                p = os.path.join(kok, f)
+                with open(p, encoding="utf-8") as h: satir = h.read().split("\n")
+                for i, s in enumerate(satir):
+                    onceki = satir[i - 1].strip() if i else ""
+                    if s.strip().startswith("sys.stdout.reconfigure(") and not ("hasattr(sys.stdout" in onceki or onceki == "try:"):
+                        kotu.append(f"{os.path.relpath(p, ARACLAR)}:{i + 1}")
+        self.assertEqual(kotu, [])
+
+
 class KoddaAdlar(unittest.TestCase):
     """D-35: kodda sabit dizi olarak geçen adlar ADLAR.json'dadır. Yalnız kesin okunan kalıplar taranır (değişkenle kurulan ad atlanır),
     böylece yanlış alarm olmaz: hat/asamalar.py R()/J()/B(kor_paket --kip), kapi.kaydet/rapor_kur ve ses_ortak.rapor kapı kodları,

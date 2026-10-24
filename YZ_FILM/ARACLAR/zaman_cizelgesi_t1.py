@@ -24,7 +24,7 @@ Kurallar:
 Çıkış kodları: 0 BİTTİ · 1 HATA (SAHNELER yok/bozuk) · 4 ORTAM (SAHNELER v1).
 """
 import os, sys, re, json, glob, hashlib, argparse, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

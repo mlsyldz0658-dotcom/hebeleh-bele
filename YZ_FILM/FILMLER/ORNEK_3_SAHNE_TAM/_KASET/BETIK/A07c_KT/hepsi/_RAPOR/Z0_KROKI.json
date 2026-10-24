@@ -1,0 +1,32 @@
+{
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A07c",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "kroki (kaset)",
+  "esik_surum": "esikler 1.0",
+  "sonuc": "GEC",
+  "zaman": "2026-10-24T00:00:00+00:00",
+  "ortam": "bulut"
+ },
+ "kapi": "Z0",
+ "kapsam": "KROKI",
+ "tur": 1,
+ "sonuc": "GEC",
+ "ozet": {
+  "plan": 33,
+  "gec": 33,
+  "bayrak": 0,
+  "hata": 0,
+  "olculemedi": 0
+ },
+ "hatalar": [],
+ "bayraklar": [],
+ "mekanlar": [
+  "kale_kapisi",
+  "kulube",
+  "magara_agzi",
+  "patika"
+ ]
+}

@@ -1,0 +1,1743 @@
+{
+ "_sahip": "hikaye-yazari",
+ "evren": "FROSTHOLLOW",
+ "film_no": 1,
+ "film_sure_hedef_sn": 1800,
+ "logline": "A disgraced huntress hides the last dragon hatchling from the king's burners, while her own brother leads the hunt.",
+ "baslik": {
+  "secilen": "She Raised the Dragon the King Ordered Burned | FROSTHOLLOW | Full Movie 4K 2026",
+  "adaylar": []
+ },
+ "vaat_sozlesmesi": [
+  {
+   "oge": "kapak_imgesi",
+   "sahne": "S01",
+   "ekranda": "cloak + glow + torches"
+  },
+  {
+   "oge": "the King Ordered Burned",
+   "sahne": "S01",
+   "replik": "R0003",
+   "sozlu": true
+  }
+ ],
+ "donem": {
+  "cag": "geç ortaçağ benzeri, barut yok"
+ },
+ "ne_yok": [
+  {
+   "oge": "barut silahı",
+   "neden": "dönem",
+   "kelimeler_en": [
+    "gun",
+    "rifle",
+    "pistol",
+    "musket"
+   ]
+  }
+ ],
+ "duygu_haritasi": {
+  "0": {
+   "yogunluk": 8,
+   "tur": "gerilim"
+  }
+ },
+ "vuruslar": {
+  "soguk_acilis": 0.0,
+  "orta_nokta": 15.0,
+  "doruk": 25.0
+ },
+ "anahtar_olgular": [
+  {
+   "id": "o01",
+   "hikaye_partisi": "P1",
+   "olgu": "Sera ejderha yavrusunu kraldan saklıyor",
+   "kritik": true,
+   "ekranda": [
+    "S01",
+    "R0002"
+   ]
+  },
+  {
+   "id": "o02",
+   "hikaye_partisi": "P1",
+   "olgu": "Ejderha saklamak ölüm cezası",
+   "kritik": true,
+   "ekranda": [
+    "S01",
+    "R0003"
+   ]
+  },
+  {
+   "id": "o03",
+   "hikaye_partisi": "P1",
+   "olgu": "Kemik düdük yavruyu sakinleştirir",
+   "kritik": false,
+   "ekranda": [
+    "S02",
+    "R0004"
+   ]
+  },
+  {
+   "id": "o04",
+   "hikaye_partisi": "P1",
+   "olgu": "Avı yöneten kaptan Brann, Sera'nın ağabeyi",
+   "kritik": true,
+   "ekranda": [
+    "S04",
+    "R0007"
+   ]
+  },
+  {
+   "id": "o05",
+   "hikaye_partisi": "P2",
+   "olgu": "Sera yavruyu yüksek mağaraya götürüyor",
+   "kritik": true,
+   "ekranda": [
+    "S05",
+    "R0009"
+   ]
+  },
+  {
+   "id": "o06",
+   "hikaye_partisi": "P2",
+   "olgu": "Brann'ın adamı kulübeyi gözlüyor",
+   "kritik": true,
+   "ekranda": [
+    "S08",
+    "R0012"
+   ]
+  },
+  {
+   "id": "o07",
+   "hikaye_partisi": "P3",
+   "olgu": "Yavru çantadan kaçtı",
+   "kritik": true,
+   "ekranda": [
+    "S09",
+    "R0014"
+   ]
+  },
+  {
+   "id": "o08",
+   "hikaye_partisi": "P3",
+   "olgu": "Yavru büyüdü",
+   "kritik": false,
+   "ekranda": [
+    "S10"
+   ]
+  },
+  {
+   "id": "o09",
+   "hikaye_partisi": "P3",
+   "olgu": "Brann ejderhayı bağışlıyor",
+   "kritik": true,
+   "ekranda": [
+    "S11",
+    "R0018"
+   ]
+  },
+  {
+   "id": "o10",
+   "hikaye_partisi": "P3",
+   "olgu": "Bahar geldi, ikisi de hayatta",
+   "kritik": false,
+   "ekranda": [
+    "S12"
+   ]
+  },
+  {
+   "id": "o11",
+   "hikaye_partisi": "P3",
+   "olgu": "Kuzeyde başka bir ışık var",
+   "kritik": false,
+   "ekranda": [
+    "S12",
+    "R0020"
+   ]
+  }
+ ],
+ "MERAK_DEFTERI": [
+  {
+   "id": "m01",
+   "soru": "Kardaki ışık ne?",
+   "ac": "S01",
+   "kapat": "S02",
+   "tur": "kucuk"
+  },
+  {
+   "id": "m02",
+   "soru": "Brann kız kardeşini ele verecek mi?",
+   "ac": "S03",
+   "kapat": "S11",
+   "tur": "buyuk"
+  },
+  {
+   "id": "m03",
+   "soru": "Yavru hayatta kalacak mı?",
+   "ac": "S02",
+   "kapat": "S12",
+   "tur": "buyuk"
+  },
+  {
+   "id": "m04",
+   "soru": "Kuzeyde başka yumurta var mı?",
+   "ac": "S12",
+   "kapat": null,
+   "tur": "seri"
+  }
+ ],
+ "KURULUMLAR": [
+  {
+   "id": "kur_duduk",
+   "ne": "Kemik düdük ejderhayı sakinleştirir",
+   "kurulum": "S02",
+   "hatirlatma": [
+    "S06"
+   ],
+   "kullanim": "S11"
+  }
+ ],
+ "IRONILER": [
+  {
+   "id": "i01",
+   "seyirci_bilir": "S08",
+   "karakter_ogrenir": "S09",
+   "ne": "Brann'ın adamı kulübeyi gözlüyor"
+  }
+ ],
+ "bolum_adlari": [
+  {
+   "bas_sahne": "S01",
+   "ad": "The Light Under the Snow"
+  }
+ ],
+ "short_adaylari": [
+  {
+   "sahneler": [
+    "S01"
+   ]
+  },
+  {
+   "sahneler": [
+    "S06"
+   ]
+  },
+  {
+   "sahneler": [
+    "S11"
+   ]
+  }
+ ],
+ "seri_kancasi": {
+  "sahne": "S12",
+  "sure_sn": 18,
+  "merak": "m04",
+  "sonraki_tohum": "He Burned the Village That Hid Her"
+ },
+ "mekanlar": [
+  {
+   "id": "kale_kapisi",
+   "tekrar": 1,
+   "hikaye_olgulari": []
+  },
+  {
+   "id": "kulube",
+   "tekrar": 5,
+   "hikaye_olgulari": []
+  },
+  {
+   "id": "magara_agzi",
+   "tekrar": 4,
+   "hikaye_olgulari": []
+  },
+  {
+   "id": "patika",
+   "tekrar": 2,
+   "hikaye_olgulari": []
+  }
+ ],
+ "kostum_degisimleri": [],
+ "karakterler": {
+  "sera": {
+   "ad": "Sera",
+   "ad_telaffuz": "SEH-rah",
+   "rol": "kahraman",
+   "yas_bandi": "yetiskin",
+   "istek": "ağabeyinin affı",
+   "korku": "terk edilmek",
+   "yara": "sürgün",
+   "sir": "yavruyu saklıyor",
+   "yay": {
+    "bas": "güvenmez",
+    "son": "göze alır"
+   },
+   "konusma_tarzi": "kısa, kuru",
+   "bildikleri_bas": [
+    "ad:brann",
+    "ad:oda"
+   ],
+   "maske": {
+    "etiket_anonim_en": "woman in a fur-collared green cloak",
+    "takma_adlar": [
+     "sister",
+     "huntress"
+    ]
+   },
+   "gorsel_ayirt_edici": [
+    {
+     "oge": "kızıl tek örgü",
+     "hikaye_baglayici": true
+    }
+   ],
+   "ses_karakteri": "kadın, yetişkin, alçak",
+   "kostum": {
+    "varsayilan": "k1",
+    "varyantlar": [
+     "k1"
+    ]
+   }
+  },
+  "brann": {
+   "ad": "Brann",
+   "ad_telaffuz": "BRAN",
+   "rol": "karsi_guc",
+   "yas_bandi": "yetiskin",
+   "bildikleri_bas": [
+    "ad:sera"
+   ],
+   "konusma_tarzi": "emir kipi",
+   "maske": {
+    "etiket_anonim_en": "man in a captain's cloak",
+    "takma_adlar": [
+     "captain"
+    ]
+   },
+   "kostum": {
+    "varsayilan": "k1",
+    "varyantlar": [
+     "k1"
+    ]
+   }
+  },
+  "oda": {
+   "ad": "Oda",
+   "ad_telaffuz": "OH-dah",
+   "rol": "akil_hocasi",
+   "yas_bandi": "yasli",
+   "bildikleri_bas": [
+    "ad:sera"
+   ],
+   "konusma_tarzi": "ağır, sakin",
+   "maske": {
+    "etiket_anonim_en": "old hunter with a bone whistle",
+    "takma_adlar": []
+   },
+   "kostum": {
+    "varsayilan": "k1",
+    "varyantlar": [
+     "k1"
+    ]
+   }
+  },
+  "kit": {
+   "ad": "Kit",
+   "rol": "yaratik",
+   "konusmaz": true
+  }
+ },
+ "partiler": [
+  {
+   "id": "P1",
+   "sahneler": [
+    "S01",
+    "S04"
+   ],
+   "sure_hedef_sn": 600,
+   "tek_cumle": "P1'de Sera yavruyu saklamaya karar verir ve avı ağabeyinin yönettiğini öğrenerek biter.",
+   "b1_amac_duygu": {
+    "amac": "sakla",
+    "duygu_seyri": "gerilim>şefkat>korku"
+   },
+   "b2_vurus_akisi": [
+    "S01",
+    "S02",
+    "S03",
+    "S04"
+   ],
+   "b3_kim_nerede": [
+    {
+     "sahne": "S01",
+     "giris": {
+      "sera": "magara_agzi"
+     }
+    }
+   ],
+   "b4_nesne_yolu": [
+    {
+     "nesne": "kemik_duduk"
+    }
+   ],
+   "b5_yalan_niyet_bilgi": [
+    {
+     "kim": "brann",
+     "yalan": "yardım",
+     "seyirci_okur": {
+      "arac": "ironi",
+      "sahne": "S08"
+     }
+    }
+   ],
+   "b6_mekan_olgulari": [
+    "kulube",
+    "magara_agzi"
+   ],
+   "b7_parti_kancasi": {
+    "sahne": "S04",
+    "merak": "m02",
+    "yogunluk": 9,
+    "sonraki_acilis": "kapıda"
+   },
+   "b8_kaba_plan_ve_risk": {
+    "plan_tahmini": 60,
+    "riskli": []
+   }
+  },
+  {
+   "id": "P2",
+   "sahneler": [
+    "S05",
+    "S08"
+   ],
+   "sure_hedef_sn": 600,
+   "tek_cumle": "P2'de Sera yavruyu dağa taşır ve kulübenin gözlendiğini anlayarak biter.",
+   "b1_amac_duygu": {
+    "amac": "sakla",
+    "duygu_seyri": "gerilim>şefkat>korku"
+   },
+   "b2_vurus_akisi": [
+    "S05",
+    "S06",
+    "S07",
+    "S08"
+   ],
+   "b3_kim_nerede": [
+    {
+     "sahne": "S05",
+     "giris": {
+      "sera": "patika"
+     }
+    }
+   ],
+   "b4_nesne_yolu": [
+    {
+     "nesne": "kemik_duduk"
+    }
+   ],
+   "b5_yalan_niyet_bilgi": [
+    {
+     "kim": "brann",
+     "yalan": "yardım",
+     "seyirci_okur": {
+      "arac": "ironi",
+      "sahne": "S08"
+     }
+    }
+   ],
+   "b6_mekan_olgulari": [
+    "kale_kapisi",
+    "kulube",
+    "patika"
+   ],
+   "b7_parti_kancasi": {
+    "sahne": "S08",
+    "merak": "m02",
+    "yogunluk": 9,
+    "sonraki_acilis": "kapıda"
+   },
+   "b8_kaba_plan_ve_risk": {
+    "plan_tahmini": 60,
+    "riskli": []
+   }
+  },
+  {
+   "id": "P3",
+   "sahneler": [
+    "S09",
+    "S12"
+   ],
+   "sure_hedef_sn": 600,
+   "tek_cumle": "P3'te Sera yavruyu kaybeder, bulur ve ağabeyini ikna ederek biter.",
+   "b1_amac_duygu": {
+    "amac": "sakla",
+    "duygu_seyri": "gerilim>şefkat>korku"
+   },
+   "b2_vurus_akisi": [
+    "S09",
+    "S10",
+    "S11",
+    "S12"
+   ],
+   "b3_kim_nerede": [
+    {
+     "sahne": "S09",
+     "giris": {
+      "sera": "patika"
+     }
+    }
+   ],
+   "b4_nesne_yolu": [
+    {
+     "nesne": "kemik_duduk"
+    }
+   ],
+   "b5_yalan_niyet_bilgi": [
+    {
+     "kim": "brann",
+     "yalan": "yardım",
+     "seyirci_okur": {
+      "arac": "ironi",
+      "sahne": "S08"
+     }
+    }
+   ],
+   "b6_mekan_olgulari": [
+    "kulube",
+    "magara_agzi",
+    "patika"
+   ],
+   "b7_parti_kancasi": {
+    "sahne": "S12",
+    "merak": "m02",
+    "yogunluk": 9,
+    "sonraki_acilis": "kapıda"
+   },
+   "b8_kaba_plan_ve_risk": {
+    "plan_tahmini": 60,
+    "riskli": []
+   }
+  }
+ ],
+ "sahneler": [
+  {
+   "id": "S01",
+   "hikaye_partisi": "P1",
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 1,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": "soguk_acilis",
+   "hedef_duygu": "gerilim",
+   "yogunluk": 8,
+   "sahne_degeri": {
+    "bas": "S01 başında güvende",
+    "son": "S01 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [
+    "m01"
+   ],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Sera ejderha yavrusunu kraldan saklıyor",
+   "kucuk_guzel": false,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Torchlight flickers far below on the slope.",
+     "Sera kneels at the cave mouth; an orange glow pulses under the snow.",
+     "She brushes the snow aside with her gloved left hand; a hatchling opens its eyes."
+    ],
+    "duyulan": [
+     "R0001",
+     "R0002",
+     "R0003"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S01 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S02",
+   "hikaye_partisi": "P1",
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 2,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 7,
+   "sahne_degeri": {
+    "bas": "S02 başında güvende",
+    "son": "S02 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [
+    "m03"
+   ],
+   "merak_kapat": [
+    "m01"
+   ],
+   "kurulum": [
+    "kur_duduk"
+   ],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Ejderha saklamak ölüm cezası",
+   "kucuk_guzel": false,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Oda steps out of the trees, a bone whistle on a cord around his neck.",
+     "He presses the whistle into Sera's palm."
+    ],
+    "duyulan": [
+     "R0004",
+     "R0005"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S02 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S03",
+   "hikaye_partisi": "P1",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 3,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 6,
+   "sahne_degeri": {
+    "bas": "S03 başında güvende",
+    "son": "S03 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [
+    "m02"
+   ],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Kemik düdük yavruyu sakinleştirir",
+   "kucuk_guzel": true,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Sera bars the cabin door with a beam.",
+     "The hatchling curls inside a basket of wool by the lamp."
+    ],
+    "duyulan": [
+     "R0006"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S03 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S04",
+   "hikaye_partisi": "P1",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 4,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 9,
+   "sahne_degeri": {
+    "bas": "S04 başında güvende",
+    "son": "S04 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Avı yöneten kaptan Brann, Sera'nın ağabeyi",
+   "kucuk_guzel": false,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "A rider in a captain's cloak stops at the fence.",
+     "Sera opens the door one hand's width."
+    ],
+    "duyulan": [
+     "R0007",
+     "R0008"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S04 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S05",
+   "hikaye_partisi": "P2",
+   "mekan": "patika",
+   "zaman": {
+    "gun": 5,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 6,
+   "sahne_degeri": {
+    "bas": "S05 başında güvende",
+    "son": "S05 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "patika",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "patika",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Sera yavruyu yüksek mağaraya götürüyor",
+   "kucuk_guzel": false,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Sera walks the ridge path with a heavy pack.",
+     "Small claws scrape inside the pack."
+    ],
+    "duyulan": [
+     "R0009"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S05 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S06",
+   "hikaye_partisi": "P2",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 6,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 7,
+   "sahne_degeri": {
+    "bas": "S06 başında güvende",
+    "son": "S06 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Brann'ın adamı kulübeyi gözlüyor",
+   "kucuk_guzel": true,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Sera blows the bone whistle once; the hatchling settles at once.",
+     "She shares dried fish with it, piece by piece."
+    ],
+    "duyulan": [
+     "R0010"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S06 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S07",
+   "hikaye_partisi": "P2",
+   "mekan": "kale_kapisi",
+   "zaman": {
+    "gun": 7,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": "orta_nokta",
+   "hedef_duygu": "gerilim",
+   "yogunluk": 7,
+   "sahne_degeri": {
+    "bas": "S07 başında güvende",
+    "son": "S07 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kale_kapisi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kale_kapisi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Yavru çantadan kaçtı",
+   "kucuk_guzel": false,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Brann reads the king's decree at the fortress gate.",
+     "Soldiers lift torches toward the hills."
+    ],
+    "duyulan": [
+     "R0011",
+     "R0012"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S07 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S08",
+   "hikaye_partisi": "P2",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 8,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 9,
+   "sahne_degeri": {
+    "bas": "S08 başında güvende",
+    "son": "S08 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": "i01",
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Yavru büyüdü",
+   "kucuk_guzel": false,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Brann's man watches the cabin from the tree line.",
+     "Sera puts out the lamp and listens."
+    ],
+    "duyulan": [
+     "R0013"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S08 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S09",
+   "hikaye_partisi": "P3",
+   "mekan": "patika",
+   "zaman": {
+    "gun": 9,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": "en_karanlik",
+   "hedef_duygu": "gerilim",
+   "yogunluk": 6,
+   "sahne_degeri": {
+    "bas": "S09 başında güvende",
+    "son": "S09 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "patika",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "patika",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Brann ejderhayı bağışlıyor",
+   "kucuk_guzel": false,
+   "seyirlik": false,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Snow falls on the empty ridge path.",
+     "Sera kneels beside the pack; it is torn open and empty."
+    ],
+    "duyulan": [
+     "R0014"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S09 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S10",
+   "hikaye_partisi": "P3",
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 10,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 8,
+   "sahne_degeri": {
+    "bas": "S10 başında güvende",
+    "son": "S10 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Bahar geldi, ikisi de hayatta",
+   "kucuk_guzel": false,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Tracks lead up to the cave mouth.",
+     "The hatchling, now the size of a horse, rises between the rocks."
+    ],
+    "duyulan": [
+     "R0015"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S10 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S11",
+   "hikaye_partisi": "P3",
+   "mekan": "magara_agzi",
+   "zaman": {
+    "gun": 11,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": "doruk",
+   "hedef_duygu": "gerilim",
+   "yogunluk": 9,
+   "sahne_degeri": {
+    "bas": "S11 başında güvende",
+    "son": "S11 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [],
+   "merak_kapat": [
+    "m02"
+   ],
+   "kurulum": [],
+   "kullanim_bilgi": [
+    "kur_duduk"
+   ],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "magara_agzi",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Kuzeyde başka bir ışık var",
+   "kucuk_guzel": false,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Brann raises his torch at the cave mouth.",
+     "Sera steps between the torch and the dragon.",
+     "She blows the bone whistle."
+    ],
+    "duyulan": [
+     "R0016",
+     "R0017",
+     "R0018"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S11 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  },
+  {
+   "id": "S12",
+   "hikaye_partisi": "P3",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 12,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "kisa"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 150,
+   "vurus": null,
+   "hedef_duygu": "gerilim",
+   "yogunluk": 7,
+   "sahne_degeri": {
+    "bas": "S12 başında güvende",
+    "son": "S12 sonunda tehlikede"
+   },
+   "risk": "Sera yakalanırsa yavruyla birlikte yakılır",
+   "merak_ac": [
+    "m04"
+   ],
+   "merak_kapat": [
+    "m03"
+   ],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "sera": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {}
+   },
+   "bilgi_degisimi": [],
+   "seyirci_ogrenir": "Kuzeyde başka bir ışık var",
+   "kucuk_guzel": true,
+   "seyirlik": true,
+   "ekran": {
+    "kart": null,
+    "gorulen": [
+     "Spring water runs past the cabin.",
+     "Far to the north, a second glow pulses under the ice."
+    ],
+    "duyulan": [
+     "R0019",
+     "R0020"
+    ],
+    "ekran_disi": [
+     "wind"
+    ]
+   },
+   "kagit": {
+    "amac": "S12 amacı",
+    "neden_simdi": "askerler yaklaşıyor"
+   }
+  }
+ ],
+ "replikler": [
+  {
+   "id": "R0001",
+   "sahne": "S01",
+   "karakter": "oda",
+   "teslim": "normal",
+   "metin": "Sera, they ride with torches tonight.",
+   "kelime": 6,
+   "tasidigi": [
+    "o01"
+   ],
+   "ad_soyler": [
+    "sera"
+   ],
+   "ilk_replik": true,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0002",
+   "sahne": "S01",
+   "karakter": "sera",
+   "teslim": "fisilti",
+   "metin": "Easy now. Nobody burns you tonight.",
+   "kelime": 6,
+   "tasidigi": [
+    "o01"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": true,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0003",
+   "sahne": "S01",
+   "karakter": "oda",
+   "teslim": "soguk",
+   "metin": "The king's law is fire for every dragon and every keeper.",
+   "kelime": 11,
+   "tasidigi": [
+    "o02"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0004",
+   "sahne": "S02",
+   "karakter": "oda",
+   "teslim": "yumusak",
+   "metin": "One note, and it will rest. Keep this close.",
+   "kelime": 9,
+   "tasidigi": [
+    "o03"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0005",
+   "sahne": "S02",
+   "karakter": "sera",
+   "teslim": "normal",
+   "metin": "Why help me, Oda?",
+   "kelime": 4,
+   "tasidigi": [
+    "o03"
+   ],
+   "ad_soyler": [
+    "oda"
+   ],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0006",
+   "sahne": "S03",
+   "karakter": "sera",
+   "teslim": "fisilti",
+   "metin": "You stay quiet. We both live that way.",
+   "kelime": 8,
+   "tasidigi": [
+    "o01"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0007",
+   "sahne": "S04",
+   "karakter": "brann",
+   "teslim": "soguk",
+   "metin": "Open the door, Sera. The king sent me.",
+   "kelime": 8,
+   "tasidigi": [
+    "o04"
+   ],
+   "ad_soyler": [
+    "sera"
+   ],
+   "ilk_replik": true,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0008",
+   "sahne": "S04",
+   "karakter": "sera",
+   "teslim": "soguk",
+   "metin": "Then the king can knock himself, Brann.",
+   "kelime": 7,
+   "tasidigi": [
+    "o04"
+   ],
+   "ad_soyler": [
+    "brann"
+   ],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0009",
+   "sahne": "S05",
+   "karakter": "sera",
+   "teslim": "normal",
+   "metin": "Two more days to the high cave. They won't climb that far.",
+   "kelime": 12,
+   "tasidigi": [
+    "o05"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0010",
+   "sahne": "S06",
+   "karakter": "sera",
+   "teslim": "yumusak",
+   "metin": "There. One note, like Oda said.",
+   "kelime": 6,
+   "tasidigi": [
+    "o03"
+   ],
+   "ad_soyler": [
+    "oda"
+   ],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0011",
+   "sahne": "S07",
+   "karakter": "brann",
+   "teslim": "bagirma",
+   "metin": "Any hand that hides a dragon burns with it!",
+   "kelime": 9,
+   "tasidigi": [
+    "o02"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0012",
+   "sahne": "S07",
+   "karakter": "brann",
+   "teslim": "normal",
+   "metin": "Search every cabin on the ridge.",
+   "kelime": 6,
+   "tasidigi": [
+    "o06"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0013",
+   "sahne": "S08",
+   "karakter": "sera",
+   "teslim": "fisilti",
+   "metin": "He knows the path. He taught it to me.",
+   "kelime": 9,
+   "tasidigi": [
+    "o06"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0014",
+   "sahne": "S09",
+   "karakter": "sera",
+   "teslim": "fisilti",
+   "metin": "No. Not you. Not now.",
+   "kelime": 5,
+   "tasidigi": [
+    "o07"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0015",
+   "sahne": "S10",
+   "karakter": "sera",
+   "teslim": "yumusak",
+   "metin": "You grew while I wasn't looking.",
+   "kelime": 6,
+   "tasidigi": [
+    "o08"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0016",
+   "sahne": "S11",
+   "karakter": "brann",
+   "teslim": "soguk",
+   "metin": "Step aside, Sera. I won't ask twice.",
+   "kelime": 7,
+   "tasidigi": [
+    "o09"
+   ],
+   "ad_soyler": [
+    "sera"
+   ],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0017",
+   "sahne": "S11",
+   "karakter": "sera",
+   "teslim": "bagirma",
+   "metin": "Then don't ask. Look at it, Brann.",
+   "kelime": 7,
+   "tasidigi": [
+    "o09"
+   ],
+   "ad_soyler": [
+    "brann"
+   ],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0018",
+   "sahne": "S11",
+   "karakter": "brann",
+   "teslim": "fisilti",
+   "metin": "It's beautiful. Go. Before they come.",
+   "kelime": 6,
+   "tasidigi": [
+    "o09"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0019",
+   "sahne": "S12",
+   "karakter": "sera",
+   "teslim": "yumusak",
+   "metin": "Spring came. We kept our word, both of us.",
+   "kelime": 9,
+   "tasidigi": [
+    "o10"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  },
+  {
+   "id": "R0020",
+   "sahne": "S12",
+   "karakter": "oda",
+   "teslim": "normal",
+   "metin": "The ice in the north is glowing again.",
+   "kelime": 8,
+   "tasidigi": [
+    "o11"
+   ],
+   "ad_soyler": [],
+   "ilk_replik": false,
+   "ekran_disi_uygun": false,
+   "tr": ""
+  }
+ ]
+}

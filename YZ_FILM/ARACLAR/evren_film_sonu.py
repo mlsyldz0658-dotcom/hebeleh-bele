@@ -18,7 +18,7 @@ kanon yalnız eklenir (taslak var olan kanon maddesini düşürürse HATA, hiçb
 Çıkış kodları: 0 tamam (yedek ertelendiyse de) · 1 HATA (kanon ihlali, evren yok, sha1 uyuşmazlığı) · 4 ORTAM (YOLLAR.json yok).
 """
 import os, sys, json
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, evren, ders_yedekle as dy

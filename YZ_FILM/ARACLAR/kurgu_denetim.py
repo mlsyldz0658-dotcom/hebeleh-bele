@@ -19,7 +19,7 @@ Kesici önerisi biçimi (CIKTI/KESME_ONERI.json): {"oneriler": [{"tur": "plan", 
 Çıkış kodları: 0 rapor yazıldı · 1 girdi yok/bozuk · 4 ORTAM (Z3 bu sürümde yok).
 """
 import os, sys, re, json, math, copy, argparse
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

@@ -185,7 +185,7 @@ class KasetA07(unittest.TestCase):
         except ValueError: return kod, o.getvalue()
 
     def nabiz(self):
-        ortak.atomik_yaz(os.path.join(self.kok, "_GOREV", "KANCA_NABZI.json"), {"zaman": self.film.simdi(), "yazan": "test"})
+        _ortam.kanca_nabzi(self.kok)
 
     def test_kaset_planlarla_ayni(self):
         for i, s in ((1, "S01"), (2, "S02"), (3, "S03")):
@@ -210,8 +210,6 @@ class KasetA07(unittest.TestCase):
         gercek, kasetten = [], []
         orj_kos = film.Defter.betik_kos
         def betik_kos(d, g):
-            if g["arac"] == "kredi.py":                       # kredi.py görev kimliği yazmıyor (paylaşılan istek): kasetten
-                kasetten.append(g["id"]); return kaset.betik_oynat(d.kok, g)[0]
             gercek.append(g["arac"] + " " + " ".join(g["argumanlar"])); return orj_kos(d, g)
         asamalar = []
         with unittest.mock.patch.object(film.Defter, "aktif", aktif), unittest.mock.patch.object(film.Defter, "betik_kos", betik_kos), \
@@ -253,11 +251,12 @@ class KasetA07(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(kok, "_YONETMEN", "KROKI_ONERI.json")))
         self.assertEqual(sorted(os.path.basename(p) for p in glob.glob(os.path.join(kok, "_YONETMEN", "PLANLAR", "*.json"))),
                          ["G1.json", "G2.json", "G3.json"])
-        self.assertEqual(len(kasetten), 1)
+        self.assertEqual(kasetten, [])                                          # betik kaseti yok (kredi.py but1 gerçek)
+        self.assertTrue(rap("BUT1_FILM.json")["_uretim"]["gorev"].startswith("A07c-B1-"))
         g = " | ".join(gercek)
         for alt in ("kroki.py --karsilikli", "plan_denetim.py --harita", "kroki.py --ciz", "dilim.py --asama A07b",
                     "plan_denetim.py --sahne --tum", "plan_birlestir.py", "dunya_defteri.py --derle --denetle",
-                    "zaman_cizelgesi.py --asama kagit", "cekim_listesi.py"):
+                    "zaman_cizelgesi.py --asama kagit", "cekim_listesi.py", "kredi.py but1"):
             self.assertIn(alt, g)
 
 

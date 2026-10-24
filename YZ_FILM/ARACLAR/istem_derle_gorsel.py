@@ -21,7 +21,7 @@ Basamak (GS7): 1 = baslangic kart | ana_kare (sahne başları, kurulum ana karel
 Çıkış kodları: 0 tamam (BAYRAK olabilir) · 1 HATA (yasak kelime, kimlik dizesi yok) · 2 girdi yok · 4 kullanım.
 """
 import os, sys, re, json, glob, hashlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -221,7 +221,8 @@ def plan_istemi(kok, plan, S, ev, yedek=False):
     for oge, durum in (dur.get("mekan_durumu") or {}).items():
         if isinstance(durum, str): p.append(f"The {_ad(oge)} is {DURUM_EN.get(durum, _ad(durum))}.")
     isik = sg.get("isik") or {}; zaman = sg.get("zaman") or {}
-    yon = {"soldan": "frame left", "sagdan": "frame right"}.get(der.get("isik_kadrajda"))
+    import kroki
+    yon = {"soldan": "frame left", "sagdan": "frame right"}.get(kroki.isik_yonu(der.get("isik_kadrajda")))
     if isik.get("ana"):
         p.append(f"The only main light is the {_ad(isik['ana'])}" + (f" from {yon}" if yon else "")
                  + {"gece": ", at night", "gunduz": ", in daylight", "aksam": ", at dusk", "sabah": ", in the early morning"}.get(zaman.get("gun_saati"), "")

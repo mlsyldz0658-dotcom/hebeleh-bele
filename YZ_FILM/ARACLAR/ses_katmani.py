@@ -18,7 +18,7 @@ Test kipinde (sahte) kütüphanede olmayan yatak ve efekt sentezlenir (gürült�
 Çıkış kodları: 0 çizelge ve raporlar yazıldı (kapı sonucu raporda) · 1 girdi yok/bozuk · 4 T2 aracı yok / kullanım.
 """
 import os, sys, re, glob, json, importlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import numpy as np

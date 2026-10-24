@@ -18,7 +18,7 @@ DERS kapısı: korkuluktan geçmeyen aday reddedilir (BAYRAK, raporda listelenir
 Çıkış kodları: 0 tamam (kapı sonucu raporda) · 1 girdi bozuk · 4 ORTAM (YOLLAR.json yok) · kullanım 4.
 """
 import os, re, sys, json, glob, copy, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, kapi

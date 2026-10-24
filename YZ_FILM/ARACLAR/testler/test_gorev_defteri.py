@@ -105,8 +105,7 @@ class Ortam(unittest.TestCase):
         self.sayac[ad] = self.sayac.get(ad, 0) + 1
         if (ad, self.sayac[ad]) in self.kesmeler: raise Oldu(f"{ad}#{self.sayac[ad]}")
 
-    def nabiz(self):
-        ortak.atomik_yaz(os.path.join(self.kok, "_GOREV", "KANCA_NABZI.json"), {"zaman": film.simdi(), "yazan": "test"})
+    def nabiz(self): _ortam.kanca_nabzi(self.kok)                          # tam kanca nabzı (fork + settings sha)
 
     def k(self, *a): return calistir(*a, "--film", self.ad)
 

@@ -3,12 +3,13 @@
 film.py v2 görev zinciri `kaset` ile: ajan görevleri ORNEK_3_SAHNE/_KASET (A00–A06) + ORNEK_3_SAHNE_TAM/_KASET (A06s–A09) kayıtlarından;
 betikler GERÇEK, şu ikisi dışında:
   - KASETTEN: bu adımın sahibi olmadığı, depoda henüz olmayan ya da başka ajanın sürdürdüğü yönetmen araçları (kroki, plan_denetim,
-    plan_birlestir, dunya_defteri, zaman_cizelgesi, cekim_listesi, istem_derle, kamera_agaci) ve görev kimliği yazmayan kredi.py.
+    plan_birlestir, dunya_defteri, zaman_cizelgesi, cekim_listesi, istem_derle, kamera_agaci).
+  - kredi.py GERÇEK koşar (but0, but1: rapor _uretim.gorev yazar).
   - kor_paket GERÇEK koşar (birleştirme: repliğin içinde söylenen ad kurulmuştur, ilk 2 dk dosyasında sızıntı sayılmaz).
   - A09 DN GERÇEK 'istem_denetim.py --film' (birleştirme: rapor_v2 = denetle_v2 + istem_denetim_ses ekleri; tırnaklı söz ve tts planı
     yanlış alarmının kök nedeni denetle_v2'de düzeldi). test_istem_denetim_tek_basina artık gerçek denetim.
 Gerçek koşanlar: hikaye_odasi, puan_oku (seyirci-topla, --plan), evren, dilim, ses_plani (--profil-denetle, --taslak, --denetle),
-muzik --kagit, kor_paket --kip plan, istem_denetim --film. Ağ yok, kredi yok."""
+muzik --kagit, kor_paket --kip plan, istem_denetim --film, kredi.py but0/but1. Ağ yok, kredi yok."""
 import os, sys, json, io, glob, time, shutil, contextlib, unittest, unittest.mock
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
@@ -20,7 +21,7 @@ FILMLER = os.path.join(os.path.dirname(ARACLAR), "FILMLER")
 KASET_HIKAYE = os.path.join(FILMLER, "ORNEK_3_SAHNE", "_KASET")
 TAM = os.path.join(FILMLER, "ORNEK_3_SAHNE_TAM")
 KASETTEN = {"kroki.py", "plan_denetim.py", "plan_birlestir.py", "dunya_defteri.py", "zaman_cizelgesi.py", "cekim_listesi.py",
-            "istem_derle.py", "kamera_agaci.py", "kredi.py"}
+            "istem_derle.py", "kamera_agaci.py"}
 YOK_ARAC = KASETTEN | {"seyirci_topla.py"}
 BEKLENEN = ["A00", "A01", "A02", "A03", "A04", "A05", "A06", "A06s", "A07a", "A07b", "A07c", "A07d", "A07e", "A08", "A09", "A10a"]
 
@@ -74,7 +75,7 @@ class UctanUcaTam(unittest.TestCase):
         with unittest.mock.patch.object(film.Defter, "betik_kos", betik_kos), unittest.mock.patch("os.path.isfile", isfile), \
                 unittest.mock.patch.object(film, "disk_bos_gb", lambda y: 500.0):
             for _ in range(600):
-                ortak.atomik_yaz(os.path.join(cls.kok, "_GOREV", "KANCA_NABZI.json"), {"zaman": film.simdi(), "yazan": "test"})
+                _ortam.kanca_nabzi(cls.kok)
                 kod, r = cls.k("sonraki"); son = r
                 if not isinstance(r, dict): break
                 asama = (r.get("asama") or "").split(" ")[0]
@@ -137,10 +138,11 @@ class UctanUcaTam(unittest.TestCase):
         g = " | ".join(self.cagri["gercek"])
         for alt in ("ses_plani.py --profil-denetle", "ses_plani.py --taslak", "ses_plani.py --denetle --tum", "muzik.py --kagit",
                     "istem_denetim.py --film", "kor_paket.py --kip plan", "dilim.py --asama A07b", "puan_oku.py --plan", "puan_oku.py seyirci-topla --kip plan",
-                    "hikaye_odasi.py devir"):
+                    "hikaye_odasi.py devir", "kredi.py but0", "kredi.py but1"):
             self.assertIn(alt, g)
         self.assertEqual(self.cagri["yonlendirilen"], [])
         self.assertNotIn("kor_paket.py", " ".join(self.cagri["kaset"]))
+        self.assertFalse([i for i in self.cagri["kaset"] if "-B0-" in i or "-B1-" in i or "-KP-" in i])
 
     def test_istem_denetim_tek_basina(self):
         """istem_denetim.py v2 tek başına (ayıklamasız denetle_v2 dahil) TTS planında ve replik tırnağında yanlış HATA vermez."""

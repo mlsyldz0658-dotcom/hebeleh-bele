@@ -11,7 +11,7 @@ Yerlerine: "bu dosya emekli" .bat/.ps1/notu; memmet.py yerine depodaki yamalı M
 Rapor: <veri>/_ESKI/EMNIYET_RAPORU.json ("kalan_giris_noktasi" boş olmalı). Tekrar çalıştırmak güvenlidir.
 """
 import os, sys, re, json, time, shutil
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 SARMALAYICI_IMI = "# YZ_FILM_SET memmet sarmalayicisi"

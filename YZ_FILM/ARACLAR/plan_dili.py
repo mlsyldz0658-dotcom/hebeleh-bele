@@ -16,7 +16,7 @@ kararı OLCUM0.json "canli_bekleme" true ise "holds the pose, breathing"). Ekran
 closed" (Y35). EN çıktıda çıplak left/right yoktur: yön daima iyelikli ("her own left") ya da "frame left"tir.
 """
 import os, sys, re, glob
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po

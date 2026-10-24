@@ -8,13 +8,14 @@ Kullanım:
   python kroki.py --sahne S12 --film <film>      sahnenin geometrik kuralları (Y14, Y17, Y18, Y19, Y23, Y28, Y60) → _RAPOR/Z0_KROKI_S12.json
   python kroki.py --tum --film <film>            bütün sahneler → _RAPOR/Z0_KROKI.json
 Kodda: derle(plan, bas, bit, K) → (_derlenir alanları, ölçümler) · sahne_derle(sid, planlar, K) · yasak_ardisik(...) · izdusum(kurulum, nokta)
+  isik_yonu(_derlenir.isik_kadrajda) → "soldan" | "sagdan" | None   (tek biçim: {rol: "<on|arka>_<sol|sag>"}; tüketiciler bu çeviriciyi kullanır)
 Geometri: metre; x = doğu, y = kuzey; yon_derece pusula (0 = kuzey, 90 = doğu). Yatay görüş açısı 2·atan(18/f) (36 mm tam kare).
 Tanjant izdüşümü: konum = tan(açı) / tan(yarım görüş); < −1/3 sol üçte bir, > +1/3 sağ üçte bir. Kroki eksik olduğu için hesaplanamayan
 kural HESAPLANAMADI verir ve HATA sayılır ([YN2] §4.7: "ölçülemedi asla GEÇ değildir"in kâğıttaki karşılığı).
 Çıkış kodları: 0 tamam · 1 HATA · 2 film/kroki yok · 4 kullanım.
 """
 import os, sys, math, glob
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po
@@ -57,6 +58,18 @@ def izdusum(kur, p):
     if der <= 0.05: return None
     yan = _nokta(v, r)
     return (yan / der) / math.tan(math.radians(fov(kur.get("lens_mm")) / 2)), der
+
+
+ISIK_YANI = {"sol": "soldan", "sag": "sagdan"}
+
+
+def isik_yonu(deger, rol="ana"):
+    """_derlenir.isik_kadrajda ({ana: "on_sol", dolgu: …}) → ışığın kadrajdaki yönü ("soldan" | "sagdan" | None; olcum.isik.isik_yon
+    sözlüğü). Eski fikstürlerdeki düz dize ("soldan" / "sagdan") aynen geçer."""
+    if isinstance(deger, dict): deger = deger.get(rol)
+    if not isinstance(deger, str): return None
+    if deger in ("soldan", "sagdan"): return deger
+    return ISIK_YANI.get(deger.rsplit("_", 1)[-1])
 
 
 def ucte_bir(x):

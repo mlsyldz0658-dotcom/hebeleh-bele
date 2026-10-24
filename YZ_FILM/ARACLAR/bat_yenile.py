@@ -21,15 +21,18 @@ Kurallar (kabul: test_kurulum, test_yollar):
 Çıkış kodları: 0 tamam · 1 yazılamadı · 4 YOLLAR.json yok (önce KURULUM.bat).
 """
 import os, sys, time, shutil
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
 
 IM = "rem yz_film_set:bat_yenile"
 YASAK = "..\\..\\ARACLAR"
-DEPO_KOKU = ("FILM_SETI.bat", "GUNCELLE.bat", "FLOW_GIRIS.bat", "IZINLER.bat", "UYARI_GECTI.bat", "GEMINI_TEST.bat")
-FILM_KLASORU = ("DEVAM.bat", "DURDUR.bat", "KONTROL.bat", "NOTLARI_OKU.bat", "FILM_DENEME_SAHTE.bat")
+DEPO_KOKU = ("FILM_SETI.bat", "GUNCELLE.bat", "FLOW_GIRIS.bat", "IZINLER.bat", "UYARI_GECTI.bat", "GEMINI_TEST.bat", "KUR3.bat",
+             "VIDEO_YARI_OTOMATIK.bat", "VIDEO_TOPLA.bat")
+FILM_KLASORU = ("DEVAM.bat", "DURDUR.bat", "KONTROL.bat", "NOTLARI_OKU.bat", "FILM_DENEME_SAHTE.bat", "VIDEO_YARI_OTOMATIK.bat",
+                "VIDEO_TOPLA.bat")
+MASAUSTU = ("FILM_SETI.bat", "VIDEO_YARI_OTOMATIK.bat", "VIDEO_TOPLA.bat")   # masaüstüne de kopyalanır (aktif filmle çalışır)
 SABIT = ("KURULUM.bat",)          # depoya işlenmiş; üretilmez
 
 
@@ -56,7 +59,8 @@ def _cagir(python, araclar):
 
 
 def depo_batlari(python=None, araclar=None, depo=None):
-    """Depo kökü .bat'ları {ad: içerik}. FILM_SETI.bat masaüstüne de kopyalanır (her yerden aynı klasörde açılır)."""
+    """Depo kökü .bat'ları {ad: içerik}. MASAUSTU'dakiler masaüstüne de kopyalanır (her yerden aynı klasörde açılır; video .bat'ları
+    film verilmeden aktif filmle çalışır). Hiçbiri memmet*.py ya da film.py'yi doğrudan anmaz: işi bat_isleri.py'nin alt komutu yapar."""
     python, araclar, depo = _kaynaklar(python, araclar, depo)
     c = _cagir(python, araclar); bi = lambda *a: c("bat_isleri.py", *a)
     dur = "pause"
@@ -68,6 +72,9 @@ def depo_batlari(python=None, araclar=None, depo=None):
         "IZINLER.bat": _metin("IZINLER.bat", [bi("izinler"), dur], '"%~dp0"'),
         "UYARI_GECTI.bat": _metin("UYARI_GECTI.bat", [c("flow_yuk.py", "--uyari-gecti"), dur], '"%~dp0"'),
         "GEMINI_TEST.bat": _metin("GEMINI_TEST.bat", [bi("gemini-test"), dur], '"%~dp0"'),
+        "KUR3.bat": _metin("KUR3.bat", [bi("kur3"), dur], '"%~dp0"'),
+        "VIDEO_YARI_OTOMATIK.bat": _metin("VIDEO_YARI_OTOMATIK.bat", [bi("video-yari"), dur], '"%~dp0"'),
+        "VIDEO_TOPLA.bat": _metin("VIDEO_TOPLA.bat", [bi("video-topla"), dur], '"%~dp0"'),
     }
 
 
@@ -82,6 +89,8 @@ def film_batlari(python=None, araclar=None, depo=None):
         "KONTROL.bat": _metin("KONTROL.bat", [c("kontrol.py", f), "pause"], None),
         "NOTLARI_OKU.bat": _metin("NOTLARI_OKU.bat", [c("notlari_oku.py", f), "pause"], None),
         "FILM_DENEME_SAHTE.bat": _metin("FILM_DENEME_SAHTE.bat", [bi("film-deneme", f), "pause"], None),
+        "VIDEO_YARI_OTOMATIK.bat": _metin("VIDEO_YARI_OTOMATIK.bat", [bi("video-yari", f), "pause"], None),
+        "VIDEO_TOPLA.bat": _metin("VIDEO_TOPLA.bat", [bi("video-topla", f), "pause"], None),
     }
 
 
@@ -140,7 +149,7 @@ def yenile(depo=None, veri=None, masaustu=None, depo_koku=True, filmler=True, fi
     if depo_koku:
         for ad, ic in depo_batlari(python, araclar, depo).items():
             isler.append((os.path.join(depo, ad), ic))
-            if ad == "FILM_SETI.bat" and masaustu and os.path.isdir(masaustu) and os.path.abspath(masaustu) != depo:
+            if ad in MASAUSTU and masaustu and os.path.isdir(masaustu) and os.path.abspath(masaustu) != depo:
                 isler.append((os.path.join(masaustu, ad), ic))
     hedef_filmler = [os.path.abspath(film)] if film else (film_klasorleri(y["filmler"]) if filmler else [])
     if hedef_filmler:

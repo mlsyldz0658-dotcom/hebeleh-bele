@@ -103,7 +103,7 @@ def calistir(film, kip, tur, sahte=None, saglayici=None):
 
 
 def main(argv=None):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(); ap.add_argument("--kip", default="animatik"); ap.add_argument("--tur", type=int, default=1)
     ap.add_argument("--film"); ap.add_argument("--sahte", action="store_true"); ap.add_argument("--saglayici")
     o = ap.parse_args(argv)

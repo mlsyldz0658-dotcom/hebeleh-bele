@@ -31,7 +31,7 @@ Kural: 'tahmin' kaynaklı eşikler ilk iki filmde yalnız BAYRAK verir (kalibras
                4 ORTAM (YOLLAR.json yok) · bilinmeyen alt komut 1.
 """
 import os, re, sys, json, glob, hashlib, random, subprocess
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, kapi, puan_oku, istem_denetim, evren

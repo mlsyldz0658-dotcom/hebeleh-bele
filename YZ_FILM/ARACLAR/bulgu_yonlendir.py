@@ -18,7 +18,7 @@ Kural (her bulgu için):
 Çıkış kodları: 0 yazıldı · 1 girdi yok/kullanım · 4 YOLLAR.json yok.
 """
 import os, re, sys, json, glob
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, kapi

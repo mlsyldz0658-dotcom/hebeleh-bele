@@ -6,7 +6,7 @@ MEMMET_GIRIS.bat da üretilmez: Flow girişi depo kökündeki FLOW_GIRIS.bat'tad
 SAHNELER.json'u Claude doldurur; karakter görselleri 01_KARAKTERLER'e konur.
 """
 import os, sys, json, re
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ortak, bat_yenile

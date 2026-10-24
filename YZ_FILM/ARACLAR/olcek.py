@@ -30,7 +30,7 @@ OLCUM0 alanları (hepsi isteğe bağlı): O0b {olculen_gunluk_kapasite, olculeme
 Çıkış kodları: 0 BİTTİ · 1 HATA (eşik dosyası ya da girdi bozuk, kullanım yanlış).
 """
 import os, sys, json, math, hashlib, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, esikler

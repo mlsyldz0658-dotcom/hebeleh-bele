@@ -19,7 +19,7 @@ Kodda (film.py video görevi açmadan önce; seyirci_topla A12 kapısı sağlan�
 Çıkış kodları: 0 · 1 (yukarıda) · 4 kullanım.
 """
 import os, sys, json, hashlib, argparse
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

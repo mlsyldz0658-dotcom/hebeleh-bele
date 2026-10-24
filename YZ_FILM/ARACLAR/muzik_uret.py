@@ -18,7 +18,7 @@ Rapor: _RAPOR/S6_URET.json (animatik) · _RAPOR/S6_URET_YAYIN.json (yayın); bir
 Çıkış kodları: 0 rapor yazıldı · 1 muzik_listesi yok/bozuk · 2 KULLANICI (Gemini müzik paketi kullanıcıyı bekliyor) · 4 kullanım.
 """
 import os, sys, re, json, shutil
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import numpy as np

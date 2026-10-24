@@ -24,7 +24,7 @@ dosya adı ve satır numarası yazılır). Tek bir bulgu olursa hiçbir şey kop
 (push başarısız olursa da 1: commit yerel dalda durur, dosyalar GELISTIRME'de kalır).
 """
 import os, re, sys, shutil, argparse, subprocess, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 IZINLI_UZANTI = {".py", ".md", ".json", ".bat", ".txt"}

@@ -18,7 +18,7 @@ Eski kullanım (v1; SAHNELER v1 ve KURGU_PLANI yok): python capcut_film.py <film
 import os, sys, json, subprocess, time, uuid, shutil
 import ortak   # SAHNELER.json v2 koruması (v1 yolu)
 from pathlib import Path
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "kurgu_koprusu"))

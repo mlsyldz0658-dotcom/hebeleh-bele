@@ -12,7 +12,8 @@ Kodda: kurgu_uygula.denetle(islemler, plan, sahneler, cizelge) → (hatalar, bay
   duzen_uygula(plan, islemler, sahneler) (zaman_cizelgesi_t1 çağırır).
 İşlemler ([KU2] §4.5.6): kirp, uzat, sira, jl, ekran_disi, kopru_replik_iste, ortu, alternatif, bol, ayna, kadraj, hiz, kart, efekt_iste,
   kes, kes_sahne_iste, yer_tutucu, yeniden_cek, yeni_plan_iste, diyalog_kaydir {replik, sn} (dudak_denetim S3.1 → KURGU/S3_ONERI_v<N>.json;
-  |sn| ≤ diyalog_kaydir_max_sn, plan_ofset'e eklenir: `--kararlar KURGU/S3_ONERI_v<N>.json`).
+  |sn| ≤ diyalog_kaydir_max_sn, plan_ofset'e eklenir: `--kararlar KURGU/S3_ONERI_v<N>.json`; `--kararlar S3_ONERI` güncel sürümün önerisini alır, öneri yoksa 0;
+  uygulanan öneri `uygulandi` işaretlenir, ikinci kez uygulanmaz — A16 görev zinciri bunu kullanır).
 SES İSTEKLERİ (T2/T3): KURGU/SES_ISTEKLERI.json'daki yapılmamış ekran_disi istekleri (ses_karar, ekran_disi_tts) işlem listesine eklenir;
   kurgucu aynı repliğe karar verdiyse onunki geçer, yoksa B9'dan geçen en yakın plan seçilir (bulunamazsa BAYRAK). Uygulanan istek
   yapildi: true işaretlenir. Karar dosyası yoksa yalnız bu istekler uygulanır.
@@ -452,10 +453,22 @@ def main(argv=None):
     import zaman_cizelgesi_t1 as t1
     g = t1.gorev_baglami(o.tur)
     cizelge = o.cizelge or ("T1" if (g.get("asama") or "A12") == "A12" else "T2")
+    s3 = None
+    if o.kararlar == "S3_ONERI":                    # A16 DU'dan sonra: güncel kurgu sürümünün dudak önerisi (yoksa ya da uygulandıysa iş yok)
+        n = t1.plan_oku(film, cizelge)[2]
+        s3 = os.path.join(film, "KURGU", f"S3_ONERI_v{n}.json")
+        if not os.path.isfile(s3) or (ortak.json_oku(s3, {}) or {}).get("uygulandi"):
+            print(f"S3 önerisi yok (KURGU/S3_ONERI_v{n}.json): kurgu değişmedi"); return 0
+        o.kararlar = s3
+    elif o.kararlar and not os.path.isabs(o.kararlar) and not os.path.isfile(o.kararlar) \
+            and os.path.isfile(os.path.join(film, o.kararlar)):
+        o.kararlar = os.path.join(film, o.kararlar)  # film klasörüne göre göreli yol
     try:
         kod, s = calistir(film, cizelge, g["tur"], o.kuru or o.kararlar, kuru=bool(o.kuru), asama=g.get("asama"))
     except FileNotFoundError as e: print("!! " + str(e)); return 2
     except KurguHatasi as e: print("!! " + str(e)); return 1
+    if s3 and kod == 0 and not o.kuru:               # aynı öneri ikinci kez uygulanmaz (kaydırma katlanmasın)
+        d = ortak.json_oku(s3, {}) or {}; d["uygulandi"] = s.get("yeni_surum"); ortak.atomik_yaz(s3, d)
     print(json.dumps({k: s.get(k) for k in ("hatalar", "bayraklar", "yeni_surum", "degisen")}, ensure_ascii=False)[:4000])
     return kod
 

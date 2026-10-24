@@ -17,7 +17,7 @@ Kurallar:
        sabit = değişmez · cozunurluk = en az eşik. yon yazılmamışsa addan çıkarılır (_max/tavan → tavan, _min/taban → taban).
 """
 import os, sys, json, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEPO = os.path.dirname(os.path.dirname(HERE))
 RE = os.path.join(DEPO, ".claude", "skills", "film-yap", "ritim_esikleri.json")

@@ -20,7 +20,7 @@ KAGIT_TAMAM.json: SAHNELER v2 + DUNYA_DEFTERI + K0 / Z0 / ISTEM / S0 raporları 
 Çıkış kodları: 0 tamam · 1 HATA (ağaç kurulamadı ya da kâğıt tamam değil) · 2 SAHNELER.json yok · 4 kullanım.
 """
 import os, sys, glob
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po

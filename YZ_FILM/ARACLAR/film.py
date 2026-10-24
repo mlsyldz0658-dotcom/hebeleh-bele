@@ -43,7 +43,7 @@ değişkeni görev klasörüdür); araç kapı raporunu _uretim.gorev = görev k
                (merdiven tükendi) · 7 KISIT (Flow uyarısı/kilidi) · 8 BEKLE (çalışan iş, disk, token, kilit, bekleme)
 """
 import os, sys, json, time, hashlib, subprocess
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 import saglayicilar as sg

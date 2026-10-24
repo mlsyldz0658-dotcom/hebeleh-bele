@@ -18,7 +18,7 @@ Kapsam: atomik eylem zinciri (Y01–Y10), konuşma ve L/J (Y29–Y36, Y59; ZN §
 Çıkış kodları: 0 GEÇ/BAYRAK · 1 HATA/KISMI ya da bozuk girdi · 2 film/plan yok · 4 kullanım.
 """
 import os, sys, re, math, glob
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po

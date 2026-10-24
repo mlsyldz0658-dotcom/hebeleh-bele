@@ -11,6 +11,11 @@ Kullanım (her .bat tek bir alt komut çağırır; bat_yenile.py üretir):
   python bat_isleri.py durdur <film>             DURDUR.bat: <film>/DUR yazar; film.py yeni iş başlatmaz (8 BEKLE)
   python bat_isleri.py devam <film>              DEVAM.bat: DUR'u <film>/_ESKI/'ye taşır (silmez); .bat sonra claude --continue
   python bat_isleri.py film-deneme <film>        FILM_DENEME_SAHTE.bat: film.py <film> --saglayici sahte (kredisiz deneme)
+  python bat_isleri.py video-yari [<film>]       VIDEO_YARI_OTOMATIK.bat: açık VG görevinin komutu (.claude/bin/film.py video --film <film>
+                                                 --blok KESIT|*; GÖNDER'e kullanıcı basar). Film verilmezse aktif film. Flow kilidi varken
+                                                 film.py video açmaz (UYARI_GECTI.bat'a kadar). Açık VG görevi yoksa hiçbir şey açılmaz (2).
+  python bat_isleri.py video-topla [<film>]      VIDEO_TOPLA.bat: memmet_topla.py <film> (yeni gönderim YOK; yalnız gönderilmişleri indirir)
+  python bat_isleri.py kur3 [--kuru]             KUR3.bat: KUR3 kartını gösterir, kullanıcıya SORAR; "E" derse kurulum.py --kur3 --onay
 
 GUNCELLE kuralları ([SON] O-5, D-12): .git yoksa (ZIP kurulumu) kapalıdır, bilgi verir (4). İzlenen dosyada yerel değişiklik, yerel commit
 (ileri dal) ya da gelen değişikliğin üzerine yazacağı izlenmeyen/yok sayılan bir dosya varsa HİÇBİR ŞEYİ taşımadan durur, tek cümle söyler (2).
@@ -21,7 +26,7 @@ Memmet'i açmaz (Memmet'in kendi ön koşulu). Kilidi yalnız UYARI_GECTI.bat (f
 Çıkış kodları: 0 tamam · 1 HATA (ör. internet yok) · 2 KULLANICI (yerel değişiklik, anahtar yok) · 4 ORTAM (git/claude yok, ZIP, YOLLAR yok).
 """
 import os, sys, json, time, shutil, subprocess
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -244,6 +249,79 @@ def film_deneme(film):
     return subprocess.call([p, os.path.join(ortak.ARACLAR, "film.py"), os.path.abspath(film), "--saglayici", "sahte"])
 
 
+def _python():
+    try: return (ortak.yollar().get("python") or {}).get("ana") or sys.executable
+    except ortak.YolYok: return sys.executable
+
+
+def _film_coz(film):
+    """Verilen film klasörü; yoksa aktif film (<filmler>/_AKTIF.json). Bulunamazsa None."""
+    if film: return os.path.abspath(film) if os.path.isdir(film) else None
+    a = ortak.json_oku(os.path.join(ortak.yollar()["filmler"], "_AKTIF.json"), {}) or {}
+    return a["yol"] if a.get("yol") and os.path.isdir(a["yol"]) else None
+
+
+KAPALI_DURUM = ("bitti", "gecersiz", "iptal", "eski")
+
+
+def video_gorevi(film):
+    """Filmin açık VG (video gönderimi) kullanıcı görevi ve komutu: (görev, [komut…]) ya da (None, None)."""
+    gd = os.path.join(film, "_GOREV")
+    if not os.path.isdir(gd): return None, None
+    for d in sorted(os.listdir(gd), reverse=True):
+        g = ortak.json_oku(os.path.join(gd, d, "GOREV.json"))
+        if not isinstance(g, dict) or g.get("durum") in KAPALI_DURUM: continue
+        k = [str(x) for x in g.get("komut") or []]
+        if len(k) >= 2 and os.path.basename(k[0]) == "film.py" and k[1] == "video": return g, k
+    return None, None
+
+
+def video_komutu(film, blok):
+    return [os.path.join(ortak.DEPO_KOK, ".claude", "bin", "film.py"), "video", "--film", film, "--blok", blok]
+
+
+def video_yari(film=None, kuru=False, yaz=print):
+    """VIDEO_YARI_OTOMATIK.bat (`elle` kip): açık VG görevinin bloğuyla film.py video. Flow kilidi, animatik imzası ve bütçe imzası
+    film.py video'nun kendi ön koşullarıdır (kilit varken açılmaz); bu iş yalnız doğru film ve bloğu bulur."""
+    f = _film_coz(film)
+    if not f: yaz("Aktif film bulunamadı; önce FILM_SETI.bat ile filmi aç."); return KULLANICI
+    g, k = video_gorevi(f)
+    if not g:
+        yaz("Şu an video sırası yok: set senden video göndermeni istediğinde bu dosyayı aç."); return KULLANICI
+    i = k.index("--blok") if "--blok" in k else None
+    komut = video_komutu(f, k[i + 1] if i is not None and i + 1 < len(k) else "*")
+    yaz("Memmet hazırlayınca Flow sayfasında her istemde GÖNDER'e SEN bas. Uyarı çıkarsa GÖNDER'e basma, sayfayı yenileme; "
+        "pencereyi olduğu gibi bırak ve Claude'a haber ver.")
+    if kuru: return TAMAM
+    return subprocess.call([_python()] + komut)
+
+
+def video_topla(film=None, kuru=False, yaz=print):
+    """VIDEO_TOPLA.bat: gönderilmiş ama indirilmemiş videoları toplar (memmet_topla; yeni gönderim yok, Flow kilidinde açılmaz)."""
+    f = _film_coz(film)
+    if not f: yaz("Aktif film bulunamadı; önce FILM_SETI.bat ile filmi aç."); return KULLANICI
+    yaz("Gönderilmiş videolar toplanıyor (yeni gönderim yapılmaz).")
+    komut = [_python(), os.path.join(ortak.ARACLAR, "memmet_topla.py"), f] + (["--kuru"] if kuru else [])
+    return subprocess.call(komut)
+
+
+def kur3(kuru=False, sor=None, yaz=print):
+    """KUR3.bat: MuseTalk / ACE-Step / büyütücü ortamlarının kartı; kurulum yalnız kullanıcı burada "E" derse (kurulum.py --kur3 --onay).
+    Etkileşimsiz pencerede (ya da --kuru) hiçbir şey kurulmaz."""
+    import kurulum_kur3 as k3
+    plan = k3.kur3_plani(None)
+    yaz("KUR3 (yalnız gerektiğinde): ağız eşleme, müzik ve büyütme ortamları"); [yaz("  " + x) for x in plan["kart"]]
+    if all(o["hazir"] for o in plan["ortamlar"]): yaz("Hepsi zaten kurulu."); return TAMAM
+    if kuru: yaz("Kuru çalıştırma: hiçbir şey kurulmadı."); return TAMAM
+    if sor is None:
+        if not (sys.stdin and sys.stdin.isatty()): yaz("Soru sorulamadı; hiçbir şey kurulmadı. KUR3.bat'a çift tıklayıp yeniden dene."); return KULLANICI
+        sor = input
+    c = (sor("Bu ortamlar kurulsun mu? İnternetten büyük dosyalar iner, Windows izin penceresi açılabilir. (E = evet, Enter = hayır): ")
+         or "").strip().lower()
+    if c not in ("e", "evet", "y", "yes"): yaz("Kurulmadı. İstediğinde KUR3.bat'a yeniden çift tıkla."); return KULLANICI
+    return subprocess.call([_python(), os.path.join(ortak.ARACLAR, "kurulum.py"), "--kur3", "--onay"])
+
+
 def main(a=None):
     a = sys.argv[1:] if a is None else list(a)
     if not a: print(__doc__); return ORTAM
@@ -255,6 +333,9 @@ def main(a=None):
         if k == "flow-giris": return flow_giris("--kuru" in r)
         if k == "izinler": return izinler(r)
         if k == "gemini-test": return gemini_test("sahte" in r)
+        if k == "video-yari": return video_yari(arg(), "--kuru" in r)
+        if k == "video-topla": return video_topla(arg(), "--kuru" in r)
+        if k == "kur3": return kur3("--kuru" in r)
         if k in ("durdur", "devam", "film-deneme") and arg():
             return {"durdur": durdur, "devam": devam, "film-deneme": film_deneme}[k](arg())
     except ortak.YolYok as e: print("!!", e); return ORTAM

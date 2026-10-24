@@ -12,7 +12,9 @@ Girdi: SAHNELER.json v2 (sira, kullanim, zanaat), SIRALI_VIDEO/NNN.mp4, SESLER/d
   3. Çizelge boşluksuz: planlar[i+1].cizelge_bas = planlar[i].cizelge_bas + sure (planlı karartma tek istisna); bütün değerler 1/24 sn.
   4. Diyalog senkron kuralıyla: görünen konuşan → cizelge_bas = plan.cizelge_bas + (klip_zamani.bas − kullanim.bas) / hiz; plan sonunu
      aşan ses L taşması, plan başından önce başlayan J; ekran dışı replik (zanaat.ekran_disi_ses) üzerine konduğu planın çizelgesinde.
-  5. Ölçüler: toplam süre, ASL (film, ilk 120, ilk 30), J/L oranı, tepki oranı. zaman_cizelgesi.py varsa "--asama kurgu" çağrılır (T2 ölçüleri
+  5. Kalıcı işlem katmanı KURGU/KURGU_DUZEN_T2.json (kurgu_uygula yazar) yeniden uygulanır (zaman_cizelgesi_t1'in T1'de yaptığı gibi):
+     diyalog_kaydir, ekran_disi, jl, kes … yeniden kuruluşta kaybolmaz. Önceki sürümden zaten taşınan hiz ve ortu ikinci kez uygulanmaz.
+  6. Ölçüler: toplam süre, ASL (film, ilk 120, ilk 30), J/L oranı, tepki oranı. zaman_cizelgesi.py varsa "--asama kurgu" çağrılır (T2 ölçüleri
      ve SAPMA_T2 orada; tek ölçü tek kod).
 Ses görevleri (diyalog_esitle, ses_katmani T2, muzik --yerlestir, son_miks) bu sürümün imzasıyla görev defterindeki sonraki gruplarda koşar.
 Çıkış kodları: 0 tamam · 1 hata · 2 SAHNELER yok · 4 kullanım.
@@ -152,7 +154,7 @@ def kur(kok, argv=(), cizelge="T2"):
     _, onceki = ko.kurgu_plani(kok)
     onceki = onceki or {}
     o_dizin = {x.get("plan"): x for x in onceki.get("planlar") or []}
-    kesilen = set(onceki.get("kesilen") or [])
+    kesilen = set(onceki.get("kesilen") or []) | set(onceki.get("kesilenler") or [])
     d = ko.diyalog_oku(kok); E = ko.po.esik()
     sira = sorted((p for p in pl.values() if p["no"] not in kesilen), key=_sira_anahtari)
     if o_dizin:                                            # kurgucu/kullanıcı sırası korunur; yeni planlar kendi sırasıyla araya
@@ -206,12 +208,39 @@ def kur(kok, argv=(), cizelge="T2"):
           "kullanici_kilitleri": list(onceki.get("kullanici_kilitleri") or []), "kesilen": sorted(kesilen),
           "onceki_surum": onceki.get("kurgu_surumu")}
     diyalog_yerlestir(kok, kp, pl, d)
+    duzen_uygula(kok, kp, s, cizelge)
     kp["olcumler"] = olcumler(kp, pl)
     kp["_uretim"] = ko.po.zarf("A16", SURUM, "GEC", girdi_imza=ko.po.imza(kp["girdi_imzalari"]))
     yol = ko.kurgu_plani_yaz(kok, kp, cizelge)
     ortak.atomik_yaz(os.path.join(kok, "KURGU", "KIRP_ONERI.json"), {"_uretim": kp["_uretim"], "planlar": oneriler})
     kirp_oner.incele_md(kok, oneriler, float(E.get("kirp_guven_min", 0.6)))
     return yol, kp
+
+
+TASINAN_ISLEMLER = ("hiz", "ortu")    # önceki KURGU_PLANI'ndan zaten taşınır; ikinci uygulama hızı/örtüyü katlar
+
+
+def duzen_uygula(kok, kp, sahneler, cizelge="T2"):
+    """KURGU/KURGU_DUZEN_<cizelge>.json işlemlerini yeni kurulan plana yeniden uygular (kurgu_uygula.duzen_uygula; geçersiz olan
+    işlem kp['duzen_atlanan']'a yazılır). Sonra çizelge, diyalog (plan_ofset) ve kart zamanları yeniden kurulur."""
+    duzen = ortak.json_oku(os.path.join(kok, "KURGU", f"KURGU_DUZEN_{cizelge}.json"), {}) or {}
+    kesilen = set(kp.get("kesilen") or [])
+    islemler = [x for x in duzen.get("islemler") or [] if isinstance(x, dict) and x.get("op") not in TASINAN_ISLEMLER
+                and not (x.get("op") == "kes" and x.get("plan") in kesilen)]
+    if not islemler: return []
+    import kurgu_uygula
+    kurgu_uygula._ofset_sabitle(kp)
+    gecerli = kurgu_uygula.duzen_uygula(kp, islemler, sahneler)
+    if kp.get("kesilenler"): kp["kesilen"] = sorted(set(kp.get("kesilen") or []) | set(kp.pop("kesilenler")))
+    cizelgele(kp["planlar"], kp.get("karartmalar"))
+    bas = {x["plan"]: x["cizelge_bas"] for x in kp["planlar"]}
+    for y in kp.get("diyalog") or []:
+        if y.get("plan") in bas and y.get("plan_ofset") is not None: y["cizelge_bas"] = ko.kare(bas[y["plan"]] + float(y["plan_ofset"]))
+    kp["diyalog"] = sorted(kp.get("diyalog") or [], key=lambda y: (y.get("cizelge_bas") is None, y.get("cizelge_bas") or 0))
+    for k in kp.get("kartlar") or []:
+        if k.get("plan") in bas: k["cizelge_bas"] = ko.kare(bas[k["plan"]] + float(k.get("ofset", 0.0)))
+    kp["duzen_uygulanan"] = len(gecerli)
+    return gecerli
 
 
 def zaman_olculeri(kok):

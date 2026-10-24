@@ -11,7 +11,7 @@ v1 (eski proje kaydı): davranış değişmedi → KURGU/NOTLARIM.txt ve KURGU/N
 """
 import os, sys, json, re
 import ortak   # SAHNELER.json v2 koruması (v1 yolu)
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 SEC = 1_000_000

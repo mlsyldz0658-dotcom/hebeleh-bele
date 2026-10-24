@@ -12,7 +12,7 @@ Bir sahneyi yeniden yaptırmak için SIRALI_GORSEL/NNN.jpg dosyasını silmen ye
 """
 import os, sys, re, json, shutil, zipfile, hashlib, subprocess, html, time
 import ortak   # SAHNELER.json v2 koruması
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
 

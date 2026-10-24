@@ -594,7 +594,7 @@ def olc(yol):
 
 
 def main(argv):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if argv[:1] == ["--kontrol"]:
         film = argv[argv.index("--film") + 1] if "--film" in argv else None
         k = kontrol(film)

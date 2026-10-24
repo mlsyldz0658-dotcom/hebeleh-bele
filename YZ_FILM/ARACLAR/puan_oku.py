@@ -31,7 +31,7 @@ Birleştirme (seyirci_topla):
 Çıkış kodları (v2): 0 rapor yazıldı (kapı sonucu raporda) · 1 araç/kullanım hatası · 4 YOLLAR.json yok.
 """
 import os, re, sys, json, glob, math
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 try: import kapi                       # v2 zarfı; v1 (OZET satırı) kapi olmadan da çalışır
@@ -158,22 +158,15 @@ def dosya_imza(film, rels):
     return h.hexdigest()[:16]
 
 
-def yerel_kapilar():
-    try:
-        from hat import asamalar
-        return set(asamalar.YEREL_KAPILAR) | {"SEMA"}
-    except Exception: return set()
-
-
 def kapi_yaz(film, kapi_kod, kapsam, olcumler, tur, asama, gorev=None, girdi=(), arac=SURUM, ek=None, yol=None, sonuc=None,
              birimler=None):
     """kapi.rapor_kur ile zarflı rapor kurar, (gerekirse) sonucu üstüne yazar, denetler ve atomik yazar. (yol, rapor).
-    ADLAR.json'da henüz olmayan yerel kâğıt kapıları (hat.asamalar.YEREL_KAPILAR) için yalnız 'kapi bilinmiyor' denetimi atlanır."""
+    Kâğıt aşamalarının kapı kodları (HAZIRLIK, KONU, … SEMA) ADLAR.json kapilar'dadır: kapi.dogrula'nın hiçbir maddesi atlanmaz."""
     r = kapi.rapor_kur(kapi_kod, kapsam, olcumler, tur=tur, asama=asama, gorev=gorev, girdi_imza=dosya_imza(film, girdi),
                        arac_surum=arac, ek=ek, birimler=birimler)
     if sonuc:
         r["sonuc"] = sonuc; r["_uretim"]["sonuc"] = sonuc
-    h = [x for x in kapi.dogrula(r) if not (x.startswith("kapi bilinmiyor") and kapi_kod in yerel_kapilar())]
+    h = kapi.dogrula(r)
     if h: raise kapi.RaporHatasi(h)
     yol = yol or os.path.join(film, "_RAPOR", f"{kapi_kod}_{kapsam}_t{tur}.json")
     atomik_yaz(yol, r)

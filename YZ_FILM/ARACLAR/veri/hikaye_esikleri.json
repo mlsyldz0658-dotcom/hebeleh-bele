@@ -391,6 +391,34 @@
   "etiket": "ZANAAT Z1 #32",
   "sonuc": "B"
  },
+ "merak_sorusu_min": {
+  "deger": 8,
+  "aciklama": "Öneride (A03/A04) en az bu kadar merak sorusu",
+  "kaynak": "belge",
+  "etiket": "hikaye-mimari şablonu; ZANAAT Z1",
+  "sonuc": "B"
+ },
+ "kurulum_kullanim_cift_min": {
+  "deger": 5,
+  "aciklama": "Öneride (A03/A04) en az bu kadar kurulum → kullanım çifti (süre eşiği RE kurulum_kullanim_min_sn'dedir)",
+  "kaynak": "belge",
+  "etiket": "hikaye-mimari şablonu; ZANAAT Z1 #29–32",
+  "sonuc": "B"
+ },
+ "ornek_replik_max": {
+  "deger": 5,
+  "aciklama": "Öneride (A03/A04) en çok bu kadar örnek replik (her biri RE replik_max_kelime_8sn sınırında). Kapak imgesinin ekrana geliş sınırı RE vaat_imgesi_max_sn'dir (120), burada tekrarlanmaz",
+  "kaynak": "belge",
+  "etiket": "hikaye-mimari şablonu",
+  "sonuc": "B"
+ },
+ "ayni_karakter_ardisik_blok_max": {
+  "deger": 3,
+  "aciklama": "Senaryoda (A05) aynı karakter art arda en çok bu kadar replik bloğu",
+  "kaynak": "belge",
+  "etiket": "hikaye-yazari·senaryo şablonu",
+  "sonuc": "B"
+ },
  "konu_kanca_aileleri": {
   "deger": [
    "insan_yaratik_bagi",

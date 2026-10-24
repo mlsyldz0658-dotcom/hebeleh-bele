@@ -187,7 +187,7 @@ def hatirlat(film_kok, gorev, simdi=None):
 
 
 def main(argv=None):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description="Bildirim gönder.")
     ap.add_argument("--olay"); ap.add_argument("--metin", default=""); ap.add_argument("--film"); ap.add_argument("--dosya")
     ap.add_argument("--anahtar"); ap.add_argument("--test", action="store_true"); ap.add_argument("--saglayici")

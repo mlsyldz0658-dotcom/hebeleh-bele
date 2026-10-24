@@ -22,7 +22,7 @@ Ortak: --saglayici sahte (test). Claude sesi duymaz: seçim yalnız ölçüye ve
 Çıkış kodları: 0 rapor yazıldı (sonuç raporda) · 1 girdi yok/bozuk · 4 ORTAM (TTS/katalog yok, telaffuz sesleri tanımsız) · 5 BÜTÇE · 7 KISIT.
 """
 import os, sys, re, json, html
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

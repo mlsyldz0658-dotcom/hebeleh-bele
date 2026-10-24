@@ -1,0 +1,16 @@
+{
+ "kip": "bulgu",
+ "seyirci": 1,
+ "bulgular": [
+  {
+   "kaynak": "acik_soru:0",
+   "bulgu": "kuzeydeki ışığın ne olduğu açık kaldı",
+   "konum": {},
+   "eslesen": {
+    "tur": "merak",
+    "id": "m04"
+   },
+   "alinti": "Kuzeydeki ışık neydi?"
+  }
+ ]
+}

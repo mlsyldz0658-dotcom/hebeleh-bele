@@ -815,21 +815,12 @@ class Memmet:
                 "kredi": self.kredi_birim(tur), "model": model, "cozunurluk": coz}
 
     def video_hazir(self, no, p):
-        """Her video gönderiminden önce ikinci denetim: kare_denetim.video_hazir (G1 GEÇ + SIRALI_GORSEL SHA1'i kayıtla aynı; D-15,
-        §1.5 kural 6). Zincir (son_kare) planında başlangıç karesi önceki klipten çıkarılır; onun G1Z + SHA1'i blok_plani.uygun_mu'da
-        denetlendi, burada yalnız kare_denetim de GEÇ derse ya da zincir kaydı tutarsa geçer. Denetlenemezse gönderilmez (kapalı başarısız)."""
+        """Her video gönderiminden önce ikinci denetim: kare_denetim.video_hazir (G1 GEÇ ya da son_kare zincirinde uretim.zincir.g1z GEÇ +
+        SIRALI_GORSEL SHA1'i kayıtla aynı, ≥ 8 haneli önek kabul; D-15, §1.5 kural 6). Denetlenemezse gönderilmez (kapalı başarısız)."""
         try: ok, neden = kare_denetim.video_hazir(self.root, no)
         except Exception as e:
             return False, f"video_hazir denetlenemedi ({str(e)[:80]}): gönderilmedi"
-        if ok: return True, ""
-        if str(neden).startswith("SHA1"):        # kısa sha1 kaydı (≥ 8 hane, blok_plani sözleşmesi): aynı kare mi, öneki karşılaştır
-            import blok_plani
-            s, sha = blok_plani._g1(p)
-            if s == "GEC" and blok_plani._sha_tutar(os.path.join(self.root, "SIRALI_GORSEL", "%03d.jpg" % int(no)), sha): return True, ""
-        z = (p.get("uretim") or {}).get("zincir") or {}
-        if (z.get("yontem") or "bagimsiz") == "son_kare" and (z.get("g1z") or {}).get("sonuc") == "GEC":
-            return True, ""
-        return False, f"kare videoya hazır değil: {neden}"
+        return (True, "") if ok else (False, f"kare videoya hazır değil: {neden}")
 
     def kredi_once(self, j):
         """Bütçe noktası (BUTK) + kredi defterine gönderim satırı: GÖNDERİMDEN ÖNCE. Onay yoksa 5 (yeni gönderim yok)."""

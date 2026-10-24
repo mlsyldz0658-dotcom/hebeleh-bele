@@ -29,8 +29,8 @@ GOREV_TURLERI = ("ajan", "betik", "kullanici")
 TURDA = ("hepsi", "ilk", "sonra")
 ADET_ANAHTARLARI = ("parti", "sahne_grubu", "karakter", "blok", "gorsel_grubu")
 KOSULLAR = ("flow_filtre_red",)    # GorevSablonu.kosul değerleri (film.py Defter.kosul_tamam çözer)
-# ADLAR.json'da henüz olmayan, yalnız kâğıt aşamalarında kullanılan kapı kodları (ADLAR'a eklenecek; rapor yolu _RAPOR/<KAPI>_…)
-YEREL_KAPILAR = ("HAZIRLIK", "KONU", "BRIFING", "ONERI", "JURI", "YAPI", "HARITA", "PLAN_ELESTIRI", "KUR", "DERS")
+# Kâğıt aşamalarının yerel kapı kodları artık ADLAR.json kapilar'da (rapor yolu _RAPOR/<KAPI>_…); ayrı liste yok, denetim ADLAR'a bakar.
+YEREL_KAPILAR = ()
 
 
 @dataclass(frozen=True)
@@ -478,15 +478,16 @@ ASAMALAR = (
            J("V3", "kare-tarifcisi", "v3", grup=3, adet="blok", tasima=(("CIKTI/rapor.json", "_RAPOR/V3/gozlem_t{tur}_{i}.json"),)),
            B("KZ", "kare_zinciri.py", "--cikar", grup=4, cikti=("_RAPOR/G1Z_FILM_t{tur}.json",), kapi="G1Z"),
            B("KU", "kuyruk.py", "--birlestir", grup=5))),
-    Asama("A15", "Ses", "betik seslendir --parti, ses_donustur, ses_karar; gri bantta hikaye-yazari·replik_kabul",
+    Asama("A15", "Ses", "betik seslendir --parti, ses_donustur, ses_karar, seslendir --istek (ses_karar'ın TTS istekleri); gri bantta hikaye-yazari·replik_kabul",
           (G("klipler", "A14"), G("evren sesleri", "evren"), G("diyalog.json", "A12")),
           ("SESLER/diyalog.json", "_RAPOR/S2_FILM.json"), (R("S2", "_RAPOR/S2_FILM_t{tur}.json"),), "flow+ai84", "yerel", 2,
           (DURDU_SIFIR,), None,
           (B("SP", "seslendir.py", "--parti", grup=0, kredili=True),
            B("SD", "ses_donustur.py", "--donustur", grup=1),
            J("RK", "hikaye-yazari", "replik_kabul", grup=2, tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/REPLIK_KABUL.json"),)),
-           B("SK", "ses_karar.py", grup=3, cikti=("_RAPOR/S2_FILM_t{tur}.json",), kapi="S2"))),
-    Asama("A16", "Kurgu", "plan_kurgu, diyalog_esitle, ses_katmani T2 + muzik --yerlestir, son_miks, kurgu_render, dudak_denetim, kurgu_denetim (Z3); kesici + kesme simülasyonu; habersiz-seyirci·kurgu ×3; renk_cila, buyut; capcut_film; arsivle",
+           B("SK", "ses_karar.py", grup=3, cikti=("_RAPOR/S2_FILM_t{tur}.json",), kapi="S2"),
+           B("TI", "seslendir.py", "--istek", grup=4, kredili=True))),
+    Asama("A16", "Kurgu", "plan_kurgu, diyalog_esitle, ses_katmani T2 + muzik --yerlestir, son_miks, kurgu_render, dudak_denetim, kurgu_uygula --kararlar S3_ONERI, kurgu_denetim (Z3); kesici + kesme simülasyonu; habersiz-seyirci·kurgu ×3; renk_cila, buyut; capcut_film; arsivle",
           (G("videolar", "A14"), G("diyalog.json", "A15", "_RAPOR/S2_FILM_t1.json"), G("raporlar", "A14")),
           ("KURGU/KURGU_PLANI.json", "KURGU/onizleme_v<N>.mp4", "_RAPOR/Z3_v<N>.json", "_RAPOR/HS_KURGU_FILM_t<n>.json",
            "KURGU/son_capcut_projesi.json", "KURGU/altyazi_en.srt"),
@@ -502,13 +503,14 @@ ASAMALAR = (
            B("SM", "son_miks.py", grup=4),
            B("KR", "kurgu_render.py", "--onizleme", grup=5, cikti=("KURGU/onizleme_v{tur}.mp4",)),
            B("DU", "dudak_denetim.py", grup=5),
-           B("KZ", "kurgu_denetim.py", grup=6, cikti=("_RAPOR/Z3_v{tur}.json",), kapi="Z3"))
-          + _kesici("kurgu", "T2", 7)
-          + _seyirci_turu("kurgu", "HS_KURGU", "_RAPOR/HS_KURGU_FILM_t{tur}.json", 10)
-          + (B("RC", "renk_cila.py", grup=14),
-             B("BY", "buyut.py", grup=14),
-             B("CC", "capcut_film.py", grup=15, cikti=("KURGU/son_capcut_projesi.json",)),
-             B("AR", "arsivle.py", "--film", grup=16)),
+           B("KU", "kurgu_uygula.py", "--kararlar", "S3_ONERI", "--cizelge", "T2", grup=6),
+           B("KZ", "kurgu_denetim.py", grup=7, cikti=("_RAPOR/Z3_v{tur}.json",), kapi="Z3"))
+          + _kesici("kurgu", "T2", 8)
+          + _seyirci_turu("kurgu", "HS_KURGU", "_RAPOR/HS_KURGU_FILM_t{tur}.json", 11)
+          + (B("RC", "renk_cila.py", grup=15),
+             B("BY", "buyut.py", grup=15),
+             B("CC", "capcut_film.py", grup=16, cikti=("KURGU/son_capcut_projesi.json",)),
+             B("AR", "arsivle.py", "--film", grup=17)),
           butce="animatik_kurgu_tur"),
     Asama("A16n", "Kullanıcı notu", "beceri film-not → taslak_fark, notlari_oku; kurgucu·not; kurgu_uygula; kurgu_denetim --hepsi; capcut_yama",
           (G("kullanıcının notu ya da CapCut düzenlemesi", "kullanici"), G("kurgu", "A16")),
@@ -631,7 +633,7 @@ def denetle(adlar=None):
                 if b.ajan and b.kip and b.kip not in ajanlar.get(b.ajan, {}).get("kipler", []):
                     h.append(f"{a.kod}: basamak {b.ajan}·{b.kip} kipi yok")
             for k in a.kapilar:
-                if k.kod not in kapilar and k.kod not in YEREL_KAPILAR: h.append(f"{a.kod}: kapı {k.kod} ADLAR'da da yerel listede de yok")
+                if k.kod not in kapilar: h.append(f"{a.kod}: kapı {k.kod} ADLAR.json kapilar'da yok")
     return h
 
 
@@ -660,6 +662,6 @@ def sozluk():
 
 
 if __name__ == "__main__":
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     if "--json" in sys.argv: print(json.dumps(sozluk(), ensure_ascii=False, indent=1))
     else: print(markdown())

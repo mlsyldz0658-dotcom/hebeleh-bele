@@ -24,7 +24,7 @@ Karar kuralları (D-16): iki kaynağın HATA'sı HATA; tek kaynak BAYRAK; ölç�
 Çıkış kodları: 0 tamam (kapı sonucu raporda) · 1 girdi/program hatası · 2 aday yok · 4 kullanım.
 """
 import os, sys, re, json, glob, shutil, hashlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -62,7 +62,7 @@ def _planlar(S): return {p.get("no"): p for p in (S or {}).get("sahneler") or []
 
 # --- beklenen --------------------------------------------------------------------------------------------------
 def beklenen(kok, plan, S, ev, hik=None):
-    import istem_derle_gorsel as idg, olcum
+    import istem_derle_gorsel as idg, olcum, kroki
     z = plan.get("zanaat") or {}; der = plan.get("_derlenir") or {}
     sg = (S.get("sahne_gruplari") or {}).get(z.get("sahne_grubu")) or {}
     hik = hik if hik is not None else (ortak.json_oku(os.path.join(kok, "HIKAYE.json"), {}) or {})
@@ -106,7 +106,7 @@ def beklenen(kok, plan, S, ev, hik=None):
             "yasaklar": yas, "ne_yok": ne_yok, "ifade": ifade, "konusan": konusan, "agiz_kapali": sorted(set(agiz)),
             "kadraj_sirasi": [x for x in der.get("kadraj_sirasi") or [] if x in gorunur],
             "kadraj_konumu": {k: olcum.ucte_bir_normal(v) for k, v in (der.get("kadraj_konumu") or {}).items()},
-            "bakis": der.get("bakis_kadrajda") or {}, "isik": der.get("isik_kadrajda"), "ayna_yasak": der.get("ayna_yasak", True),
+            "bakis": der.get("bakis_kadrajda") or {}, "isik": kroki.isik_yonu(der.get("isik_kadrajda")), "ayna_yasak": der.get("ayna_yasak", True),
             "acik_parmak": der.get("acik_parmak") or {}, "yakin_el": (z.get("kamera") or {}).get("kadraj") in ("D", "Y", "CY"),
             "plan_tipi": z.get("plan_tipi"), "banka": banka, "kalibrasyon": {k: v for k, v in cal.items() if k in insan},
             "yaw_isareti": (ev.kalibrasyon() or {}).get("yaw_isareti", 1),
@@ -602,18 +602,35 @@ def hakem(kok, tur, dosya):
     return kod, r
 
 
+SHA_ONEK_MIN = 8          # kısa sha1 kaydı (blok_plani sözleşmesi): en az 8 hane, dosyanın sha1'inin öneki
+
+
+def sha_tutar(yol, kayit):
+    """Kayıttaki sha1 (tam ya da ≥ 8 haneli önek) dosyanınkiyle aynı mı."""
+    if not kayit or not os.path.isfile(yol): return False
+    k = str(kayit).lower()
+    return len(k) >= SHA_ONEK_MIN and sha1(yol).startswith(k)
+
+
 def video_hazir(film, no):
-    """Video gönderimine hazır mı: SAHNELER denetim.G1 GEÇ, SIRALI_GORSEL/NNN.jpg var ve SHA1'i kayıtla aynı. (bool, neden)"""
+    """Video gönderimine hazır mı (D-15, §1.5 kural 6): başlangıç karesi SIRALI_GORSEL/NNN.jpg var, kaydı GEÇ ve SHA1'i (tam ya da ≥ 8
+    haneli önek) kayıtla aynı. Kayıt sırası: son_kare zinciri planında uretim.zincir.g1z (kare_zinciri yazar; sha1 ya da kare_sha1),
+    sonra denetim.G1Z, sonra denetim.G1 (sha1 yoksa uretim.gorsel.sha1). (bool, neden)"""
     S = ortak.json_oku(os.path.join(film, "SAHNELER.json"), {}) or {}
     p = _planlar(S).get(int(no))
     if not p: return False, "plan yok"
-    g = (p.get("denetim") or {}).get("G1") or {}
-    zg = (p.get("denetim") or {}).get("G1Z") or {}
-    kayit = zg if zg.get("sonuc") == "GEC" and zg.get("sha1") else g
-    if kayit.get("sonuc") != "GEC": return False, f"G1 {kayit.get('sonuc') or 'yok'} (videoya yalnız G1 GEÇ kare gider)"
+    d = p.get("denetim") or {}; u = p.get("uretim") or {}
+    z = u.get("zincir") or {}; zz = z.get("g1z") or {}
+    zg = d.get("G1Z") or {}; g = d.get("G1") or {}
+    if (z.get("yontem") or "bagimsiz") == "son_kare":
+        kayit, ad = {"sonuc": zz.get("sonuc"), "sha1": zz.get("sha1") or z.get("kare_sha1")}, "G1Z (zincir karesi)"
+        if kayit["sonuc"] != "GEC" and zg.get("sonuc") == "GEC": kayit = zg
+    elif zg.get("sonuc") == "GEC" and zg.get("sha1"): kayit, ad = zg, "G1Z"
+    else: kayit, ad = {"sonuc": g.get("sonuc"), "sha1": g.get("sha1") or (u.get("gorsel") or {}).get("sha1")}, "G1"
+    if kayit.get("sonuc") != "GEC": return False, f"{ad} {kayit.get('sonuc') or 'yok'} (videoya yalnız G1 GEÇ kare gider)"
     yol = os.path.join(film, "SIRALI_GORSEL", "%03d.jpg" % int(no))
     if not os.path.isfile(yol): return False, "SIRALI_GORSEL karesi yok"
-    if not kayit.get("sha1") or sha1(yol) != kayit["sha1"]: return False, "SHA1 uyuşmuyor (kare G1'den sonra değişmiş)"
+    if not sha_tutar(yol, kayit.get("sha1")): return False, f"SHA1 uyuşmuyor (kare {ad}'den sonra değişmiş ya da kayıt < {SHA_ONEK_MIN} hane)"
     return True, ""
 
 

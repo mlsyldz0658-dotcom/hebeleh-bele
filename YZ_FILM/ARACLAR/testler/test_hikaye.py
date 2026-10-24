@@ -308,13 +308,22 @@ class Evren(unittest.TestCase):
         self.assertIn("TESTSERI", [s["seri"] for s in evren.ozet()["seriler"]])
         h["karakterler"]["sera"]["ad"] = "Mara"; ortak.atomik_yaz(os.path.join(kok, "HIKAYE.json"), h)
         r3, kod = evren.on_kayit(kok); self.assertEqual(kod, 1); self.assertIn("çakışma", r3["hatalar"][0])
-        self.assertEqual(sessiz(evren.main, ["--yedekle"]), 4)
+        self.assertEqual(sessiz(evren.main, ["--yedekle"]), 1)                # seri/film verilmedi → kullanım hatası
 
 
 class EsikVeKaset(unittest.TestCase):
     def test_hikaye_esikleri_cift_anahtarsiz(self):
         E = esikler.yukle(); self.assertEqual(E["juri_kazanan_min"], 8.0)
         self.assertEqual(E.kayit["juri_kazanan_min"]["_dosya"], "hikaye_esikleri.json")
+
+    def test_sablon_esikleri(self):
+        """A03/A04/A05 şablonlarındaki düz sayıların anahtarları (kanca ajanı isteği); kapak imgesi RE vaat_imgesi_max_sn'den."""
+        E = esikler.yukle()
+        for ad, d in (("merak_sorusu_min", 8), ("kurulum_kullanim_cift_min", 5), ("ornek_replik_max", 5),
+                      ("ayni_karakter_ardisik_blok_max", 3), ("vaat_imgesi_max_sn", 120)):
+            self.assertEqual(E[ad], d, ad)
+        for ad in ("merak_sorusu_min", "kurulum_kullanim_cift_min", "ornek_replik_max", "ayni_karakter_ardisik_blok_max"):
+            self.assertEqual(E.kayit[ad]["_dosya"], "hikaye_esikleri.json")
 
     def test_kaset_uydurmaz(self):
         g = {"id": "A09-ZZ-001", "asama": "A09", "anahtar": "A09@s1/t1/g0/ZZ/1", "tur_no": 1}
@@ -323,8 +332,8 @@ class EsikVeKaset(unittest.TestCase):
 
 
 # --- uçtan uca --------------------------------------------------------------------------------------------------
-YOK_ARAC = {"kor_paket.py", "seyirci_topla.py"}       # henüz depoda yok (PR-3) / A06 ST → puan_oku.py seyirci-topla
-KASETTEN = {"kor_paket.py", "kredi.py"}              # kredi.py but0 raporu _uretim.gorev yazmıyor (paylaşılan istek)
+YOK_ARAC = {"seyirci_topla.py"}                       # A06 ST → puan_oku.py seyirci-topla
+KASETTEN = set()                                      # betiklerin hepsi gerçek (kor_paket ve kredi.py but0 artık depoda ve görev kimliği yazar)
 
 
 class UctanUca(unittest.TestCase):
@@ -345,7 +354,7 @@ class UctanUca(unittest.TestCase):
         except ValueError: return kod, o.getvalue()
 
     def nabiz(self):
-        ortak.atomik_yaz(os.path.join(self.kok, "_GOREV", "KANCA_NABZI.json"), {"zaman": film.simdi(), "yazan": "test"})
+        _ortam.kanca_nabzi(self.kok)
 
     def test_A00_A06_kaset(self):
         orj_kos, orj_isfile = film.Defter.betik_kos, os.path.isfile
@@ -399,9 +408,10 @@ class UctanUca(unittest.TestCase):
         self.assertIn("süre 30 dk", rd(os.path.join(self.kok, "KARAR_DEFTERI.md")))
         gercek = " | ".join(cagri["gercek"])
         for alt in ("konu-denetim", "brifing", "oneri-denetim", "juri-paketi", "juri-topla", "yapi-denetim", "senaryo-denetim",
-                    "seyirci-topla", "devir"):
+                    "seyirci-topla", "devir", "kor_paket.py --kip kagit", "kredi.py but0"):
             self.assertIn(alt, gercek)
-        self.assertEqual(len(cagri["kaset"]), 3)                               # B0 + KP (tur 1, tur 2)
+        self.assertEqual(cagri["kaset"], [])                                   # betik kaseti yok: B0 ve KP gerçek koşar
+        self.assertEqual(rap("BUT0_FILM.json")["_uretim"]["gorev"][:7], "A01-B0-")
 
 
 if __name__ == "__main__":

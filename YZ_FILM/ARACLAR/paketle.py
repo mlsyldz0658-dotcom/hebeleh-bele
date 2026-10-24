@@ -6,7 +6,7 @@ Girmez: anahtarlar, Memmet Chrome profili (Google oturumu), film çıktıları, 
 Sonunda zip'in içinde anahtarların geçmediğini tarar.
 """
 import os, sys, json, zipfile, time
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)   # ROOT: depodaki YZ_FILM (paketlenen)
 sys.path.insert(0, HERE)
 import ortak

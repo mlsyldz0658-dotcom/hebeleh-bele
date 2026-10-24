@@ -23,7 +23,7 @@ Pakete GİRMEYENLER: amaç, duygu, risk, vuruş, merak/kurulum kimlikleri, ekran
 Çıkış kodları: 0 BİTTİ · 1 HATA (girdi yok, sızıntı) · 4 ORTAM (kipin girdisi bu aşamada yok: kesit planı, video).
 """
 import os, sys, re, json, glob, shutil, subprocess, argparse, statistics
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak

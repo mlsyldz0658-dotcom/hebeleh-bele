@@ -14,7 +14,7 @@ bölme, sessiz oransal yayma, sessizce Flow sesine düşme, 44,1 kHz). v2 filmle
 import os, sys, re, json, hashlib, subprocess, shutil
 import ortak   # SAHNELER.json v2 koruması
 import numpy as np, soundfile as sf
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("HF_HUB_OFFLINE", "1")
 SR = 44100

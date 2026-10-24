@@ -17,5 +17,8 @@ AYARLAR/MEMMET_AYAR.json
 /GEMINI_TEST.bat
 /DURDUR.bat
 /DEVAM.bat
+/KUR3.bat
+/VIDEO_YARI_OTOMATIK.bat
+/VIDEO_TOPLA.bat
 .claude/settings.local.json
 .claude/bin/python_yolu.txt

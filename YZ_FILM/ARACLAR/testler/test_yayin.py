@@ -35,11 +35,11 @@ def medya_kur():
     if not FFMPEG or os.path.isfile(os.path.join(MEDYA, "iyi.mp4")): return
     v = ["-f", "lavfi", "-i", f"testsrc2=s=320x180:r=24:d={SURE}", "-f", "lavfi", "-i", f"anoisesrc=d={SURE}:c=pink:r=48000:a=0.3"]
     enc = ["-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000"]
-    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-14:TP=-3:LRA=7[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "iyi.mp4"))
+    ff(*v, "-filter_complex", "[1:a]loudnorm=I=-14:TP=-4:LRA=7[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "iyi.mp4"))
     ff("-i", os.path.join(MEDYA, "iyi.mp4"), "-vn", "-ar", "48000", os.path.join(MEDYA, "master.wav"))
     ff(*v, "-filter_complex", "[1:a]loudnorm=I=-7:TP=-0.1:LRA=7[a]", "-map", "0:v", "-map", "[a]", *enc, os.path.join(MEDYA, "yuksek.mp4"))
     ff(*v, "-filter_complex", "[0:v]drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t,40,43)'[v];"
-           "[1:a]loudnorm=I=-14:TP=-3:LRA=7,volume=enable='between(t,40,43)':volume=0[a]", "-map", "[v]", "-map", "[a]", *enc,
+           "[1:a]loudnorm=I=-14:TP=-4:LRA=7,volume=enable='between(t,40,43)':volume=0[a]", "-map", "[v]", "-map", "[a]", *enc,
        os.path.join(MEDYA, "siyah.mp4"))
     ff("-i", os.path.join(MEDYA, "siyah.mp4"), "-vn", "-ar", "48000", os.path.join(MEDYA, "siyah_master.wav"))
 
@@ -125,6 +125,17 @@ class KaliteFinal(Temel):
         self.assertTrue(dv["mux"]["gerekli"]); self.assertEqual(dv["sonuc"], "HATA"); self.assertIn("S8.1_lufs", dv["hazir_degil_nedeni"])
         self.assertFalse(dv["mux"]["yapildi"])                    # son_miks.py (PR-9) yoksa mux yapılmaz, kör karıştırma yok
         self.assertTrue(any(k in mm for k in ("mux", "mux_kaniti")))
+
+    def test_kullanici_ses_duzenlemesi_mux_dogrusal_kazanc_yapilir(self):
+        if kdf.son_miks_modulu() is None: self.skipTest("son_miks.py (PR-9) yok ya da açılamıyor")
+        self.medya("yuksek.mp4")
+        yaz(os.path.join(self.film, "KURGU", "TASLAK_FARK.json"), {"geri_uretilemeyen": [{"kanal": "Muzik", "tur": "ses_ayari"}]})
+        _, r = kdf.final(self.film); mm = self.maddeler(r)
+        dv = oku(os.path.join(self.film, "YAYIN", "YAYIN_DOGRULAMA.json"))
+        self.assertTrue(dv["mux"]["yapildi"]); self.assertEqual(dv["mux"]["tur"], "dogrusal_kazanc")
+        self.assertTrue(dv["dosya"].endswith("_4K_MUX.mp4")); self.assertTrue(os.path.isfile(os.path.join(self.film, "YAYIN", f"{self.ad}_4K.mp4")))
+        self.assertNotIn("S8.1_lufs", mm); self.assertNotIn("S8.2_kullanici_sesi", {m["madde"] for m in r["hatalar"]})
+        self.assertLessEqual(abs(dv["mux"]["sonra_lufs"] + 14), 1.0)
 
     def test_kullanici_ses_duzenlemesi_dogrusal_kazanc(self):
         yaz(os.path.join(self.film, "KURGU", "TASLAK_FARK.json"), {"geri_uretilemeyen": [{"kanal": "Muzik", "tur": "ses_ayari"}]})
@@ -378,7 +389,7 @@ class Evren(Temel):
         self.assertEqual(oku(os.path.join(_ortam.VERI, "HESAP", "YEDEK_DURUMU.json"))[f"evren/{SERI}"]["durum"], "ertelendi")
 
     def test_robocopy_mir_yok(self):
-        gorulen = []
+        gorulen = []; os.makedirs(self.hedef, exist_ok=True)
         with unittest.mock.patch.object(dy.subprocess, "run", lambda k, **_: gorulen.append(k) or subprocess.CompletedProcess(k, 1)):
             r = dy.kopya_yedek(evren.seri_yolu(SERI), os.path.join(self.hedef, "R"), robocopy=True)
         self.assertTrue(gorulen and gorulen[0][0] == "robocopy" and "/E" in gorulen[0])

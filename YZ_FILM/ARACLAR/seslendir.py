@@ -95,7 +95,8 @@ def tts_hazirla(film, rs, saglayici=None, kapsam="ANIMATIK", asama="A12"):
     sahte = so.sahte_mi(film, saglayici)
     olmayan = []; zin = so.zincir("tts", film, saglayici_=saglayici, hazir_olmayan=olmayan)
     if not zin:
-        log(f"!! hazır TTS sağlayıcısı yok: {'; '.join(f'{x['saglayici']}: {x['neden']}' for x in olmayan) or 'zincir boş'}")
+        neden = "; ".join("%s: %s" % (x["saglayici"], x["neden"]) for x in olmayan) or "zincir boş"
+        log(f"!! hazır TTS sağlayıcısı yok: {neden}")
         return so.ORTAM, None, None
     asr = (so.zincir("asr", film, saglayici_=saglayici) or [None])[0]
     D = diyalog_oku(film); olc, yaz_maddeleri = [], []

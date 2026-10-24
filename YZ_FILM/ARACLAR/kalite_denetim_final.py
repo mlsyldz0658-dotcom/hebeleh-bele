@@ -12,9 +12,10 @@ mux_ofset_max_kare, mux_korelasyon_min, mux_pencere, yayin_sure_tolerans_kare):
   mux   ses_master.wav varsa 40 × 10 sn pencerede çapraz korelasyon: her pencerede ofset ≤ 1 kare ve tepe ≥ 0,9               H
   S8.2  kullanıcı CapCut'ta sesle oynadıysa (TASLAK_FARK geri_uretilemeyen) yeniden karıştırma yok: mux türü dogrusal_kazanc     H
   biçim 2160p ve KURGU_PLANI fps'i (değilse BAYRAK: dışa aktarım ayarı)
-Mux kararı ([KU2] §4.5.8): yükseklik/tepe tutmuyorsa ve kanıt varsa `son_miks.py --mux <tur>` (PR-9, tek miks kodu) BİR KEZ çalışır,
-  sonra yeniden ölçülür (sonuç YAYIN/<FILM>_4K_MUX.mp4; kullanıcının dosyası değişmez). Tür: kullanıcı ses düzenlemesi varsa
-  dogrusal_kazanc, yoksa ve korelasyon kanıtı varsa master_stem; kanıt yoksa mux yapılmaz → HATA + "A16n" önerisi. son_miks yoksa HATA.
+Mux kararı ([KU2] §4.5.8): yükseklik/tepe tutmuyorsa ve kanıt varsa son_miks (PR-9, tek miks kodu) BİR KEZ çalışır, sonra yeniden
+  ölçülür (sonuç YAYIN/<FILM>_4K_MUX.mp4; kullanıcının dosyası değişmez). Tür: kullanıcı ses düzenlemesi varsa dogrusal_kazanc
+  (son_miks.miksle: kullanıcının miksine tek kazanç + tepe sınırlayıcı, yeniden karıştırma yok), yoksa ve korelasyon kanıtı varsa
+  master_stem (`son_miks.py --final --mux <video> --cikti <mp4>`); kanıt yoksa mux yapılmaz → HATA + "A16n" önerisi. son_miks yoksa HATA.
 Çıktı: YAYIN/YAYIN_DOGRULAMA.json (sonuc, hazir_degil_nedeni) · kapı raporu _RAPOR/S8_FINAL_t<n>.json (kapı S8, kapsam FINAL).
 ffmpeg yoksa ya da dosya medya değilse (sahte deneme) ölçümler ÖLÇÜLEMEDİ (= BAYRAK; geçmiş sayılmaz).
 Kodda: olc_yukseklik(p) → {lufs, tepe_dbtp, lra} · araliklar(p) → {siyah, donma, sessizlik} · sure_fps(p) · mux_korelasyon(a, b, fps)

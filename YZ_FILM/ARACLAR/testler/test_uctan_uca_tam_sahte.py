@@ -16,7 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HER
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
 import _ortam
 import ortak, kapi
-import film
+import film, evren
 from hat import asamalar as HAT
 
 SURE_MAX_SN = 300
@@ -118,7 +118,8 @@ class UctanUcaTamSahte(unittest.TestCase):
                 arg = [x.replace("{tur}", "1") for x in s.argumanlar] + ["--film", self.kok]
                 if arac == "jenerik.py": arg += ["--boyut", "160x90", "--sure", "5"]
                 r = subprocess.run([sys.executable, p] + arg, env=env, capture_output=True, text=True, timeout=120)
-                if s.arac == "evren.py" and not glob.glob(os.path.join(ortak.yollar()["evren_kok"], "*", "evren.json")):
+                seri = evren.film_serisi(self.kok)
+                if s.arac == "evren.py" and not (seri and os.path.isfile(evren.seri_yolu(seri, "evren.json"))):
                     self.assertEqual(r.returncode, 1, r.stdout)          # sahte HIKAYE'de ön kayıt yok: açık HATA, sessiz geçiş yok
                     kosulan.append(f"{kod}/{s.kod} (evren yok → 1)"); continue
                 self.assertEqual(r.returncode, 0, f"{kod}/{s.kod} {arac} {arg}: {r.stdout[-500:]} {r.stderr[-500:]}")

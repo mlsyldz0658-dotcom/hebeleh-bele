@@ -30,8 +30,15 @@ SESSIZ_DB = -120.0
 
 # --- argümanlar ----------------------------------------------------------------------------------------------------
 def film_ve_arg(argv):
-    """(film_kok, kalan_argv). Film: --film <ad|yol> ya da ilk konumsal klasör (film.py v1 ve .bat'lar böyle çağırır)."""
-    argv = list(argv)
+    """(film_kok, kalan_argv). Film: --film <ad|yol> ya da ilk konumsal klasör (film.py v1 ve .bat'lar böyle çağırır).
+    Film sahte açıldıysa (HAZIRLIK.json saglayici: sahte; film.py yeni --saglayici sahte) argv'ye --saglayici sahte eklenir."""
+    kok, argv = _film_ve_arg(list(argv))
+    if "--saglayici" not in argv and (ortak.json_oku(os.path.join(kok, "HAZIRLIK.json"), {}) or {}).get("saglayici") == "sahte":
+        argv += ["--saglayici", "sahte"]
+    return kok, argv
+
+
+def _film_ve_arg(argv):
     if "--film" in argv:
         i = argv.index("--film"); f = argv[i + 1] if i + 1 < len(argv) else None
         del argv[i:i + 2]
@@ -502,6 +509,10 @@ def ses_cizelgesi(kok): return ortak.json_oku(os.path.join(kok, "KURGU", "SES_CI
 
 
 def ses_cizelgesi_yaz(kok, d, kp_yol, kp):
+    st = dict(d.get("stemler") or {})
+    for ad in ("diyalog", "efekt", "ambiyans", "muzik"):
+        if os.path.exists(stem_yolu(kok, ad)): st[ad] = goreli(kok, stem_yolu(kok, ad))
+    d["stemler"] = st; d.setdefault("stem_kazanc_db", {a: 0.0 for a in st})
     d.update(surum=1, cizelge=kp.get("cizelge", "T2"), fps=FPS,
              kurgu_plani={"dosya": goreli(kok, kp_yol) if kp_yol else None, "imza": plan_imza(kp), "surum": kp.get("kurgu_surumu")})
     ortak.atomik_yaz(os.path.join(kok, "KURGU", "SES_CIZELGESI.json"), d)

@@ -67,7 +67,12 @@ def _yasak(metin):
     return istem_derle.yasak_bul(metin)
 
 
-def _ad(x): return re.sub(r"[_]+", " ", str(x)).strip()
+OGE_EN = {"kapi": "door", "ocak": "hearth", "ocak_atesi": "hearth fire", "ates": "fire", "pencere": "window", "pencere_kepenk": "window shutters",
+          "kepenk": "shutters", "mum": "candle", "lamba": "lamp", "fener": "lantern", "masa": "table", "sandalye": "chair", "sandik": "wooden trunk",
+          "yatak_ortusu": "blanket", "perde": "curtain", "kapi_esigi": "doorway", "merdiven": "stairs", "duvar": "wall", "zemin": "floor"}
+
+
+def _ad(x): return OGE_EN.get(str(x), re.sub(r"[_]+", " ", str(x)).strip())
 
 
 # --- evren (salt okuma) ------------------------------------------------------------------------------------------
@@ -305,7 +310,7 @@ def kart_istemi(tur, k, varyant=None, dunya=None):
     elif tur == "mekan":
         pl = varyant or {}
         notr = "; ".join(f"the {_ad(o)} is {DURUM_EN.get(d, _ad(d))}" for o, d in (k.get("notr_durum") or {}).items())
-        gor = ", ".join(f"the {g.get('ad') or _ad(g.get('id'))} {UC_EN.get(g.get('ucte_bir'), '')}".strip()
+        gor = ", ".join(f"{_belirli(g.get('ad') or _ad(g.get('id')))} {UC_EN.get(__import__('olcum').ucte_bir_normal(g.get('ucte_bir')), '')}".strip()
                         for g in pl.get("gorunen") or [] if isinstance(g, dict))
         s = (f"An empty location plate photograph, no people, no figures: {k.get('tarif_en')}. " + (pl.get("aci_en") + ". " if pl.get("aci_en") else "")
              + (f"Visible: {gor}. " if gor else "") + (notr[:1].upper() + notr[1:] + ". " if notr else "") + "Neutral, even exposure.")

@@ -8,7 +8,7 @@ Açılma kuralı (D-19, [SON] K-3) — izin_karari(tur):
     gozlemci/izleyici/dinleyici AÇIK (FILM_AYAR usd_tavan_film 0 olsa bile; ücretsiz anahtar faturalandırmasız alınır, §8.2).
   - katman "ucretli" ise yalnız izinler.gemini_api_ucretli = true VE butce.usd_tavan_film > 0 ile açık.
   - gorsel türü ek olarak Ö0-e'nin "gorsel_uygun: true" kararını ister (yoksa kapalı; paket yolu sürer).
-  - Ö0-e "video_giris: false" / "ses_giris: false" dediyse izleyici / dinleyici kapalı ("ücretsiz katman video/ses girişini kabul etmiyor").
+  - Ö0-e "video_girisi: false" / "ses_girisi: false" dediyse izleyici / dinleyici kapalı ("ücretsiz katman video/ses girişini kabul etmiyor").
 Hatalar → Kisitlandi: 429/RESOURCE_EXHAUSTED → kota · 401/403 → anahtar · ağ → ag · güvenlik reddi → filtre_red · diğer → bilinmeyen.
   Kota dolunca çağıran (D-19) dikey kesit ve son kurgu için bir kez 8 BEKLE ile bekler; öteki çağrılar ÖLÇÜLEMEDİ olur.
 Anahtar yalnız istek başlığında (x-goog-api-key) gider; asla URL'ye, loga, rapora yazılmaz. Kullanım kaydı <veri>/HESAP/GEMINI_KULLANIM.jsonl
@@ -58,8 +58,10 @@ def izin_karari(tur):
     if katman == "ucretli":
         izin = bool((a.get("izinler") or {}).get("gemini_api_ucretli")); tavan = (a.get("butce") or {}).get("usd_tavan_film") or 0
         if not (izin and tavan > 0): return False, "Gemini katmanı ücretli; izinler.gemini_api_ucretli ve usd_tavan_film > 0 yok"
-    if tur == "izleyici" and o.get("video_giris") is False: return False, "ücretsiz katman video girişini kabul etmiyor (Ö0-e): ölçülemedi"
-    if tur == "dinleyici" and o.get("ses_giris") is False: return False, "ücretsiz katman ses girişini kabul etmiyor (Ö0-e): ölçülemedi"
+    if tur == "izleyici" and False in (o.get("video_girisi"), o.get("video_giris")):
+        return False, "ücretsiz katman video girişini kabul etmiyor (Ö0-e): ölçülemedi"
+    if tur == "dinleyici" and False in (o.get("ses_girisi"), o.get("ses_giris")):
+        return False, "ücretsiz katman ses girişini kabul etmiyor (Ö0-e): ölçülemedi"
     if tur == "gorsel" and not o.get("gorsel_uygun"): return False, "Ö0-e görsel kotasını uygun bulmadı (ya da ölçülmedi): paket yolu"
     return True, "ucretsiz" if katman != "ucretli" else "ucretli_izinli"
 

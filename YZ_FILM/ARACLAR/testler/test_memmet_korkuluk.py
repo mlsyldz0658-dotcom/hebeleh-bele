@@ -526,6 +526,17 @@ class BlokV2(unittest.TestCase):
         self.assertEqual(c.exception.kod, "kilitli")
         self.assertEqual(json.load(open(memmet.kilit_yolu(), encoding="utf-8"))["neden"], "hesap_degisti")
 
+    def test_bakiye_salt_okunur(self):
+        m = self.mm("elle"); self.sayfa.metin = "Flow · Kalan 1.250 AI kredi"
+        with contextlib.redirect_stdout(io.StringIO()): b = m.bakiye_oku()
+        self.assertEqual(b, 1250); self.assertEqual(self.sayfa.islemler, [], "bakiye okuma sayfada işlem yapmaz")
+        self.assertEqual(json.load(open(os.path.join(memmet.HESAP, "FLOW_BAKIYE.json"), encoding="utf-8"))["bakiye"], 1250)
+        self.sayfa.metin = "Flow"
+        with contextlib.redirect_stdout(io.StringIO()): self.assertIsNone(m.bakiye_oku())
+        self.sayfa.metin = UYARI
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(memmet.Durdur) as c: m.bakiye_oku()
+        self.assertEqual(c.exception.kod, "olagandisi")
+
     def test_gunduz_otomatik_kip_yok_varsayilan_elle(self):
         self.assertEqual(memmet.KIPLER, ("elle", "gece"))
         for k in ("gunduz", "otomatik"):

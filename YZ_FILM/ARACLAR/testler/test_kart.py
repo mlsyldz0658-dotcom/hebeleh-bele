@@ -58,7 +58,8 @@ class Kart(unittest.TestCase):
             self.assertNotIn("Mara", k["istem"])
         self.assertIn("plain light-grey studio backdrop", ks["karakter_mara_k1"]["istem"])
         self.assertIn("no people", ks["mekan_kulube_ic_genel"]["istem"])
-        self.assertIn("the kapi is closed", ks["mekan_kulube_ic_genel"]["istem"])
+        self.assertIn("The door is closed", ks["mekan_kulube_ic_genel"]["istem"])
+        self.assertIn("Visible: a closed wooden door in the middle of the frame", ks["mekan_kulube_ic_genel"]["istem"])
 
     def test_temiz_kartlar_gecer(self):
         kok, r, rap = hazirla()

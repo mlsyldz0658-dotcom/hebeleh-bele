@@ -221,7 +221,9 @@ def sahte_uret(kok, tur="gorsel", hata_plan=None):
         no = v.get("plan") or 0
         renk = ((no * 67) % 200 + 30, (no * 131) % 200 + 30, (no * 29) % 200 + 30)
         im = Image.new("RGB", (W, H), renk); d = ImageDraw.Draw(im)
-        for i in range(0, W, 40): d.line([(i, 0), (i, H)], fill=(255 - renk[0], 200, 120), width=2)
+        if v["tur"] != "kart":
+            for i in range(0, W, 40): d.line([(i, 0), (i, H)], fill=(255 - renk[0], 200, 120), width=2)
+        else: im = Image.new("RGB", (W, H), (200, 200, 200)); d = ImageDraw.Draw(im); d.rectangle([500, 150, 876, 700], fill=(90, 70, 60))
         d.text((40, 40), f"SAHTE {v['dosya']}", fill=(255, 255, 255))
         if v["tur"] == "gorsel":
             hs = hp.get(no) or hp.get(str(no)) or hp.get("*") or []

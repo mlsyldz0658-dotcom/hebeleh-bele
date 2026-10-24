@@ -13,6 +13,7 @@ Zincir (§5.6 buyutme): yz_buyutucu (Real-ESRGAN türü, ayrı CUDA ortamı, KUR
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
+import numpy as np
 import ortak, kurgu_ortak as ko
 
 SURUM = "buyut 1.0"
@@ -23,10 +24,14 @@ SURE_TAVAN_ORAN = 12.0          # 1 saatlik içerik için 12 saat (D-29; tahmin)
 def yuz_denetle(once, sonra, t):
     """SFace benzerliği (büyütme öncesi ↔ sonrası aynı kare). olcum paketi yoksa None (ÖLÇÜLEMEDİ)."""
     try:
-        from olcum import yuz
-        a, b = ko.kare_rgb(once, t, 640, 360), ko.kare_rgb(sonra, t, 640, 360)
+        from olcum import kimlik                                  # YuNet + SFace (adım 12)
+        if not kimlik.hazir()[0]: return None
+        a, b = ko.kare_rgb(once, t, 1280, 720), ko.kare_rgb(sonra, t, 1280, 720)
         if a is None or b is None: return None
-        return float(yuz.benzerlik(a, b))
+        fa, fb = kimlik.yuzler(np.ascontiguousarray(a[:, :, ::-1])), kimlik.yuzler(np.ascontiguousarray(b[:, :, ::-1]))
+        if not fa or not fb: return None
+        en = lambda fs: max(fs, key=lambda f: f["kutu"][2] * f["kutu"][3])
+        return float(kimlik.benzerlik(np.asarray(en(fa)["vektor"]), np.asarray(en(fb)["vektor"])))
     except Exception: return None
 
 

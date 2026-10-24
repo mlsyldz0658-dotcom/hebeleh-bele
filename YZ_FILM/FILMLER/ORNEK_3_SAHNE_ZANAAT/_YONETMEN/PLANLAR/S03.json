@@ -1,0 +1,177 @@
+{
+ "sahne_grubu": "S03",
+ "planlar": [
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 4.6
+   },
+   "amac": "Mara masaya döner",
+   "zanaat": {
+    "kod": "S03-P01",
+    "sahne_grubu": "S03",
+    "plan_tipi": "eylem",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM8",
+     "kadraj": "O",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "O",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": true
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 3.2,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "yurur",
+      "hedef": "masa",
+      "olcu": "iki_yavas_adim",
+      "hiz": "yavas",
+      "etki": {
+       "mara.isaret": "M5"
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 3.4,
+      "bit": 5.0,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "omuz_dusurur",
+      "govde": "omuzlar"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "Voss geri gelecek",
+      "alt_metin": "yorgun ama pes etmiyor",
+      "dis_ifade": {
+       "bas": "gizli_endise",
+       "bit": "huzun"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": "plaka:ic_genel",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "eylem",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Kaptan gidince Mara yorgun adımlarla masaya dönüyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 6
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 2.4
+   },
+   "amac": "Karanlık",
+   "zanaat": {
+    "kod": "S03-P02",
+    "sahne_grubu": "S03",
+    "plan_tipi": "ekleme",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM2",
+     "kadraj": "D",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "el",
+      "yuz_acisi": "gorunmez",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.1,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "birakir",
+      "govde": "sol_el",
+      "hedef": "masa",
+      "etki": {
+       "mara.eller.sol.tutar": null,
+       "mara.eller.sol.sekil": "serbest"
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 2.3,
+      "bit": 4.0,
+      "ozne": "mara",
+      "tur": "fiziksel",
+      "fiil": "sondurur",
+      "hedef": "fener",
+      "etki": {
+       "fener.durum": "sonuk"
+      }
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {},
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S03-P01",
+     "baslangic": "turev",
+     "ebeveyn": "KAM1@1",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "sert",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara anahtarı masaya bırakıp feneri üfleyerek söndürüyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "merak_kapat": [
+     "m01"
+    ],
+    "kullanim_bilgi": [
+     "kur_anahtar"
+    ],
+    "yogunluk": 7
+   }
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "_surum": 1,
+ "_aciklama": "Dış ifade sözlüğü (TASARIM D-22; [ESY] EK2). zanaat.oyunculuk.<karakter>.dis_ifade.{bas, bit} yalnız bu değerlerden olur. en: filtre-güvenli EN karşılık (istemlere derlenir; 'cheek', 'trembles' gibi filtre kelimeleri giremez), tr: Türkçe, kor: kör ifade sorusunun beklenen cevabı (neutral, fear, anger, sadness, tenderness, surprise, determination, joy, contempt, unclear), siddet: varsayılan şiddet 0–3. 'notr' insanlı planda gerekçe ister (oyunculuk.<k>.notr_neden).",
+ "kor_secenekleri": ["neutral", "fear", "anger", "sadness", "tenderness", "surprise", "determination", "joy", "contempt", "unclear"],
+ "degerler": {
+  "notr": {"en": "a neutral, still face", "tr": "nötr, kıpırtısız yüz", "kor": "neutral", "siddet": 0},
+  "dikkatli": {"en": "an alert face, eyes watchful", "tr": "tetikte, dikkatli bakış", "kor": "determination", "siddet": 1},
+  "kontrollu_sakin": {"en": "a calm, controlled face, jaw set", "tr": "kontrollü, sakin yüz", "kor": "neutral", "siddet": 1},
+  "gizli_endise": {"en": "a composed face, eyes darting, lips pressed together", "tr": "sakin görünmeye çalışan, gözleri kaçan yüz", "kor": "fear", "siddet": 2},
+  "korku": {"en": "wide eyes, brows raised, breath held", "tr": "korkmuş, gözler iri", "kor": "fear", "siddet": 2},
+  "dehset": {"en": "frozen face, eyes wide open, mouth slightly open", "tr": "dehşete düşmüş, donmuş yüz", "kor": "fear", "siddet": 3},
+  "ofke": {"en": "a hard glare, brows lowered, nostrils flared", "tr": "öfkeli, sert bakış", "kor": "anger", "siddet": 2},
+  "sert": {"en": "a stern face, steady gaze", "tr": "sert, sabit bakış", "kor": "determination", "siddet": 1},
+  "huzun": {"en": "downcast eyes, mouth soft", "tr": "hüzünlü, bakışlar aşağıda", "kor": "sadness", "siddet": 2},
+  "yas": {"en": "red-rimmed eyes, a heavy, slack face", "tr": "yaslı, ağır yüz", "kor": "sadness", "siddet": 3},
+  "sefkat": {"en": "a soft gaze, a faint warm smile", "tr": "şefkatli, yumuşak bakış", "kor": "tenderness", "siddet": 2},
+  "saskinlik": {"en": "raised brows, lips parted", "tr": "şaşkın, kaşlar havada", "kor": "surprise", "siddet": 2},
+  "kararlilik": {"en": "a firm jaw, eyes fixed ahead", "tr": "kararlı, çene sıkı", "kor": "determination", "siddet": 2},
+  "umut": {"en": "eyes brightening, a small hopeful smile", "tr": "umutlu, gözleri parlayan", "kor": "joy", "siddet": 1},
+  "sevinc": {"en": "a broad open smile, eyes creased", "tr": "sevinçli, geniş gülümseme", "kor": "joy", "siddet": 2},
+  "kucumseme": {"en": "one corner of the mouth raised, eyes half-lidded", "tr": "küçümseyen, dudağın bir ucu kalkık", "kor": "contempt", "siddet": 2},
+  "yorgunluk": {"en": "heavy eyelids, shoulders slumped", "tr": "yorgun, göz kapakları ağır", "kor": "sadness", "siddet": 1}
+ },
+ "duygu_esleme": {"merak": "dikkatli", "gerilim": "gizli_endise", "korku": "korku", "saskinlik": "saskinlik", "sefkat": "sefkat", "mizah": "sevinc",
+                  "huzun": "huzun", "umut": "umut", "zafer": "sevinc", "ofke": "ofke", "huzur": "kontrollu_sakin"},
+ "izler": ["gozler_kizarik", "nefes_nefese", "yuz_terli", "sac_dagilmis"]
+}

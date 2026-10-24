@@ -1,0 +1,271 @@
+{
+ "_sahip": "hikaye-yazari",
+ "_surum": 1,
+ "_uretim": {
+  "asama": "A06",
+  "gorev": null,
+  "girdi_imza": null,
+  "arac_surum": "fikstur",
+  "esik_surum": null,
+  "sonuc": "GEC",
+  "zaman": "2026-10-23T12:00:00+03:00",
+  "ortam": "bulut"
+ },
+ "kilit": true,
+ "evren": "ORNEK",
+ "film_no": 1,
+ "film_sure_hedef_sn": 2400,
+ "logline": "A huntress hides a secret in her cabin while the captain of the burners knocks at her door.",
+ "karakterler": {
+  "mara": {
+   "ad": "Mara",
+   "rol": "kahraman",
+   "ses_karakteri": "kadın, yetişkin; alçak ve hafif boğuk",
+   "kostum": {
+    "varsayilan": "k1",
+    "varyantlar": [
+     "k1"
+    ]
+   },
+   "gorsel_ayirt_edici": [
+    {
+     "oge": "kızıl tek örgü",
+     "hikaye_baglayici": true
+    }
+   ]
+  },
+  "voss": {
+   "ad": "Voss",
+   "rol": "karsit",
+   "ses_karakteri": "erkek, orta yaşlı; derin ve sakin",
+   "kostum": {
+    "varsayilan": "k1",
+    "varyantlar": [
+     "k1"
+    ]
+   }
+  }
+ },
+ "MERAK_DEFTERI": [
+  {
+   "id": "m01",
+   "soru": "Kapının ardındaki kim?",
+   "ac": "S01",
+   "kapat": "S03",
+   "tur": "kisa"
+  }
+ ],
+ "KURULUMLAR": [
+  {
+   "id": "kur_anahtar",
+   "ne": "Demir anahtar masada durur",
+   "kurulum": "S01",
+   "kullanim": "S03"
+  }
+ ],
+ "sahneler": [
+  {
+   "id": "S01",
+   "hikaye_partisi": "P1",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "gerilim",
+   "hedef_sure_sn": 12,
+   "vurus": "soguk_acilis",
+   "hedef_duygu": "merak>gerilim",
+   "yogunluk": 6,
+   "risk": "Mara'nın sırrı ortaya çıkabilir",
+   "merak_ac": [
+    "m01"
+   ],
+   "merak_kapat": [],
+   "kurulum": [
+    "kur_anahtar"
+   ],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "mara": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "islak": false,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "yanik"
+     },
+     "anahtar": {
+      "nerede": "masa",
+      "durum": "soguk_demir"
+     }
+    }
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "mara": {
+      "mekan": "kulube",
+      "kostum": "k1"
+     }
+    },
+    "nesneler": {
+     "anahtar": {
+      "kimde": "mara",
+      "el": "sol"
+     }
+    }
+   },
+   "seyirci_ogrenir": "Mara yalnız kulübesinde bir anahtarı alıyor ve kapıdan gelen sese kulak kesiliyor."
+  },
+  {
+   "id": "S02",
+   "hikaye_partisi": "P1",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "diyalog",
+   "hedef_sure_sn": 15,
+   "vurus": "ilk_kanca",
+   "hedef_duygu": "gerilim",
+   "yogunluk": 7,
+   "risk": "Voss kulübeyi arayabilir",
+   "merak_ac": [],
+   "merak_kapat": [],
+   "kurulum": [],
+   "kullanim_bilgi": [],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "mara": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 1,
+       "islak": false,
+       "yaralar": []
+      }
+     },
+     "voss": {
+      "mekan": "kulube",
+      "kostum": "k1",
+      "gorunum": {
+       "kir": 0,
+       "islak": true,
+       "yaralar": []
+      }
+     }
+    },
+    "nesneler": {
+     "fener": {
+      "kimde": "mara",
+      "el": "sag",
+      "durum": "yanik"
+     },
+     "anahtar": {
+      "kimde": "mara",
+      "el": "sol"
+     },
+     "mesale": {
+      "kimde": "voss",
+      "el": "sol",
+      "durum": "yanik"
+     }
+    }
+   },
+   "cikis_durumu": {
+    "varliklar": {
+     "voss": {
+      "mekan": "kulube"
+     }
+    },
+    "nesneler": {
+     "mesale": {
+      "kimde": "voss",
+      "el": "sol"
+     }
+    }
+   },
+   "seyirci_ogrenir": "Kaptan Voss kapıda; Mara onu içeri almıyor ama yalanı yakalanıyor."
+  },
+  {
+   "id": "S03",
+   "hikaye_partisi": "P1",
+   "mekan": "kulube",
+   "zaman": {
+    "gun": 1,
+    "saat": "gece",
+    "hava": "kar",
+    "atlama": "yok"
+   },
+   "sahne_tipi": "duygusal",
+   "hedef_sure_sn": 7,
+   "vurus": "bag",
+   "hedef_duygu": "huzun",
+   "yogunluk": 6,
+   "risk": null,
+   "merak_ac": [],
+   "merak_kapat": [
+    "m01"
+   ],
+   "kurulum": [],
+   "kullanim_bilgi": [
+    "kur_anahtar"
+   ],
+   "ironi": null,
+   "giris_durumu": {
+    "varliklar": {
+     "mara": {
+      "mekan": "kulube"
+     }
+    }
+   },
+   "cikis_durumu": {
+    "nesneler": {
+     "anahtar": {
+      "nerede": "masa"
+     },
+     "fener": {
+      "durum": "sonuk"
+     }
+    }
+   },
+   "seyirci_ogrenir": "Mara anahtarı masaya bırakıp karanlıkta kalıyor."
+  }
+ ],
+ "replikler": [
+  {
+   "id": "R0001",
+   "sahne": "S02",
+   "karakter": "mara",
+   "teslim": "soguk",
+   "metin": "It's late, Captain. What do you want?",
+   "kelime": 7,
+   "tr": "Geç oldu, Kaptan. Ne istiyorsun?"
+  },
+  {
+   "id": "R0002",
+   "sahne": "S02",
+   "karakter": "voss",
+   "teslim": "sakin_tehdit",
+   "metin": "Smoke from your chimney, on a night you swore you had no wood.",
+   "kelime": 12,
+   "tr": "Odunun kalmadığına yemin ettiğin bir gecede bacandan duman çıkıyor."
+  }
+ ]
+}

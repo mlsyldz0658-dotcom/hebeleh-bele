@@ -1,0 +1,203 @@
+{
+ "_surum": 1,
+ "id": "kulube",
+ "surum": 1,
+ "birim": "metre",
+ "yonler": "x = dogu, y = kuzey; yon_derece 0 = kuzey (pusula)",
+ "sinir": [
+  [
+   -1,
+   -4
+  ],
+  [
+   6,
+   5
+  ]
+ ],
+ "duvarlar": [
+  {
+   "id": "guney_duvar",
+   "a": [
+    0,
+    0
+   ],
+   "b": [
+    5,
+    0
+   ],
+   "aciklik": [
+    {
+     "id": "kapi",
+     "x": [
+      2.0,
+      3.0
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bati_duvar",
+   "a": [
+    0,
+    0
+   ],
+   "b": [
+    0,
+    4
+   ]
+  },
+  {
+   "id": "kuzey_duvar",
+   "a": [
+    0,
+    4
+   ],
+   "b": [
+    5,
+    4
+   ]
+  },
+  {
+   "id": "dogu_duvar",
+   "a": [
+    5,
+    0
+   ],
+   "b": [
+    5,
+    4
+   ]
+  }
+ ],
+ "ogeler": [
+  {
+   "id": "kapi",
+   "tur": "kapi",
+   "konum": [
+    2.5,
+    0.0
+   ],
+   "mentese": "bati_kasa",
+   "acilis": "iceri",
+   "ad_en": "wooden door",
+   "ad": "kapı"
+  },
+  {
+   "id": "masa",
+   "tur": "esya",
+   "konum": [
+    1.2,
+    2.6
+   ],
+   "yukseklik_m": 0.8,
+   "ad_en": "table",
+   "ad": "masa"
+  },
+  {
+   "id": "ocak",
+   "tur": "ocak",
+   "konum": [
+    4.0,
+    3.8
+   ],
+   "yukseklik_m": 1.2,
+   "ad_en": "stone hearth",
+   "ad": "ocak"
+  },
+  {
+   "id": "odun_yigini",
+   "tur": "esya",
+   "konum": [
+    4.7,
+    1.2
+   ],
+   "yukseklik_m": 1.0,
+   "engel": true,
+   "ad_en": "woodpile",
+   "ad": "odun yığını"
+  }
+ ],
+ "isaretler": {
+  "M1": {
+   "konum": [
+    2.5,
+    0.2
+   ],
+   "ad": "kapı eşiği",
+   "ad_en": "doorway"
+  },
+  "M2": {
+   "konum": [
+    2.5,
+    -1.2
+   ],
+   "ad": "basamak altı",
+   "ad_en": "foot of the step"
+  },
+  "M3": {
+   "konum": [
+    3.6,
+    3.0
+   ],
+   "ad": "ocak önü",
+   "ad_en": "hearth"
+  },
+  "M5": {
+   "konum": [
+    1.6,
+    2.4
+   ],
+   "ad": "masa önü",
+   "ad_en": "table"
+  }
+ },
+ "isik_kaynaklari": [
+  {
+   "id": "ocak_atesi",
+   "konum": [
+    4.0,
+    3.8
+   ],
+   "tur": "ates",
+   "renk": "sicak",
+   "varsayilan": "sonuk",
+   "ad_en": "hearth fire",
+   "ad": "ocak ateşi"
+  },
+  {
+   "id": "ay",
+   "konum": "gok_guneybati",
+   "tur": "ay",
+   "renk": "soguk"
+  }
+ ],
+ "plakalar": {
+  "ic_genel": {
+   "konum": [
+    4.9,
+    3.9
+   ],
+   "yon_derece": 222,
+   "lens_mm": 18,
+   "yukseklik_m": 1.6
+  },
+  "dis_kapi": {
+   "konum": [
+    1.0,
+    -0.8
+   ],
+   "yon_derece": 75,
+   "lens_mm": 24,
+   "yukseklik_m": 1.6
+  },
+  "dis_kuzey": {
+   "konum": [
+    2.3,
+    -2.4
+   ],
+   "yon_derece": 15,
+   "lens_mm": 24,
+   "yukseklik_m": 1.6
+  }
+ }
+}

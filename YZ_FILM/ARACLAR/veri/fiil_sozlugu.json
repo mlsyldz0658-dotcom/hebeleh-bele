@@ -1,0 +1,1249 @@
+{
+ "_surum": 1,
+ "_aciklama": "Fiil sözlüğü (TASARIM D-13, §6.4; [YN2] §4.5.11). Adımın fiili yalnız buradan seçilir; yoksa Y07 HATA. Alanlar: tur (fiziksel|mikro|konusma|ses_vurusu), zorunlu (adım alanları; 'a|b' biri yeter), en (EN şablon, öznesiz: tek kişili planda böyle, çok kişide başına ad gelir), tr (TR şablon: kör paket, animatik şeridi, çekim listesi), etki_sablonu (beklenen etki anahtarları; {ozne}, {hedef}, {el} yer tutucu), olay (dünya defteri olay türü), durum_degistirir (true ise etkisiz adım K0.5 BAYRAK), ince_el (Y09: OG ve daha geniş kadrajda BAYRAK), beklenen_hiz (V2 hareket hızı; birim kare genişliği/sn, hız sınıfına göre [alt, üst]; tahmin, ders defteri kalibre eder), sure_carpani (ölçülen/planlanan; başlangıç 1,0; kirp_oner kalibre eder). Yer tutucular: {pos} iyelik (her/his/its), {hedef}, {olcu}, {yon}, {el} (karakterin KENDİ eli: 'her left hand'), {kol}, {el_sekli}, {hiz}. Şablonlarda filtre kelimesi, yasak sonuç fiili ve çıplak left/right yoktur (test_plan_dili).",
+ "_hiz_birimi": "kare_genisligi_sn",
+ "_olcu": {
+  "hafif": {
+   "en": "slightly",
+   "tr": "hafifçe"
+  },
+  "belirgin": {
+   "en": "clearly",
+   "tr": "belirgin biçimde"
+  },
+  "bir_adim": {
+   "en": "one step",
+   "tr": "bir adım"
+  },
+  "iki_adim": {
+   "en": "two steps",
+   "tr": "iki adım"
+  },
+  "iki_yavas_adim": {
+   "en": "two slow steps",
+   "tr": "iki yavaş adım"
+  },
+  "uc_adim": {
+   "en": "three steps",
+   "tr": "üç adım"
+  },
+  "yarim_tur": {
+   "en": "a half turn",
+   "tr": "yarım tur"
+  },
+  "ceyrek_tur": {
+   "en": "a quarter turn",
+   "tr": "çeyrek tur"
+  },
+  "_desen_cm": "^[0-9]+(\\.[0-9]+)?cm$",
+  "_desen_derece": "^[0-9]+_derece$"
+ },
+ "fiiller": {
+  "yurur": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "olcu",
+    "hedef|yon"
+   ],
+   "en": "walks {olcu} toward the {hedef}",
+   "en_yon": "walks {olcu} {yon}",
+   "tr": "{hedef} yönüne {olcu} yürür",
+   "tr_yon": "{yon} {olcu} yürür",
+   "etki_sablonu": [
+    "{ozne}.isaret"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.04,
+     0.12
+    ],
+    "normal": [
+     0.08,
+     0.2
+    ],
+    "hizli": [
+     0.15,
+     0.35
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "geri_cekilir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "olcu"
+   ],
+   "en": "steps back {olcu}",
+   "tr": "{olcu} geri çekilir",
+   "etki_sablonu": [
+    "{ozne}.isaret"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.03,
+     0.1
+    ],
+    "normal": [
+     0.06,
+     0.16
+    ],
+    "hizli": [
+     0.12,
+     0.3
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "durur": {
+   "tur": "fiziksel",
+   "zorunlu": [],
+   "en": "comes to a stop",
+   "tr": "durur",
+   "etki_sablonu": [
+    "{ozne}.poz"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.05
+    ],
+    "normal": [
+     0.0,
+     0.08
+    ],
+    "hizli": [
+     0.0,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "doner": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "hedef|yon"
+   ],
+   "en": "turns to face the {hedef}",
+   "en_yon": "turns {yon}",
+   "tr": "{hedef} tarafına döner",
+   "tr_yon": "{yon} döner",
+   "etki_sablonu": [
+    "{ozne}.yuz_yonu"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.06
+    ],
+    "normal": [
+     0.03,
+     0.1
+    ],
+    "hizli": [
+     0.06,
+     0.18
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "uzanir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef",
+    "olcu"
+   ],
+   "en": "extends {kol} toward the {hedef}, fingers stopping {olcu} above it",
+   "tr": "{kol} {hedef} tarafına uzatır, parmaklar {olcu} yukarıda durur",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.yer"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.02,
+     0.08
+    ],
+    "normal": [
+     0.04,
+     0.12
+    ],
+    "hizli": [
+     0.08,
+     0.2
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kavrar": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "el_sekli",
+    "hedef"
+   ],
+   "en": "{el} closes around the {hedef}: {el_sekli}",
+   "en_kiskac": "{elsiz} thumb and index finger close around the {hedef}, other fingers curled",
+   "tr": "{el_ile} {hedef} kavrar ({el_sekli})",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.sekil",
+    "{ozne}.eller.{el}.tutar",
+    "{hedef}.kimde",
+    "{hedef}.el"
+   ],
+   "olay": "nesne_al",
+   "durum_degistirir": true,
+   "ince_el": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.04
+    ],
+    "normal": [
+     0.01,
+     0.06
+    ],
+    "hizli": [
+     0.02,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "birakir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef"
+   ],
+   "en": "{el} lowers the {nesne} onto the {hedef} and the fingers open",
+   "tr": "{el_ile} tuttuğu {nesne} {hedef} üstüne bırakır",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.tutar",
+    "{nesne}.nerede"
+   ],
+   "olay": "nesne_birak",
+   "durum_degistirir": true,
+   "ince_el": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.05
+    ],
+    "normal": [
+     0.01,
+     0.08
+    ],
+    "hizli": [
+     0.03,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "verir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef"
+   ],
+   "en": "holds out the {nesne} in {el} to {hedef}, who closes a hand around it",
+   "tr": "{el_ile} tuttuğu {nesne} {hedef} uzatır; o da kavrar",
+   "etki_sablonu": [
+    "{nesne}.kimde",
+    "{nesne}.el"
+   ],
+   "olay": "nesne_ver",
+   "durum_degistirir": true,
+   "ince_el": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "el_degistirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde"
+   ],
+   "en": "passes the {nesne} from {el} to the other hand",
+   "tr": "{nesne} öbür eline geçirir",
+   "etki_sablonu": [
+    "{nesne}.el"
+   ],
+   "olay": "nesne_el_degis",
+   "durum_degistirir": true,
+   "ince_el": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.04
+    ],
+    "normal": [
+     0.01,
+     0.06
+    ],
+    "hizli": [
+     0.02,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kaldirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "olcu"
+   ],
+   "en": "raises {el} {olcu}",
+   "en_nesne": "raises the {nesne} in {el} {olcu}",
+   "tr": "{el} {olcu} kaldırır",
+   "tr_nesne": "{el_ile} tuttuğu {nesne} {olcu} kaldırır",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.yer"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.14
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "indirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "olcu"
+   ],
+   "en": "lowers {el} {olcu}",
+   "en_nesne": "lowers the {nesne} in {el} {olcu}",
+   "tr": "{el} {olcu} indirir",
+   "tr_nesne": "{el_ile} tuttuğu {nesne} {olcu} indirir",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.yer"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.14
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "iter": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef",
+    "olcu"
+   ],
+   "en": "pushes the {hedef} {olcu} with {el}",
+   "tr": "{hedef} {el_ile} {olcu} iter",
+   "etki_sablonu": [
+    "mekan_durumu.{hedef}"
+   ],
+   "olay": "mekan_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.05,
+     0.15
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "ceker": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef",
+    "olcu"
+   ],
+   "en": "pulls the {hedef} {olcu} with {el}",
+   "tr": "{hedef} {el_ile} {olcu} çeker",
+   "etki_sablonu": [
+    "mekan_durumu.{hedef}"
+   ],
+   "olay": "mekan_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.05,
+     0.15
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "el_kaydirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef",
+    "olcu"
+   ],
+   "en": "{el} slides {olcu} {yon} to the {hedef}",
+   "tr": "{el} {olcu} kaydırarak {hedef} getirir",
+   "etki_sablonu": [
+    "{ozne}.eller.{el}.yer"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.04
+    ],
+    "normal": [
+     0.01,
+     0.06
+    ],
+    "hizli": [
+     0.03,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "yakar": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef"
+   ],
+   "en": "touches a burning splinter in {el} to the wick of the {hedef}; a small flame rises",
+   "tr": "{el_ile} tuttuğu kıymıkla {hedef} fitilini tutuşturur",
+   "etki_sablonu": [
+    "{hedef}.durum"
+   ],
+   "olay": "nesne_durum",
+   "durum_degistirir": true,
+   "ince_el": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.04
+    ],
+    "normal": [
+     0.01,
+     0.06
+    ],
+    "hizli": [
+     0.02,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "sondurur": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "hedef"
+   ],
+   "en": "leans in and blows out the flame of the {hedef}",
+   "tr": "eğilip {hedef} alevini üfler, söndürür",
+   "etki_sablonu": [
+    "{hedef}.durum"
+   ],
+   "olay": "nesne_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.04
+    ],
+    "normal": [
+     0.01,
+     0.06
+    ],
+    "hizli": [
+     0.02,
+     0.1
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kapusonu_indirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde"
+   ],
+   "en": "pushes the hood back off {pos} head with {el}",
+   "tr": "{el_ile} kapüşonunu başından geriye iter",
+   "etki_sablonu": [
+    "{ozne}.kostum_durumu"
+   ],
+   "olay": "kostum_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kapusonu_takar": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde"
+   ],
+   "en": "pulls the hood up over {pos} head with {el}",
+   "tr": "{el_ile} kapüşonunu başına çeker",
+   "etki_sablonu": [
+    "{ozne}.kostum_durumu"
+   ],
+   "olay": "kostum_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "pelerin_sarar": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "govde",
+    "hedef"
+   ],
+   "en": "folds the edge of {pos} cloak over the {hedef} with {el}",
+   "tr": "{el_ile} pelerininin ucunu {hedef} üstüne kapatır",
+   "etki_sablonu": [
+    "{hedef}.nerede"
+   ],
+   "olay": "nesne_durum",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "oturur": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "hedef"
+   ],
+   "en": "lowers {pos} body and sits on the {hedef}",
+   "tr": "{hedef} üstüne oturur",
+   "etki_sablonu": [
+    "{ozne}.poz"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kalkar": {
+   "tur": "fiziksel",
+   "zorunlu": [],
+   "en": "rises to {pos} feet",
+   "tr": "ayağa kalkar",
+   "etki_sablonu": [
+    "{ozne}.poz"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "diz_coker": {
+   "tur": "fiziksel",
+   "zorunlu": [],
+   "en": "lowers onto one knee",
+   "tr": "tek dizinin üstüne çöker",
+   "etki_sablonu": [
+    "{ozne}.poz"
+   ],
+   "olay": "yer_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "egilir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "hedef|yon"
+   ],
+   "en": "bends forward over the {hedef}",
+   "en_yon": "bends {yon}",
+   "tr": "{hedef} üstüne eğilir",
+   "tr_yon": "{yon} eğilir",
+   "etki_sablonu": [
+    "{ozne}.poz"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.12
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kadraja_girer": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "yon"
+   ],
+   "en": "enters from {yon}",
+   "tr": "{yon} kadraja girer",
+   "etki_sablonu": [
+    "{ozne}.isaret"
+   ],
+   "olay": "giris",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.05,
+     0.15
+    ],
+    "normal": [
+     0.1,
+     0.25
+    ],
+    "hizli": [
+     0.2,
+     0.45
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kadrajdan_cikar": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "yon"
+   ],
+   "en": "exits toward {yon}",
+   "tr": "{yon} kadrajdan çıkar",
+   "etki_sablonu": [
+    "{ozne}.isaret"
+   ],
+   "olay": "cikis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.05,
+     0.15
+    ],
+    "normal": [
+     0.1,
+     0.25
+    ],
+    "hizli": [
+     0.2,
+     0.45
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kuyruk_kaydirir": {
+   "tur": "fiziksel",
+   "zorunlu": [
+    "olcu"
+   ],
+   "en": "the tip of {pos} scaled tail slides {olcu} {yon} and vanishes from view",
+   "tr": "kuyruğunun ucu {olcu} {yon} kayıp kaybolur",
+   "etki_sablonu": [
+    "{ozne}.gizli_arkasinda"
+   ],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.01,
+     0.05
+    ],
+    "normal": [
+     0.02,
+     0.08
+    ],
+    "hizli": [
+     0.04,
+     0.14
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "cene_kaldirir": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "lifts {pos} chin {olcu}",
+   "tr": "çenesini {olcu} kaldırır",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.05
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "cene_sikar": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "the jaw tightens, mouth closed",
+   "tr": "çenesi kasılır, ağzı kapalı",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "bakis_kaydirir": {
+   "tur": "mikro",
+   "zorunlu": [
+    "hedef"
+   ],
+   "en": "{pos} eyes shift to the {hedef}",
+   "tr": "gözleri {hedef} tarafına kayar",
+   "etki_sablonu": [
+    "{ozne}.bakis"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "basini_cevirir": {
+   "tur": "mikro",
+   "zorunlu": [
+    "hedef|yon"
+   ],
+   "en": "turns {pos} head toward the {hedef}",
+   "en_yon": "turns {pos} head {yon}",
+   "tr": "başını {hedef} tarafına çevirir",
+   "tr_yon": "başını {yon} çevirir",
+   "etki_sablonu": [
+    "{ozne}.bakis"
+   ],
+   "olay": null,
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.03
+    ],
+    "normal": [
+     0.01,
+     0.05
+    ],
+    "hizli": [
+     0.02,
+     0.08
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kas_catar": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "{pos} brows draw together",
+   "tr": "kaşlarını çatar",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "yutkunur": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "swallows once, mouth closed",
+   "tr": "bir kez yutkunur, ağzı kapalı",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "goz_kirpar": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "blinks slowly once",
+   "tr": "bir kez yavaşça göz kırpar",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.01
+    ],
+    "hizli": [
+     0.0,
+     0.02
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "gozlerini_kapatir": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "closes {pos} eyes",
+   "tr": "gözlerini kapatır",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.01
+    ],
+    "hizli": [
+     0.0,
+     0.02
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "dudak_bastirir": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "presses {pos} lips together",
+   "tr": "dudaklarını birbirine bastırır",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.01
+    ],
+    "hizli": [
+     0.0,
+     0.02
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "gulumser": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "a small smile forms, mouth closed",
+   "tr": "ağzı kapalı, hafifçe gülümser",
+   "etki_sablonu": [
+    "{ozne}.ifade"
+   ],
+   "olay": "duygu_degis",
+   "durum_degistirir": true,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "basini_sallar": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "nods once",
+   "tr": "bir kez başını sallar",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.05
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "basini_egir": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "lowers {pos} head {olcu}",
+   "tr": "başını {olcu} eğer",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.05
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "omuz_dusurur": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "{pos} shoulders drop",
+   "tr": "omuzları düşer",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.05
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "derin_nefes_alir": {
+   "tur": "mikro",
+   "zorunlu": [],
+   "en": "draws one slow breath, shoulders rising",
+   "tr": "yavaş, derin bir nefes alır",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "ic_ceker": {
+   "tur": "ses_vurusu",
+   "zorunlu": [],
+   "en": "lets out a quiet sigh, mouth barely open",
+   "tr": "sessizce iç çeker",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "kisa_guler": {
+   "tur": "ses_vurusu",
+   "zorunlu": [],
+   "en": "gives one short, breathy laugh",
+   "tr": "kısa, nefesli bir gülüş",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.04
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "nefes_verir": {
+   "tur": "ses_vurusu",
+   "zorunlu": [],
+   "en": "exhales sharply through the nose",
+   "tr": "burnundan sertçe nefes verir",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.01
+    ],
+    "normal": [
+     0.0,
+     0.02
+    ],
+    "hizli": [
+     0.0,
+     0.03
+    ]
+   },
+   "sure_carpani": 1.0
+  },
+  "konusur": {
+   "tur": "konusma",
+   "zorunlu": [
+    "replik"
+   ],
+   "en": "{ton}, {ses}: \"{metin}\"",
+   "tr": "{ton_tr}: \"{metin}\"",
+   "etki_sablonu": [],
+   "olay": null,
+   "durum_degistirir": false,
+   "beklenen_hiz": {
+    "yavas": [
+     0.0,
+     0.02
+    ],
+    "normal": [
+     0.0,
+     0.03
+    ],
+    "hizli": [
+     0.0,
+     0.05
+    ]
+   },
+   "sure_carpani": 1.0
+  }
+ }
+}

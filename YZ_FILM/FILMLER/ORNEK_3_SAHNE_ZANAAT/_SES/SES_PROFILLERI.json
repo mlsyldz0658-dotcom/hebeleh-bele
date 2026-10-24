@@ -1,0 +1,11 @@
+{
+ "_surum": 1,
+ "karakterler": {
+  "mara": {
+   "veo_ses_tarifi": "a low, husky female voice"
+  },
+  "voss": {
+   "veo_ses_tarifi": "a deep, calm male voice"
+  }
+ }
+}

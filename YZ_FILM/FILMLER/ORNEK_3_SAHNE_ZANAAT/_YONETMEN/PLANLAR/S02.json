@@ -1,0 +1,389 @@
+{
+ "sahne_grubu": "S02",
+ "planlar": [
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.6
+   },
+   "amac": "Voss kapıda",
+   "zanaat": {
+    "kod": "S02-P01",
+    "sahne_grubu": "S02",
+    "plan_tipi": "kurulus",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM4",
+     "kadraj": "IK",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "voss"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     },
+     {
+      "id": "voss",
+      "olcek": "OG",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 2.2,
+      "ozne": "voss",
+      "tur": "fiziksel",
+      "fiil": "kaldirir",
+      "govde": "sol_el",
+      "olcu": "omuz_hizasi",
+      "etki": {
+       "voss.eller.sol.yer": "omuz_hizasi"
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 2.5,
+      "bit": 4.0,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "dudak_bastirir",
+      "govde": "agiz"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "gizli_endise",
+       "bit": "gizli_endise"
+      },
+      "isaretler": [],
+      "siddet": 2
+     },
+     "voss": {
+      "ic_durum": "kulübede bir şey saklandığından emin",
+      "alt_metin": "kibar görünüp sıkıştırıyor",
+      "dis_ifade": {
+       "bas": "sert",
+       "bit": "sert"
+      },
+      "isaretler": [],
+      "siddet": 1
+     }
+    },
+    "zincir": {
+     "gecis_turu": "yeni_sahne",
+     "onceki_plan": null,
+     "baslangic": "kart",
+     "ebeveyn": "plaka:dis_kapi",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Kapıda Kaptan Voss meşalesini kaldırıyor; Mara eşikte, iki elinde fener ve anahtar.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 3.8
+   },
+   "amac": "Mara kaptanı geri çevirir",
+   "zanaat": {
+    "kod": "S02-P02",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM5",
+     "kadraj": "OU",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "voss",
+      "olcek": "on_plan_omuz",
+      "yuz_acisi": "sirt",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "cene_kaldirir",
+      "govde": "cene",
+      "olcu": "hafif"
+     },
+     {
+      "id": "a2",
+      "bas": 1.8,
+      "bit": 4.6,
+      "ozne": "mara",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0001",
+      "cumleler": [
+       0,
+       1
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "korkusunu saklıyor",
+      "alt_metin": "kaptanı içeri almamak için soğuk davranıyor",
+      "dis_ifade": {
+       "bas": "gizli_endise",
+       "bit": "kontrollu_sakin"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P01",
+     "baslangic": "ana_kare",
+     "ebeveyn": "KAM4@4",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "L",
+     "ses_tasma_sn": 0.5
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara kaptana soğuk davranıyor; onu içeri almak istemiyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 7
+   },
+   "replik": {
+    "id": "R0001"
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 6.3
+   },
+   "amac": "Voss yalanı yakalar",
+   "zanaat": {
+    "kod": "S02-P03",
+    "sahne_grubu": "S02",
+    "plan_tipi": "diyalog",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM6",
+     "kadraj": "OU",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "voss"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "voss",
+      "olcek": "OY",
+      "yuz_acisi": "3/4",
+      "konusur": true,
+      "kimlik_demiri": true
+     },
+     {
+      "id": "mara",
+      "olcek": "on_plan_omuz",
+      "yuz_acisi": "sirt",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.5,
+      "ozne": "voss",
+      "tur": "mikro",
+      "fiil": "bakis_kaydirir",
+      "govde": "gozler",
+      "hedef": "ocak_atesi",
+      "etki": {
+       "voss.bakis": {
+        "hedef": "ocak_atesi"
+       }
+      }
+     },
+     {
+      "id": "a2",
+      "bas": 1.7,
+      "bit": 6.5,
+      "ozne": "voss",
+      "tur": "konusma",
+      "fiil": "konusur",
+      "replik": "R0002",
+      "cumleler": [
+       0
+      ]
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "voss": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "sert",
+       "bit": "sert"
+      },
+      "isaretler": [],
+      "siddet": 1
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P02",
+     "baslangic": "ana_kare",
+     "ebeveyn": "plaka:ic_genel",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "replik_sonu",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Voss içerideki ateşe bakıp Mara'nın odunu olmadığı yalanını yüzüne vuruyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "merak_kapat": [],
+    "yogunluk": 8
+   },
+   "replik": {
+    "id": "R0002"
+   }
+  },
+  {
+   "kullanim": {
+    "bas": 0.5,
+    "sure": 2.5
+   },
+   "amac": "Mara'nın tepkisi",
+   "zanaat": {
+    "kod": "S02-P04",
+    "sahne_grubu": "S02",
+    "plan_tipi": "tepki",
+    "klip_sn": 8,
+    "kamera": {
+     "kurulum": "KAM7",
+     "kadraj": "Y",
+     "aci": "goz_hizasi",
+     "hareket_tipi": "sabit",
+     "odak": "mara"
+    },
+    "eksen_gecis": false,
+    "kadrajdakiler": [
+     {
+      "id": "mara",
+      "olcek": "Y",
+      "yuz_acisi": "3/4",
+      "konusur": false,
+      "kimlik_demiri": false
+     }
+    ],
+    "baslangic_durumu": "miras",
+    "eylem_zinciri": [
+     {
+      "id": "a1",
+      "bas": 0.5,
+      "bit": 1.4,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "yutkunur",
+      "govde": "bas"
+     },
+     {
+      "id": "a2",
+      "bas": 1.6,
+      "bit": 2.6,
+      "ozne": "mara",
+      "tur": "mikro",
+      "fiil": "goz_kirpar",
+      "govde": "gozler"
+     }
+    ],
+    "bitis_durumu": "derlenir",
+    "oyunculuk": {
+     "mara": {
+      "ic_durum": "",
+      "alt_metin": "",
+      "dis_ifade": {
+       "bas": "kontrollu_sakin",
+       "bit": "gizli_endise"
+      },
+      "isaretler": [],
+      "siddet": 2
+     }
+    },
+    "zincir": {
+     "gecis_turu": "eylem_kesme",
+     "onceki_plan": "S02-P03",
+     "baslangic": "ana_kare",
+     "ebeveyn": "KAM4@4",
+     "dogal_durak": false,
+     "bitis_sabitle": false
+    },
+    "kesme": {
+     "tip": "duz",
+     "ses_tasma_sn": 0.0
+    },
+    "ekran_disi_ses": null,
+    "ekranda_bilgi": "Mara yakalandığını anlıyor ama yüzünü sakin tutmaya çalışıyor.",
+    "yasaklar": [],
+    "risk_uretim": "dusuk",
+    "istem_elle": null,
+    "yogunluk": 8
+   }
+  }
+ ]
+}

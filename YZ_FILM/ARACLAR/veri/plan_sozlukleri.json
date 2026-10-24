@@ -1,0 +1,626 @@
+{
+ "_surum": 1,
+ "_aciklama": "Plan dili sözlükleri (TASARIM §5.1, §6.4; [YN2] §4.5.11; ZANAAT §3). Yönetmen yalnız bu değerleri yazar; plan_sema denetler, plan_dili ve istem_derle EN/TR karşılıklarını kullanır. EN karşılıklarda filtre kelimesi ve çıplak left/right yoktur (test_plan_dili denetler).",
+ "kadraj": {
+  "EG": {
+   "kademe": 1,
+   "en": "extreme wide",
+   "tr": "çok geniş"
+  },
+  "G": {
+   "kademe": 2,
+   "en": "wide",
+   "tr": "geniş"
+  },
+  "OG": {
+   "kademe": 3,
+   "en": "medium-wide",
+   "tr": "orta geniş"
+  },
+  "O": {
+   "kademe": 4,
+   "en": "medium",
+   "tr": "orta"
+  },
+  "OY": {
+   "kademe": 5,
+   "en": "medium close-up",
+   "tr": "orta yakın"
+  },
+  "Y": {
+   "kademe": 6,
+   "en": "close-up",
+   "tr": "yakın"
+  },
+  "CY": {
+   "kademe": 7,
+   "en": "extreme close-up",
+   "tr": "çok yakın"
+  },
+  "D": {
+   "kademe": null,
+   "en": "macro insert",
+   "tr": "detay (ekleme)"
+  },
+  "OU": {
+   "kademe": 5,
+   "en": "over-the-shoulder",
+   "tr": "omuz üstü"
+  },
+  "IK": {
+   "kademe": 3,
+   "en": "two-shot",
+   "tr": "ikili"
+  }
+ },
+ "konum_plani": [
+  "G",
+  "OG",
+  "IK",
+  "EG"
+ ],
+ "olcek": {
+  "EG": {
+   "en": "tiny in the distance"
+  },
+  "G": {
+   "en": "full figure"
+  },
+  "OG": {
+   "en": "seen from the knees up"
+  },
+  "O": {
+   "en": "seen from the waist up"
+  },
+  "OY": {
+   "en": "seen from mid-torso up"
+  },
+  "Y": {
+   "en": "face filling the frame"
+  },
+  "CY": {
+   "en": "eyes and mouth only"
+  },
+  "on_plan_omuz": {
+   "en": "foreground shoulder, softly out of focus"
+  },
+  "el": {
+   "en": "only the hand visible"
+  },
+  "siluet": {
+   "en": "a dark silhouette"
+  }
+ },
+ "aci": {
+  "goz_hizasi": {
+   "en": "eye-level"
+  },
+  "alcak": {
+   "en": "low-angle"
+  },
+  "yuksek": {
+   "en": "high-angle"
+  },
+  "kus_bakisi": {
+   "en": "top-down"
+  }
+ },
+ "hareket_tipi": {
+  "sabit": {
+   "en": "Static",
+   "guven": "yuksek",
+   "hareket": false
+  },
+  "yavas_ileri": {
+   "en": "Slow push-in",
+   "guven": "yuksek",
+   "hareket": true
+  },
+  "yavas_geri": {
+   "en": "Slow pull-out",
+   "guven": "yuksek",
+   "hareket": true
+  },
+  "yavas_pan": {
+   "en": "Slow pan",
+   "guven": "yuksek",
+   "hareket": true
+  },
+  "tilt_acilis": {
+   "en": "Slow tilt up",
+   "guven": "yuksek",
+   "hareket": true
+  },
+  "takip_yan": {
+   "en": "Lateral tracking",
+   "guven": "orta",
+   "hareket": true
+  },
+  "omuz_kamera": {
+   "en": "Subtle handheld",
+   "guven": "orta",
+   "hareket": true
+  },
+  "odak_kaydirma": {
+   "en": "Static with a rack focus",
+   "guven": "orta",
+   "hareket": true
+  },
+  "yörünge": {
+   "en": "Slow orbit",
+   "guven": "dusuk",
+   "hareket": true
+  },
+  "hizli_hareket": {
+   "en": "Whip pan",
+   "guven": "dusuk",
+   "hareket": true
+  }
+ },
+ "poz": {
+  "ayakta": {
+   "en": "standing",
+   "tr": "ayakta",
+   "goz_yuksekligi_m": 1.6
+  },
+  "yuruyor": {
+   "en": "walking",
+   "tr": "yürüyor",
+   "goz_yuksekligi_m": 1.6
+  },
+  "kosuyor": {
+   "en": "running",
+   "tr": "koşuyor",
+   "goz_yuksekligi_m": 1.5
+  },
+  "diz_cokmus": {
+   "en": "kneeling",
+   "tr": "diz çökmüş",
+   "goz_yuksekligi_m": 0.9
+  },
+  "comelmis": {
+   "en": "crouching",
+   "tr": "çömelmiş",
+   "goz_yuksekligi_m": 0.8
+  },
+  "oturuyor": {
+   "en": "seated",
+   "tr": "oturuyor",
+   "goz_yuksekligi_m": 1.2
+  },
+  "egilmis": {
+   "en": "bent forward",
+   "tr": "eğilmiş",
+   "goz_yuksekligi_m": 1.3
+  },
+  "yerde": {
+   "en": "lying on the ground",
+   "tr": "yerde",
+   "goz_yuksekligi_m": 0.3
+  }
+ },
+ "yuz_acisi": {
+  "on": {
+   "yaw": [
+    0,
+    15
+   ],
+   "en": "facing the camera",
+   "agiz": "tam"
+  },
+  "3/4": {
+   "yaw": [
+    15,
+    60
+   ],
+   "en": "at a three-quarter angle",
+   "agiz": "tam"
+  },
+  "profil": {
+   "yaw": [
+    60,
+    100
+   ],
+   "en": "in profile",
+   "agiz": "kismi"
+  },
+  "sirt": {
+   "yaw": [
+    100,
+    180
+   ],
+   "en": "seen from behind",
+   "agiz": "gorunmez"
+  },
+  "gorunmez": {
+   "yaw": null,
+   "en": "face not visible",
+   "agiz": "gorunmez"
+  }
+ },
+ "el_sekli": {
+  "serbest": {
+   "acik_parmak": null,
+   "en": "relaxed",
+   "tr": "serbest"
+  },
+  "acik_avuc": {
+   "acik_parmak": 5,
+   "en": "open palm, five fingers spread",
+   "tr": "açık avuç"
+  },
+  "yumruk": {
+   "acik_parmak": 0,
+   "en": "closed fist",
+   "tr": "yumruk"
+  },
+  "kiskac": {
+   "acik_parmak": 2,
+   "en": "thumb and index finger pinching, the other three fingers curled",
+   "tr": "başparmak ve işaret parmağıyla kıskaç"
+  },
+  "uc_parmak": {
+   "acik_parmak": 3,
+   "en": "three fingers extended",
+   "tr": "üç parmak açık"
+  },
+  "tutus_tam": {
+   "acik_parmak": 0,
+   "en": "all fingers wrapped around",
+   "tr": "tam kavrayış"
+  },
+  "isaret": {
+   "acik_parmak": 1,
+   "en": "index finger pointing",
+   "tr": "işaret parmağı uzanmış"
+  }
+ },
+ "el_yer": {
+  "yanda": {
+   "en": "hanging at the side",
+   "tr": "yanda"
+  },
+  "kalca_hizasi": {
+   "en": "at hip height",
+   "tr": "kalça hizasında"
+  },
+  "govde_onunde": {
+   "en": "in front of the torso",
+   "tr": "gövdesinin önünde"
+  },
+  "omuz_hizasi": {
+   "en": "at shoulder height",
+   "tr": "omuz hizasında"
+  },
+  "bas_ustu": {
+   "en": "raised above the head",
+   "tr": "başının üstünde"
+  },
+  "cepte": {
+   "en": "in a pocket",
+   "tr": "cebinde"
+  },
+  "arkada": {
+   "en": "behind the back",
+   "tr": "arkasında"
+  }
+ },
+ "govde": {
+  "sag_el": {
+   "en": "{pos} right hand",
+   "tr": "sağ elini",
+   "el": "sag",
+   "tr_ile": "sağ eliyle"
+  },
+  "sol_el": {
+   "en": "{pos} left hand",
+   "tr": "sol elini",
+   "el": "sol",
+   "tr_ile": "sol eliyle"
+  },
+  "sag_kol": {
+   "en": "{pos} right arm",
+   "tr": "sağ kolunu",
+   "el": "sag",
+   "tr_ile": "sağ koluyla"
+  },
+  "sol_kol": {
+   "en": "{pos} left arm",
+   "tr": "sol kolunu",
+   "el": "sol",
+   "tr_ile": "sol koluyla"
+  },
+  "iki_el": {
+   "en": "both hands",
+   "tr": "iki elini",
+   "el": "iki",
+   "tr_ile": "iki eliyle"
+  },
+  "bas": {
+   "en": "{pos} head",
+   "tr": "başını",
+   "tr_ile": "başıyla"
+  },
+  "cene": {
+   "en": "{pos} chin",
+   "tr": "çenesini",
+   "tr_ile": "çenesiyle"
+  },
+  "gozler": {
+   "en": "{pos} eyes",
+   "tr": "gözlerini",
+   "tr_ile": "gözleriyle"
+  },
+  "agiz": {
+   "en": "{pos} mouth",
+   "tr": "ağzını",
+   "tr_ile": "ağzıyla"
+  },
+  "kaslar": {
+   "en": "{pos} brows",
+   "tr": "kaşlarını",
+   "tr_ile": "kaşlarıyla"
+  },
+  "omuzlar": {
+   "en": "{pos} shoulders",
+   "tr": "omuzlarını",
+   "tr_ile": "omuzlarıyla"
+  },
+  "tum_beden": {
+   "en": "{pos} whole body",
+   "tr": "bütün bedenini",
+   "tr_ile": "bütün bedeniyle"
+  },
+  "ayaklar": {
+   "en": "{pos} feet",
+   "tr": "ayaklarını",
+   "tr_ile": "ayaklarıyla"
+  },
+  "kuyruk": {
+   "en": "{pos} tail",
+   "tr": "kuyruğunu",
+   "tr_ile": "kuyruğuyla"
+  },
+  "kanat": {
+   "en": "{pos} wings",
+   "tr": "kanatlarını",
+   "tr_ile": "kanatlarıyla"
+  },
+  "burun": {
+   "en": "{pos} snout",
+   "tr": "burnunu",
+   "tr_ile": "burnuyla"
+  }
+ },
+ "yon": {
+  "ileri": {
+   "en": "forward",
+   "tr": "ileri"
+  },
+  "geri": {
+   "en": "backward",
+   "tr": "geri"
+  },
+  "sola": {
+   "en": "to {pos} own left",
+   "tr": "kendi soluna"
+  },
+  "saga": {
+   "en": "to {pos} own right",
+   "tr": "kendi sağına"
+  },
+  "yukari": {
+   "en": "upward",
+   "tr": "yukarı"
+  },
+  "asagi": {
+   "en": "downward",
+   "tr": "aşağı"
+  },
+  "kadraj_solu": {
+   "en": "frame left",
+   "tr": "kadrajın solu"
+  },
+  "kadraj_sagi": {
+   "en": "frame right",
+   "tr": "kadrajın sağı"
+  }
+ },
+ "hiz": {
+  "yavas": {
+   "en": "slowly",
+   "tr": "yavaşça"
+  },
+  "normal": {
+   "en": "",
+   "tr": ""
+  },
+  "hizli": {
+   "en": "quickly",
+   "tr": "hızla"
+  }
+ },
+ "adim_tur": [
+  "fiziksel",
+  "mikro",
+  "konusma",
+  "ses_vurusu"
+ ],
+ "plan_tipi": [
+  "kurulus",
+  "diyalog",
+  "tepki",
+  "ekleme",
+  "aksiyon",
+  "eylem",
+  "duygu_tutma",
+  "gecis",
+  "kart"
+ ],
+ "insansiz_tipler": [
+  "kurulus",
+  "gecis",
+  "kart"
+ ],
+ "zincir_gecis_turu": [
+  "yeni_sahne",
+  "eylem_kesme",
+  "devam",
+  "kurulum_donusu",
+  "araya_kesme",
+  "zaman_atlama"
+ ],
+ "zincir_baslangic": [
+  "kart",
+  "ana_kare",
+  "turev",
+  "son_kare"
+ ],
+ "kesme_tip": [
+  "eylem",
+  "replik_sonu",
+  "L",
+  "J",
+  "tepki",
+  "bakis",
+  "eslesme",
+  "sert",
+  "duz",
+  "devam"
+ ],
+ "risk_uretim": [
+  "dusuk",
+  "orta",
+  "yuksek"
+ ],
+ "baslangic_ozel": [
+  "miras"
+ ],
+ "teslim": {
+  "normal": {
+   "en": "says",
+   "tr": "der",
+   "lufs": "normal"
+  },
+  "soguk": {
+   "en": "says coldly",
+   "tr": "soğuk bir sesle der",
+   "lufs": "normal"
+  },
+  "fisilti": {
+   "en": "whispers",
+   "tr": "fısıldar",
+   "lufs": "fisilti"
+  },
+  "bagirma": {
+   "en": "shouts",
+   "tr": "bağırır",
+   "lufs": "bagirma"
+  },
+  "yumusak": {
+   "en": "says softly",
+   "tr": "yumuşakça der",
+   "lufs": "yumusak"
+  },
+  "aci": {
+   "en": "says bitterly",
+   "tr": "acıyla der",
+   "lufs": "normal"
+  },
+  "yalvaran": {
+   "en": "pleads",
+   "tr": "yalvarır",
+   "lufs": "yumusak"
+  },
+  "alayci": {
+   "en": "says mockingly",
+   "tr": "alay ederek der",
+   "lufs": "normal"
+  },
+  "sefkatli": {
+   "en": "says tenderly",
+   "tr": "şefkatle der",
+   "lufs": "yumusak"
+  },
+  "yorgun": {
+   "en": "says wearily",
+   "tr": "yorgun bir sesle der",
+   "lufs": "yumusak"
+  },
+  "aceleci": {
+   "en": "says hurriedly",
+   "tr": "aceleyle der",
+   "lufs": "normal"
+  },
+  "sakin_tehdit": {
+   "en": "says with quiet menace",
+   "tr": "sakin bir tehditle der",
+   "lufs": "normal"
+  }
+ },
+ "olay_turleri": [
+  "nesne_al",
+  "nesne_birak",
+  "nesne_ver",
+  "nesne_el_degis",
+  "nesne_durum",
+  "kostum_degis",
+  "kostum_durum",
+  "gorunum_degis",
+  "giris",
+  "cikis",
+  "yer_degis",
+  "mekan_durum",
+  "isik_degis",
+  "zaman_atla",
+  "duygu_degis"
+ ],
+ "kalip": [
+  "klasik_giris",
+  "gec_giris",
+  "yukselen_diyalog",
+  "acilan_sonuc",
+  "yeniden_konumlandirma",
+  "serbest"
+ ],
+ "zamir": {
+  "kadin": {
+   "pos": "her",
+   "ozne": "she"
+  },
+  "erkek": {
+   "pos": "his",
+   "ozne": "he"
+  },
+  "yaratik": {
+   "pos": "its",
+   "ozne": "it"
+  },
+  "bilinmiyor": {
+   "pos": "their",
+   "ozne": "they"
+  }
+ },
+ "zaman_bicimi": [
+  "aralik",
+  "sira"
+ ],
+ "bekleme": {
+  "sabit": {
+   "en": "holds still",
+   "tr": "kıpırdamadan durur"
+  },
+  "canli": {
+   "en": "holds the pose, breathing",
+   "tr": "nefes alarak pozunu korur"
+  }
+ },
+ "dinleme": {
+  "en": "listens silently, mouth closed",
+  "tr": "sessizce dinler, ağzı kapalı"
+ },
+ "sessiz_bekleme": {
+  "en": "stays still, silent",
+  "tr": "kıpırdamadan, sessiz durur"
+ }
+}

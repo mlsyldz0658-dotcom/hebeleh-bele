@@ -2,6 +2,7 @@
 
 Kullanım:
   python ders_defteri.py --denetle [KURALLAR_OGRENILEN.json]     öğrenilen kuralları korkuluktan geçirir (HATA varsa çıkış 1)
+  python ders_defteri.py --yedekle [--hedef <yedek kökü>]     ders defteri → <yedek>/DERSLER/ (ders_yedekle.py; yalnız kopya)
   python ders_defteri.py --kaydet --olay arac_hatasi --kaynak ajan --belirti "..." [--film F] [--asama A11] [--kapi G1] [--plan 12]
 Kodda:  import ders_defteri as dd
   dd.kaydet("kapi_hatasi", kaynak="kapi", belirti="...", film="EMBERFALL_F2", asama="A11", kapi="G1", plan=214, ...)  → dosya yolu
@@ -18,7 +19,7 @@ Korkuluklar (öğrenmeyle gevşemez; §5.3):
     (e-posta ve anahtar benzeri metin kayıtta maskelenir, kuralda HATA).
 """
 import os, sys, re, json, copy, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, esikler
@@ -293,6 +294,9 @@ def kural_ekle(kural, yol=None, E=None, uretim=None):
 
 # ------------------------------------------------------------------ komut satırı
 def main(argv):
+    if "--yedekle" in argv:                      # A18: ders defterinin yedeği (yalnız kopya; AYARLAR girmez)
+        import ders_yedekle
+        return ders_yedekle.main(argv)
     if argv[:1] == ["--denetle"] and len(argv) <= 2:
         try: yol = argv[1] if len(argv) == 2 else ogrenilen_yolu()
         except ortak.YolYok as e: print("!!", e); return 4

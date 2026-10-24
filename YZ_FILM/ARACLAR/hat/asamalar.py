@@ -28,6 +28,7 @@ BASAMAK_TURLERI = ("ayni_sahip", "ust_sahip", "durdu", "hedef_alti", "kagit_urun
 GOREV_TURLERI = ("ajan", "betik", "kullanici")
 TURDA = ("hepsi", "ilk", "sonra")
 ADET_ANAHTARLARI = ("parti", "sahne_grubu", "karakter", "blok", "gorsel_grubu")
+KOSULLAR = ("flow_filtre_red",)    # GorevSablonu.kosul değerleri (film.py Defter.kosul_tamam çözer)
 # ADLAR.json'da henüz olmayan, yalnız kâğıt aşamalarında kullanılan kapı kodları (ADLAR'a eklenecek; rapor yolu _RAPOR/<KAPI>_…)
 YEREL_KAPILAR = ("HAZIRLIK", "KONU", "BRIFING", "ONERI", "JURI", "YAPI", "HARITA", "PLAN_ELESTIRI", "KUR", "DERS")
 
@@ -67,6 +68,8 @@ class GorevSablonu:
     mesaj: str = None               # kullanici: aynen iletilecek talimat
     algilama: dict = None           # kullanici: {"tur": "dosya_var", "desen": "GELENLER/*.zip"} | {"tur": "blok", "blok": "KESIT"}
     turda: str = "hepsi"
+    kosul: str = None               # yalnız koşul sağlanınca kurulur (film.py KOSULLAR; ör. "flow_filtre_red")
+    komut: tuple = ()               # kullanici: kullanıcının .bat'ının koşturacağı komut (GOREV.json "komut"; ör. film.py video)
 
 
 @dataclass(frozen=True)
@@ -100,19 +103,20 @@ class Asama:
 
 
 # --- kısa kurucular ------------------------------------------------------------------------------------------------------
-def B(kod, arac, *args, grup=0, cikti=(), kapi=None, kredili=False, turda="hepsi"):
+def B(kod, arac, *args, grup=0, cikti=(), kapi=None, kredili=False, turda="hepsi", kosul=None):
     return GorevSablonu(kod=kod, tur="betik", grup=grup, arac=arac, argumanlar=tuple(args), cikti=tuple(cikti), kapi=kapi,
-                        kredili=kredili, turda=turda)
+                        kredili=kredili, turda=turda, kosul=kosul)
 
 
 def J(kod, ajan, kip=None, *, grup=0, adet=1, persona=None, cikti=("CIKTI/rapor.json",), tasima=(), girdi=(), asamali=(),
-      kapi=None, turda="hepsi"):
+      kapi=None, turda="hepsi", kosul=None):
+    """girdi: film klasörüne göre dosya, glob deseni ya da "/" ile biten klasör (içeriği GIRDI/'ye kopyalanır)."""
     return GorevSablonu(kod=kod, tur="ajan", grup=grup, ajan=ajan, kip=kip, persona=persona, adet=adet, cikti=tuple(cikti),
-                        tasima=tuple(tasima), girdi=tuple(girdi), asamali=tuple(asamali), kapi=kapi, turda=turda)
+                        tasima=tuple(tasima), girdi=tuple(girdi), asamali=tuple(asamali), kapi=kapi, turda=turda, kosul=kosul)
 
 
-def K(kod, mesaj, algilama, grup=0, turda="hepsi"):
-    return GorevSablonu(kod=kod, tur="kullanici", grup=grup, mesaj=mesaj, algilama=algilama, turda=turda)
+def K(kod, mesaj, algilama, grup=0, turda="hepsi", komut=()):
+    return GorevSablonu(kod=kod, tur="kullanici", grup=grup, mesaj=mesaj, algilama=algilama, turda=turda, komut=tuple(komut))
 
 
 def G(ad, ureten, dosya=None): return Girdi(ad, ureten, dosya)
@@ -134,19 +138,45 @@ DOKTOR = M("ust_sahip", "film düzeyi: yapimci·doktor yapısal tur", "yapimci",
 HEDEF_ALTI = M("hedef_alti", "kalan maddeler hedef_alti ve açık eksik raporuyla (FILM_SONU_RAPORU.md) sürer (§1.5 basamak 5)")
 
 
+def _eslestirici_girdi(kip):
+    """Özet eşleştiricinin (kör) GIRDI'si: paketin anahtarı + eşlediği seyircinin raporu (i. eşleştirici ↔ i. seyirci)."""
+    return ("_KOR_PAKET/%s_t{tur}/ESLESTIRICI/ANAHTAR.json" % kip, "_RAPOR/SEYIRCI/%s_t{tur}/s{i}_rapor.json" % kip)
+
+
 def _seyirci_turu(kip, kapi, rapor_kok, grup0, seyirci_kip=None):
-    """Kör paket → habersiz seyirci ×3 (aşamalı) + ilk 2 dk ×3 → özet eşleştirici ×3 → seyirci_topla (kapı)."""
+    """Kör paket → habersiz seyirci ×3 (aşamalı) + ilk 2 dk ×3 → özet eşleştirici ×3 → seyirci_topla (kapı).
+    İlk 2 dk görevine paketin <kip>_ilk2dk_t<tur>/ klasörü kopyalanır (film.py öteki personaların ILK2DK_<p>.md'sini almaz)."""
     return (
         B("KP", "kor_paket.py", "--kip", kip, grup=grup0),
         J("HS", "habersiz-seyirci", seyirci_kip or kip, grup=grup0 + 1, adet=3, persona=SEYIRCI, asamali=BOLUMLER,
           cikti=("CIKTI/rapor.json",), tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/%s_t{tur}/s{i}_rapor.json" % kip),)),
         J("IK", "habersiz-seyirci", "ilk2dk", grup=grup0 + 1, adet=3, persona=SEYIRCI,
+          girdi=("_KOR_PAKET/%s_ilk2dk_t{tur}/" % kip,),
           tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/%s_ilk2dk_t{tur}/s{i}_rapor.json" % kip),)),
-        J("OE", "ozet-eslestirici", "ozet", grup=grup0 + 2, adet=3,
+        J("OE", "ozet-eslestirici", "ozet", grup=grup0 + 2, adet=3, girdi=_eslestirici_girdi(kip),
           tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/%s_t{tur}/e{i}_eslesme.json" % kip),)),
         B("ST", "seyirci_topla.py", "--kip", kip, "--tur", "{tur}", grup=grup0 + 3, cikti=(rapor_kok,), kapi=kapi),
     )
 
+
+def _kesici(kaynak_kip, cizelge, grup0):
+    """Kesici turu (yalnız tur 1): kör kesici paketi → kesici ajanı → kesme simülasyonu (kurgu_uygula yalnız simülasyonu temiz
+    öneriyi uygular)."""
+    return (B("KK", "kor_paket.py", "--kip", "kesici", "--kaynak-kip", kaynak_kip, grup=grup0, turda="ilk"),
+            J("KS", "kesici", kaynak_kip, grup=grup0 + 1, turda="ilk", girdi=("_KOR_PAKET/kesici_t{tur}/",),
+              tasima=(("CIKTI/rapor.json", "KURGU/KESME_%s.json" % cizelge),)),
+            B("KM", "kurgu_denetim.py", "--kesme-simule", "--cizelge", cizelge, grup=grup0 + 2, turda="ilk",
+              cikti=("_RAPOR/KESME_SIMULE_%s.json" % cizelge,)))
+
+
+def _flow_onarim(grup):
+    """Flow filtre reddi (_RAPOR/FLOW_<blok>.json filtre_red HATA) → yonetmen·onarim (A14a/A14 merdiveninin ilk basamağı;
+    aynı istem yeniden gönderilmez). Yalnız yeni bir red varsa kurulur (kosul)."""
+    return J("FO", "yonetmen", "onarim", grup=grup, kosul="flow_filtre_red", girdi=("_RAPOR/FLOW_*.json", "SAHNELER.json"),
+             tasima=(("CIKTI/rapor.json", "_YONETMEN/ONARIM_f{tur}.json"),))
+
+
+JURI_GIRDI = tuple("_HIKAYE_ODASI/JURI_PAKETI/Oneri_%d.md" % k for k in range(1, 5)) + ("_HIKAYE_ODASI/00_BRIFING.md",)
 
 ASAMALAR = (
     Asama("A00", "Hazırlık ve konu", "betik film.py yeni + hazirlik; ana Claude yalnız tek soruyu sorar (bulutta sormaz, D-45)",
@@ -154,18 +184,21 @@ ASAMALAR = (
           ("00_KONU.md", "HAZIRLIK.json"), (R("HAZIRLIK", "_RAPOR/HAZIRLIK_t{tur}.json"),), None, "her_ikisi", 1,
           (KOD_HATASI,), None,
           (B("HZ", "film.py:hazirlik", cikti=("HAZIRLIK.json", "_RAPOR/HAZIRLIK_t{tur}.json"), kapi="HAZIRLIK"),)),
-    Asama("A01", "Konu kartı ve süre (BUT0)", "yapimci·konu; betik hikaye_odasi.py konu-denetim, kredi.py but0",
+    Asama("A01", "Konu kartı ve süre (BUT0)", "betik kredi.py but0, hikaye_odasi.py butce-bilgisi, evren özeti; yapimci·konu; konu-denetim",
           (G("00_KONU.md", "A00", "00_KONU.md"), G("evren özeti", "evren"), G("OLCUM0.json", "olcum0"), G("bakiye", "bakiye")),
           ("_HIKAYE_ODASI/01_KONU_KARTI.json", "_HIKAYE_ODASI/01_VARSAYIMLAR.md", "KARAR_DEFTERI.md", "_RAPOR/BUT0_FILM.json"),
           (R("KONU", "_RAPOR/KONU_t{tur}.json"), R("BUT0", "_RAPOR/BUT0_FILM.json", butce=True)), None, "her_ikisi", 1,
           (M("ayni_sahip", "yapimci·konu yeni eksenle 1 kez (ör. çocuk kahraman → yetişkin)", "yapimci", "konu"),
            M("kapi6", "konu bu sistemle üretilemez: yüzüne vur raporu, kâğıt ürün yok, 6 KAPI (§1.5 A01)")), None,
-          (J("YK", "yapimci", "konu", grup=0, girdi=("00_KONU.md",),
+          (B("B0", "kredi.py", "but0", grup=0, cikti=("_RAPOR/BUT0_FILM.json",), kapi="BUT0"),
+           B("EO", "film.py:evren_ozeti", grup=0, cikti=("_HIKAYE_ODASI/EVREN_OZETI.md",)),
+           B("BB", "hikaye_odasi.py", "butce-bilgisi", grup=1, cikti=("_HIKAYE_ODASI/butce_bilgisi.json",)),
+           J("YK", "yapimci", "konu", grup=2,
+             girdi=("00_KONU.md", "_HIKAYE_ODASI/butce_bilgisi.json", "_RAPOR/BUT0_FILM.json", "_HIKAYE_ODASI/EVREN_OZETI.md"),
              cikti=("CIKTI/01_KONU_KARTI.json", "CIKTI/01_VARSAYIMLAR.md"),
              tasima=(("CIKTI/01_KONU_KARTI.json", "_HIKAYE_ODASI/01_KONU_KARTI.json"),
                      ("CIKTI/01_VARSAYIMLAR.md", "_HIKAYE_ODASI/01_VARSAYIMLAR.md"))),
-           B("KD", "hikaye_odasi.py", "konu-denetim", grup=1, cikti=("_RAPOR/KONU_t{tur}.json",), kapi="KONU"),
-           B("B0", "kredi.py", "but0", grup=1, cikti=("_RAPOR/BUT0_FILM.json",), kapi="BUT0"))),
+           B("KD", "hikaye_odasi.py", "konu-denetim", grup=3, cikti=("_RAPOR/KONU_t{tur}.json",), kapi="KONU"))),
     Asama("A02", "Brifing", "betik hikaye_odasi.py brifing",
           (G("konu kartı", "A01", "_HIKAYE_ODASI/01_KONU_KARTI.json"), G("aktif hikâye dersleri", "ders_defteri"),
            G("ritim eşikleri", "ayar")),
@@ -173,16 +206,17 @@ ASAMALAR = (
           (KOD_HATASI,), None,
           (B("BR", "hikaye_odasi.py", "brifing", cikti=("_HIKAYE_ODASI/00_BRIFING.md", "_RAPOR/BRIFING_t{tur}.json"),
              kapi="BRIFING"),)),
-    Asama("A03", "Dört öneri", "hikaye-mimari ×3 (D/S/E, paralel) + 1 (X); betik oneri-denetim",
+    Asama("A03", "Dört öneri", "hikaye-mimari ×3 (D/S/E, paralel); betik logline; + 1 (X); betik oneri-denetim",
           (G("brifing", "A02", "_HIKAYE_ODASI/00_BRIFING.md"),),
           ("_HIKAYE_ODASI/02_oneri_<eksen>.md",), (R("ONERI", "_RAPOR/ONERI_t{tur}.json"),), None, "her_ikisi", 1,
           (M("ayni_sahip", "BENZER: yeni eksenle 1 kez", "hikaye-mimari"),
            M("hedef_alti", "yine BENZER: en ayrışan dört öneriyle jüriye gidilir, çeşitlilik BAYRAK'ı jüri paketine")), None,
           (J("HM", "hikaye-mimari", grup=0, adet=3, persona=("D", "S", "E"), girdi=("_HIKAYE_ODASI/00_BRIFING.md",),
              cikti=("CIKTI/oneri.md",), tasima=(("CIKTI/oneri.md", "_HIKAYE_ODASI/02_oneri_{persona}.md"),)),
-           J("HX", "hikaye-mimari", grup=1, persona="X", girdi=("_HIKAYE_ODASI/00_BRIFING.md",),
+           B("LG", "hikaye_odasi.py", "logline", grup=1, cikti=("_HIKAYE_ODASI/02_LOGLINELAR.md",)),
+           J("HX", "hikaye-mimari", grup=2, persona="X", girdi=("_HIKAYE_ODASI/00_BRIFING.md", "_HIKAYE_ODASI/02_LOGLINELAR.md"),
              cikti=("CIKTI/oneri.md",), tasima=(("CIKTI/oneri.md", "_HIKAYE_ODASI/02_oneri_X.md"),)),
-           B("OD", "hikaye_odasi.py", "oneri-denetim", grup=2, cikti=("_RAPOR/ONERI_t{tur}.json",), kapi="ONERI"))),
+           B("OD", "hikaye_odasi.py", "oneri-denetim", grup=3, cikti=("_RAPOR/ONERI_t{tur}.json",), kapi="ONERI"))),
     Asama("A04", "Kör jüri ve seçim", "juri-uyesi × 4 rol + uretilebilirlik-denetcisi·juri; betik juri-topla",
           (G("anonim öneriler", "A03", "_HIKAYE_ODASI/02_oneri_D.md"),),
           ("_HIKAYE_ODASI/04_SECIM.json", "_HIKAYE_ODASI/04_KULLANICIYA_OZET.md"), (R("JURI", "_RAPOR/JURI_t{tur}.json"),),
@@ -191,8 +225,8 @@ ASAMALAR = (
            M("hedef_alti", "veto almamış en yüksek medyanlı öneri kazanır (hedef_alti)")), None,
           (B("JP", "hikaye_odasi.py", "juri-paketi", grup=0),
            J("JU", "juri-uyesi", ("ilk_kez_izleyen", "youtube_stratejisti", "tur_uzmani", "duygu_elestirmeni"), grup=1, adet=4,
-             tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/03_juri_{kip}.json"),)),
-           J("UJ", "uretilebilirlik-denetcisi", "juri", grup=1,
+             girdi=JURI_GIRDI, tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/03_juri_{kip}.json"),)),
+           J("UJ", "uretilebilirlik-denetcisi", "juri", grup=1, girdi=JURI_GIRDI,
              tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/03_juri_uretilebilirlik.json"),)),
            B("JT", "hikaye_odasi.py", "juri-topla", grup=2, cikti=("_HIKAYE_ODASI/04_SECIM.json", "_RAPOR/JURI_t{tur}.json"),
              kapi="JURI"))),
@@ -220,53 +254,67 @@ ASAMALAR = (
           (DOKTOR, DOKTOR,
            M("ayni_sahip", "konu kartı bir kez yeniden yorumlanır (yeni eksen) ve ikinci öneriyle tur", "yapimci", "konu"),
            M("kagit_urun", "kapı sağlanmıyor: kâğıt ürün (senaryo) yüzüne vur raporuyla teslim, videoya geçilmez (§1.4)")), None,
-          (J("RV", "hikaye-yazari", "revizyon", grup=0, turda="sonra",
-             tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/DEGISIKLIK_v{tur}.json"),)),)
+          (J("RV", "hikaye-yazari", "revizyon", grup=0, turda="sonra", cikti=("CIKTI/senaryo.json", "CIKTI/rapor.json"),
+             girdi=("_RAPOR/BULGU_YONLENDIRME_KAGIT_t{tur-1}.json", "_RAPOR/SEYIRCI_KARAR_KAGIT_t{tur-1}.json",
+                    "_HIKAYE_ODASI/05_YAPI.json", "son:_HIKAYE_ODASI/06_SENARYO_v*.json"),
+             tasima=(("CIKTI/senaryo.json", "_HIKAYE_ODASI/06_SENARYO_v{tur100}.json"),
+                     ("CIKTI/rapor.json", "_HIKAYE_ODASI/DEGISIKLIK_v{tur}.json"))),)
           + _seyirci_turu("kagit", "HS_KAGIT", "_RAPOR/HS_KAGIT_FILM_t{tur}.json", 1)
-          + (B("DV", "hikaye_odasi.py", "devir", grup=5, cikti=("HIKAYE.json", "HIKAYE.md")),)),
+          + (J("OB", "ozet-eslestirici", "bulgu", grup=3, adet=3, girdi=_eslestirici_girdi("kagit"),
+               tasima=(("CIKTI/rapor.json", "_RAPOR/SEYIRCI/kagit_t{tur}/b{i}_bulgu.json"),)),
+             B("BY", "bulgu_yonlendir.py", "--kip", "kagit", "--tur", "{tur}", grup=5,
+               cikti=("_RAPOR/BULGU_YONLENDIRME_KAGIT_t{tur}.json",)),
+             B("DV", "hikaye_odasi.py", "devir", grup=6, cikti=("HIKAYE.json", "HIKAYE.md")))),
     Asama("A06s", "Ses kadrosu (kâğıt)", "ses-tasarimcisi·kadro; betik ses_plani.py --profil-denetle",
           (G("HIKAYE.json", "A06", "HIKAYE.json"), G("evren ses kayıtları", "evren")),
           ("_SES/SES_PROFILLERI.json", "_SES/SES_KADROSU.md"), (R("S0", "_RAPOR/S0_PROFIL_t{tur}.json"),), None, "her_ikisi", 1,
           (M("hedef_alti", "kural ihlali kodla kırpılır ve BAYRAK; aksan bilinmiyorsa neutral + BAYRAK"),), None,
           (J("SK", "ses-tasarimcisi", "kadro", grup=0, girdi=("HIKAYE.json",), cikti=("CIKTI/SES_PROFILLERI.json",),
-             tasima=(("CIKTI/SES_PROFILLERI.json", "_SES/SES_PROFILLERI.json"),)),
+             tasima=(("CIKTI/SES_PROFILLERI.json", "_SES/SES_PROFILLERI.json"), ("CIKTI/SES_KADROSU.md", "_SES/SES_KADROSU.md"))),
            B("PD", "ses_plani.py", "--profil-denetle", grup=1, cikti=("_RAPOR/S0_PROFIL_t{tur}.json",), kapi="S0"))),
-    Asama("A07a", "Harita, kroki, kart tarifleri", "yonetmen·harita × parti ∥ kart-tasarimcisi; kroki.py --karsilikli/--ciz",
+    Asama("A07a", "Harita, kroki, kart tarifleri", "dilim.py (parti dilimleri); yonetmen·harita × parti → kart-tasarimcisi; kroki.py --karsilikli/--ciz",
           (G("HIKAYE.json", "A06", "HIKAYE.json"), G("evren mekânları", "evren")),
           ("_YONETMEN/HARITA_P<n>.json", "_YONETMEN/KART_ISTEGI.json", "_KARTLAR/KART_SPEC.json"),
           (R("HARITA", "_RAPOR/HARITA_t{tur}.json"),), None, "her_ikisi", 1,
           (M("ayni_sahip", "harita: yonetmen·harita yeni örnek 1 kez", "yonetmen", "harita"), DAR, DURDU_SIFIR), None,
-          (B("KR", "kroki.py", "--karsilikli", grup=0),
-           J("YH", "yonetmen", "harita", grup=1, adet="parti", girdi=("HIKAYE.json",), cikti=("CIKTI/HARITA.json",),
-             tasima=(("CIKTI/HARITA.json", "_YONETMEN/HARITA_P{i}.json"),)),
-           J("KT", "kart-tasarimcisi", grup=1, girdi=("HIKAYE.json",), cikti=("CIKTI/KART_SPEC.json",),
+          (B("DL", "dilim.py", "--asama", "A07a", grup=0),
+           B("KR", "kroki.py", "--karsilikli", grup=1),
+           # KART_ISTEGI isteğe bağlıdır (yonetmen.md: "gerekiyorsa"); parti başına ayrı dosya (üç görev aynı dosyayı ezmesin)
+           J("YH", "yonetmen", "harita", grup=2, adet="parti", girdi=("_YONETMEN/DILIM/P{i}.json", "HIKAYE.json", "_YONETMEN/KROKI_ONERI.json"),
+             cikti=("CIKTI/HARITA.json",),
+             tasima=(("CIKTI/HARITA.json", "_YONETMEN/HARITA_P{i}.json"), ("CIKTI/KART_ISTEGI.json", "_YONETMEN/KART_ISTEGI_P{i}.json"))),
+           J("KT", "kart-tasarimcisi", grup=3, girdi=("HIKAYE.json", "_YONETMEN/KART_ISTEGI_P*.json"), cikti=("CIKTI/KART_SPEC.json",),
              tasima=(("CIKTI/KART_SPEC.json", "_KARTLAR/KART_SPEC.json"),)),
-           B("PH", "plan_denetim.py", "--harita", grup=2, cikti=("_RAPOR/HARITA_t{tur}.json",), kapi="HARITA"),
-           B("KC", "kroki.py", "--ciz", grup=3))),
+           B("PH", "plan_denetim.py", "--harita", grup=3, cikti=("_RAPOR/HARITA_t{tur}.json",), kapi="HARITA"),
+           B("KC", "kroki.py", "--ciz", grup=4))),
     Asama("A07b", "Sahne grubu planları", "yonetmen·plan × sahne grubu (paralel ≤ 5); betik dilim.py, plan_denetim --sahne",
           (G("haritalar", "A07a", "_YONETMEN/HARITA_P1.json"), G("HIKAYE.json", "A06", "HIKAYE.json"),
            G("kroki PNG", "A07a"), G("dersler", "ders_defteri")),
           ("_YONETMEN/PLANLAR/S<k>.json",), (R("Z0", "_RAPOR/Z0_SAHNE_t{tur}.json"),), None, "her_ikisi", 1,
           (M("ayni_sahip", "partinin harita revizyonu 1 kez", "yonetmen", "harita"), DURDU_SIFIR), None,
           (B("DL", "dilim.py", "--asama", "A07b", grup=0),
-           J("YP", "yonetmen", "plan", grup=1, adet="sahne_grubu", cikti=("CIKTI/plan.json",),
+           # O-12: DILIM.json'da "bagimli: G<i-1>" taşıyan grup sırayla koşar (film.py önceki bitince dilim.py --grup <i> koşar)
+           J("YP", "yonetmen", "plan", grup=1, adet="sahne_grubu", girdi=("_YONETMEN/DILIM/G{i}.json",), cikti=("CIKTI/plan.json",),
              tasima=(("CIKTI/plan.json", "_YONETMEN/PLANLAR/G{i}.json"),)),
            B("PS", "plan_denetim.py", "--sahne", "--tum", grup=2, cikti=("_RAPOR/Z0_SAHNE_t{tur}.json",), kapi="Z0"))),
-    Asama("A07c", "Birleştirme, K0, T0, BUT1", "betik plan_birlestir, dunya_defteri, zaman_cizelgesi, kredi.py but1, olcek.py, cekim_listesi",
+    Asama("A07c", "Birleştirme, K0, Z0, T0, BUT1", "betik plan_birlestir, dunya_defteri, kroki --tum, plan_denetim --tum, zaman_cizelgesi, kredi.py but1, olcek.py, cekim_listesi",
           (G("planlar", "A07b", "_YONETMEN/PLANLAR"), G("evren karakter kayıtları", "evren")),
           ("SAHNELER.json", "DUNYA_DEFTERI.json", "_RAPOR/K0_FILM.json", "KURGU/surumler/KURGU_PLANI_T0.json",
            "URETIM_ONIZLEME.json"),
-          (R("K0", "_RAPOR/K0_FILM.json"), R("BUT1", "_RAPOR/BUT1_FILM.json", butce=True)), None, "her_ikisi", 3,
+          (R("K0", "_RAPOR/K0_FILM.json"), R("Z0", "_RAPOR/Z0_FILM.json"), R("BUT1", "_RAPOR/BUT1_FILM.json", butce=True)),
+          None, "her_ikisi", 3,
           (DURDU_SIFIR,), "A07b",
           (J("YO", "yonetmen", "onarim", grup=0, turda="sonra", tasima=(("CIKTI/rapor.json", "_YONETMEN/ONARIM_t{tur}.json"),)),
            B("PB", "plan_birlestir.py", grup=1, cikti=("SAHNELER.json",)),
            B("DD", "dunya_defteri.py", "--derle", "--denetle", grup=2, cikti=("DUNYA_DEFTERI.json", "_RAPOR/K0_FILM.json"),
              kapi="K0"),
-           B("ZC", "zaman_cizelgesi.py", "--asama", "kagit", grup=3, cikti=("KURGU/surumler/KURGU_PLANI_T0.json",)),
+           B("KT", "kroki.py", "--tum", grup=2),
+           B("PT", "plan_denetim.py", "--tum", grup=3, cikti=("_RAPOR/Z0_FILM.json",), kapi="Z0"),
+           B("ZC", "zaman_cizelgesi.py", "--asama", "kagit", grup=3, cikti=("KURGU/surumler/KURGU_PLANI_T0.json", "_RAPOR/ZAMAN_T0.json")),
            B("B1", "kredi.py", "but1", grup=4, cikti=("_RAPOR/BUT1_FILM.json", "URETIM_ONIZLEME.json"), kapi="BUT1"),
            B("CL", "cekim_listesi.py", grup=5))),
     Asama("A07d", "Kâğıt plan eleştirisi", "plan-elestirmeni ×3 ∥ uretilebilirlik-denetcisi·plan ×3 ∥ sureklilik-denetcisi·kagit ×3",
-          (G("çekim listeleri", "A07c"), G("K0 BAYRAK'ları", "A07c", "_RAPOR/K0_FILM.json")),
+          (G("çekim listeleri", "A07c", "_YONETMEN/CEKIM_LISTESI_P*.md"), G("K0 BAYRAK'ları", "A07c", "_RAPOR/K0_FILM.json")),
           ("_RAPOR/PLAN_ELESTIRI_P<n>_t<n>.json",), (R("PLAN_ELESTIRI", "_RAPOR/PLAN_ELESTIRI_FILM_t{tur}.json"),),
           None, "her_ikisi", 2,
           (M("ayni_sahip", "kalan KRİTİK → yonetmen·onarim 1 kez", "yonetmen", "onarim"), DAR, DURDU_SIFIR), None,
@@ -292,7 +340,7 @@ ASAMALAR = (
            M("hedef_alti", "kod varsayılanı (tek yatak, efektsiz) + BAYRAK")), None,
           (B("ST", "ses_plani.py", "--taslak", grup=0),
            J("SE", "ses-tasarimcisi", "tasarim", grup=1, adet="sahne_grubu", cikti=("CIKTI/SES.json",),
-             tasima=(("CIKTI/SES.json", "_SES/SES_G{i}.json"),)),
+             tasima=(("CIKTI/SES.json", "_SES/SES_G{i}.json"), ("CIKTI/SES_TASARIMI.md", "_SES/SES_TASARIMI_G{i}.md"))),
            J("SM", "ses-tasarimcisi", "muzik", grup=1, cikti=("CIKTI/muzik_listesi.json",),
              tasima=(("CIKTI/muzik_listesi.json", "MUZIK/muzik_listesi.json"),)),
            B("MK", "muzik.py", "--kagit", grup=2),
@@ -333,12 +381,13 @@ ASAMALAR = (
                    "klasörüne koy. Ben ZIP'i görünce kendim devam ederim.",
              {"tur": "dosya_var", "desen": "GELENLER/*KART*.zip"}, grup=2),
            B("GA", "gemini_al.py", "--kartlar", grup=3),
-           J("KF", "kare-tarifcisi", "kart", grup=4, tasima=(("CIKTI/rapor.json", "_KARTLAR/gozlem_t{tur}_{i}.json"),)),
+           J("KF", "kare-tarifcisi", "kart", grup=4, girdi=("_KOR_PAKET/kart_t{tur}/{i}/",),
+             tasima=(("CIKTI/rapor.json", "_KARTLAR/gozlem_t{tur}_{i}.json"),)),
            B("KD", "kart_denetim.py", grup=5, cikti=("_RAPOR/KART_KAPISI.json",), kapi="KART"),
            J("KS", "yonetmen", "kart_secimi", grup=6, cikti=("CIKTI/KART_SECIM.json",),
              tasima=(("CIKTI/KART_SECIM.json", "_KARTLAR/KART_SECIM.json"),)),
            B("EK", "evren.py", "--kilitle", grup=7))),
-    Asama("A11", "Başlangıç görselleri, G1 ilk geçiş, kapak adayları", "istem_derle --gorsel, gemini_paket → gemini_al; kare-tarifcisi·g1; kare_denetim --karar; kapak",
+    Asama("A11", "Başlangıç görselleri, G1 ilk geçiş, kapak adayları", "istem_derle --gorsel, gemini_paket → gemini_al; kare-tarifcisi·g1; kare_denetim --karar; sureklilik-denetcisi·hakem → kare_denetim --hakem; kapak",
           (G("SAHNELER.json", "A09", "KAGIT_TAMAM.json"), G("kilitli kartlar", "A10d", "_KARTLAR/KART_SECIM.json")),
           ("SIRALI_GORSEL/NNN.jpg", "_RAPOR/G1_P<n>_B<k>.json", "KUYRUK/YENIDEN_URET.json", "YAYIN/KAPAK_SPEC.json"),
           (R("G1", "_RAPOR/G1_FILM_t{tur}.json"), R("HS_KAPAK", "_RAPOR/KAPAK_t{tur}.json", seyirci=True)), None, "yerel", 2,
@@ -350,13 +399,21 @@ ASAMALAR = (
              {"tur": "dosya_var", "desen": "GELENLER/*GORSEL*.zip"}, grup=2),
            B("GA", "gemini_al.py", grup=3),
            B("OL", "kare_denetim.py", "--olc", grup=4),
-           J("KG", "kare-tarifcisi", "g1", grup=5, adet="gorsel_grubu",
+           J("KG", "kare-tarifcisi", "g1", grup=5, adet="gorsel_grubu", girdi=("_KOR_PAKET/g1_t{tur}/{i}/",),
              tasima=(("CIKTI/rapor.json", "_RAPOR/G1/gozlem_t{tur}_{i}.json"),)),
-           B("KK", "kare_denetim.py", "--karar", grup=6, cikti=("_RAPOR/G1_FILM_t{tur}.json",), kapi="G1"),
-           J("KP", "kare-tarifcisi", "kapak", grup=7, tasima=(("CIKTI/rapor.json", "_RAPOR/KAPAK/gozlem_t{tur}.json"),)),
-           J("HK", "habersiz-seyirci", "kapak", grup=7, tasima=(("CIKTI/rapor.json", "_RAPOR/KAPAK/seyirci_t{tur}.json"),)),
-           B("KS", "kapak.py", "--sec", grup=8, cikti=("_RAPOR/KAPAK_t{tur}.json",), kapi="HS_KAPAK"))),
-    Asama("A12", "Animatik", "zaman_cizelgesi T1, seslendir --animatik, muzik, ses_katmani, son_miks, kurgu_render; habersiz-seyirci·animatik ×3",
+           # Basamak 2–3: gemini_paket --basamak 1 ebeveyni aynı pakette üretilen planları da alır; ebeveyni G1'i geçmeyen plan tur 2'de
+           # (tur_max 2) yeniden paketlenir. Kapı raporu hakem sonrası yazılır (kare_denetim --hakem kararı yeniden kurar).
+           B("KK", "kare_denetim.py", "--karar", grup=6, cikti=("_RAPOR/G1_FILM_t{tur}.json",)),
+           J("RF", "sureklilik-denetcisi", "hakem", grup=7, girdi=("_RAPOR/G1_FILM_t{tur}.json", "_RAPOR/G1/KARAR_t{tur}.json"),
+             cikti=("CIKTI/HAKEM_G1.json",), tasima=(("CIKTI/HAKEM_G1.json", "_RAPOR/G1/HAKEM_G1_t{tur}.json"),)),
+           B("KH", "kare_denetim.py", "--hakem", "{film}/_RAPOR/G1/HAKEM_G1_t{tur}.json", grup=8,
+             cikti=("_RAPOR/G1_FILM_t{tur}.json",), kapi="G1"),
+           J("KP", "kare-tarifcisi", "kapak", grup=9, girdi=("_KOR_PAKET/kapak_t{tur}/1/",),
+             tasima=(("CIKTI/rapor.json", "_RAPOR/KAPAK/gozlem_t{tur}.json"),)),
+           J("HK", "habersiz-seyirci", "kapak", grup=9, girdi=("_KOR_PAKET/kapak_t{tur}/SEYIRCI/",),
+             tasima=(("CIKTI/rapor.json", "_RAPOR/KAPAK/seyirci_t{tur}.json"),)),
+           B("KS", "kapak.py", "--sec", grup=10, cikti=("_RAPOR/KAPAK_t{tur}.json",), kapi="HS_KAPAK"))),
+    Asama("A12", "Animatik", "kurgu_uygula, seslendir --animatik, zaman_cizelgesi T1, muzik, ses_katmani, son_miks, kurgu_render; kesici + kesme simülasyonu; habersiz-seyirci·animatik ×3; bilgi paketi",
           (G("görseller", "A11", "_RAPOR/G1_FILM_t1.json"), G("sesler", "A10c", "_RAPOR/S1_FILM.json"),
            G("HIKAYE.json", "A06", "HIKAYE.json")),
           ("ANIMATIK/animatik_v<N>.mp4", "_RAPOR/HS_ANIMATIK_FILM_t<n>.json", "KURGU/surumler/KURGU_PLANI_T1_v<N>.json"),
@@ -365,14 +422,16 @@ ASAMALAR = (
            M("kagit_urun", "kapı sağlanmıyor: kâğıt ürün (senaryo + animatik) yüzüne vur raporuyla; videoya geçilmez (§1.4)")),
           None,
           (J("KD", "kurgucu", "duzelt", grup=0, turda="sonra", tasima=(("CIKTI/rapor.json", "KURGU/KURGU_KARARLARI_T1_t{tur}.json"),)),
-           B("ZT", "zaman_cizelgesi.py", "--asama", "animatik", grup=1),
-           B("SA", "seslendir.py", "--animatik", grup=1, kredili=True),
-           B("MU", "muzik.py", "--uret", grup=2),
-           B("SK", "ses_katmani.py", "--cizelge", "T1", grup=3),
-           B("SM", "son_miks.py", "--animatik", grup=4),
-           B("KR", "kurgu_render.py", "--animatik", grup=5, cikti=("ANIMATIK/animatik_v{tur}.mp4",)),
-           J("KS", "kesici", "animatik", grup=6, turda="ilk", tasima=(("CIKTI/rapor.json", "KURGU/KESME_T1.json"),)))
-          + _seyirci_turu("animatik", "HS_ANIMATIK", "_RAPOR/HS_ANIMATIK_FILM_t{tur}.json", 7),
+           B("KU", "kurgu_uygula.py", "--uygula", grup=1, turda="sonra"),
+           B("SA", "seslendir.py", "--animatik", grup=2, kredili=True),
+           B("ZT", "zaman_cizelgesi.py", "--asama", "animatik", grup=3),
+           B("MU", "muzik.py", "--uret", grup=3),
+           B("SK", "ses_katmani.py", "--cizelge", "T1", grup=4),
+           B("SM", "son_miks.py", "--animatik", grup=5),
+           B("KR", "kurgu_render.py", "--animatik", grup=6, cikti=("ANIMATIK/animatik_v{tur}.mp4",)))
+          + _kesici("animatik", "T1", 7)
+          + _seyirci_turu("animatik", "HS_ANIMATIK", "_RAPOR/HS_ANIMATIK_FILM_t{tur}.json", 10)
+          + (B("BP", "kurgu_render.py", "--bilgi-paketi", "--kip", "animatik", grup=14),),
           butce="animatik_kurgu_tur"),
     Asama("A13", "Kesin bütçe BUT2", "betik kredi.py but2, olcek.py; hat-denetcisi",
           (G("URETIM_ONIZLEME", "A07c", "URETIM_ONIZLEME.json"), G("kuyruk", "A11"), G("OLCUM0", "olcum0"),
@@ -393,14 +452,17 @@ ASAMALAR = (
           (DURDU_SIFIR, M("hedef_alti", "PILOT kararı yazılır, A14 hedef_alti ile başlar (§1.5 A14a)")), None,
           (B("BP", "blok_plani.py", "--kesit", grup=0, cikti=("BLOK_PLANI.json",)),
            K("VG", "Masaüstündeki VIDEO_YARI_OTOMATIK.bat'a çift tıkla; açılan Flow sayfasında her istemde GÖNDER'e sen bas. "
-                   "Bitince ben kendim devam ederim.", {"tur": "blok", "blok": "KESIT"}, grup=1),
+                   "Bitince ben kendim devam ederim.", {"tur": "blok", "blok": "KESIT"}, grup=1,
+             komut=("film.py", "video", "--blok", "KESIT", "--film", "{film}")),
            B("VD", "video_denetim.py", "--klip", "--blok", "KESIT", grup=2, cikti=("_RAPOR/V2_KESIT_t{tur}.json",), kapi="V2"),
+           _flow_onarim(2),
            B("SP", "seslendir.py", "--parti", "--kesit", grup=3, kredili=True),
            B("SM", "son_miks.py", "--kesit", grup=4),
            B("KR", "kurgu_render.py", "--kesit", grup=5, cikti=("KESIT/kesit_v{tur}.mp4",)))
           + _seyirci_turu("kesit", "HS_KESIT", "_RAPOR/HS_KESIT_FILM_t{tur}.json", 6, seyirci_kip="kurgu")
           + (J("DE", "ders-editoru", grup=10, persona="PILOT", tasima=(("CIKTI/rapor.json", "_RAPOR/PILOT_DERS.json"),)),
-             B("PL", "blok_plani.py", "--pilot-karar", grup=11, cikti=("_RAPOR/PILOT_FILM.json",), kapi="PILOT"))),
+             B("PL", "blok_plani.py", "--pilot-karar", grup=11, cikti=("_RAPOR/PILOT_FILM.json",), kapi="PILOT"),
+             B("BK", "kurgu_render.py", "--bilgi-paketi", "--kip", "kesit", grup=12))),
     Asama("A14", "Video blokları", "blok_plani → Memmet (elle) → V1/SC1 → film.py bekle --blok → V2, V3, kare_zinciri + G1Z → kuyruk.py",
           (G("SIRALI_GORSEL (G1 GEÇ + SHA1)", "A11"), G("hareket_istem", "A09", "KAGIT_TAMAM.json"),
            G("PILOT_FILM.json", "A14a", "_RAPOR/PILOT_FILM.json")),
@@ -409,8 +471,10 @@ ASAMALAR = (
           (M("ayni_sahip", "yonetmen·onarim planı değiştirir", "yonetmen", "onarim"), DURDU_SIFIR), None,
           (B("BP", "blok_plani.py", grup=0, cikti=("BLOK_PLANI.json",)),
            K("VG", "Masaüstündeki VIDEO_YARI_OTOMATIK.bat'a çift tıkla; açılan Flow sayfasında her istemde GÖNDER'e sen bas. "
-                   "Blok bitince ben kendim devam ederim.", {"tur": "blok", "blok": "*"}, grup=1),
+                   "Blok bitince ben kendim devam ederim.", {"tur": "blok", "blok": "*"}, grup=1,
+             komut=("film.py", "video", "--blok", "*", "--film", "{film}")),
            B("VD", "video_denetim.py", "--klip", grup=2, cikti=("_RAPOR/V2_FILM_t{tur}.json",), kapi="V2"),
+           _flow_onarim(2),
            J("V3", "kare-tarifcisi", "v3", grup=3, adet="blok", tasima=(("CIKTI/rapor.json", "_RAPOR/V3/gozlem_t{tur}_{i}.json"),)),
            B("KZ", "kare_zinciri.py", "--cikar", grup=4, cikti=("_RAPOR/G1Z_FILM_t{tur}.json",), kapi="G1Z"),
            B("KU", "kuyruk.py", "--birlestir", grup=5))),
@@ -419,10 +483,10 @@ ASAMALAR = (
           ("SESLER/diyalog.json", "_RAPOR/S2_FILM.json"), (R("S2", "_RAPOR/S2_FILM_t{tur}.json"),), "flow+ai84", "yerel", 2,
           (DURDU_SIFIR,), None,
           (B("SP", "seslendir.py", "--parti", grup=0, kredili=True),
-           B("SD", "ses_donustur.py", grup=1),
+           B("SD", "ses_donustur.py", "--donustur", grup=1),
            J("RK", "hikaye-yazari", "replik_kabul", grup=2, tasima=(("CIKTI/rapor.json", "_HIKAYE_ODASI/REPLIK_KABUL.json"),)),
            B("SK", "ses_karar.py", grup=3, cikti=("_RAPOR/S2_FILM_t{tur}.json",), kapi="S2"))),
-    Asama("A16", "Kurgu", "plan_kurgu, diyalog_esitle, ses_katmani T2, son_miks, kurgu_render, kurgu_denetim (Z3); habersiz-seyirci·kurgu ×3; capcut_film; arsivle",
+    Asama("A16", "Kurgu", "plan_kurgu, diyalog_esitle, ses_katmani T2 + muzik --yerlestir, son_miks, kurgu_render, dudak_denetim, kurgu_denetim (Z3); kesici + kesme simülasyonu; habersiz-seyirci·kurgu ×3; renk_cila, buyut; capcut_film; arsivle",
           (G("videolar", "A14"), G("diyalog.json", "A15", "_RAPOR/S2_FILM_t1.json"), G("raporlar", "A14")),
           ("KURGU/KURGU_PLANI.json", "KURGU/onizleme_v<N>.mp4", "_RAPOR/Z3_v<N>.json", "_RAPOR/HS_KURGU_FILM_t<n>.json",
            "KURGU/son_capcut_projesi.json", "KURGU/altyazi_en.srt"),
@@ -434,13 +498,17 @@ ASAMALAR = (
            B("PK", "plan_kurgu.py", grup=1),
            B("DE", "diyalog_esitle.py", grup=2),
            B("SK", "ses_katmani.py", "--cizelge", "T2", grup=3),
+           B("MY", "muzik.py", "--yerlestir", grup=3),
            B("SM", "son_miks.py", grup=4),
            B("KR", "kurgu_render.py", "--onizleme", grup=5, cikti=("KURGU/onizleme_v{tur}.mp4",)),
-           B("KZ", "kurgu_denetim.py", grup=6, cikti=("_RAPOR/Z3_v{tur}.json",), kapi="Z3"),
-           J("KS", "kesici", "kurgu", grup=7, turda="ilk", tasima=(("CIKTI/rapor.json", "KURGU/KESME_T2.json"),)))
-          + _seyirci_turu("kurgu", "HS_KURGU", "_RAPOR/HS_KURGU_FILM_t{tur}.json", 8)
-          + (B("CC", "capcut_film.py", grup=12, cikti=("KURGU/son_capcut_projesi.json",)),
-             B("AR", "arsivle.py", "--film", grup=13)),
+           B("DU", "dudak_denetim.py", grup=5),
+           B("KZ", "kurgu_denetim.py", grup=6, cikti=("_RAPOR/Z3_v{tur}.json",), kapi="Z3"))
+          + _kesici("kurgu", "T2", 7)
+          + _seyirci_turu("kurgu", "HS_KURGU", "_RAPOR/HS_KURGU_FILM_t{tur}.json", 10)
+          + (B("RC", "renk_cila.py", grup=14),
+             B("BY", "buyut.py", grup=14),
+             B("CC", "capcut_film.py", grup=15, cikti=("KURGU/son_capcut_projesi.json",)),
+             B("AR", "arsivle.py", "--film", grup=16)),
           butce="animatik_kurgu_tur"),
     Asama("A16n", "Kullanıcı notu", "beceri film-not → taslak_fark, notlari_oku; kurgucu·not; kurgu_uygula; kurgu_denetim --hepsi; capcut_yama",
           (G("kullanıcının notu ya da CapCut düzenlemesi", "kullanici"), G("kurgu", "A16")),
@@ -467,7 +535,9 @@ ASAMALAR = (
              kapi="S8"),
            B("JN", "jenerik.py", grup=3),
            B("KP", "kapak.py", grup=3),
-           J("YP", "yayin-paketcisi", "paket", grup=4, cikti=("CIKTI/PAKET.json",), tasima=(("CIKTI/PAKET.json", "YAYIN/PAKET.json"),)),
+           B("PT", "yayin_paketi.py", "--taslak", grup=3, cikti=("YAYIN/PAKET_TASLAK.json",)),
+           J("YP", "yayin-paketcisi", "paket", grup=4, girdi=("YAYIN/PAKET_TASLAK.json",), cikti=("CIKTI/PAKET.json",),
+             tasima=(("CIKTI/PAKET.json", "YAYIN/PAKET.json"),)),
            J("YK", "yayin-paketcisi", "kapak", grup=4, tasima=(("CIKTI/rapor.json", "YAYIN/KAPAK_SECIM.json"),)),
            B("YD", "yayin_paketi.py", "--dogrula", grup=5, cikti=("_RAPOR/YAYIN_PAKET_t{tur}.json",), kapi="YAYIN"),
            B("SH", "shorts_mp4.py", grup=6),
@@ -542,6 +612,8 @@ def denetle(adlar=None):
             if s.tur == "betik" and not s.arac: h.append(f"{a.kod}/{s.kod}: betik aracı yok")
             if s.tur == "ajan" and not s.ajan: h.append(f"{a.kod}/{s.kod}: ajan adı yok")
             if s.tur == "kullanici" and not (s.mesaj and s.algilama): h.append(f"{a.kod}/{s.kod}: kullanıcı mesajı/algılaması yok")
+            if s.kosul and s.kosul not in KOSULLAR: h.append(f"{a.kod}/{s.kod}: bilinmeyen koşul {s.kosul}")
+            if s.kapi and s.kosul: h.append(f"{a.kod}/{s.kod}: koşullu görev kapı taşıyamaz (kurulmazsa kapı raporu yazılmaz)")
             if s.kapi and s.tur == "betik" and not any(c == next(k.rapor for k in a.kapilar if k.kod == s.kapi) for c in s.cikti):
                 h.append(f"{a.kod}/{s.kod}: kapı raporu görevin çıktıları arasında yok")
         for k in a.kapilar:

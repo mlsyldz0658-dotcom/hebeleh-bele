@@ -10,7 +10,7 @@ Kapsam:
     çekim çıktıları; sira biçimi.
   - plan_denetim: örnek film --harita / --sahne --tum / --tum HATA'sız; ZANAAT bozuk varyantları ("arac": "z0") adıyla yakalanır;
     ZN §2.3 diyalog formülü tablosu; --dosya (SubagentStop) kipi.
-  - istem_derle --hareket (istem özeti, elle değişmiş istem korunur), --gorsel adım 12 hatası; kroki --ciz / --karsilikli / kroki yoksa
+  - istem_derle --hareket (istem özeti, elle değişmiş istem korunur), --gorsel/--kart istem_derle_gorsel'e yönlenir; kroki --ciz / --karsilikli / kroki yoksa
     HESAPLANAMADI; zaman_cizelgesi T0 (Z1/Z2, olaylar, eğri) ve bozuk zaman; kamera_agaci (ağaç, bayat yayılımı, KAGIT_TAMAM);
     cekim_listesi.
 Ağ yok, kredi yok."""
@@ -94,6 +94,21 @@ class Sema(unittest.TestCase):
         kod, _ = Z.kos(plan_sema, "--film", kok)
         self.assertEqual(kod, 1)
         self.assertIn("derlenir_ajan_yazimi", [h["madde"] for h in rapor(kok, "SEMA_PLAN.json")["hatalar"]])
+
+    def test_yeniden_birlestirme_ses_alanlarini_korur(self):
+        """Birleştirme: A08'in yazdığı zanaat.ses, sahne_gruplari.<S>.ses ve sese bağlı _derlenir alanları A07c yeniden koşunca kaybolmaz."""
+        kok = birlesik("ZN_SESK"); y = os.path.join(kok, "SAHNELER.json"); s = Z.jl(y)
+        p0 = s["sahneler"][0]; sid = next(iter(s["sahne_gruplari"]))
+        p0["zanaat"]["ses"] = {"flow_sound": "Sound: wind over snow. No music.", "diyalog": {"yol": "tts"}}
+        p0["_derlenir"]["ton_fiili_en"] = "whispers"; p0["_derlenir"]["muzik_ipucu"] = "M01"
+        s["sahne_gruplari"][sid]["ses"] = {"yatak": {"dosya": "_SES/yatak.wav", "seviye_lufs": -38}}
+        ortak.atomik_yaz(y, s)
+        self.assertEqual(Z.kos(plan_birlestir, "--film", kok)[0], 0)
+        s2 = Z.jl(y); q0 = next(p for p in s2["sahneler"] if p["no"] == p0["no"])
+        self.assertEqual(q0["zanaat"]["ses"], p0["zanaat"]["ses"])
+        self.assertEqual((q0["_derlenir"]["ton_fiili_en"], q0["_derlenir"]["muzik_ipucu"]), ("whispers", "M01"))
+        self.assertEqual(s2["sahne_gruplari"][sid]["ses"], s["sahne_gruplari"][sid]["ses"])
+        self.assertEqual(Z.kos(plan_sema, "--film", kok)[0], 0)          # derlenir imzası korunan alanlarla tazelendi
 
     def test_sahnelerde_elle_derlenir(self):
         kok = birlesik("ZN_SEMA2")
@@ -194,7 +209,15 @@ class IstemKroki(unittest.TestCase):
         kod, cikti = Z.kos(istem_derle, "--hareket", "--film", kok)
         self.assertIn("istem_elle_degismis", cikti)
         self.assertEqual(Z.jl(os.path.join(kok, "SAHNELER.json"))["sahneler"][0]["hareket_istem"], "Static shot. She walks.")
-        self.assertEqual(Z.kos(istem_derle, "--gorsel", "--film", kok)[0], po.ORTAM)
+        # adım 12 kipleri istem_derle_gorsel'e yönlenir (birleştirme: artık "henüz yok → 4" değil)
+        from unittest import mock
+        import istem_derle_gorsel
+        with mock.patch.object(istem_derle_gorsel, "main", return_value=0) as m:
+            self.assertEqual(Z.kos(istem_derle, "--gorsel", "--film", kok)[0], 0)
+            self.assertEqual(Z.kos(istem_derle, "--kart", "--film", kok)[0], 0)
+        self.assertEqual([c.args[0] for c in m.call_args_list], [["--gorsel", "--film", kok], ["--kart", "--film", kok]])
+        kod, cikti = Z.kos(istem_derle, "--bitis", "--film", kok)          # gerçek alt araç: bitiş görseli adım 15'te
+        self.assertEqual(kod, 4); self.assertIn("kare_zinciri", cikti)
 
     def test_kroki_ciz_karsilikli_ve_hesaplanamadi(self):
         kok = Z.kopya("ZN_KR")
@@ -230,7 +253,11 @@ class ZamanAgacListe(unittest.TestCase):
         self.assertEqual(r1["hatalar"] + r2["hatalar"], [])
         self.assertIn("doruk_yogunluk_min", r2["uygulanmadi"])          # kısa örnek filmde film yapısı ölçüleri uygulanmaz
         self.assertEqual(os.path.isfile(os.path.join(kok, "KURGU", "EGRI_T0.png")), PILLOW)
-        self.assertEqual(Z.kos(zaman_cizelgesi, "--asama", "animatik", "--film", kok)[0], 4)
+        # birleştirme: --asama animatik → zaman_cizelgesi_t1 (T1 çizelgesi T0'dan kurulur); --asama kurgu T2 planı ister; yayin henüz yok
+        self.assertEqual(Z.kos(zaman_cizelgesi, "--asama", "animatik", "--film", kok)[0], 0)
+        self.assertTrue(os.path.isfile(os.path.join(kok, "KURGU", "surumler", "KURGU_PLANI_T1_v1.json")))
+        self.assertEqual(Z.kos(zaman_cizelgesi, "--asama", "kurgu", "--film", kok)[0], 2)
+        self.assertEqual(Z.kos(zaman_cizelgesi, "--asama", "yayin", "--film", kok)[0], 4)
 
     def test_t0_bozuk(self):
         def gec_eylem(kok):                                  # ilk plan 7 sn statik tutuluyor: ilk eylem > 5 sn

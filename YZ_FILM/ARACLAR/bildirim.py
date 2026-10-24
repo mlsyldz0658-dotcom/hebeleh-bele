@@ -28,8 +28,20 @@ SURUM = "bildirim 1.0"
 ACIL = ("kisit_olagandisi", "dogrulama", "butce", "kapi_tukendi")
 BILGI = ("kullanici_isi", "blok_hazir", "bilgi_paketi", "asama_bitti", "oturum_ozeti", "sinir_doldu", "disk", "hata")
 OLAYLAR = ACIL + BILGI
-TEKRAR_SN = 30 * 60          # §8.4; eşik dosyasında anahtar yok (paylasilan_istekler: hat_esikleri bildirim_tekrar_dk)
-SAAT_MAX = 12                # §8.4 "saatte ≤ 12 mesaj"
+# Tekrar süresi ve saatlik tavan hat_esikleri.json'dan (bildirim_tekrar_dk, bildirim_saat_max). Eşik dosyası okunamazsa bildirim yine
+# gider (Flow uyarısı hiçbir zaman eşik hatası yüzünden susmaz): aşağıdaki belge değerleri yalnız o durum içindir.
+TEKRAR_SN = 30 * 60          # §8.4 (bildirim_tekrar_dk)
+SAAT_MAX = 12                # §8.4 "saatte ≤ 12 mesaj" (bildirim_saat_max)
+
+
+def sinirlar():
+    """(tekrar_sn, saat_max): eşik dosyasından; okunamazsa belge değerleri."""
+    try:
+        import esikler
+        E = esikler.yukle()
+        return float(E["bildirim_tekrar_dk"]) * 60, int(E["bildirim_saat_max"])
+    except Exception:
+        return TEKRAR_SN, SAAT_MAX
 HATIRLATMA_SN = 6 * 3600     # §4.2 / §8.3: kullanıcı işinde 6 saat sonra 1 hatırlatma
 EK_MAX = 45 * 1024 * 1024
 GIZLI = [(re.compile(r"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b"), "[gizli]"), (re.compile(r"\bAIza[0-9A-Za-z_\-]{20,}\b"), "[gizli]"),
@@ -73,11 +85,12 @@ def _kaydet(y, kayit, ad="BILDIRIM.jsonl"):
 def bastir_mi(gecmis, olay, anahtar, simdi=None):
     """(bastır, neden). Yalnız gerçekten gönderilmiş kayıtlar sayılır."""
     simdi = simdi or time.time()
+    tekrar_sn, saat_max = sinirlar()
     gonderilen = [k for k in gecmis if k.get("gonderildi")]
-    if any(k.get("olay") == olay and k.get("anahtar") == anahtar and simdi - k.get("t", 0) < TEKRAR_SN for k in gonderilen):
-        return True, "aynı olay 30 dk içinde gönderildi"
-    if olay not in ACIL and sum(1 for k in gonderilen if simdi - k.get("t", 0) < 3600) >= SAAT_MAX:
-        return True, "saatlik tavan (%d) doldu" % SAAT_MAX
+    if any(k.get("olay") == olay and k.get("anahtar") == anahtar and simdi - k.get("t", 0) < tekrar_sn for k in gonderilen):
+        return True, "aynı olay %g dk içinde gönderildi" % (tekrar_sn / 60)
+    if olay not in ACIL and sum(1 for k in gonderilen if simdi - k.get("t", 0) < 3600) >= saat_max:
+        return True, "saatlik tavan (%d) doldu" % saat_max
     return False, None
 
 

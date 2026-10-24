@@ -20,13 +20,17 @@ Ne yapar:
 Çıkış kodları: 0 tamam · 1 HATA (rapor _RAPOR/SEMA_BIRLESTIR.json) · 2 PLANLAR/HARITA yok · 4 kullanım.
 """
 import os, sys, re, glob, shutil, copy
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po
 
 SURUM = "plan_birlestir 1.0"
 KORUNAN = ("uretim", "denetim", "kurgu", "gorsel_istem", "gorsel_istem_yedek", "hareket_istem", "hareket_istem_yedek")
+# Ses kâğıdının (A08 ses_plani) yazdığı alanlar: yeniden birleştirmede (A07c tekrar) kaybolmasın. Yönetmen dosyası aynı alanı yazmışsa
+# yönetmeninki geçer (ses_plani --denetle sonra yeniden uygular); replik değiştiyse replike bağlı derlenmiş ses alanları taşınmaz.
+KORUNAN_SES_ZANAAT = ("ses",)
+KORUNAN_SES_DERLENIR = ("ton_fiili_en", "seviye", "muzik_ipucu")
 CUMLE = re.compile(r"(?<=[.!?])\s+")
 
 
@@ -193,6 +197,12 @@ def topla(kok, kopyala=False):
             rz = {a.get("replik"): [a.get("bas"), a.get("bit")] for a in z.get("eylem_zinciri") or [] if a.get("tur") == "konusma" and a.get("replik")}
             dl["replik_zaman"] = rz; dl["hikaye"] = hd
             if (ep.get("_derlenir") or {}).get("istem_ozeti"): dl["istem_ozeti"] = ep["_derlenir"]["istem_ozeti"]
+            ez = ep.get("zanaat") or {}
+            for k in KORUNAN_SES_ZANAAT:
+                if k not in z and k in ez: z[k] = copy.deepcopy(ez[k])
+            if ((ep.get("replik") or {}).get("id")) == ((p.get("replik") or {}).get("id")):
+                for k in KORUNAN_SES_DERLENIR:
+                    if k in (ep.get("_derlenir") or {}): dl[k] = copy.deepcopy(ep["_derlenir"][k])
             p["_derlenir"] = dl
             sahneler.append(p)
     # bitis_karesi (Memmet uyumu, §5.1 kural 7; [YN2] §4.5.13 #9)
@@ -202,6 +212,9 @@ def topla(kok, kopyala=False):
             sonraki = sahneler[i + 1] if i + 1 < len(sahneler) else None
             dv = sonraki and (sonraki["zanaat"].get("zincir") or {}).get("gecis_turu") == "devam"
             p["bitis_karesi"] = sonraki["no"] if dv else f"{p['no']:03d}_son"
+    for sid, sg in gruplar.items():                                   # sahne_gruplari.<S>.ses (A08) korunur
+        es = (eski.get("sahne_gruplari") or {}).get(sid) or {}
+        if "ses" not in sg and "ses" in es: sg["ses"] = copy.deepcopy(es["ses"])
     seri = hikaye.get("evren")
     doc = {"_surum": 2, "_sema": "sahneler_v2", "_uretim": po.zarf("A07c", SURUM), "film": os.path.basename(kok),
            "baslik": seri or hikaye.get("baslik_ekran") or os.path.basename(kok), "altyazi_dili": None,

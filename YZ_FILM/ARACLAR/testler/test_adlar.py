@@ -1,7 +1,8 @@
 """Ad sözlüğü testi (TASARIM D-35, §6.1): veri/ADLAR.json, veri/kok_neden.json, veri/LISANSLAR.json.
 Önekler ve kapı/sahne/ses biçimi, tekrar yok, ajan dosyaları, yeni_film.py'nin .bat adları, ORNEK_3_SAHNE alanları,
-TASARIM'daki ajan·kip yazımları. Yalnız stdlib; ağ yok."""
-import ast, json, os, re, unittest
+TASARIM'daki ajan·kip yazımları ve kodda sabit dizi olarak geçen adlar (KoddaAdlar: kapı, ajan·kip, kör paket kipi, kök neden,
+kaynak kapı, film klasörü, veri dosyası). Yalnız stdlib; ağ yok."""
+import ast, json, os, re, sys, unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 YZ = os.path.dirname(ARACLAR); DEPO = os.path.dirname(YZ)
@@ -219,7 +220,150 @@ class Adlar(unittest.TestCase):
                 self.assertEqual(len(liste), len(set(liste)), ad)
 
 
+def _py_dosyalari(atla=("__pycache__", "testler", "kurgu_koprusu")):
+    """ARACLAR altındaki araç dosyaları (testler ve dış kurgu köprüsü hariç): (göreli yol, ast ağacı)."""
+    for kok, ds, fs in os.walk(ARACLAR):
+        ds[:] = sorted(d for d in ds if d not in atla)
+        for f in sorted(fs):
+            if f.endswith(".py"):
+                p = os.path.join(kok, f)
+                with open(p, encoding="utf-8-sig") as fh:
+                    try: yield os.path.relpath(p, ARACLAR).replace(os.sep, "/"), ast.parse(fh.read())
+                    except SyntaxError: continue
+
+
+def _sabit(n): return n.value if isinstance(n, ast.Constant) and isinstance(n.value, str) else None
+
+
+def _cagri_adi(n):
+    f = n.func
+    if isinstance(f, ast.Attribute): return (f.value.id if isinstance(f.value, ast.Name) else None), f.attr
+    return None, (f.id if isinstance(f, ast.Name) else None)
+
+
+class KoddaAdlar(unittest.TestCase):
+    """D-35: kodda sabit dizi olarak geçen adlar ADLAR.json'dadır. Yalnız kesin okunan kalıplar taranır (değişkenle kurulan ad atlanır),
+    böylece yanlış alarm olmaz: hat/asamalar.py R()/J()/B(kor_paket --kip), kapi.kaydet/rapor_kur ve ses_ortak.rapor kapı kodları,
+    kok_neden= ve kaynak_kapi= değerleri, os.path.join(film, "<AD>") film klasörü adları, veri/*.json dosyaları."""
+    @classmethod
+    def setUpClass(cls):
+        cls.a = yukle("ADLAR.json"); cls.kapilar = set(acik(cls.a["kapilar"]))
+        cls.ajanlar = acik(cls.a["ajanlar"]); cls.agaclar = list(_py_dosyalari())
+        cls.asamalar = next(t for r, t in cls.agaclar if r == "hat/asamalar.py")
+
+    def cagrilar(self, agac=None):
+        for n in ast.walk(agac or self.asamalar):
+            if isinstance(n, ast.Call): yield n
+
+    def test_asama_kapilari_adlarda(self):
+        """hat/asamalar.py'deki her R("<KAPI>") ADLAR kapilar'dadır (YEREL_KAPILAR da dahil; yerel liste artık yedek değildir)."""
+        say, eksik = 0, set()
+        for n in self.cagrilar():
+            if _cagri_adi(n)[1] == "R" and n.args and _sabit(n.args[0]):
+                say += 1
+                if _sabit(n.args[0]) not in self.kapilar: eksik.add(_sabit(n.args[0]))
+        self.assertGreater(say, 20, "R() çağrıları bulunamadı (tarama bozuk)")
+        self.assertEqual(sorted(eksik), [])
+        for n in ast.walk(self.asamalar):
+            if isinstance(n, ast.Assign) and any(isinstance(h, ast.Name) and h.id == "YEREL_KAPILAR" for h in n.targets):
+                self.assertLessEqual({_sabit(e) for e in n.value.elts}, self.kapilar)
+
+    def test_asama_ajan_kipleri_adlarda(self):
+        say, hata = 0, []
+        for n in self.cagrilar():
+            if _cagri_adi(n)[1] == "J" and len(n.args) >= 2:
+                say += 1
+                ajan, kip = _sabit(n.args[1]), (_sabit(n.args[2]) if len(n.args) > 2 else None)
+                if ajan not in self.ajanlar: hata.append(ajan); continue
+                if kip and kip not in self.ajanlar[ajan]["kipler"]: hata.append("%s·%s" % (ajan, kip))
+        self.assertGreater(say, 20)
+        self.assertEqual(hata, [])
+
+    def test_kor_paket_kipleri_adlarda(self):
+        kipler = set(self.a["kipler"]["kor_paket"])
+        for n in self.cagrilar():
+            a = [_sabit(x) for x in n.args]
+            if _cagri_adi(n)[1] == "B" and "kor_paket.py" in a and "--kip" in a and a.index("--kip") + 1 < len(a):
+                k = a[a.index("--kip") + 1]
+                if k: self.assertIn(k, kipler, "asamalar.py kor_paket --kip " + k)
+        kp = next(t for r, t in self.agaclar if r == "kor_paket.py")
+        for n in ast.walk(kp):
+            if isinstance(n, ast.Assign) and any(isinstance(h, ast.Name) and h.id in ("KAGIT_KIPLERI", "IZLEME_KIPLERI") for h in n.targets):
+                self.assertLessEqual({_sabit(e) for e in n.value.elts}, kipler)
+
+    def test_rapor_kapi_kodlari_adlarda(self):
+        """kapi.kaydet(klasor, "<KAPI>", …), kapi.rapor_kur("<KAPI>", …), so.rapor(film, "<KAPI>", …)."""
+        say, eksik = 0, set()
+        for r, t in self.agaclar:
+            for n in self.cagrilar(t):
+                on, ad = _cagri_adi(n); i = None
+                if on == "kapi" and ad == "kaydet": i = 1
+                elif on == "kapi" and ad == "rapor_kur": i = 0
+                elif on in ("so", "ses_ortak") and ad == "rapor": i = 1
+                if i is not None and len(n.args) > i and _sabit(n.args[i]):
+                    say += 1
+                    if _sabit(n.args[i]) not in self.kapilar: eksik.add("%s: %s" % (r, _sabit(n.args[i])))
+        self.assertGreater(say, 5)
+        self.assertEqual(sorted(eksik), [])
+
+    def test_kok_neden_ve_kaynak_kapi_degerleri(self):
+        if ARACLAR not in sys.path: sys.path.insert(0, ARACLAR)
+        import plan_ortak
+        k = yukle("kok_neden.json"); kodlar = set(acik(k["kok_nedenler"]))
+        self.assertLessEqual(set(plan_ortak.KOK_ESLEME.values()), kodlar, "KOK_ESLEME sözlükte olmayan koda eşliyor")
+        gecerli = kodlar | set(acik(k["es_anlamlar"])) | set(plan_ortak.KOK_ESLEME)
+        kaynak = set(self.a["kuyruk_kaynak_kapilari"]); say, hata = 0, set()
+        for r, t in self.agaclar:
+            for n in ast.walk(t):
+                ciftler = []
+                if isinstance(n, ast.keyword) and n.arg in ("kok_neden", "kaynak_kapi"): ciftler = [(n.arg, n.value)]
+                elif isinstance(n, ast.Dict): ciftler = [(_sabit(a), v) for a, v in zip(n.keys, n.values) if a is not None]
+                for ad, v in ciftler:
+                    deger = _sabit(v)
+                    if ad == "kok_neden" and deger:
+                        say += 1
+                        if deger not in gecerli: hata.add("%s: kok_neden %s" % (r, deger))
+                    if ad == "kaynak_kapi" and deger and deger not in kaynak: hata.add("%s: kaynak_kapi %s" % (r, deger))
+        self.assertGreater(say, 30)
+        self.assertEqual(sorted(hata), [])
+
+    def test_film_klasoru_adlari(self):
+        """os.path.join(film, "<AD>…") ile açılan büyük harfli ya da '_' önekli üst ad ADLAR klasorler.film / film_dosyalari'ndadır."""
+        izin = set(self.a["klasorler"]["film"]) | set(self.a["film_dosyalari"]["kok"]) | set(self.a["film_dosyalari"])
+        say, eksik = 0, set()
+        for r, t in self.agaclar:
+            for n in self.cagrilar(t):
+                if _cagri_adi(n)[1] != "join" or len(n.args) < 2: continue
+                if not (isinstance(n.args[0], ast.Name) and n.args[0].id in ("film", "film_kok")): continue
+                s = _sabit(n.args[1])
+                if not s: continue
+                ust = s.replace("\\", "/").split("/")[0]
+                if re.fullmatch(r"[A-Z0-9_]+(\.[A-Za-z0-9]+)?", ust) or ust.startswith("_"):
+                    say += 1
+                    if ust not in izin: eksik.add("%s: %s" % (r, ust))
+        self.assertGreater(say, 50)
+        self.assertEqual(sorted(eksik), [])
+
+    def test_veri_dosyalari_adlarda(self):
+        v = self.a["veri_dosyalari"]; liste = set(v["veri_sozlukleri"]) | set(v["esik_dosyalari"])
+        for f in os.listdir(VERI):
+            if f.endswith(".json"): self.assertIn("veri/" + f, liste, "ADLAR veri_dosyalari'nda olmayan veri dosyası: " + f)
+        for kapi_kodu in ("KONU", "BRIFING", "ONERI", "JURI", "YAPI", "PLAN_ELESTIRI", "HAZIRLIK", "HARITA", "KUR", "DERS", "S2a"):
+            self.assertIn(kapi_kodu, self.kapilar)
+        for kip in ("ilk2dk", "kesici"):
+            self.assertIn(kip, self.a["kipler"]["kor_paket"])
+        self.assertIn(".claude/_ESKI/agents", self.a["klasorler"]["depo"])
+        self.assertIn("yeni_film.py artık üretmiyor", self.a["bat"]["gecis"]["MEMMET_GIRIS.bat"])
+
+
 class KokNeden(unittest.TestCase):
+    def test_birlestirme_kodlari(self):
+        kodlar = acik(yukle("kok_neden.json")["kok_nedenler"])
+        for kod, alan, sahip in (("eylem_zinciri", "yonetmen", "yonetmen"), ("diyalog_suresi", "yonetmen", "yonetmen"),
+                                 ("replik_sigmiyor", "ses", "yonetmen"), ("teknik_kusur", "sureklilik", "sureklilik-denetcisi"),
+                                 ("gorsel_teknik", "sureklilik", "sureklilik-denetcisi")):
+            self.assertEqual((kodlar[kod]["alan"], kodlar[kod]["sahip"]), (alan, sahip), kod)
+
     def test_sozluk(self):
         k = yukle("kok_neden.json")
         adlar = acik(yukle("ADLAR.json")["ajanlar"])
@@ -259,8 +403,11 @@ class Lisanslar(unittest.TestCase):
                 self.assertNotEqual(v["ticari_youtube"], "evet", ad)
         for zorunlu in ("playwright", "pycapcut", "kurgu_koprusu", "demucs", "faster-whisper", "yunet", "sface", "dinov2-small",
                         "openvoice_v2", "rvc", "chatterbox", "musetalk", "ace-step", "pyloudnorm", "pyscenedetect", "fluidsynth",
-                        "sf2_ses_bankasi", "gemini_api_ucretsiz", "muzik_cekirdek_seti", "gemini_muzik"):
+                        "sf2_ses_bankasi", "gemini_api_ucretsiz", "muzik_cekirdek_seti", "gemini_muzik",
+                        "stable-ts", "audio-separator", "ffmpeg", "real-esrgan", "scipy", "torchaudio", "mediapipe_modelleri"):
             self.assertIn(zorunlu, d["bilesenler"])
+        # Bu sürümde hiçbir satır kaynağından doğrulanmadı: 'dogrulandi' yazılmaz (doğrulama uydurulmaz).
+        self.assertEqual([a for a, v in d["bilesenler"].items() if v["dogrulama"] == "dogrulandi"], [])
         for ad in ("pycapcut", "kurgu_koprusu", "demucs"):  # D-36
             self.assertTrue(d["bilesenler"][ad]["kullanici_araci"], ad)
         for ad in ("flow", "ai84"):

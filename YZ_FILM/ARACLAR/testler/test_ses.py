@@ -271,6 +271,14 @@ class IstemSes(Taban):
                                                                   if p.get("veo_ses_tarifi")})
         temiz = ids.ayikla(ham, self.S)
         self.assertFalse([x for x in temiz if x["seviye"] == "HATA"], temiz)
+        # birleştirme: kök neden denetle_v2'de düzeldi (tırnaklı söz eylem değil; birebir şartı yalnız veo_donustur/veo_ham) → ayıklamasız temiz
+        self.assertFalse([x for x in ham if x["seviye"] == "HATA"], ham)
+        r, _ = idn.rapor_v2(self.kok, rapor_yolu=self.yol("_RAPOR", "ISTEM_V2.json"))      # tek ISTEM kapısı: v2 + ses ekleri
+        self.assertEqual(r["sonuc"], "GEC", r["hatalar"]); self.assertIn("istem_denetim_ses", r["_uretim"]["arac_surum"])
+        p3 = self.plan(3); eski = p3["hareket_istem"]
+        p3["hareket_istem"] = eski.replace(p3["replik"]["metin"], "Something else")       # veo_donustur planında replik birebir değil
+        self.assertIn(("replik_istemde_birebir_degil", 3), {(x["madde"], x.get("plan")) for x in idn.denetle_v2(self.S, ())})
+        p3["hareket_istem"] = eski
         p21 = self.plan(21); p21["hareket_istem"] = p21["hareket_istem"].replace("Static", "Sera realizes the truth. Static")
         k = [x for x in ids.ayikla(idn.denetle_v2(self.S, ()), self.S) if x["madde"] == "ic_durum_fiili"]
         self.assertEqual([x["olcu"] for x in k if x.get("plan") == 21], [["realizes"]])  # tırnak dışı iç durum fiili kalır

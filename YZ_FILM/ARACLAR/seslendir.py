@@ -11,6 +11,11 @@ Kullanım (film.py görevi):
   python seslendir.py --parti N [--kesit] --film F
         Video sonrası yönlendirme: yol tts → animatikteki dosya (önbellekten, 0 kredi; metin değiştiyse yeniden); yol veo_donustur/veo_ham →
         ses_donustur.py (video sonrası ses dilimi; yoksa 4 ORTAM). Sessiz geri dönüş YOK: TTS başarısızsa replik HATA'dır, Flow sesine düşülmez.
+  python seslendir.py --istek --film F
+        SESLER/TTS_ISTEK.json'daki yapılmamış istekler (ses_karar: tts_dudak, ekran_disi_tts, 'esnetme > %8: yeniden okut'): replik TTS'le
+        okunur; "yeniden okut" isteğinde aynı ses yeni tohumla (önbellek dışı yeni take). --parti de o partinin isteklerini katar.
+        Yazılan istek yapildi: true işaretlenir. Her TTS replikte diyalog.json tts.esnetme_oran (S2.12): videoda konuşma anı varsa
+        sure / (klip_zamani.bit − bas) − 1; yoksa planın penceresinden taşan oran (≥ 0).
   python seslendir.py <film_klasoru>     (v1 SAHNELER) eski yol: seslendir_v1.py (bilinen kusurlarıyla; yalnız eski filmler)
 Kredi: kredili sağlayıcıda önce BUTK (kredi.py; AI84 film dilimi) toplam önbelleksiz harf için; her gönderimden ÖNCE kredi defterine
   gönderim satırı. Kesilen çalıştırmadan sonra gönderilmiş ama dosyası olmayan replikte önce sağlayıcı önbelleği toplanır; bulunamazsa
@@ -19,7 +24,7 @@ Kredi: kredili sağlayıcıda önce BUTK (kredi.py; AI84 film dilimi) toplam ön
                7 KISIT (sağlayıcı geçilemez kısıt).
 """
 import os, sys, json, subprocess
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -89,8 +94,42 @@ def _komsu(rs, i):
     return a, b
 
 
-def tts_hazirla(film, rs, saglayici=None, kapsam="ANIMATIK", asama="A12"):
-    """rs: so.replikler() alt kümesi. (çıkış kodu, rapor yolu, rapor)."""
+# --- TTS istekleri (ses_karar → SESLER/TTS_ISTEK.json) ------------------------------------------------------------------
+TTS_ISTEK = os.path.join("SESLER", "TTS_ISTEK.json")
+
+
+def istekler_oku(film):
+    """Yapılmamış TTS istekleri {replik: neden} (ses_karar: tts_dudak, ekran_disi_tts, tts_agiz_gorunmuyor, 'esnetme > %8: yeniden okut')."""
+    v = ortak.json_oku(os.path.join(film, TTS_ISTEK), {}) or {}
+    return {m["replik"]: str(m.get("neden") or "") for m in v.get("replikler") or [] if isinstance(m, dict) and m.get("replik") and not m.get("yapildi")}
+
+
+def yeniden_okut_mu(neden): return "yeniden okut" in (neden or "") or "esnetme" in (neden or "")
+
+
+def istekler_isaretle(film, sonuclar):
+    """sonuclar: {replik: tts dosyası|None}. Dosyası yazılan istek yapildi: true olur (kalıcı silme yok)."""
+    p = os.path.join(film, TTS_ISTEK); v = ortak.json_oku(p, {}) or {}
+    for m in v.get("replikler") or []:
+        if isinstance(m, dict) and not m.get("yapildi") and sonuclar.get(m.get("replik")):
+            m.update(yapildi=True, dosya=sonuclar[m["replik"]])
+    if v: ortak.atomik_yaz(p, v)
+
+
+def esnetme_orani(sure, r, kay):
+    """S2.12: TTS'nin yerine oturması için gereken esnetme. Videoda konuşma anı varsa (klip_zamani: ağız/ekran dışına alınan veo
+    repliği) o süreye göre işaretli oran (sure/hedef − 1); yoksa planın penceresinden (giriş + çıkış payı, cümle arası) taşan kısım."""
+    kz = kay.get("klip_zamani") or {}
+    if kz.get("bas") is not None and kz.get("bit") is not None and float(kz["bit"]) > float(kz["bas"]):
+        return round(sure / (float(kz["bit"]) - float(kz["bas"])) - 1.0, 3)
+    yer = r["pencere_sn"] - so.esik("diyalog_giris_payi_sn") - so.esik("diyalog_cikis_payi_sn") - 0.25 * (len(r["cumleler"]) - 1)
+    if yer <= 0: return None
+    return round(max(0.0, sure / yer - 1.0), 3)
+
+
+def tts_hazirla(film, rs, saglayici=None, kapsam="ANIMATIK", asama="A12", yeniden=()):
+    """rs: so.replikler() alt kümesi; yeniden: yeni okuma istenen replikler (TTS_ISTEK 'yeniden okut': aynı ses, yeni tohum →
+    önbellek dışı yeni take). (çıkış kodu, rapor yolu, rapor)."""
     from olcum import ses as O
     sahte = so.sahte_mi(film, saglayici)
     olmayan = []; zin = so.zincir("tts", film, saglayici_=saglayici, hazir_olmayan=olmayan)
@@ -104,6 +143,10 @@ def tts_hazirla(film, rs, saglayici=None, kapsam="ANIMATIK", asama="A12"):
     for r in rs:
         v = so.karakter_sesi(film, r["karakter"])
         if not v.get("voice_id") and sahte: v = {"voice_id": f"sahte_{r['karakter']}", "kaynak": "sahte"}
+        if r["id"] in yeniden:
+            n_ok = int(((D["replikler"].get(r["id"]) or {}).get("yeniden_okuma") or 0)) + 1
+            v = dict(v, seed=int(v.get("seed") or 0) + n_ok)
+            D["replikler"].setdefault(r["id"], {})["yeniden_okuma"] = n_ok
         sesler[r["id"]] = v
     s0 = zin[0]
     # BUTK: önbelleksiz toplam harf (kredili sağlayıcı)
@@ -173,11 +216,12 @@ def tts_hazirla(film, rs, saglayici=None, kapsam="ANIMATIK", asama="A12"):
                                   "yazar": "yonetmen", "oneri": f"{rid} TTS {round(sure, 2)} sn; gereken {round(gerek, 2)} > pencere "
                                                                 f"{r['pencere_sn']} sn: repliği böl, ekran dışına taşı ya da 10 sn klip"})
         kel = sonuc.get("kelimeler") or kay.get("kelimeler") or []
+        es = esnetme_orani(sure, r, kay)
         kay.update({"karakter": r["karakter"], "kaynak_plan": r["plan"], "yol_plan": r["yol"], "senaryo_metin": r["metin"],
                     "cumleler": r["cumleler"], "tr": r["tr"], "teslim": r["teslim"],
                     "tts": {"dosya": rel.replace("\\", "/"), "sure_sn": round(sure, 3), "kelime_sn": round(len(r["metin"].split()) / max(sure, 1e-3), 2),
                             "kredi": sonuc.get("kredi", 0), "ses": v["voice_id"], "saglayici": sonuc.get("saglayici") or kay.get("tts", {}).get("saglayici"),
-                            "onbellek": bool(sonuc.get("onbellek")), "gecirilmedi": sonuc.get("gecirilmedi")},
+                            "onbellek": bool(sonuc.get("onbellek")), "gecirilmedi": sonuc.get("gecirilmedi"), "esnetme_oran": es},
                     "kelimeler": kel, "kelime_kaynagi": sonuc.get("kelime_kaynagi") or kay.get("kelime_kaynagi"),
                     "seviye": sinif, "hedef_lufs": hedef, "olculen_lufs": round(l, 2), "kazanc_db": sonuc.get("kazanc_db", kay.get("kazanc_db")),
                     "pencere": {"bas": (r.get("replik_zaman") or [None])[0], "sn": r["pencere_sn"]}})
@@ -205,9 +249,12 @@ def parti(film, n, kesit=False, saglayici=None):
         kes = {pl for b in bp.get("bloklar") or [] if b.get("ad") == "KESIT" or b.get("kesit") for pl in b.get("planlar") or []}
         rs = [r for r in rs if r["plan"] in kes] if kes else rs
     elif n is not None: rs = [r for r in rs if str(partiler.get(r["plan"])) == str(n)]
-    tts_r = [r for r in rs if r["yol"] == "tts"]; veo_r = [r for r in rs if r["yol"] != "tts"]
-    kod, yol, rap = tts_hazirla(film, tts_r, saglayici, kapsam=f"PARTI{n if not kesit else 'KESIT'}", asama="A14a" if kesit else "A15")
+    ist = istekler_oku(film)
+    tts_r = [r for r in rs if r["yol"] == "tts" or r["id"] in ist]; veo_r = [r for r in rs if r["yol"] != "tts"]
+    kod, yol, rap = tts_hazirla(film, tts_r, saglayici, kapsam=f"PARTI{n if not kesit else 'KESIT'}", asama="A14a" if kesit else "A15",
+                                yeniden={rid for rid, ne in ist.items() if yeniden_okut_mu(ne)})
     if kod: return kod
+    _istekleri_kapat(film, [r["id"] for r in tts_r if r["id"] in ist])
     if veo_r:
         p = os.path.join(HERE, "ses_donustur.py")
         if not os.path.exists(p):
@@ -215,6 +262,26 @@ def parti(film, n, kesit=False, saglayici=None):
         arg = [sys.executable, p, "--parti", str(n)] + (["--kesit"] if kesit else []) + ["--film", film]
         if saglayici: arg += ["--saglayici", saglayici]
         return subprocess.run(arg).returncode
+    return so.BITTI
+
+
+def _istekleri_kapat(film, rids):
+    if not rids: return
+    D = diyalog_oku(film)
+    istekler_isaretle(film, {rid: ((D["replikler"].get(rid) or {}).get("tts") or {}).get("dosya") for rid in rids})
+
+
+def istek(film, saglayici=None):
+    """--istek: yalnız SESLER/TTS_ISTEK.json'daki yapılmamış istekler (ses_karar merdiveni). → çıkış kodu."""
+    ist = istekler_oku(film)
+    if not ist: log("TTS isteği yok"); return so.BITTI
+    rs = [r for r in so.replikler(film) if r["id"] in ist]
+    eksik = sorted(set(ist) - {r["id"] for r in rs})
+    if eksik: log(f"!! istenen replik SAHNELER'de yok: {', '.join(eksik)}")
+    kod, yol, rap = tts_hazirla(film, rs, saglayici, kapsam="ISTEK", asama="A15", yeniden={rid for rid, ne in ist.items() if yeniden_okut_mu(ne)})
+    if kod: return kod
+    _istekleri_kapat(film, [r["id"] for r in rs])
+    if rap: log(f"S2 ISTEK → {rap['sonuc']} ({os.path.relpath(yol, film)})")
     return so.BITTI
 
 
@@ -230,6 +297,7 @@ def main(argv):
         kod, yol, rap = tts_hazirla(film, so.replikler(film), sg)
         if rap: log(f"S2 ANIMATIK → {rap['sonuc']} ({os.path.relpath(yol, film)})")
         return kod
+    if "--istek" in argv: return istek(film, sg)
     if "--parti" in argv:
         n = so.arg(argv, "--parti"); n = None if (n or "").startswith("--") else n
         return parti(film, n, "--kesit" in argv, sg)

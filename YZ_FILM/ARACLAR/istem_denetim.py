@@ -18,13 +18,15 @@ v2 (TASARIM §6.3, §7.2 ISTEM; SAHNELER.json "_surum" ≥ 2 — v1 dosyası v1 
         iki el tarifli değil (eller alanı varsa iki el), görsel isteminde süren eylem fiili yok (görsel donmuş an değil),
         ifade sözlüğü dışı ifade şablonu, öğrenilen kural (KURALLAR_OGRENILEN.json "istem" türü, aktif).
   BAYRAK: hareket istemi > plan_hareket_istem_kelime_max (75), elle istem oranı > plan_istem_elle_oran_max (0,05).
+  rapor_v2 = denetle_v2 + istem_denetim_ses (ayikla + S0.4–S0.6 ses ekleri; tek ISTEM kapısı). denetle_v2'de replik tırnağı içindeki söz
+  iç durum / sonuç fiili sayılmaz; veo_ses_tarifi ve replik birebir şartı yalnız zanaat.ses.diyalog.yol veo_donustur|veo_ham planında.
   v1 davranışı değişmez: denetle()/rapor() v1 içindir ve v2 dosyasında 4 ile çıkar (ortak.sahneler_oku).
 """
 import os, sys, re, json
 import ortak   # SAHNELER.json v2 koruması
 try: import kapi   # yalnız v2 raporu için
 except Exception: kapi = None
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 # Video istemlerinde küçükler filtresine takılan kelimeler (03_DERSLER.md)
 FILTRE_KELIMELERI = ["girl", "little", "child", "children", "kid", "kids", "baby", "toddler", "siblings", "frail",
@@ -110,6 +112,8 @@ YON_SAHIBI = re.compile(r"\b(?:her|his|their|its|[A-Z][a-z]+'s)\s+(?:own\s+)?(?:
                         r"\b(?:enters|exits|leaves) frame (?:left|right)\b", re.I)
 SUREN_EYLEM = re.compile(r"\b\w+ing\b|\bmid-\w+", re.I)
 FLOW_SOUND = re.compile(r"^Sound: .+\. No music\.$")
+TIRNAK_ICI = re.compile(r"[\"“][^\"”]*[\"”]")          # replik tırnağı: söz eylem değildir (iç durum / sonuç fiili sayılmaz)
+KONUSAN_YOLLAR = ("veo_donustur", "veo_ham")            # Veo'nun konuştuğu diyalog yolları (zanaat.ses.diyalog.yol)
 
 
 def _esikler():
@@ -157,6 +161,12 @@ def _eylem_metni(z):
                     for a in (z.get("eylem_zinciri") or []) if isinstance(a, dict))
 
 
+def _diyalog_yolu(z):
+    ses = z.get("ses") if isinstance(z.get("ses"), dict) else {}
+    d = ses.get("diyalog") if isinstance(ses.get("diyalog"), dict) else {}
+    return d.get("yol")
+
+
 def denetle_v2(plan, ne_yok=(), ogrenilen=None, kimlikler=None, ses_tarifleri=None, ifade_sozlugu=None, E=None):
     """SAHNELER v2 → [ölçüm]. kimlikler: {karakter: kimlik_en} (evren), ses_tarifleri: {karakter: veo_ses_tarifi}."""
     E = E if E is not None else _esikler(); out = []
@@ -180,7 +190,7 @@ def denetle_v2(plan, ne_yok=(), ogrenilen=None, kimlikler=None, ses_tarifleri=No
         if len(refs) > ref_max: out.append(_m("referans", "HATA", n, olcu=len(refs), esik=ref_max))
         konusan = [k.get("id") for k in z.get("kadrajdakiler") or [] if k.get("konusur")]
         if len(konusan) > konusan_max: out.append(_m("konusan_karede", "HATA", n, olcu=konusan, esik=konusan_max))
-        eylem = hi + " " + _eylem_metni(z)
+        eylem = TIRNAK_ICI.sub(" ", hi) + " " + _eylem_metni(z)
         ys = bul(eylem, yasak_sonuc)
         if ys: out.append(_m("yasak_sonuc_fiili", "HATA", n, olcu=ys, oneri="eylemi fiziksel adımlarla yaz (ör. 'closes her fingers around')"))
         ic = bul(eylem, IC_DURUM_FIILLERI)
@@ -200,10 +210,11 @@ def denetle_v2(plan, ne_yok=(), ogrenilen=None, kimlikler=None, ses_tarifleri=No
         if fs and hi and fs.strip() not in hi: out.append(_m("flow_sound_istemde_yok", "HATA", n))
         if rep.get("metin") and hi:
             kar = rep.get("karakter"); tarif = ses_tarifleri.get(kar)
+            veo_konusur = _diyalog_yolu(z) in KONUSAN_YOLLAR      # tts / ekran dışı planda Veo konuşmaz → birebir şartı yok
             if tarif:
                 if kelime_sayisi(tarif) > 12: out.append(_m("veo_ses_tarifi_kelime", "HATA", n, olcu=kelime_sayisi(tarif), esik=12))
-                if tarif not in hi: out.append(_m("veo_ses_tarifi_birebir", "HATA", n, olcu=kar))
-            if rep["metin"] not in hi: out.append(_m("replik_istemde_birebir_degil", "HATA", n, olcu=rep.get("id")))
+                if veo_konusur and tarif not in hi: out.append(_m("veo_ses_tarifi_birebir", "HATA", n, olcu=kar))
+            if veo_konusur and rep["metin"] not in hi: out.append(_m("replik_istemde_birebir_degil", "HATA", n, olcu=rep.get("id")))
         for kar in refs:
             kim = kimlikler.get(kar)
             if kim and gi and kim not in gi: out.append(_m("kimlik_dizesi_birebir", "HATA", n, olcu=kar))
@@ -243,19 +254,24 @@ def _evren_bilgisi(kok):
 def rapor_v2(kok, tur=1, gorev=None, rapor_yolu=None):
     """SAHNELER v2 → _RAPOR/ISTEM_FILM.json. (rapor, yol)."""
     kok = os.path.abspath(kok)
-    plan = ortak.json_oku(os.path.join(kok, "SAHNELER.json"))
+    plan = ortak.json_oku(os.path.join(kok, "SAHNELER.json")); surum = SURUM_V2
     if not isinstance(plan, dict): olc = [_m("sahneler_yok", "HATA")]; plan = {}
     elif int(plan.get("_surum", 1) or 1) < 2: olc = [_m("sahneler_v1", "HATA", neden="v1 dosyası: python istem_denetim.py <film> (v1)")]
     else:
-        ses = {}; prof = ortak.json_oku(os.path.join(kok, "_SES", "SES_PROFILLERI.json"), {}) or {}
-        for kid, p in (prof.get("karakterler") or prof).items():
-            if isinstance(p, dict) and p.get("veo_ses_tarifi"): ses[kid] = p["veo_ses_tarifi"]
+        import istem_denetim_ses as ids                     # ses ekleri (S0.4–S0.6, §7.2 ISTEM): kural tek yerde, orada
+        prof = ids.profiller_oku(kok)
+        ses = {kid: p["veo_ses_tarifi"] for kid, p in prof.items() if p.get("veo_ses_tarifi")}
         ogr = None
         try: ogr = ortak.json_oku(os.path.join(ortak.yollar()["veri_kok"], "BILGI", "KURALLAR_OGRENILEN.json"))
         except ortak.YolYok: pass
-        olc = denetle_v2(plan, _evren_bilgisi(kok), ogr, ses_tarifleri=ses)
+        h = ortak.json_oku(os.path.join(kok, "HIKAYE.json"), {}) or {}
+        kar = h.get("karakterler") if isinstance(h.get("karakterler"), dict) else {}
+        yar = {k for k, v in kar.items() if isinstance(v, dict) and (v.get("rol") == "yaratik" or v.get("konusmaz"))}
+        olc = ids.ayikla(denetle_v2(plan, _evren_bilgisi(kok), ogr, ses_tarifleri=ses), plan)
+        olc += ids.denetle(plan, profiller=prof, ciftleri_atla=True, yaratiklar=yar)
+        surum = f"{SURUM_V2} + {ids.SURUM}"
     birimler = [s.get("no") for s in plan.get("sahneler") or [] if s.get("no") is not None]
-    r = kapi.rapor_kur("ISTEM", "FILM", olc, tur=tur, asama="A09", gorev=gorev, arac_surum=SURUM_V2, birimler=birimler)
+    r = kapi.rapor_kur("ISTEM", "FILM", olc, tur=tur, asama="A09", gorev=gorev, arac_surum=surum, birimler=birimler)
     yol = rapor_yolu or os.path.join(kok, "_RAPOR", "ISTEM_FILM.json")
     h = kapi.dogrula(r)
     if h: raise kapi.RaporHatasi(h)

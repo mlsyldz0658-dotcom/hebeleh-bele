@@ -8,7 +8,11 @@ Kullanım (film.py calis çağırır: "<arac> <args> --film <film>"):
                                              + ölçüler + yoğunluk eğrisi (plan başına) ve hedef eğri
         KURGU/EGRI_T0.png                    yoğunluk ve hedef eğrisi (Pillow; yoksa ÖLÇÜLEMEDİ, rapora not)
         _RAPOR/ZAMAN_T0.json                 Z1 (bilgi) kapı raporu   · _RAPOR/ZAMAN_Z2_T0.json  Z2 (duygu) kapı raporu
-  python zaman_cizelgesi.py --asama animatik|kurgu|yayin --film <film>   T1/T2/T3: PR-11/PR-12 (adım 15–16) gelir; şimdi 4 ile çıkar.
+  python zaman_cizelgesi.py --asama animatik [--tur N] --film <film>   A12 T1 → zaman_cizelgesi_t1.py (animatik çizelgesi)
+  python zaman_cizelgesi.py --asama kurgu --film <film>      A16 T2: son KURGU_PLANI_T2 (plan_kurgu çağırır) →
+        KURGU/ZAMAN_T2.json (ölçüler plan_kurgu.olcumler'den, olaylar, eğri) · _RAPOR/ZAMAN_T2.json (Z1 + T0'a göre sapma BAYRAK'ları)
+        · _RAPOR/ZAMAN_Z2_T2.json (Z2) · _RAPOR/SAPMA_T2.json (plan başına |T2 − T0| / T0 > sapma_plan_oran_max → BAYRAK)
+  python zaman_cizelgesi.py --asama yayin --film <film>      T3: henüz yok, 4 ile çıkar.
 Kodda: cizelge(sahneler) → planlar · olaylar(sahneler, hikaye, planlar) · z1(...) · z2(...) · egri_ciz(...)
 Kurallar:
   - Süre yalnız kullanim.sure'den (kod alanı _derlenir.sure_sn ile aynı); L/J taşması görünen süreyi değiştirmez, olay anını kaydırmaz.
@@ -20,14 +24,14 @@ Kurallar:
 Çıkış kodları: 0 GEÇ/BAYRAK · 1 HATA (Z1/Z2) ya da bozuk girdi · 2 SAHNELER.json yok · 4 kullanım ya da henüz desteklenmeyen aşama.
 """
 import os, sys, re, math
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po
 
 SURUM = "zaman_cizelgesi 1.0"
 ASAMA_T = {"kagit": "T0", "animatik": "T1", "kurgu": "T2", "yayin": "T3"}
-SONRAKI = {"animatik": "adım 15 (PR-11)", "kurgu": "adım 16 (PR-12)", "yayin": "adım 16 (PR-12)"}
+SONRAKI = {"yayin": "adım 16–17 (T3 yayın çizelgesi)"}
 MANZARA = ("kurulus", "gecis")
 
 
@@ -373,11 +377,90 @@ def kagit(kok, tur):
     return max(po.cikis(r1), po.cikis(r2))
 
 
+def t2_cizelge(kp, pl):
+    """KURGU_PLANI_T2 planları → cizelge() biçimi (bas/bit/sure T2 çizelgesinden, kullanim kırpma penceresinden)."""
+    out = []
+    for x in kp.get("planlar") or []:
+        p = pl.get(x.get("plan"))
+        if not isinstance(p, dict): continue                # örtü/kart girdisi: SAHNELER'de planı yok
+        z = p.get("zanaat") or {}; g = x.get("goruntu") or {}; ku = g.get("kullanim") or {}
+        bas, sure = float(x.get("cizelge_bas") or 0), float(x.get("sure") or 0)
+        ks = z.get("kesme") or {}
+        out.append({"no": p.get("no"), "sira": x.get("sira", p.get("sira")), "kod": z.get("kod"), "sahne": z.get("sahne_grubu"),
+                    "parti": int(p.get("parti") or 1), "bas": _r(bas), "bit": _r(bas + sure), "sure": _r(sure), "plan_tipi": z.get("plan_tipi"),
+                    "kesme": (x.get("kesme_cikis") or {}).get("tip") or ks.get("tip"), "ses_tasma_sn": float(ks.get("ses_tasma_sn") or 0),
+                    "kullanim": {"bas": ku.get("bas"), "sure": ku.get("sure")},
+                    "yogunluk": ((p.get("_derlenir") or {}).get("hikaye") or {}).get("yogunluk") or z.get("yogunluk"),
+                    "duygu": ((p.get("_derlenir") or {}).get("hikaye") or {}).get("hedef_duygu") or p.get("duygu")})
+    return out
+
+
+def kurgu(kok, tur):
+    """A16 T2: KURGU_PLANI_T2'nin ölçüleri (plan_kurgu.olcumler; tek ölçü tek kod), olay listesi, Z1/Z2 ve T0'a göre sapma.
+    → KURGU/ZAMAN_T2.json · _RAPOR/ZAMAN_T2.json (Z1) · _RAPOR/ZAMAN_Z2_T2.json (Z2) · _RAPOR/SAPMA_T2.json."""
+    ko = _alt_modul("kurgu_ortak"); plan_kurgu = _alt_modul("plan_kurgu")
+    E = po.esik()
+    s = ortak.json_oku(os.path.join(kok, "SAHNELER.json"))
+    if not isinstance(s, dict) or int(s.get("_surum", 1) or 1) < 2:
+        print("!! v2 SAHNELER.json yok", flush=True); return 2
+    yol, kp = ko.kurgu_plani(kok, "T2")
+    if not kp:
+        print("!! KURGU_PLANI_T2 yok (önce plan_kurgu.py)", flush=True); return 2
+    h = ortak.json_oku(os.path.join(kok, "HIKAYE.json"), {}) or {}
+    pl = ko.sahne_planlari(kok, s)
+    C = t2_cizelge(kp, pl); ev = olaylar(s, h, C)
+    olc = plan_kurgu.olcumler(kp, pl)
+    imza = po.imza([kp.get("planlar"), kp.get("diyalog"), h.get("sahneler")])
+    toplam = C[-1]["bit"] if C else 0.0
+    o1, u1 = z1(s, h, C, ev, E); o2, u2 = z2(s, h, C, E)
+    t0 = ortak.json_oku(os.path.join(kok, "KURGU", "surumler", "KURGU_PLANI_T0.json"), {}) or {}
+    t0_sure = {x.get("no"): float(x.get("sure") or 0) for x in t0.get("planlar") or [] if isinstance(x, dict)}
+    esik = float(E.get("sapma_plan_oran_max", 0.25) or 0.25)
+    sapma = []
+    for c in C:
+        a = t0_sure.get(c["no"])
+        oran = round(abs(c["sure"] - a) / a, 3) if a else None
+        sapma.append({"plan": c["no"], "t0": a, "t2": c["sure"], "oran": oran,
+                      "seviye": "OLCULEMEDI" if oran is None else ("BAYRAK" if oran > esik else "GEC")})
+    zarf = po.zarf("A16", SURUM, "GEC", imza)
+    kp_rel = os.path.relpath(yol, kok).replace("\\", "/")
+    ortak.atomik_yaz(os.path.join(kok, "KURGU", "ZAMAN_T2.json"),
+                     {"_surum": 1, "_uretim": zarf, "surum": "T2", "kurgu_plani": kp_rel, "kurgu_surumu": kp.get("kurgu_surumu"),
+                      "toplam_sn": _r(toplam), "olcumler": olc, "olaylar": ev,
+                      "egri": [{"t": t, "yogunluk": y, "duygu": d} for t, y, d in egri(C, E, 5.0)]})
+    ortak.atomik_yaz(os.path.join(kok, "_RAPOR", "SAPMA_T2.json"),
+                     {"_surum": 1, "_uretim": dict(zarf, sonuc="BAYRAK" if any(x["seviye"] == "BAYRAK" for x in sapma) else "GEC"),
+                      "cizelge": "T2", "kurgu_plani": kp_rel, "esik": esik, "planlar": sapma})
+    birim = [c["no"] for c in C]
+    o1 += [po.m("sapma", "BAYRAK", x["plan"], olcu=x["oran"], esik=esik, kural="T2−T0") for x in sapma if x["seviye"] == "BAYRAK"]
+    _, r1 = po.rapor_yaz(kok, "Z1", "T2", o1, asama="A16", arac=SURUM, birimler=birim, tur=tur, girdi_imza=imza,
+                         varsayilan=os.path.join("_RAPOR", "ZAMAN_T2.json"),
+                         ek={"uygulanmadi": u1, "toplam_sn": _r(toplam), "olcumler": olc, "kurgu_plani": kp_rel})
+    _, r2 = po.rapor_yaz(kok, "Z2", "T2", o2, asama="A16", arac=SURUM, birimler=birim, tur=tur, girdi_imza=imza,
+                         varsayilan=os.path.join("_RAPOR", "ZAMAN_Z2_T2.json"), ek={"uygulanmadi": u2})
+    po.yaz_ozet(r1, "Z1 T2"); po.yaz_ozet(r2, "Z2 T2")
+    print(f"T2: {len(C)} plan, {toplam:.1f} sn, ASL {olc.get('asl')}, {len(ev)} olay", flush=True)
+    return max(po.cikis(r1), po.cikis(r2))
+
+
+def _alt_modul(ad):
+    """Alt aracı yükler; alt araç içe aktarılırken stdout'u yeniden yapılandırıyorsa (StringIO altında) gerçek stdout'la yükler."""
+    import importlib
+    if ad in sys.modules: return sys.modules[ad]
+    o = sys.stdout
+    try:
+        if not hasattr(o, "reconfigure"): sys.stdout = sys.__stdout__
+        return importlib.import_module(ad)
+    finally: sys.stdout = o
+
+
 def main(argv):
     if not argv or "-h" in argv or "--help" in argv: print(__doc__); return 4
     asama = po.arg_al(argv, "--asama")
     if asama not in ASAMA_T: print(__doc__); return 4
+    if asama == "animatik": return _alt_modul("zaman_cizelgesi_t1").main(list(argv))     # T1 (adım 14)
     kok = po.film_kok(po.arg_al(argv, "--film"))
+    if asama == "kurgu": return kurgu(kok, po.tur_no(argv))
     if asama != "kagit":
         print(f"!! zaman_cizelgesi {ASAMA_T[asama]} ({asama}) henüz yok: TASARIM §9 {SONRAKI[asama]} ile gelir.", flush=True)
         return 4

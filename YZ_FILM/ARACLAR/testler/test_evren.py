@@ -80,8 +80,33 @@ class Evren(unittest.TestCase):
     def test_cli_yardim_ve_eksik_girdi(self):
         r = subprocess.run([sys.executable, ARAC, "--kilitle"], capture_output=True, text=True)
         self.assertEqual(r.returncode, 1)
-        r = subprocess.run([sys.executable, ARAC, "--film-sonu"], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, ARAC, "--film-sonu"], capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(r.returncode, 1); self.assertIn("--film gerekli", r.stdout)      # evren_film_sonu'ya yönlendirildi
+        r = subprocess.run([sys.executable, ARAC, "--kur"], capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(r.returncode, 4)                                     # başka adımın komutu hâlâ "henüz yok"
+
+    def test_film_sonu_yedek_yonlendirme(self):
+        """--film-sonu / --yedekle / --yedek-dogrula evren_film_sonu.main'e gider (argv aynen)."""
+        from unittest import mock
+        import evren_film_sonu
+        for k in evren.FILM_SONU:
+            with mock.patch.object(evren_film_sonu, "main", return_value=7) as m:
+                self.assertEqual(evren.main([k, "--seri", "TEST"]), 7); m.assert_called_once_with([k, "--seri", "TEST"])
+            self.assertNotIn(k, evren.SONRAKI)
+
+    def test_ses_kaydet_surumlu(self):
+        kok = os.path.join(_ortam.VERI, "FILMLER", "SES_EVREN"); os.makedirs(kok, exist_ok=True)
+        ortak.atomik_yaz(os.path.join(kok, "HIKAYE.json"), {"evren": "SESSERI"})
+        p, d = evren.ses_kaydet(kok, "mara", {"voice_id": "v1", "etiket": "sıcak alto"})
+        self.assertTrue(d); self.assertEqual(p, evren.seri_yolu("SESSERI", "karakterler", "mara", "ses.json"))
+        self.assertEqual((ortak.json_oku(p)["surum"], ortak.json_oku(p)["voice_id"]), (1, "v1"))
+        self.assertEqual(evren.ses_kaydet(kok, "mara", {"voice_id": "v1", "etiket": "sıcak alto"})[1], False)   # aynı kayıt
+        evren.ses_kaydet(kok, "mara", {"voice_id": "v2", "etiket": "sıcak alto"})
+        self.assertEqual(ortak.json_oku(p)["surum"], 2)
+        self.assertEqual(ortak.json_oku(p.replace("ses.json", "ses_v1.json"))["voice_id"], "v1")         # eski hâli kalır
+        with self.assertRaises(ValueError): evren.ses_kaydet(kok, "Mara Adı", {"voice_id": "x"})
+        bos = os.path.join(_ortam.VERI, "FILMLER", "SERISIZ"); os.makedirs(bos, exist_ok=True)
+        with self.assertRaises(ValueError): evren.ses_kaydet(bos, "mara", {"voice_id": "x"})
 
 
 if __name__ == "__main__":

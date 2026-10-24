@@ -4,7 +4,7 @@
     merak, kurulum, karakter sırrı, çeviri) değerleri seyirci klasörlerine ve ilk 2 dk dosyalarına SIZMAZ (sızıntı 0).
   - Ad maskeleme: ad ve hitaplar ilk kez sözle söylenene/yazılana kadar görünüş etiketiyle; satır sırasıyla bağımsız denetim.
   - Aşamalı bölümler P0 (0–120 sn) → P1 → P2 → P3; film.py'nin asamali kaynağı (_KOR_PAKET/<kip>_t<tur>/<persona>/<bolum>) ile uyumlu.
-  - Persona satırı (kâğıt: 3 × A); eşleştirici anahtarı yalnız ESLESTIRICI/'de; plan kipi (SAHNELER v2); izleme kipleri → 4;
+  - Persona satırı (kâğıt: 3 × A); eşleştirici anahtarı yalnız ESLESTIRICI/'de; plan kipi (SAHNELER v2); izleme kipleri → kor_paket_izleme, kapak → kapak.kor_paketi;
     kendi sızıntı denetimi tutarsa paket yayımlanmaz (1, _RED/); eski paket _ESKI/'ye taşınır (silinmez)."""
 import os, sys, re, json, glob, shutil, tempfile, unittest, subprocess
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
@@ -179,10 +179,59 @@ class TestKorPaket(unittest.TestCase):
         self.assertTrue(glob.glob(os.path.join(self.film, "_KOR_PAKET", "_ESKI", "kagit_t1_*")))
         self.assertTrue(os.path.isfile(os.path.join(self.kok, "PAKET.json")))
 
-    def test_izleme_kipleri_henuz_yok(self):
-        for kip in ("animatik", "kurgu", "kesit", "kesici", "kapak"):
+    def test_izleme_kipleri_yonlenir(self):
+        """Birleştirme: izleme kipleri kor_paket_izleme'ye, kapak kapak.kor_paketi'ne yönlenir ("henüz yok → 4" kalktı).
+        Bu filmde T1/T2/kesit planı yok → izleme kipi 4 (girdisi yok); kapak adayı yok → 1."""
+        for kip in ("animatik", "kurgu", "kesit", "kesici"):
             r = self.kos("--kip", kip, "--tur", "1")
-            self.assertEqual(r.returncode, 4, kip); self.assertIn("henüz yok", r.stdout)
+            self.assertEqual(r.returncode, 4, (kip, r.stdout, r.stderr)); self.assertNotIn("henüz yok", r.stdout)
+        r = self.kos("--kip", "kapak", "--tur", "1")
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr); self.assertIn("kapak adayı yok", r.stdout)
+
+    def test_kapak_kipi_kapak_kor_paketi(self):
+        try:
+            from PIL import Image
+        except ImportError: self.skipTest("Pillow yok")
+        for i in range(1, 4):
+            p = os.path.join(self.film, "YAYIN", "_KAPAK_ADAYLAR", "kapak_%02d.jpg" % i); os.makedirs(os.path.dirname(p), exist_ok=True)
+            Image.new("RGB", (1280, 720), (i * 40, 90, 120)).save(p)
+        r = self.kos("--kip", "kapak", "--tur", "2")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        kok = os.path.join(self.film, "_KOR_PAKET", "kapak_t2")
+        self.assertTrue(os.path.isfile(os.path.join(kok, "SEYIRCI", "CIFTLER.json")))       # habersiz-seyirci·kapak klasörü
+        self.assertTrue(os.path.isdir(os.path.join(kok, "1")))                              # kare-tarifcisi·kapak klasörü
+
+    def test_izleme_kipi_animatik_t1_ile(self):
+        """T1 çizelgesi varsa animatik kipi gerçek paket kurar (0)."""
+        import zaman_cizelgesi_t1  # noqa: F401
+        film = os.path.join(_ortam.VERI, "FILMLER", "kp_izleme_%d" % os.getpid())
+        if os.path.exists(film): shutil.move(film, film + "_eski_%d" % len(os.listdir(os.path.dirname(film))))
+        tam = os.path.join(os.path.dirname(ARACLAR), "FILMLER", "ORNEK_3_SAHNE_TAM")
+        os.makedirs(film)
+        for ad in ("HIKAYE.json", "SAHNELER.json"): shutil.copy2(os.path.join(tam, ad), os.path.join(film, ad))
+        shutil.copytree(os.path.join(tam, "_SES"), os.path.join(film, "_SES"))
+        z = subprocess.run([sys.executable, os.path.join(ARACLAR, "zaman_cizelgesi.py"), "--asama", "animatik", "--tur", "1", "--film", film],
+                           capture_output=True, text=True)
+        self.assertEqual(z.returncode, 0, z.stdout + z.stderr)
+        r = subprocess.run([sys.executable, os.path.join(ARACLAR, "kor_paket.py"), "--kip", "animatik", "--tur", "1", "--film", film],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertTrue(os.path.isdir(os.path.join(film, "_KOR_PAKET", "animatik_t1")))
+
+    def test_plan_kipi_ilk2dk_hitap_sizinti_degil(self):
+        """Birleştirme: ilk 2 dk dosyasında repliğin içindeki hitap ("Sera,") adı kurar; sonraki 'SERA:' etiketi sızıntı sayılmaz."""
+        tam = os.path.join(os.path.dirname(ARACLAR), "FILMLER", "ORNEK_3_SAHNE_TAM")
+        for ad in ("HIKAYE.json", "SAHNELER.json"): shutil.copy2(os.path.join(tam, ad), os.path.join(self.film, ad))
+        shutil.copytree(os.path.join(tam, "_SES"), os.path.join(self.film, "_SES"))
+        r = self.kos("--kip", "plan", "--tur", "1")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        m = jo(os.path.join(self.film, "_KOR_PAKET", "plan_t1", "PAKET.json"))
+        self.assertEqual(m["sizinti"], {"yasak_alan": 0, "ad": 0})
+        ik = oku(os.path.join(self.film, "_KOR_PAKET", "plan_ilk2dk_t1", "ILK2DK_A.md"))
+        self.assertIn('"Sera, they ride with torches tonight."', ik); self.assertIn("SERA der:", ik)
+        kar = {k: {"ad": (v or {}).get("ad") or k.title(), "maske": {"takma_adlar": ((v or {}).get("maske") or {}).get("takma_adlar") or []}}
+               for k, v in (jo(os.path.join(self.film, "HIKAYE.json")).get("karakterler") or {}).items()}
+        self.assertEqual(satir_sirasi_denetimi([ik], kar), [])          # bağımsız satır sırası denetimi de temiz
 
     def test_girdi_yoksa_hata(self):
         shutil.move(os.path.join(self.film, "_HIKAYE_ODASI"), os.path.join(self.film, "_yok"))

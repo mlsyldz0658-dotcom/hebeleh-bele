@@ -317,6 +317,8 @@ SONUC_GECER = ("GEC", "BAYRAK", "OLCULEMEDI")
 YENILENIR = ("kesildi", "gecersiz", "model_sapmasi")
 ACIK = ("hazir", "calisiyor")
 KAPI_TURLU = ("ayni_sahip", "ust_sahip")
+SIRALI_CIFT = {("A07b", "YP")}                                              # O-12 sıralı çift (dilim.py "bagimli")
+VIDEO_ASAMALARI = ("A13", "A14a", "A14")                                   # animatik ONAYLI imzası olmadan açılmaz
 KURESEL_TAVAN = {"animatik_kurgu_tur": 8, "h15": 2, "kart_tarif": 2}     # §1.5 küresel geri dönüş bütçesi
 KANCA_NABZI_MAX_SN = 15                                                    # §4.5.8 (tahmin)
 KILIT_BAYAT_SN = 300
@@ -325,6 +327,8 @@ SONRAKI_MAX_KR = 1200
 TEK_SORU = ("Filmin konusu ne olsun? Bir cümle yeter (ör. ejderha yavrusunu saklayan avcı kadın). "
             "İstersen 'sen seç' yaz.")
 BULUT_CUMLESI = "Film seti senin bilgisayarında çalışır: Masaüstündeki FILM_SETI.bat'a çift tıkla ve konuyu orada yaz."
+SOZLUKLER = {"yonetmen": ("plan_sozlukleri.json", "fiil_sozlugu.json", "ifade_sozlugu.json"),      # veri/ → GIRDI (6a #4)
+             "ses-tasarimcisi": ("efekt_sozlugu.json", "aksan_sozlugu.json"), "yapimci": ("tur_kanca.json",)}
 ESIK_VARSAYILAN = {"disk_bos_min_gb": 20, "gorev_tavani_carpan": 1.5, "film_token_tavan": None, "ajan_paralel_max": 5,
                    "bekle_azami_dk": 110, "stop_ardisik_max": 8}
 uyu = time.sleep          # testler gerçek bekleme yapmasın diye tek nokta
@@ -505,7 +509,26 @@ def _sonuc(x):
     return {"GECTI": "GEC", "HATALI": "HATA", "OLCULEMEDI": "OLCULEMEDI"}.get(x, x)
 
 
-def _desen(s): return re.sub(r"\{[^}]*\}|<[^>]*>|NNN", "*", s)
+def _desen(s): return re.sub(r"\{[^}]*\}|<[^>]*>|NNN", "*", s.replace("{tur100}", "1[0-9][0-9]"))
+
+
+def _surum_no(p):
+    m = re.search(r"(\d+)(?=\.[^.]+$)", os.path.basename(p))
+    return int(m.group(1)) if m else -1
+
+
+def girdi_cozumle(kok, rel):
+    """Görev girdisi → [(film klasöründeki yol, GIRDI'deki göreli ad)]. Biçimler: dosya · glob deseni (her eşleşme) ·
+    "son:<desen>" (en büyük sürüm numaralı tek dosya; ör. 06_SENARYO_v*.json) · "/" ile biten klasör (içeriği GIRDI/'ye)."""
+    son = rel.startswith("son:")
+    if son: rel = rel[4:]
+    p = os.path.join(kok, rel)
+    if rel.endswith("/"): return [(p, "")] if os.path.isdir(p) else []
+    if any(c in rel for c in "*?["):
+        es = sorted(x for x in glob.glob(p) if os.path.isfile(x) and not x.endswith(".tmp"))
+        if son: es = sorted(es, key=lambda x: (_surum_no(x), x))[-1:]
+        return [(x, os.path.basename(x)) for x in es]
+    return [(p, os.path.basename(p))] if os.path.isfile(p) else []
 
 
 def _yazi_duz(s):
@@ -583,6 +606,10 @@ class Defter:
     @property
     def sahte(self): return self.meta().get("saglayici") == "sahte"
     @property
+    def kaset(self): return self.meta().get("saglayici") == "kaset"     # test kipi: kayıttan oynatma (D-41, §6.10)
+    @property
+    def deneme(self): return self.sahte or self.kaset
+    @property
     def ad(self): return self.meta().get("film") or os.path.basename(self.kok)
     def kilit(self, **k): return Kilit(self.kok, **k)
 
@@ -627,7 +654,10 @@ class Defter:
         h = ortak.json_oku(self.yol("HIKAYE.json"), {}) or {}
         n = 0
         if a == "parti": n = len(h.get("partiler") or [])
-        elif a == "karakter": n = min(8, len(h.get("karakterler") or {}))
+        elif a == "karakter":                         # A05'te HIKAYE.json yok: önce en son senaryo sürümü (06_SENARYO_v<N>)
+            sn = girdi_cozumle(self.kok, "son:_HIKAYE_ODASI/06_SENARYO_v*.json")
+            kaynak = (ortak.json_oku(sn[0][0], {}) or {}) if sn else {}
+            n = min(8, len(kaynak.get("karakterler") or h.get("karakterler") or {}))
         elif a == "sahne_grubu": n = len((ortak.json_oku(self.yol("_YONETMEN", "DILIM.json"), {}) or {}).get("gruplar") or [])
         elif a == "blok": n = len((ortak.json_oku(self.yol("BLOK_PLANI.json"), {}) or {}).get("bloklar") or [])
         elif a == "gorsel_grubu":
@@ -637,6 +667,11 @@ class Defter:
     def dosya_imza(self, rels):
         h = hashlib.sha1()
         for r in rels:
+            if r.startswith("son:") or any(c in r for c in "*?["):
+                es = girdi_cozumle(self.kok, r)
+                h.update((r + ":" + str(len(es))).encode())
+                for q, _ in es: h.update(os.path.relpath(q, self.kok).encode()); h.update(_bayt(q))
+                continue
             p = self.yol(r)
             if os.path.isfile(p):
                 h.update(r.encode()); h.update(_bayt(p))
@@ -655,7 +690,7 @@ class Defter:
         ilk = min(gs, key=lambda g: (g.get("zaman", {}).get("olusturma") or "", g["id"]))
         return ilk.get("asama_imza")
 
-    def atlanir(self, a): return not a.bulutta_test and self.sahte
+    def atlanir(self, a): return not a.bulutta_test and (self.sahte or (self.kaset and ortam() == "bulut"))
 
     # ---- küresel bütçe
     def kuresel_kullanim(self):
@@ -689,7 +724,7 @@ class Defter:
         if g["tur"] == "betik" and u.get("gorev") != g["id"]:
             return {"sonuc": "HATA", "hatalar": [{"madde": "rapor_bu_goreve_ait_degil", "rapor": p, "seviye": "HATA"}]}
         return {"sonuc": _sonuc(j.get("sonuc") or u.get("sonuc")), "hatalar": list(j.get("hatalar") or []),
-                "cikis_kodu": j.get("cikis_kodu")}
+                "cikis_kodu": j.get("cikis_kodu"), "plato": j.get("plato") is True}
 
     def tur_coz(self, a, tur_no, merdiven, tg):
         gruplar = sorted({gr for gr, _ in tur_sablonlari(a, tur_no, merdiven)})
@@ -712,25 +747,27 @@ class Defter:
             if eksik and not kapanis:
                 return {"gecti": False, "sonuclar": ["HATA"], "grup": gr,
                         "hatalar": [{"madde": "gorev_tukendi", "gorevler": eksik, "seviye": "HATA"}]}
-            kotu, hatalar, butce = [], [], False
+            kotu, hatalar, butce, plato = [], [], False, False
             for g in sorted(et.values(), key=lambda x: x["id"]):
                 if not g.get("kapi") or kapanis: continue
                 r = self.kapi_oku(g); rapor = g.get("rapor")
                 if r["sonuc"] in SONUC_GECER: continue
-                kotu.append(r["sonuc"])
+                kotu.append(r["sonuc"]); plato = plato or r.get("plato")
                 hatalar += r["hatalar"] or [{"madde": "kapi", "kapi": g["kapi"], "seviye": r["sonuc"]}]
                 kp = next((k for k in a.kapilar if k.kod == g["kapi"]), None)
                 if (kp and kp.butce and r["sonuc"] == "HATA") or r.get("cikis_kodu") == BUTCE: butce = True
-            if kotu: return {"gecti": False, "sonuclar": kotu, "hatalar": hatalar, "butce": butce, "rapor": rapor, "grup": gr}
+            if kotu: return {"gecti": False, "sonuclar": kotu, "hatalar": hatalar, "butce": butce, "rapor": rapor, "grup": gr,
+                             "plato": bool(plato)}
         return {"gecti": True, "rapor": rapor}
 
     def terminal(self, a, karar, son, merdiven, surum, tur_no):
         son = son or {"sonuclar": [], "hatalar": []}
         hatalar = son.get("hatalar") or []
-        planlar = sorted({str(h.get("plan", h.get("sahne"))) for h in hatalar
-                          if isinstance(h, dict) and h.get("plan", h.get("sahne")) is not None and h.get("seviye") != "BAYRAK"})
-        film_hata = any(isinstance(h, dict) and h.get("plan", h.get("sahne")) is None
-                        and _sonuc(h.get("seviye")) in ("HATA", "KRITIK") for h in hatalar)
+        # seyirci kapısının hedef maddeleri (hedef: true, sahne: <parti|FILM>) kapı değil hedef ölçüsüdür: ne plan durdurur ne film HATA'sı
+        kapi_h = [h for h in hatalar if isinstance(h, dict) and h.get("hedef") is not True]
+        planlar = sorted({str(h.get("plan", h.get("sahne"))) for h in kapi_h
+                          if h.get("plan", h.get("sahne")) is not None and h.get("seviye") != "BAYRAK"})
+        film_hata = any(h.get("plan", h.get("sahne")) is None and _sonuc(h.get("seviye")) in ("HATA", "KRITIK") for h in kapi_h)
         yalniz_kismi = bool(son.get("sonuclar")) and set(son["sonuclar"]) <= {"KISMI"} and not film_hata
         if karar == "durdu": karar = "kapi6" if film_hata else "durdu"
         elif karar in ("kagit_urun", "kapi6") and yalniz_kismi: karar = "hedef_alti"
@@ -768,12 +805,13 @@ class Defter:
         return c
 
     def _turlar(self, a, surum, gs):
-        tur_no, plan_m, son = 1, None, None
+        tur_no, plan_m, son, plato = 1, None, None, False
         while True:
             tg = [g for g in gs if g.get("tur_no") == tur_no]
             if not tg:
-                return {"durum": "calisiyor", "tur": tur_no,
-                        "eylem": {"tur": "grup_ac", "surum": surum, "tur_no": tur_no, "merdiven": plan_m}}
+                e = {"tur": "grup_ac", "surum": surum, "tur_no": tur_no, "merdiven": plan_m}
+                if plato: e["plato"] = True
+                return {"durum": "calisiyor", "tur": tur_no, "eylem": e}
             m = tg[0].get("merdiven")
             r = self.tur_coz(a, tur_no, m, tg)
             if r.get("eylem"):
@@ -788,8 +826,14 @@ class Defter:
             son = r
             if any(g.get("tur_no") == tur_no + 1 for g in gs):
                 tur_no += 1; continue
-            if m is None and tur_no < a.tur_max and self.butce_var(a.butce):
+            dk = self.plato_basamagi(a, r, gs)
+            plato = False
+            if m is None and dk is not None:
+                plan_m, plato = dk, True        # §1.4: plato (KISMI, ilerleme yok) → olağan tur yerine bir kez doktor basamağı
+            elif m is None and tur_no < a.tur_max and self.butce_var(a.butce):
                 plan_m = None
+            elif m is not None and any(g.get("plato_basamagi") for g in tg) and tur_no < a.tur_max and self.butce_var(a.butce):
+                plan_m = None                   # plato basamağından sonra olağan turlar kaldığı yerden sürer
             else:
                 nb = m + 1 if m is not None else 0
                 while nb < len(a.tavan_sonrasi) and not self.butce_var(a.tavan_sonrasi[nb].butce): nb += 1
@@ -800,6 +844,15 @@ class Defter:
                 else:
                     return {"durum": "tavan", "tur": tur_no, "eylem": self.terminal(a, b.tur, son, nb, surum, tur_no)}
             tur_no += 1
+
+    def plato_basamagi(self, a, r, gs):
+        """Seyirci kapısı rapordaki plato: true ile KISMI döndüyse ve bu sürümde henüz merdiven turu yoksa yapimci·doktor basamağının
+        sırası; değilse None."""
+        if not r.get("plato") or not r.get("sonuclar") or not set(r["sonuclar"]) <= {"KISMI"}: return None
+        if any(g.get("merdiven") is not None for g in gs): return None
+        for nb, b in enumerate(a.tavan_sonrasi):
+            if b.ajan == "yapimci" and b.kip == "doktor" and self.butce_var(b.butce): return nb
+        return None
 
     def aktif(self):
         for a in HAT.ASAMALAR:
@@ -818,7 +871,8 @@ class Defter:
         return f"{on}{n + 1:03d}"
 
     def _fmt(self, s, tur_no, i, kip, persona, gdir):
-        return (str(s).replace("{tur}", str(tur_no)).replace("{i}", str(i)).replace("{kip}", kip or "")
+        return (str(s).replace("{tur-1}", str(max(1, tur_no - 1))).replace("{tur100}", str(100 + tur_no))
+                .replace("{tur}", str(tur_no)).replace("{i}", str(i)).replace("{kip}", kip or "")
                 .replace("{persona}", persona or "").replace("{film}", self.kok).replace("{gorev}", gdir))
 
     def gorev_kur(self, a, s, anahtar, surum, tur_no, merdiven, i, kip, persona, imza):
@@ -828,9 +882,13 @@ class Defter:
         rol = (adlar().get("ajanlar", {}).get(s.ajan) or {}).get("rol") if s.tur == "ajan" else None
         girdi = []
         for r in s.girdi:
-            p = self.yol(f(r))
-            if os.path.isfile(p):
-                _kopyala(p, os.path.join(gdir, "GIRDI", os.path.basename(p))); girdi.append("GIRDI/" + os.path.basename(p))
+            for p, ad in girdi_cozumle(self.kok, f(r)):
+                if ad: _kopyala(p, os.path.join(gdir, "GIRDI", ad)); girdi.append("GIRDI/" + ad)
+                else: girdi += self._klasor_kopyala(p, os.path.join(gdir, "GIRDI"), persona)
+        if s.tur == "ajan":
+            for ad in SOZLUKLER.get(s.ajan, ()):            # yazar/kör rol veri/'yi okuyamaz (erisim.json): sözlükler GIRDI'ye
+                p = os.path.join(HERE, "veri", ad)
+                if os.path.isfile(p): _kopyala(p, os.path.join(gdir, "GIRDI", ad)); girdi.append("GIRDI/" + ad)
         if s.tur == "ajan" and rol != "kor":
             d = None
             try: d = os.path.join(ortak.yollar()["veri_kok"], "BILGI", "DERSLER_AKTIF.md")
@@ -855,6 +913,7 @@ class Defter:
              "tasima": {f(k): f(v) for k, v in s.tasima}, "kapi": s.kapi, "rapor": f(kp.rapor) if kp else None,
              "arac": s.arac, "argumanlar": [f(x) for x in s.argumanlar], "kredili": s.kredili, "gonderildi": None,
              "mesaj": s.mesaj, "algilama": s.algilama, "istem": istem,
+             "komut": [self._komut(x, f) for x in s.komut] if s.komut else None,
              "yarim_davranisi": "devam_et" if rol == "yazar" else "sifirdan", "kanca_gerek": s.tur == "ajan",
              "agent_id": None, "onceki": None, "yerine": None, "cikis_kodu": None,
              "kullanim": {"girdi": None, "cikti": None, "onbellek_okuma": None, "sure_sn": None, "model": MODEL, "effort": "high"},
@@ -865,10 +924,34 @@ class Defter:
         self.olay("gorev_kuruldu", gorev=gid, asama=a.kod, anahtar=anahtar)
         return g
 
+    def _komut(self, x, f):
+        if x == "film.py": return os.path.join(ortak.DEPO_KOK, ".claude", "bin", "film.py")
+        return f(x)
+
+    def _klasor_kopyala(self, kaynak, hedef, persona):
+        """Klasör girdisinin içeriği GIRDI/'ye (birleştirerek). Kör paketin eşleştirici anahtarı (ESLESTIRICI/, ANAHTAR.json) ve
+        öteki personaların ILK2DK_<p>.md dosyası kopyalanmaz; anahtar yalnız açık dosya girdisiyle (özet eşleştirici) verilir."""
+        out = []
+        for k, ds, fs in os.walk(kaynak):
+            ds[:] = sorted(d for d in ds if d not in ("ESLESTIRICI", "_ESKI", "_RED"))
+            for ad in sorted(fs):
+                if ad.endswith(".tmp") or ad == "ANAHTAR.json": continue
+                m = re.match(r"ILK2DK_(\w+)\.md$", ad)
+                if m and persona and m.group(1) != persona: continue
+                rel = os.path.relpath(os.path.join(k, ad), kaynak).replace(os.sep, "/")
+                _kopyala(os.path.join(k, ad), os.path.join(hedef, rel)); out.append("GIRDI/" + rel)
+        return out
+
     def _istem_md(self, a, g):
         sablon = os.path.join(ortak.DEPO_KOK, ".claude", "skills", "film-yap", "sablonlar",
                               f"{a.kod}_{g['ajan']}" + (f"_{g['kip']}" if g["kip"] else "") + ".md")
         govde = _bayt(sablon).decode("utf-8") if os.path.isfile(sablon) else ""
+        if govde:
+            import beceri_denetim                                # {{esik:x}} → eşik değeri (ajan ham yer tutucu görmez)
+            try: govde = beceri_denetim.sablon_doldur(govde)
+            except beceri_denetim.SablonHatasi as e:
+                raise Hata(f"Görev şablonu doldurulamadı ({os.path.basename(sablon)}: {e}); ajan görevi açılmadı (film-gelistir).",
+                           HATA)
         s = [f"# Görev {g['id']} — {a.kod} {a.ad}", "",
              f"Ajan: {g['ajan']}" + (f"·{g['kip']}" if g["kip"] else "") + (f" · persona {g['persona']}" if g["persona"] else ""),
              "", "Yalnız bu görev klasörünü oku (GOREV.json, ISTEM.md, GIRDI/). Yalnız CIKTI/ klasörüne yaz.",
@@ -891,14 +974,40 @@ class Defter:
         mevcut = [g for g in self.asama_gorevleri(a.kod) if g.get("surum") == surum]
         imza = self.surum_imzasi(mevcut) if mevcut else self.asama_imza(a)
         anahtarlar = {g["anahtar"] for g in mevcut}
+        kurulan = 0
         for gr, s in sab:
             if gr != grup: continue
+            if s.kosul and not self.kosul_tamam(a, s):
+                continue
             n = self.adet(s.adet); kipler = HAT.kip_listesi(s.kip, n); per = HAT.kip_listesi(s.persona, n)
             for i in range(1, n + 1):
                 an = f"{a.kod}@s{surum}/t{tur_no}/g{gr}/{s.kod}/{i}"
+                kurulan += 1
                 if an in anahtarlar: continue
-                self.gorev_kur(a, s, an, surum, tur_no, m, i, kipler[i - 1], per[i - 1], imza)
+                g = self.gorev_kur(a, s, an, surum, tur_no, m, i, kipler[i - 1], per[i - 1], imza)
+                if e.get("plato"): g["plato_basamagi"] = True; self.yaz(g)
                 _kesme("gorev_kuruldu")
+        if not kurulan:                                  # grubun bütün görevleri koşulsuz kaldı: grup "atlandı" diye kapanır
+            an = f"{a.kod}@s{surum}/t{tur_no}/g{grup}/ATLA/1"
+            if an not in anahtarlar:
+                g = self.gorev_kur(a, HAT.GorevSablonu(kod="ATLA", tur="betik", grup=grup, arac="film.py:atla"), an, surum, tur_no,
+                                   m, 1, None, None, imza)
+                g["durum"] = "bitti"; g["zaman"]["bitir"] = simdi(); g["not"] = "koşul sağlanmadı; grup atlandı"; self.yaz(g)
+
+    def kosul_tamam(self, a, s):
+        """GorevSablonu.kosul (HAT.KOSULLAR). flow_filtre_red: _RAPOR/FLOW_<blok>.json'da filtre_red HATA'sı var ve bu aşamanın
+        aynı görevi o rapordan sonra bitmedi (aynı red iki kez onarıma gitmez)."""
+        if s.kosul == "flow_filtre_red":
+            son = max([_zaman_oku(g["zaman"].get("bitir")) or 0 for g in self.asama_gorevleri(a.kod)
+                       if g["anahtar"].split("/")[3] == s.kod and g["durum"] == "bitti"] or [0])
+            for p in glob.glob(self.yol("_RAPOR", "FLOW_*.json")):
+                r = ortak.json_oku(p, {}) or {}
+                if os.path.getmtime(p) <= son: continue
+                if any(isinstance(h, dict) and h.get("madde") == "filtre_red" and _sonuc(h.get("seviye")) == "HATA"
+                       for h in (r.get("hatalar") or []) + (r.get("olcumler") or [])):
+                    return True
+            return False
+        raise Hata(f"Bilinmeyen görev koşulu: {s.kosul} (film-gelistir).")
 
     def yenile(self, eski):
         """Kesilen/geçersiz görevin yerine yeni deneme (bitmiş görev asla yeniden çalışmaz)."""
@@ -1026,7 +1135,11 @@ class Defter:
             if kilit:
                 return dict(tur="kisit", cikis_kodu=KISIT, kullaniciya="Flow uyarı verdi; hesap kilitli. GÖNDER'e basma, sayfayı "
                             "yenileme. Kilidi yalnız sen kaldırırsın (UYARI_GECTI.bat). Başka servise geçilmedi.")
-        if a.ortam == "yerel" and ortam() == "bulut" and not self.sahte:
+        if a.kod in VIDEO_ASAMALARI:
+            ok, neden = self.video_acilabilir()
+            if not ok:
+                return dict(tur="kapi", cikis_kodu=KAPI, kullaniciya="Animatik onaylı değil; video görevi açılmaz: " + str(neden))
+        if a.ortam == "yerel" and ortam() == "bulut" and not self.deneme:
             return dict(tur="ortam", cikis_kodu=ORTAM, kullaniciya=f"{a.kod} yalnız kullanıcının bilgisayarında yürür. " + BULUT_CUMLESI)
         bos, en_az = disk_bos_gb(self.kok), esik("disk_bos_min_gb") or 0
         if bos < en_az:
@@ -1046,6 +1159,18 @@ class Defter:
             return dict(tur="bekle", cikis_kodu=BEKLE, kullaniciya=f"{a.kod} beklenenden çok görev açtı ({n}); ekip inceliyor "
                         "(TOKEN_PROJEKSIYON.md).")
         return None
+
+    def video_acilabilir(self):
+        """Kullanıcının kesin şartı (§1.5 kural 4, KK3a): onaylı animatik (ANIMATIK/ONAY.json ONAYLI, imza güncel) olmadan video
+        kredisi harcayan aşama (A13 BUT2, A14a, A14) görev açmaz. Sahte denemede A12'nin defterdeki durumu yeter; gerçek filmde
+        (kaset dahil) imza şarttır. Araç açılmazsa kapalı başarısız."""
+        a12 = HAT._DIZIN.get("A12")
+        a12_durum = self.coz(a12).get("durum") if a12 is not None else "tamam"
+        try:
+            import animatik_imza
+            return animatik_imza.video_acilabilir(self.kok, sahte=self.sahte, a12_durum=a12_durum)
+        except Exception as e:
+            return False, f"animatik imzası denetlenemedi ({e.__class__.__name__})"
 
     # ---- ilerleme (sonraki'nin çekirdeği)
     def ilerle(self, salt_okunur=False, sinir=500):
@@ -1085,7 +1210,10 @@ class Defter:
         kul = [g for g in gs if g["tur"] == "kullanici"]
         if ajan:
             calisan = [g for g in ajan if g["durum"] == "calisiyor"]
-            ver = [g for g in ajan if g["durum"] == "hazir"][:max(0, int(esik("ajan_paralel_max") or 5) - len(calisan))]
+            hazir = [g for g in ajan if g["durum"] == "hazir" and not self.sirali_bekliyor(g)]
+            ver = hazir[:max(0, int(esik("ajan_paralel_max") or 5) - len(calisan))]
+            if not salt_okunur:
+                ver = [self.sirali_dilim_yenile(g) for g in ver]
             if ver:
                 return dict(tur="ajan", cikis_kodu=AJAN, gorevler=[
                     {"id": g["id"], "tur": "ajan", "ajan": g["ajan"], "kip": g["kip"], "paralel_grup": g["paralel_grup"],
@@ -1107,11 +1235,51 @@ class Defter:
         return dict(tur="kullanici_eylemi", cikis_kodu=KULLANICI, gorevler=[{"id": g["id"], "algilama": g["algilama"]}],
                     kullaniciya=g["mesaj"])
 
+    # ---- sıralı çift ([SON] O-12): aynı mekân ve zamanda süren ardışık sahne grubu, öncekinin planları bitince yazılır
+    def _sirali_onceki(self, g):
+        """(önceki grubun numarası, önceki görev ya da None). Sıralı değilse (None, None)."""
+        if (g["asama"], g["anahtar"].split("/")[3]) not in SIRALI_CIFT: return None, None
+        i = int(g["anahtar"].rsplit("/", 1)[-1])
+        dl = ortak.json_oku(self.yol("_YONETMEN", "DILIM.json"), {}) or {}
+        gr = next((x for x in dl.get("gruplar") or [] if isinstance(x, dict) and x.get("i") == i), None)
+        bag = (gr or {}).get("bagimli")
+        if not bag or not re.match(r"^G\d+$", str(bag)): return None, None
+        k = int(str(bag)[1:])
+        on = g["anahtar"].rsplit("/", 1)[0] + f"/{k}"
+        es = [x for x in self.gorevler().values() if x["anahtar"] == on]
+        return k, (max(es, key=lambda x: x["deneme"]) if es else None)
+
+    def sirali_bekliyor(self, g):
+        k, o = self._sirali_onceki(g)
+        return k is not None and (o is None or o["durum"] != "bitti")
+
+    def sirali_dilim_yenile(self, g):
+        """Önceki grup bitti: dilim.py --asama A07b --grup <i> (önceki planların çözülmüş bitişi) ve G<i>.json GIRDI'ye yeniden."""
+        k, _ = self._sirali_onceki(g)
+        if k is None or g.get("dilim_yenilendi"): return g
+        i = int(g["anahtar"].rsplit("/", 1)[-1])
+        r = subprocess.run([sys.executable, os.path.join(HERE, "dilim.py"), "--asama", g["asama"], "--grup", str(i), "--film", self.kok],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            raise Hata(f"dilim.py --grup {i} hata verdi ({r.returncode}): {(r.stdout or '')[-300:]}", HATA)
+        p = self.yol("_YONETMEN", "DILIM", f"G{i}.json")
+        if os.path.isfile(p): _kopyala(p, os.path.join(self.gorev_dizini(g), "GIRDI", f"G{i}.json"))
+        g["dilim_yenilendi"] = simdi(); self.yaz(g); self.olay("dilim_yenilendi", gorev=g["id"], onceki=f"G{k}")
+        return g
+
     # ---- görev yürütme
     def nabiz_tamam(self):
+        """Kanca nabzı (§4.5.8) taze ve kancanın kendi yazdığı nabızsa ikinci koruma: CLAUDE_CODE_FORK_SUBAGENT kapalı (fork_kapali
+        true; kanca açıkken nabız yazmaz) ve .claude/settings.json nabızdaki özetle aynı. Kanca dosyaları değişmişse de geçersiz."""
         n = ortak.json_oku(os.path.join(self.gd, "KANCA_NABZI.json"), {}) or {}
         z = _zaman_oku(n.get("zaman"))
         if z is None or time.time() - z > KANCA_NABZI_MAX_SN: return False
+        if str(n.get("yazan") or "").startswith("kanca") or "fork_kapali" in n:
+            if n.get("fork_kapali") is not True: return False
+            ayar = os.path.join(ortak.DEPO_KOK, ".claude", "settings.json")
+            beklenen = (n.get("ayar_sha") or {}).get("settings.json")
+            gercek = hashlib.sha1(_bayt(ayar)).hexdigest() if os.path.isfile(ayar) else None
+            if beklenen != gercek: return False
         for ad, sha in (n.get("kanca_sha") or {}).items():
             for d in (os.path.join(ortak.DEPO_KOK, ".claude", "hooks"), os.path.join(ortak.DEPO_KOK, ".claude", "kurallar")):
                 p = os.path.join(d, ad)
@@ -1143,12 +1311,17 @@ class Defter:
             if p.endswith(".json") and ortak.json_oku(p) is None: eksik.append(c + " (bozuk JSON)")
         return eksik
 
-    def bitir(self, gid, kullanim=None):
+    def bitir(self, gid, kullanim=None, gecersiz=None):
         with self.kilit():
             self.yeniden_oku(); g = self.g(gid)
             if g["durum"] == "bitti": return {"gorev": gid, "durum": "bitti", "not": "zaten bitti"}
             if g["durum"] not in ACIK:
                 return {"gorev": gid, "durum": g["durum"], "not": "görev artık geçerli değil; çıktısı kullanılmadı"}
+            if gecersiz is not None:                # SubagentStop: 2 düzeltme hakkı bitti → çıktı kullanılmaz, yeni deneme açılır
+                if kullanim: g["kullanim"].update({k: v for k, v in kullanim.items() if k in g["kullanim"]})
+                g["durum"] = "gecersiz"; g["gecersiz_neden"] = str(gecersiz)[:500]; g["zaman"]["bitir"] = simdi(); self.yaz(g)
+                self.olay("gecersiz", gorev=gid, neden=str(gecersiz)[:200])
+                return {"gorev": gid, "durum": "gecersiz", "not": "doğrulama geçmedi; sonraki yeni deneme açar"}
             eksik = self.cikti_eksik(g)
             if eksik: raise Hata("Çıktı eksik: " + ", ".join(eksik), HATA, eksik=eksik)
             if kullanim:
@@ -1225,6 +1398,16 @@ class Defter:
             if not os.path.exists(p): self.sahte_dosya(p, g, rapor=bool(g.get("kapi")) and c.endswith(".json"))
         return self.bitir(g["id"])
 
+    def kaset_ajan(self, g):
+        """Kaset kipi (test): ajan çıktısı kayıttan (saglayicilar/kaset.py ajan_oynat), aşamalı bölümler sırayla, sonra bitir."""
+        from saglayicilar import kaset as kaset_mod
+        if g["durum"] == "hazir": self.basla([g["id"]], nabizsiz=True); g = self.g(g["id"])
+        try: kaset_mod.ajan_oynat(self.kok, g, self.gorev_dizini(g))
+        except kaset_mod.KasetYok as e: raise Hata(f"{g['id']}: {e}", ORTAM)
+        while g.get("asamali") and len(g["asamali"]["acik"]) < len(g["asamali"]["bolumler"]):
+            self.asama_ilerlet(g["id"]); g = self.g(g["id"])        # bölüm raporu kayıtta yoksa Hata (kaset uydurmaz)
+        return self.bitir(g["id"])
+
     def sahte_kullanici(self, g):
         al = g.get("algilama") or {}
         if al.get("tur") == "dosya_var":
@@ -1256,10 +1439,35 @@ class Defter:
                                                  "kapsam": "FILM", "tur": g["tur_no"], "sonuc": s, "hatalar": hatalar})
         return 0
 
+    def ic_evren_ozeti(self, g):
+        """A01: evren özeti → _HIKAYE_ODASI/EVREN_OZETI.md (yapımcının GIRDI'si; ajan evren klasörünü okuyamaz)."""
+        seri = self.meta().get("seri")
+        try:
+            import evren
+            o = evren.ozet(seri)
+            metin = evren.ozet_md(o) if o.get("seriler") else "# Evren özeti\n\nKayıtlı seri yok; film yeni bir evren kurar.\n"
+        except Exception as e:                       # evren kökü yoksa ya da okunamıyorsa: bilgi notu (hat durmaz)
+            metin = f"# Evren özeti\n\nEvren okunamadı ({e.__class__.__name__}); film yeni bir evren kurar.\n"
+        _metin_yaz(self.yol("_HIKAYE_ODASI", "EVREN_OZETI.md"), metin)
+        return 0
+
+    def kaset_betik_var(self, g):
+        from saglayicilar import kaset as kaset_mod
+        try: kaset_mod.bul(self.kok, g, "BETIK"); return True
+        except kaset_mod.KasetYok: return False
+
     def betik_kos(self, g):
         if g["arac"] == "film.py:hazirlik": return self.ic_hazirlik(g)
+        if g["arac"] == "film.py:evren_ozeti": return self.ic_evren_ozeti(g)
+        if g["arac"] == "film.py:atla": return 0
         if self.sahte: return self.sahte_betik(g)
         p = os.path.join(HERE, g["arac"])
+        if self.kaset and (self.kaset_betik_var(g) or not os.path.isfile(p)):
+            from saglayicilar import kaset as kaset_mod     # kayıt varsa (ya da araç yoksa) kasetten; kaset uydurmaz
+            try: return kaset_mod.betik_oynat(self.kok, g)[0]
+            except kaset_mod.KasetYok as e: raise Hata(f"{g['arac']}: {e}", ORTAM)
+        if self.kaset and g.get("kredili"):
+            raise Hata(f"{g['arac']} kredili; kaset kipinde kasetsiz gerçek kredili araç koşmaz (BETIK kaydı gerekir).", ORTAM)
         env = dict(os.environ, YZ_FILM_GOREV=self.gorev_dizini(g), YZ_FILM_FILM=self.kok)
         with open(os.path.join(self.gorev_dizini(g), "CALISMA.log"), "a", encoding="utf-8") as log:
             arg = list(g["argumanlar"])
@@ -1272,13 +1480,15 @@ class Defter:
         if g["durum"] == "bitti": return BITTI, {"gorev": gid, "durum": "bitti", "not": "zaten bitti; yeniden çalıştırılmadı"}
         if g["durum"] not in ACIK: raise Hata(f"{gid} artık geçerli değil ({g['durum']}); film.py sonraki.")
         if g["tur"] == "ajan":
+            if self.kaset: return BITTI, self.kaset_ajan(g)
             if not self.sahte: raise Hata("Ajan görevi Agent aracıyla çalışır (film.py sonraki'nin istemiyle), calis ile değil.")
             return BITTI, self.sahte_ajan(g)
         if g["tur"] == "kullanici":
-            if self.sahte: return BITTI, self.sahte_kullanici(g)
+            if self.deneme: return BITTI, self.sahte_kullanici(g)
             return KULLANICI, {"gorev": gid, "kullaniciya": g["mesaj"]}
         ic = g["arac"].startswith("film.py:")
-        if not ic and not self.sahte and not os.path.isfile(os.path.join(HERE, g["arac"])):
+        if not ic and not self.sahte and not os.path.isfile(os.path.join(HERE, g["arac"])) \
+                and not (self.kaset and self.kaset_betik_var(g)):
             raise Hata(f"{g['arac']} henüz yok (TASARIM §9'daki sonraki PR'larda gelir); bu aşama bu kurulumda yürüyemez.", ORTAM)
         with self.kilit():
             self.yeniden_oku(); g = self.g(gid)
@@ -1324,6 +1534,9 @@ class Defter:
             if gonderim:
                 self.sahte_ciktilar(g); g["cikis_kodu"] = 0; self.yaz(g)
                 return self._betik_sonu(g, 0)
+        elif self.kaset:                                  # kayıttan yeniden oynatma: gönderim yok, kredi yok
+            kod = self.betik_kos(g); g["cikis_kodu"] = kod; self.yaz(g)
+            return self._betik_sonu(g, kod)
         else:
             p = os.path.join(HERE, "memmet_topla.py")
             if not os.path.isfile(p):
@@ -1417,8 +1630,7 @@ def durum_hesapla(d, eski=None):
             "donguler": dict(donguler, kagit=donguler.get("A06", 0), animatik=donguler.get("A12", 0), kurgu=donguler.get("A16", 0),
                              h15=kul.get("h15", 0), kart_tarif=kul.get("kart_tarif", 0)),
             "kuresel_butce": {ad: {"kullanilan": kul.get(ad, 0), "tavan": t} for ad, t in KURESEL_TAVAN.items()},
-            "animatik": {"durum": "ONAYLI" if a12.get("durum") in ("tamam", "kismi") else "bekliyor",
-                         "imza": a12.get("girdi_imza") if a12.get("durum") in ("tamam", "kismi") else None},
+            "animatik": _animatik_durumu(d, a12),
             "bekleyen_kullanici": [g["id"] for g in gs if g["tur"] == "kullanici" and g["durum"] in ACIK] or None,
             "sayaclar": {"gorev": len(gs), "ajan": sum(g["tur"] == "ajan" for g in gs), "betik": sum(g["tur"] == "betik" for g in gs),
                          "kullanici_eylemi": sum(g["tur"] == "kullanici" for g in gs),
@@ -1426,6 +1638,18 @@ def durum_hesapla(d, eski=None):
             "harcama": d.harcama(), "durdu_planlar": durdu, "plan_imza": pimza, "bayat_planlar": sorted(bayat),
             "gecmis": jsonl_oku(os.path.join(d.gd, "DEFTER.jsonl"))[-20:],
             "model_sapmasi": [g["id"] for g in gs if g["durum"] == "model_sapmasi"]}
+
+
+def _animatik_durumu(d, a12):
+    """FILM_DURUM.animatik (memmet.py v2 bunu okur). Sahte denemede A12'nin defter durumu; gerçek filmde animatik_imza.durum."""
+    if d.sahte:
+        ok = a12.get("durum") in ("tamam", "kismi")
+        return {"durum": "ONAYLI" if ok else "bekliyor", "imza": a12.get("girdi_imza") if ok else None}
+    try:
+        import animatik_imza
+        return animatik_imza.durum(d.kok)
+    except Exception as e:
+        return {"durum": "bekliyor", "imza": None, "neden": f"animatik imzası okunamadı ({e.__class__.__name__})"}
 
 
 def durum_yaz(d, yeniden=False):
@@ -1454,8 +1678,8 @@ def film_bul(arg=None, zorunlu=True):
 
 
 def k_yeni(o):
-    if ortam() == "bulut" and o.saglayici != "sahte":
-        return ORTAM, {"kullaniciya": BULUT_CUMLESI, "not": "D-45: bulutta film yalnız --saglayici sahte ile açılır"}
+    if ortam() == "bulut" and o.saglayici not in ("sahte", "kaset"):
+        return ORTAM, {"kullaniciya": BULUT_CUMLESI, "not": "D-45: bulutta film yalnız --saglayici sahte|kaset ile açılır"}
     if not (o.konu or "").strip(): raise Hata("Konu boş. Kullanım: film.py yeni --konu \"<cümle>\"")
     ad = o.ad or f"F{time.strftime('%Y%m%d')}_{_yazi_duz(o.konu)[:24] or 'film'}"
     kok = os.path.join(ortak.yollar()["filmler"], ad)
@@ -1511,7 +1735,7 @@ def k_calis(o):
 def k_bitir(o):
     d = film_bul(o.film)
     kul = json.loads(o.kullanim) if o.kullanim else None
-    r = d.bitir(o.id, kul)
+    r = d.bitir(o.id, kul, gecersiz=o.gecersiz)
     with d.kilit(): durum_yaz(d)
     return BITTI, r
 
@@ -1545,6 +1769,10 @@ def k_bekle(o):
             bas = _zaman_oku(g["zaman"].get("basla")) or t0; son = _zaman_oku(g.get("hatirlatma")) or bas
             if time.time() - son > 6 * 3600:
                 d.log(f"HATIRLATMA {g['id']}: {g['mesaj']}"); g["hatirlatma"] = simdi()
+                try:
+                    import bildirim                     # Telegram/masaüstü (§8.4); tekrar ve saat tavanını bildirim.py uygular
+                    bildirim.gonder("kullanici_isi", "Hatırlatma: " + str(g["mesaj"]), film=d.kok, anahtar=g["id"])
+                except Exception: pass
                 with d.kilit(): d.yaz(g)
         if (o.kez and n >= o.kez) or time.time() - t0 + o.aralik > sure:
             return BEKLE, {"bitti": False, "gorev": g and g["id"],
@@ -1714,12 +1942,13 @@ def _ayristirici():
     ortak_.add_argument("--film"); ortak_.add_argument("--json", action="store_true", dest="json_")
     alt = p.add_subparsers(dest="komut", required=True)
     s = alt.add_parser("yeni", parents=[ortak_]); s.add_argument("--konu", required=True); s.add_argument("--ad")
-    s.add_argument("--seri"); s.add_argument("--saglayici", choices=["sahte"]); s.set_defaults(f=k_yeni)
+    s.add_argument("--seri"); s.add_argument("--saglayici", choices=["sahte", "kaset"]); s.set_defaults(f=k_yeni)
     alt.add_parser("sonraki", parents=[ortak_]).set_defaults(f=k_sonraki)
     s = alt.add_parser("basla", parents=[ortak_]); s.add_argument("idler"); s.set_defaults(f=k_basla)
     s = alt.add_parser("calis", parents=[ortak_]); s.add_argument("id"); s.add_argument("--topla", action="store_true")
     s.set_defaults(f=k_calis)
-    s = alt.add_parser("bitir", parents=[ortak_]); s.add_argument("id"); s.add_argument("--kullanim"); s.set_defaults(f=k_bitir)
+    s = alt.add_parser("bitir", parents=[ortak_]); s.add_argument("id"); s.add_argument("--kullanim")
+    s.add_argument("--gecersiz", metavar="NEDEN"); s.set_defaults(f=k_bitir)
     s = alt.add_parser("kurtar", parents=[ortak_]); s.add_argument("--yeniden-kur", action="store_true", dest="yeniden_kur")
     s.set_defaults(f=k_kurtar)
     s = alt.add_parser("asama-ilerlet", parents=[ortak_]); s.add_argument("id"); s.set_defaults(f=k_asama_ilerlet)

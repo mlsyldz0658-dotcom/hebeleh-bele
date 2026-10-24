@@ -41,6 +41,31 @@ class GercekDepo(unittest.TestCase):
         self.assertFalse([x for x in self.r["maddeler"] if x["madde"] in ("sablon_eksik", "sablon_esik", "sablon_yer_tutucu")])
         self.assertGreaterEqual(len(os.listdir(os.path.join(FY, "sablonlar"))), 60)
 
+    def test_hata_sifir_bayrak_yalniz_henuz_olmayan_dosya(self):
+        """Birleştirme turu: HATA 0; BAYRAK yalnız depoda henüz olmayan (olcum0/) ya da makineye özgü (python_yolu.txt) atıflar."""
+        self.assertEqual([x for x in self.r["maddeler"] if x["seviye"] == "HATA"], [])
+        b = [x for x in self.r["maddeler"] if x["seviye"] == "BAYRAK"]
+        self.assertEqual({x["madde"] for x in b} - {"atif_depo"}, set(), json.dumps(b, ensure_ascii=False, indent=1))
+        for x in b: self.assertRegex(x["neden"], r"olcum0/|python_yolu\.txt")
+
+    def test_ajanlarda_sabit_sayi_yok_sablonda_esik(self):
+        for ad in ("hikaye-mimari", "hikaye-yazari"):
+            g = bd.oku(os.path.join(DEPO, ".claude", "agents", ad + ".md"))
+            self.assertLessEqual(len(__import__("re").findall(r"(?:≥|≤|en çok|en az)\s*\d", g)), 2, ad)   # yalnız '≤ 5 satır' protokolü
+        for s, anahtarlar in (("A03_hikaye-mimari.md", ("kanca_cumlesi_karakter_max", "seri_sorusu_max", "kostum_varyant_max_karakter")),
+                              ("A05_hikaye-yazari_yapi.md", ("bolum_sayisi_max", "doruk_yogunluk_min")),
+                              ("A05_hikaye-yazari_senaryo.md", ("ekran_disi_tasima_kelime_esigi", "gosterisiz_aralik_max_sn"))):
+            m = bd.oku(os.path.join(FY, "sablonlar", s))
+            for k in anahtarlar: self.assertIn("{{esik:%s}}" % k, m, s)
+            self.assertNotIn("{{", bd.sablon_doldur(m))
+        self.assertNotIn("_HIKAYE_ODASI", bd.oku(os.path.join(DEPO, ".claude", "agents", "oyuncu.md")))
+
+    def test_kurgu_ve_kesici_kararlari_kok_neden_ve_bulgu_ister(self):
+        m = bd.oku(os.path.join(FY, "sablonlar", "A12_kurgucu_duzelt.md"))
+        self.assertIn("kararlar[{madde, bulgu, kok_neden,", m)
+        for s in ("A12_kesici_animatik.md", "A16_kesici_kurgu.md"):
+            self.assertIn("kesmeler[{id, kok_neden,", bd.oku(os.path.join(FY, "sablonlar", s)), s)
+
     def test_hat_tablosu_guncel(self):
         self.assertFalse([x for x in self.r["maddeler"] if x["madde"] == "hat_tablosu"])
 

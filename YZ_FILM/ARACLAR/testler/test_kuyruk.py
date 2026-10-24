@@ -38,6 +38,24 @@ class Kuyruk(unittest.TestCase):
         self.assertTrue(kuyruk.oku(self.film)["reddedilenler"])          # red kaydı dosyada kalır
         self.assertEqual(len(self.ekle(madde())["eklenen"]), 1)
 
+    def test_kart_turu(self):
+        """kart maddesi: plan yerine kart_id; soy sayacı ayrı kova; video/görsel soyunu tüketmez; eski klip taşınmaz."""
+        km = madde(plan=None, tur="kart", kart_id="K_MARA", kaynak_kapi="G1", kok_neden="nesne_zipladi")
+        s = self.ekle(dict(km, kart_id=None))
+        self.assertEqual(s["eklenen"], []); self.assertTrue(any("kart_id" in n for n in s["reddedilen"][0]["neden"]))
+        s = self.ekle(km); self.assertEqual(len(s["eklenen"]), 1, s)
+        k = [m for m in kuyruk.acik_maddeler(self.film) if m["tur"] == "kart"][0]
+        self.assertEqual((k["soy"], k["deneme"]), ("K_MARA", 2))
+        self.assertIn("kart:K_MARA", kuyruk.oku(self.film)["soylar"])
+        self.assertEqual(self.ekle(km)["birlesen"], [k["id"]])                         # aynı kart + kök neden birleşir
+        self.assertEqual(len(self.ekle(madde())["eklenen"]), 1)                         # plan 41 videosu ayrı soy
+        self.assertIsNone(kuyruk.eski_klip_tasi(self.film, k))
+        self.assertIn("kart K_MARA", open(kuyruk.merdiven_md(self.film), encoding="utf-8").read())
+
+    def test_stringio_stdout_ile_import(self):
+        import importlib, io, contextlib
+        with contextlib.redirect_stdout(io.StringIO()): importlib.reload(kuyruk)
+
     def test_kirp_kuyruga_girmez(self):
         s = self.ekle(madde(cozum="kirp", kaynak_kapi="V1", sifir_kredi=None))
         self.assertEqual(s["eklenen"], []); self.assertEqual(len(s["kirp"]), 1)

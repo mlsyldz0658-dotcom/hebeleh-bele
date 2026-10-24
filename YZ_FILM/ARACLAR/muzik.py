@@ -14,7 +14,8 @@ Alt komutlar:
   --midi    [--motif LM_X] [--donusum sade|tehdit|zafer|hepsi]   leitmotif notalarından standart MIDI (tip 0; stdlib) →
             MUZIK/motif/<LM>_<dönüşüm>.mid + MUZIK/motif/DIZIN.json (sha1, BPM, ton, nota sayısı). Animatikteki midi_ornek ve
             ACE-Step "Cover/Refer audio" girdisinin omurgasıdır; yayında General MIDI ile tema çalınmaz (D-25).
-  --uret, --yerlestir                  → TASARIM §9 adım 13 (--uret) / adım 16 (--yerlestir); bu sürümde yok, çıkış 4.
+  --uret [--kip animatik|yayin] ...    → muzik_uret.py (adım 13: ipucu başına aday üretimi ve S6 ölçümleri)
+  --yerlestir ...                      → muzik_yerlestir.py (adım 16: ipuçlarının KURGU_PLANI'na yerleşimi)
   --gemini-paket, --gemini-al          → zincirin elle son basamağı; adım 13 (lisans doğrulanınca); bu sürümde yok, çıkış 4.
 Ortak: --film <ad|yol> (zorunlu) · --tur N (görev klasörü yoksa)
 Kodda: liste_oku(film) · kagit_olcumleri(plan, liste, hikaye, E, motifler=None) → (ölçümler, {plan_no: ipucu_id}) ·
@@ -23,7 +24,7 @@ Kodda: liste_oku(film) · kagit_olcumleri(plan, liste, hikaye, E, motifler=None)
                komut bu adımda yok) · kullanım hatası 4.
 """
 import os, re, sys, json, hashlib, struct
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, kapi
@@ -37,8 +38,7 @@ TAM_DONUSUM = ("zafer", "tam")
 VARSAYILAN_ZINCIR = ("acestep", "kutuphane")            # FILM_AYAR saglayicilar.muzik.yayin yoksa (§5.6)
 BILINEN = {"acestep": False, "kutuphane": False, "elevenlabs_muzik": False, "gemini_muzik_paketi": True, "midi_ornek": False,
            "sahte": False}                               # ad → elle (fiziksel iş); §5.6
-SONRAKI = {"--uret": "adım 13 (PR-9, yerel ses hazırlığı)", "--yerlestir": "adım 16 (PR-12, video sonrası ses ve kurgu)",
-           "--gemini-paket": "adım 13 (zincirin elle son basamağı; lisans doğrulanınca)", "--gemini-al": "adım 13"}
+SONRAKI = {"--gemini-paket": "adım 13 (zincirin elle son basamağı; lisans doğrulanınca)", "--gemini-al": "adım 13"}
 NOTA = re.compile(r"^([A-Ga-g])([#b]?)(-?\d)$")
 YARIM = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
 GM = (("flute", 73), ("piccolo", 72), ("oboe", 68), ("clarinet", 71), ("bassoon", 70), ("horn", 60), ("trumpet", 56),
@@ -417,7 +417,24 @@ def kagit(o):
 KOMUTLAR = {"--kagit": kagit, "--midi": midi}
 
 
+def _alt_modul(ad):
+    """Alt aracı yükler; alt araç içe aktarılırken stdout'u yeniden yapılandırıyorsa (StringIO altında) gerçek stdout'la yükler."""
+    import importlib
+    if ad in sys.modules: return sys.modules[ad]
+    o = sys.stdout
+    try:
+        if not hasattr(o, "reconfigure"): sys.stdout = sys.__stdout__
+        return importlib.import_module(ad)
+    finally: sys.stdout = o
+
+
+ALT_ARACLAR = {"--uret": "muzik_uret", "--yerlestir": "muzik_yerlestir"}     # adım 13 (A12 animatik / A16 yayın), adım 16 (A16)
+
+
 def main(a):
+    a = list(a)
+    alt = [k for k in ALT_ARACLAR if k in a]
+    if alt: return _alt_modul(ALT_ARACLAR[alt[0]]).main([x for x in a if x != alt[0]])
     son = [k for k in SONRAKI if k in a]
     if son: print(f"!! muzik.py {son[0]}: TASARIM §9 {SONRAKI[son[0]]}; bu sürümde yok."); return ORTAM
     kom = [k for k in KOMUTLAR if k in a]

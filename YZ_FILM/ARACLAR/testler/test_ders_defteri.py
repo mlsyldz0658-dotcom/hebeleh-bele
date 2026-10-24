@@ -145,5 +145,19 @@ class Ogrenilen(Taban):
         with contextlib.redirect_stdout(out): self.assertEqual(dd.main(["--yanlis"]), 4)
 
 
+class Yedek(unittest.TestCase):
+    def test_yedekle_ders_yedekle_ye_gider(self):
+        from unittest import mock
+        import ders_yedekle
+        with mock.patch.object(ders_yedekle, "main", return_value=0) as m:
+            self.assertEqual(dd.main(["--yedekle", "--hedef", "/x"]), 0)
+        m.assert_called_once_with(["--yedekle", "--hedef", "/x"])
+        import subprocess
+        hedef = tempfile.mkdtemp(prefix="ders_yedek_"); self.addCleanup(shutil.rmtree, hedef, True)
+        r = subprocess.run([sys.executable, os.path.join(os.path.dirname(HERE), "ders_defteri.py"), "--yedekle", "--hedef", hedef],
+                           capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr); self.assertIn("Ders defteri yedeği", r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

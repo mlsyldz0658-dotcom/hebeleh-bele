@@ -16,6 +16,7 @@ Bu görev bir **merdiven basamağıdır** (§1.5): önceki turların kapı rapor
 2. Anahtar olguyu taşıyan bilgi başka sahneye taşınıyorsa nereye taşındığını yaz.
 3. Komşu sahnelerin giriş/çıkış durumu bozulmamalı (sahne sınırında durum eşitliği).
 4. Telaffuz testi (A10b) yüzündeysen: geçmeyen adı {{esik:ad_hece_max_ana}} heceyi aşmayan, öbür adlardan en az {{esik:ad_duzenleme_uzaklik_min}} harf uzak yeni bir adla değiştir; her yerde aynı.
+5. Ekran dışı köprü replik sahne başına ≤ {{esik:kopru_replik_sahne_max}}; blok ≤ {{esik:replik_max_kelime_8sn}} kelime (10 sn klipte ≤ {{esik:replik_max_kelime}}).
 
 ## CIKTI
 - `CIKTI/rapor.json` — şema `denetci_rapor_v1` (`gorev`, `kip`, `sonuc`, `maddeler[{madde, seviye, konum, kanit, oneri, sahip}]`, `ozet`); ek alan `degisiklik{sahne, tur: sadelestir|bol|ekran_disi|kes, yeni_metin, tasinan_olgular[]}`

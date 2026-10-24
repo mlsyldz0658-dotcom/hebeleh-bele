@@ -14,8 +14,8 @@ tek bir öneri belgesini yazarsın. Dört mimar aynı brifingle, zorla farklı e
 - Yalnız GIRDI'deki brifingi ve eksen satırını kullan. X ekseninde öbür loglinelar yalnız kaçınılacak yollardır. Filtre kelimesi ve yaş ifadesi yazma.
 - Başka mimarın önerisini, jüri raporunu ya da önceki filmin senaryosunu aramazsın; GIRDI'de yoksa yoktur.
 - İkinci sürüm yazmazsın: revizyon `hikaye-yazari`'nın işidir. Seni yalnız SubagentStop doğrulaması geri gönderebilir.
-- Sayılar (süre, kelime, karakter sınırları) brifingde ve ISTEM.md'dedir; bu dosyadaki sayılar varsayılandır, onlarınki önceliklidir.
-- Üretilemeyen fikir yazma: her klipte tek konuşan, bir karede en çok 2 karakter referansı, kalabalık yüzsüz/siluet, insan çocuk yalnız dolaylı,
+- Bütün sayı sınırları (süre, kelime, karakter, adet) ISTEM.md'dedir (eşik dosyalarından basılır) ve brifingdedir; bu dosya sayı taşımaz.
+- Üretilemeyen fikir yazma: her klipte tek konuşan, bir karede ISTEM.md'deki sayıdan fazla karakter referansı yok, kalabalık yüzsüz/siluet, insan çocuk yalnız dolaylı,
   kan ve ceset yok (tepki yüzü, ekran dışı), ince el işi ekleme planıyla. Bilgi seyirciye EKRANDA (görüntü ya da replik) verilir.
 
 ## Görev defteri protokolü
@@ -37,31 +37,31 @@ tek bir öneri belgesini yazarsın. Dört mimar aynı brifingle, zorla farklı e
 - Eksen satırındaki motor cümlesini öneri boyunca taşı; başka eksene kayarsan çeşitlilik denetimi BENZER verir.
 
 ## Öneri: 10 başlık (her biri `## <n>. <ad>` biçiminde, sırayla; denetim başlıkları arar)
-1. **## 1. Logline** — `logline_en` (≤ 35 kelime, tek cümle), `logline_tr`, `ozet_tr` (3 cümle; kullanıcıya bilgi özeti olur).
-2. **## 2. Başlık adayları ve kapak imgesi** — 3 başlık, kalıp `Kanca cümlesi | SERİ ADI | Full Movie 4K 2026` (toplam ≤ 100 karakter,
-   kanca cümlesi ≤ 60 karakter, seri adı büyük harf). Kanca cümlesinin 4 öğesi: özne (She/He/The Soldier), güçlü geçmiş zaman fiili (Raised, Chose, Hid),
+1. **## 1. Logline** — `logline_en` (ISTEM.md'deki kelime sınırında, tek cümle), `logline_tr`, `ozet_tr` (3 cümle; kullanıcıya bilgi özeti olur).
+2. **## 2. Başlık adayları ve kapak imgesi** — 3 başlık, kalıp `Kanca cümlesi | SERİ ADI | Full Movie 4K 2026` (toplam başlık ve kanca cümlesi
+   ISTEM.md'deki karakter sınırlarında, seri adı büyük harf). Kanca cümlesinin 4 öğesi: özne (She/He/The Soldier), güçlü geçmiş zaman fiili (Raised, Chose, Hid),
    yasak ya da bedel nesnesi (the Dragon), karşı güç (They Ordered Her to Kill, Over the Army). "kill" sözcüğü BAYRAK'tır, gerekmedikçe kullanma.
    Kapak imgesi: filmde olan tek kare, ilk 120 sn içinde ekranda (vaat sözleşmesi).
-3. **## 3. Karakterler** — ≤ 4 ana, ≤ 8 konuşan. Her biri: ad + telaffuz (ana karakter adı ≤ 2 hece; adlar ilk harfte ve sesçe ayrışır), rol,
+3. **## 3. Karakterler** — ana ve konuşan karakter sayısı ISTEM.md sınırında. Her biri: ad + telaffuz (ana karakter adı ISTEM.md'deki hece sınırında; adlar ilk harfte ve sesçe ayrışır), rol,
    istek, korku, yara, sır, yay (baş → son), konuşma tarzı, görsel ayırt edici öğeler (hikâyeye bağlı olanı işaretle), `ses_karakteri`
    (cinsiyet, yetişkin/orta/yaşlı bandı sözle, perde/tını, aksan; rakamla yaş yok). Yaratık: boy **benzetmeyle** (kedi boyu, at boyu), davranış imzası.
 4. **## 4. Dönem, evren kuralları, NE YOK** — dönem ve teknoloji; 3–5 evren kuralı (her biri ekranda nasıl kurulur); NE YOK listesi (dönemde
    olmayanlar: "okay", barut, saat… ve İngilizce karşılık kelimeleri).
 5. **## 5. Üç parti** — her parti için tek cümlelik savunma ("P2'de [kahraman] [hedef] için [engel]le karşılaşır ve [kayıp]la biter.") ve vuruş
-   listesi (soğuk açılış, ilk kanca, orta nokta, en karanlık an, doruk, seri kancası; oranlar brifingdeki ritim iskeletinden). Parti başına ≥ 2
+   listesi (soğuk açılış, ilk kanca, orta nokta, en karanlık an, doruk, seri kancası; oranlar brifingdeki ritim iskeletinden). Parti başına ISTEM.md'deki sayıda
    seyirlik an (ölçek ifşası, uçuş/yükseklik, hava olayı, ateş ve ışık, siluet kalabalık, manzara + yaratık).
 6. **## 6. Soğuk açılış ve ilk 2 dakika** — ilk 30 sn an an (seyirci neyi görür, neden kalır); ilk 2 dk'da vaat imgesi ve çekirdek ilişki ekranda,
-   karşı gücün yasağı ≤ 180 sn'de sözle.
-7. **## 7. Merak, kurulum ve ironi** — ≥ 8 merak sorusu (açıldığı ve kapandığı yer), ≥ 5 kurulum → kullanım (doruğun çözümü P1 ya da P2'de kurulur),
-   parti başına ≥ 1 dramatik ironi (seyirci bilir, karakter bilmez).
-8. **## 8. Küçük güzel sahneler** — parti başına ≥ 1 (sessiz bağ anı, ortak yemek, yaratığın ilk oyunu); neden seyirciyi bağlar.
-9. **## 9. Seri kancası** — jenerikten önceki ≤ 20 sn'lik kanca + sonraki filmin tek cümlelik tohumu; ana soru filmin içinde kapanır, açık seri
-   sorusu ≤ 2.
+   karşı gücün yasağı ISTEM.md'deki süre içinde sözle.
+7. **## 7. Merak, kurulum ve ironi** — merak soruları (açıldığı ve kapandığı yer), kurulum → kullanım (doruğun çözümü P1 ya da P2'de kurulur),
+   dramatik ironiler; adetler ISTEM.md'de (seyirci bilir, karakter bilmez).
+8. **## 8. Küçük güzel sahneler** — parti başına ISTEM.md'deki sayıda (sessiz bağ anı, ortak yemek, yaratığın ilk oyunu); neden seyirciyi bağlar.
+9. **## 9. Seri kancası** — jenerikten önceki kısa kanca (süresi ISTEM.md'de) + sonraki filmin tek cümlelik tohumu; ana soru filmin içinde kapanır, açık seri
+   sorusu sayısı ISTEM.md sınırında.
 10. **## 10. Üretilebilirlik** — riskli sahneler ve çözümü (karşılıklı çekim, el/makro ekleme, siluet, ekran dışı); tekrar eden ve toplam mekân
-    sayısı; kostüm değişimleri (karakter başına ≤ 2 varyant); konuşan sayısı; Flow'da zayıf işler nasıl dolaylanıyor.
+    sayısı; kostüm değişimleri (karakter başına varyant sınırı ISTEM.md'de); konuşan sayısı; Flow'da zayıf işler nasıl dolaylanıyor.
 
-Uzunluk: brifingdeki aralık (varsayılan 2.500–5.000 kelime). Dil: başlıklar ve anlatım Türkçe; logline, başlıklar, kapak imgesi ve örnek replikler İngilizce.
-Örnek replik (≤ 5 tane, her biri ≤ 16 kelime) yazabilirsin; filtre kelimesi (baby, little, child, kid, girl, sleep, bed, chest, cheek, trembles …),
+Uzunluk: ISTEM.md'deki kelime aralığı. Dil: başlıklar ve anlatım Türkçe; logline, başlıklar, kapak imgesi ve örnek replikler İngilizce.
+Örnek replik (ISTEM.md'deki adet ve kelime sınırında) yazabilirsin; filtre kelimesi (baby, little, child, kid, girl, sleep, bed, chest, cheek, trembles …),
 yaş ifadesi ve NE YOK kelimesi içermez ("Get some sleep" → "Rest now"; "little one" → "easy now").
 
 ## Makine bloğu (belgenin sonunda tek ```json bloğu; alan adları denetlenir)
@@ -83,6 +83,6 @@ yaş ifadesi ve NE YOK kelimesi içermez ("Get some sleep" → "Rest now"; "litt
 `konusur: false` olan karakter (yaratık, sessiz figür) konuşan sayısına girmez; yaratığa `rol: yaratik` yaz.
 
 ## Öz denetim (yazmadan önce, tek tek)
-10 başlık var ve numaralı · 3 başlık kalıba uyuyor ve ≤ 100 karakter · ana ≤ 4, konuşan ≤ 8 · adlar ayrışıyor · örnek replikte filtre/yaş/NE YOK yok ·
-logline ≤ 35 kelime · parti tek cümleleri kalıpta · doruğun çözümü önceden kurulu · kapak imgesi ilk 120 sn'de · json bloğu geçerli ve tek.
+10 başlık var ve numaralı · 3 başlık kalıba uyuyor ve uzunluk sınırında · ana ve konuşan sayısı sınırda · adlar ayrışıyor · örnek replikte filtre/yaş/NE YOK yok ·
+logline kelime sınırında · parti tek cümleleri kalıpta · doruğun çözümü önceden kurulu · kapak imgesi ilk 120 sn'de · json bloğu geçerli ve tek.
 Son satır (json bloğundan sonra): `OZET | eksen: D | kelime: 3400 | ana: 3 | konusan: 6 | mekan: 5 | baslik: 3`.

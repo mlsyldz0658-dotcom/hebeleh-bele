@@ -130,8 +130,78 @@ class KuruKurulum(Ortam):
         self.assertEqual(kod, 0); self.assertNotIn(GIZLI, out)
         self.assertEqual(jl(os.path.join(self.veri, "AYARLAR", "GEMINI_DURUMU.json"))["gemini_katman"], "ucretsiz")
 
-    def test_ses_ortamlari_p1(self):
-        self.assertEqual(sessiz(kurulum.main, ["--kur3"])[0], 4)
+    def test_kur3_izinsiz_kurmaz_onayla_yollar_yazar(self):
+        import kurulum_kur3 as k3
+        kurulan = []
+        with mock.patch.object(k3, "kur3_kur", lambda plan, calistir=False: kurulan.append(calistir) or []):
+            kod, out = sessiz(kurulum.main, ["--kur3", "--gerekenler", "musetalk"])
+            self.assertEqual(kod, 0); self.assertEqual(kurulan, []); self.assertIn("izni yok", out)
+            kod, out = sessiz(kurulum.main, ["--kur3", "--gerekenler", "musetalk", "--onay", "--kuru"])
+            self.assertEqual(kurulan, [])                                    # kuru: izin olsa da kurulmaz
+            kod, r = sessiz(kurulum.kur3, {"musetalk"}, True)[0]
+        self.assertEqual((kod, kurulan, r["kuruldu"]), (0, [True], ["musetalk"]))
+        self.assertIn("musetalk", jl(self.yollar)["ortamlar"])
+
+    def test_kur2_plan_kurallari(self):
+        import ses_kiyas
+        kos = []
+        plan = {"kur": True, "motor": "openvoice", "python_yolu": os.path.join(self.kok, "venv", "python"), "deneme_kipi": True,
+                "neden": "lisans 'bilinmiyor'", "adimlar": [{"ne": "venv", "komut": ["py", "-m", "venv", "x"]}]}
+        with mock.patch.object(ses_kiyas, "kur2_plani", lambda: plan):
+            k, r = sessiz(kurulum.kur2, False, False, kos=lambda c: kos.append(c) or True)[0]
+            self.assertEqual((r["durum"], kos), ("lisans", []))              # bilinmiyor lisans → yalnız --deneme
+            k, r = sessiz(kurulum.kur2, True, True, kos=lambda c: kos.append(c) or True)[0]
+            self.assertEqual((r["durum"], kos), ("plan", []))                # kuru → yalnız plan
+            with mock.patch.object(kurulum.os, "name", "nt"):
+                k, r = sessiz(kurulum.kur2, False, True, kos=lambda c: kos.append(c) or True)[0]
+        self.assertEqual((r["durum"], len(kos)), ("kuruldu", 1))
+        self.assertEqual(jl(self.yollar)["ortamlar"]["ses_donustur"], plan["python_yolu"])
+        with mock.patch.object(ses_kiyas, "kur2_plani", lambda: {"kur": False, "neden": "Ö0-c ölçülmedi"}):
+            self.assertEqual(sessiz(kurulum.main, ["--ses-ortamlari"])[0], 0)
+
+    def test_kur1_model_plani_ve_politika(self):
+        kod, out = self.kur()
+        r = jl(os.path.join(self.veri, "AYARLAR", "KURULUM_RAPORU.json"))
+        plan = {a.get("dosya") or a.get("kimlik"): a for a in r["kur1_model_plani"]}
+        mk = kurulum.model_kok(ortak.yollar())
+        for d in ("face_detection_yunet_2023mar.onnx", "face_recognition_sface_2021dec.onnx", "face_landmarker.task",
+                  "pose_landmarker_lite.task"):
+            self.assertEqual(plan[d]["hedef"], os.path.join(mk, d)); self.assertFalse(plan[d]["hazir"])
+        for k in ("facebook/dinov2-small", "openai/clip-vit-base-patch32", "google/owlv2-base-patch16-ensemble"):
+            self.assertEqual(plan[k]["hedef"], os.path.join(mk, "hf"))
+        import olcum.gorunum as G
+        for k in (G.DINO, G.CLIP, G.OWL): self.assertIn(k, plan)                  # ölçüm kodunun okuduğu kimliklerle aynı
+        self.assertTrue(os.path.isfile(os.path.join(self.veri, "BILGI", "YOUTUBE_POLITIKA.md")))
+        yaz(os.path.join(self.veri, "BILGI", "YOUTUBE_POLITIKA.md"), "kullanıcı sürümü"); self.kur()
+        self.assertEqual(txt(os.path.join(self.veri, "BILGI", "YOUTUBE_POLITIKA.md")), "kullanıcı sürümü")   # var olana dokunulmaz
+
+    def test_kur1_ag_varken_indirme_ve_sha1(self):
+        Y = ortak.yollar(); L = {k: {"dogrulama": "bellekten"} for k in ("yunet", "sface", "mediapipe", "clip", "dinov2-small",
+                                                                          "owlv2-base", "faster-whisper", "demucs")}
+        plan = kurulum.kur1_model_plani(Y, L)
+        a = next(x for x in plan if x["tur"] == "dosya")
+        with mock.patch("urllib.request.urlopen", lambda url, timeout=0: io.BytesIO(b"onnx")):
+            s = kurulum.dosya_indir(a["url"], a["hedef"])
+        self.assertEqual(s, hashlib.sha1(b"onnx").hexdigest())
+        self.assertTrue(next(x for x in kurulum.kur1_model_plani(Y, L, sha1ler={a["dosya"]: s}) if x.get("dosya") == a["dosya"])["hazir"])
+        self.assertFalse(next(x for x in kurulum.kur1_model_plani(Y, L, sha1ler={a["dosya"]: "0" * 40}) if x.get("dosya") == a["dosya"])["hazir"])
+
+    def test_dogrula_kur_raporu(self):
+        film = os.path.join(self.veri, "FILMLER", "F"); os.makedirs(film)
+        gd = os.path.join(film, "_GOREV", "A10a-KD-s1-t1"); os.makedirs(gd)
+        ortak.atomik_yaz(os.path.join(gd, "GOREV.json"), {"id": "A10a-KD-s1-t1", "tur_no": 1})
+        with mock.patch.dict(os.environ, {"YZ_FILM_GOREV": gd}):
+            kod, out = sessiz(kurulum.main, ["--dogrula", "--film", "--film", film])      # film.py araç sözleşmesi --film'i ekler
+        self.assertEqual(kod, 0)
+        r = jl(os.path.join(film, "_RAPOR", "KURULUM_FILM.json"))
+        self.assertEqual((r["kapi"], r["_uretim"]["gorev"], r["_uretim"]["asama"], r["tur"]), ("KUR", "A10a-KD-s1-t1", "A10a", 1))
+        import kapi
+        self.assertEqual(kapi.dogrula(r), [])
+        self.assertIn("basamaklar", r); self.assertIn("kapali", r); self.assertIn("olcum_durumu", r)
+        h = {x["birim"] for x in r["hatalar"]}; b = {x["birim"] for x in r["bayraklar"]}
+        self.assertIn("kimlik", h)                                             # bulutta model yok: KUR1 eksiği HATA
+        self.assertFalse(h & {"ses_donustur", "tts_dudak", "acestep"})         # KUR2/KUR3 yalnız kendi basamağını kapatır
+        self.assertTrue({"ses_donustur", "tts_dudak"} <= b)
 
     def test_surum_karsilastirma(self):
         self.assertEqual(kurulum.surum_ayikla("2.1.302 (Claude Code)"), (2, 1, 302))

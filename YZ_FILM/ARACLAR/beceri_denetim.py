@@ -707,7 +707,11 @@ def _s1(K, A):
     A("oturum başı bağlamı tek soruyu verir", TEK_SORU in _baglam(j), _baglam(j)[:160])
     k, j = K.kanca("istem", {"prompt": "film yap", "cwd": K.depo, "session_id": "s"})
     b = _baglam(j)
-    A("çıplak 'film yap' konu sayılmaz (kanca.py istem)", "Konu verildi" not in b, b[:160] or "(bağlam yok)", seviye="BAYRAK")
+    A("çıplak 'film yap' konu sayılmaz; bağlam tek soruyu verir (kanca.py istem)", "Konu verildi" not in b and TEK_SORU in b,
+      b[:160] or "(bağlam yok)")
+    for m in ("yeni film", "film yapalım"):
+        k, j = K.kanca("istem", {"prompt": m, "cwd": K.depo, "session_id": "s"})
+        A("'%s' konu sayılmaz" % m, TEK_SORU in _baglam(j) and "Konu verildi" not in _baglam(j), _baglam(j)[:160] or "(bağlam yok)")
     k, j = K.kanca("stop", {"last_assistant_message": TEK_SORU, "cwd": K.depo, "session_id": "s"})
     A("Stop kancası tek soruyu engellemez", (j or {}).get("decision") != "block", json.dumps(j, ensure_ascii=False)[:120])
     sk = oku(os.path.join(K.depo, ".claude", "skills", "film-yap", "SKILL.md"))

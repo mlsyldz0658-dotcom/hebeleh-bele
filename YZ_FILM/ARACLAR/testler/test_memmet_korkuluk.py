@@ -286,6 +286,22 @@ class FlowSaglayici(unittest.TestCase):
             self.assertEqual(flow.cikis_cevir(7, p).kod, "olagandisi")   # 7 her zaman uyarı
         finally: shutil.rmtree(d, ignore_errors=True)
 
+    def test_butce_ve_bekle_gecis_yapmaz(self):
+        """5 (BUTK reddi) ve 8 (bekle/topla/mesgul) başka sağlayıcıya geçirmez; dosya 'kredi' dese bile."""
+        from saglayicilar import flow
+        self.assertEqual(flow.cikis_cevir(5).kod, "butce"); self.assertEqual(flow.cikis_cevir(8).kod, "bekle")
+        d = tempfile.mkdtemp()
+        try:
+            p = os.path.join(d, "_memmet_cikis.json")
+            for rc, kod in ((5, "butce"), (8, "topla"), (8, "mesgul"), (5, "kredi"), (8, "kota")):
+                json.dump({"kod": kod, "cikis": rc}, open(p, "w", encoding="utf-8"))
+                self.assertFalse(flow.cikis_cevir(rc, p).gecilebilir, (rc, kod))
+            json.dump({"_surum": 2, "sahneler": []}, open(os.path.join(d, "SAHNELER.json"), "w", encoding="utf-8"))
+            with self.assertRaises(flow.Kisitlandi) as c: flow.Flow().toplu(d, "video", [{"no": 1}])
+            self.assertFalse(c.exception.gecilebilir)
+        finally: shutil.rmtree(d, ignore_errors=True)
+        self.assertEqual(memmet.CIKIS["butce"], 5); self.assertEqual(memmet.CIKIS["topla"], 8)
+
 
 # ==================================================================== PR-11: Memmet v2 (BLOK_PLANI) — sahte Flow sayfasında blok akışı
 import blok_plani, kredi, memmet_topla, memmet_yama, difflib  # noqa: E402
@@ -444,6 +460,17 @@ class BlokV2(unittest.TestCase):
         self.sayfa.gonder_tiklaninca = lambda: self.sayfa.kart.update(var=True, yuzde=False, metin="policy violation")
         self.kos(m)
         self.assertEqual(len(self.sayfa.yazilanlar), 3)
+
+    def test_v2_her_video_gonderiminden_once_video_hazir(self):
+        """kare_denetim.video_hazir her plan için sorulur; hazır değilse (ya da denetlenemezse) gönderim ve kredi satırı yok."""
+        m = self.mm("gece"); sorulan = []
+        def hayir(film, no): sorulan.append(int(no)); return False, "G1 BAYRAK"
+        with mock.patch.object(memmet.kare_denetim, "video_hazir", hayir): o = self.kos(m)
+        self.assertEqual(sorulan, [1, 2, 3]); self.assertEqual(self.tiklamalar(), 0); self.assertEqual(self.gonderimler(), [])
+        self.assertTrue(all("G1 BAYRAK" in a["neden"] for a in o["atlanan"]))
+        m = self.mm("gece")
+        with mock.patch.object(memmet.kare_denetim, "video_hazir", side_effect=RuntimeError("bozuk")): o = self.kos(m)
+        self.assertEqual(self.tiklamalar(), 0); self.assertTrue(all("denetlenemedi" in a["neden"] for a in o["atlanan"]))
 
     def test_v2_zaman_asimi_yeniden_gondermez_once_topla(self):
         m = self.mm("gece"); m.A["video_zaman_asimi_sn"] = -1

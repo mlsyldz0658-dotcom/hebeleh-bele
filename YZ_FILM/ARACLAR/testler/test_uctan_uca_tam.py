@@ -3,13 +3,12 @@
 film.py v2 görev zinciri `kaset` ile: ajan görevleri ORNEK_3_SAHNE/_KASET (A00–A06) + ORNEK_3_SAHNE_TAM/_KASET (A06s–A09) kayıtlarından;
 betikler GERÇEK, şu ikisi dışında:
   - KASETTEN: bu adımın sahibi olmadığı, depoda henüz olmayan ya da başka ajanın sürdürdüğü yönetmen araçları (kroki, plan_denetim,
-    plan_birlestir, dunya_defteri, zaman_cizelgesi, cekim_listesi, istem_derle, kamera_agaci), kor_paket (plan kipinde sızıntı
-    denetimi R0001'deki "Sera," hitabını ad sızıntısı sayıyor; paylaşılan istek) ve görev kimliği yazmayan kredi.py.
-  - A09 DN: hat/asamalar.py 'istem_denetim.py --film' çağırır; ses ekleri istem_denetim.py'ye bağlanana kadar (paylaşılan istek)
-    görev aynı sözleşmeyle 'istem_denetim_ses.py --rapor' ile koşar (istem_denetim v2 + iki yanlış alarm ayıklaması + S0.4–S0.6).
-    test_istem_denetim_tek_basina bu bekleyen bağlantıyı ayrıca gösterir (bağlantı gelince skip kalkar).
+    plan_birlestir, dunya_defteri, zaman_cizelgesi, cekim_listesi, istem_derle, kamera_agaci) ve görev kimliği yazmayan kredi.py.
+  - kor_paket GERÇEK koşar (birleştirme: repliğin içinde söylenen ad kurulmuştur, ilk 2 dk dosyasında sızıntı sayılmaz).
+  - A09 DN GERÇEK 'istem_denetim.py --film' (birleştirme: rapor_v2 = denetle_v2 + istem_denetim_ses ekleri; tırnaklı söz ve tts planı
+    yanlış alarmının kök nedeni denetle_v2'de düzeldi). test_istem_denetim_tek_basina artık gerçek denetim.
 Gerçek koşanlar: hikaye_odasi, puan_oku (seyirci-topla, --plan), evren, dilim, ses_plani (--profil-denetle, --taslak, --denetle),
-muzik --kagit, istem_denetim_ses. Ağ yok, kredi yok."""
+muzik --kagit, kor_paket --kip plan, istem_denetim --film. Ağ yok, kredi yok."""
 import os, sys, json, io, glob, time, shutil, contextlib, unittest, unittest.mock
 HERE = os.path.dirname(os.path.abspath(__file__)); ARACLAR = os.path.dirname(HERE)
 sys.path.insert(0, ARACLAR); sys.path.insert(0, HERE)
@@ -21,7 +20,7 @@ FILMLER = os.path.join(os.path.dirname(ARACLAR), "FILMLER")
 KASET_HIKAYE = os.path.join(FILMLER, "ORNEK_3_SAHNE", "_KASET")
 TAM = os.path.join(FILMLER, "ORNEK_3_SAHNE_TAM")
 KASETTEN = {"kroki.py", "plan_denetim.py", "plan_birlestir.py", "dunya_defteri.py", "zaman_cizelgesi.py", "cekim_listesi.py",
-            "istem_derle.py", "kamera_agaci.py", "kor_paket.py", "kredi.py"}
+            "istem_derle.py", "kamera_agaci.py", "kredi.py"}
 YOK_ARAC = KASETTEN | {"seyirci_topla.py"}
 BEKLENEN = ["A00", "A01", "A02", "A03", "A04", "A05", "A06", "A06s", "A07a", "A07b", "A07c", "A07d", "A07e", "A08", "A09", "A10a"]
 
@@ -63,8 +62,6 @@ class UctanUcaTam(unittest.TestCase):
         def betik_kos(d, g):
             if g["arac"] in KASETTEN:
                 cagri["kaset"].append(g["id"]); return kaset.betik_oynat(d.kok, g)[0]
-            if g["arac"] == "istem_denetim.py":
-                cagri["yonlendirilen"].append(g["id"]); g = dict(g, arac="istem_denetim_ses.py", argumanlar=["--rapor"])
             if g["arac"] == "seyirci_topla.py": g = dict(g, arac="puan_oku.py", argumanlar=["seyirci-topla"] + list(g["argumanlar"]))
             if not g["arac"].startswith("film.py:"): cagri["gercek"].append(g["arac"] + " " + " ".join(g["argumanlar"]))
             return orj_kos(d, g)
@@ -139,18 +136,22 @@ class UctanUcaTam(unittest.TestCase):
     def test_gercek_betikler_kostu(self):
         g = " | ".join(self.cagri["gercek"])
         for alt in ("ses_plani.py --profil-denetle", "ses_plani.py --taslak", "ses_plani.py --denetle --tum", "muzik.py --kagit",
-                    "istem_denetim_ses.py --rapor", "dilim.py --asama A07b", "puan_oku.py --plan", "puan_oku.py seyirci-topla --kip plan",
+                    "istem_denetim.py --film", "kor_paket.py --kip plan", "dilim.py --asama A07b", "puan_oku.py --plan", "puan_oku.py seyirci-topla --kip plan",
                     "hikaye_odasi.py devir"):
             self.assertIn(alt, g)
-        self.assertEqual(len(self.cagri["yonlendirilen"]), 1)
+        self.assertEqual(self.cagri["yonlendirilen"], [])
+        self.assertNotIn("kor_paket.py", " ".join(self.cagri["kaset"]))
 
     def test_istem_denetim_tek_basina(self):
-        """Paylaşılan istek bekliyor: istem_denetim.py v2 tek başına TTS planında ve replik tırnağında yanlış HATA verir."""
+        """istem_denetim.py v2 tek başına (ayıklamasız denetle_v2 dahil) TTS planında ve replik tırnağında yanlış HATA vermez."""
         r, _ = istem_denetim.rapor_v2(self.kok, rapor_yolu=os.path.join(self.kok, "_RAPOR", "ISTEM_TEK.json"))
-        if r["hatalar"]:
-            self.skipTest("istem_denetim.py'ye istem_denetim_ses bağlantısı (ayikla + ses ekleri) henüz yok: "
-                          + ", ".join(sorted({h["madde"] for h in r["hatalar"]})))
-        self.assertEqual(r["sonuc"], "GEC")
+        self.assertEqual(r["hatalar"], []); self.assertIn(r["sonuc"], ("GEC", "BAYRAK"))
+        ham = istem_denetim.denetle_v2(jl(os.path.join(self.kok, "SAHNELER.json")), (), None,
+                                       ses_tarifleri={k: p["veo_ses_tarifi"] for k, p in istem_denetim_ses.profiller_oku(self.kok).items()
+                                                      if p.get("veo_ses_tarifi")})
+        self.assertEqual([x for x in ham if x["seviye"] == "HATA"], [])
+        kp = jl(os.path.join(self.kok, "_KOR_PAKET", "plan_t1", "PAKET.json"))       # kör paket gerçek koştu, sızıntı 0
+        self.assertEqual(kp["sizinti"], {"yasak_alan": 0, "ad": 0})
 
 
 if __name__ == "__main__":

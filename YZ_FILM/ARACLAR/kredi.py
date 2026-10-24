@@ -31,7 +31,7 @@ Defter: <film>/KREDI_DEFTERI.jsonl, satır başına bir olay, her satır fsync'l
 Çıkış kodları: 0 BİTTİ/onay · 1 HATA (girdi yok ya da bozuk, kullanım) · 5 BÜTÇE.
 """
 import os, sys, json, math, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, esikler, olcek
@@ -84,10 +84,21 @@ def _yukle(E, ayar, olcum):
     return olcek.esik_yukle(E, ayar_d or None), ayar_d, olcum_d
 
 
+def _gorev():
+    """film.py görevi altında (YZ_FILM_GOREV = görev klasörü): (görev kimliği, tur_no, aşama). Görev dışında (None, None, None).
+    film.py kapi_oku betik raporunu yalnız _uretim.gorev görev kimliğiyle aynıysa kabul eder."""
+    d = os.environ.get("YZ_FILM_GOREV")
+    if not d: return None, None, None
+    g = ortak.json_oku(os.path.join(d, "GOREV.json"), {}) or {}
+    if not isinstance(g, dict): g = {}
+    return (g.get("id") or os.path.basename(os.path.normpath(d)) or None), g.get("tur_no"), g.get("asama")
+
+
 def _rapor(kapi, asama, sonuc, govde, girdi, E):
-    zarf = {"asama": asama, "gorev": None, "girdi_imza": olcek.imza(girdi), "arac_surum": SURUM, "esik_surum": E.get("surum"),
+    gid, tur, g_asama = _gorev()
+    zarf = {"asama": asama or g_asama, "gorev": gid, "girdi_imza": olcek.imza(girdi), "arac_surum": SURUM, "esik_surum": E.get("surum"),
             "sonuc": sonuc, "zaman": _zaman(), "ortam": "yerel" if os.name == "nt" else "bulut"}
-    r = {"_surum": 1, "_uretim": zarf, "kapi": kapi, "kapsam": "FILM", "tur": None, "sonuc": sonuc}
+    r = {"_surum": 1, "_uretim": zarf, "kapi": kapi, "kapsam": "FILM", "tur": tur, "sonuc": sonuc}
     r.update(govde)
     return r
 

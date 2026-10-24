@@ -1706,5 +1706,39 @@
   "aciklama": "Kapak bu boyutta (px) küçültülünce yüz ve yaratık seçilebilir olmalı; değilse HATA",
   "kaynak": "tahmin",
   "etiket": "[ESY] EK5"
+ },
+ "kanal_gosterim_min": {
+  "deger": 1000,
+  "aciklama": "Kanal teşhisinde video gösterimi bunun altındaysa 'gösterim düşük' (keşif sorunu)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM Ö0-g; kanal_teshis.py (EK3 kalibrasyonu)",
+  "yon": "taban"
+ },
+ "kanal_to_min": {
+  "deger": 4.0,
+  "aciklama": "Kanal teşhisinde tıklama oranı (%) bunun altındaysa 'kapak/başlık sorunu'",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM Ö0-g; kanal_teshis.py (EK3 kalibrasyonu)",
+  "yon": "taban"
+ },
+ "kanal_izlenme_min": {
+  "deger": 30.0,
+  "aciklama": "Kanal teşhisinde ortalama izlenme yüzdesi bunun altındaysa 'tutma sorunu'",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM Ö0-g; kanal_teshis.py (EK3 kalibrasyonu)",
+  "yon": "taban"
+ },
+ "tutma_dusus_min_puan": {
+  "deger": 3,
+  "aciklama": "Yayın sonrası analizde 10 sn'lik dilimde tutma eğrisi en az bu kadar puan düşerse düşüş noktası (ders defterine kaynak: gercek_seyirci)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM §1.3 A18a; yayin_analiz.py"
+ },
+ "politika_belgesi_gun_max": {
+  "deger": 90,
+  "aciklama": "YOUTUBE_POLITIKA.md bundan (gün) eskiyse yayın paketinde bilgi (B)",
+  "kaynak": "tahmin",
+  "etiket": "TASARIM D-40, §1.3 A17; yayin_paketi.py",
+  "yon": "tavan"
  }
 }

@@ -3,7 +3,7 @@
 Kullanım:
   python istem_derle.py --hareket --film <film> [--zaman-bicimi aralik|sira] [--yedek] [--plan <no>[,<no>…]] [--kuru]
       SAHNELER.json → her planın hareket_istem'i (ve --yedek ile hareket_istem_yedek'i); _derlenir.istem_ozeti; _RAPOR/ISTEM_DERLEME.txt
-  python istem_derle.py --gorsel | --kart | --kapak | --bitis ...   → TASARIM §9 adım 12 (PR-8, görsel hattı); bu sürümde yok, çıkış 4
+  python istem_derle.py --gorsel | --kart | --kapak | --bitis ...   → istem_derle_gorsel.py'ye yönlenir (TASARIM §9 adım 12, görsel hattı)
 Kurallar:
   - gorsel_istem ve hareket_istem DERLENMİŞ alanlardır; elle yazım yalnız zanaat.istem_elle {neden} ile (film başına ≤ %5, RE
     plan_istem_elle_oran_max). istem_elle'li plan derlenmez.
@@ -18,7 +18,7 @@ Kurallar:
 Çıkış kodları: 0 tamam (BAYRAK olabilir) · 1 HATA (derlenen istemde yasak kelime ya da plan bulunamadı) · 2 SAHNELER yok · 4 kullanım/ortam.
 """
 import os, sys, re
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, plan_ortak as po, plan_dili as pd
@@ -33,6 +33,17 @@ CIPLAK = re.compile(r"\b(left|right)\b", re.I)
 SAHIPLI = re.compile(r"\b(?:her|his|their|its|[A-Z][a-z]+'s)\s+(?:own\s+|empty\s+)?(?:left|right)\b|\bframe (?:left|right)\b|"
                      r"\b(?:left|right)\s+(?:hand|arm|shoulder|eye|foot|leg|knee|elbow|wrist|palm|thumb|fingers?)\b", re.I)
 IC_DURUM = ["realize", "realizes", "decides", "decide", "remembers", "remember", "knows", "know", "thinks", "understands", "feels", "wonders"]
+
+
+def _alt_modul(ad):
+    """Alt aracı yükler; alt araç içe aktarılırken stdout'u yeniden yapılandırıyorsa (StringIO altında) gerçek stdout'la yükler."""
+    import importlib
+    if ad in sys.modules: return sys.modules[ad]
+    o = sys.stdout
+    try:
+        if not hasattr(o, "reconfigure"): sys.stdout = sys.__stdout__
+        return importlib.import_module(ad)
+    finally: sys.stdout = o
 
 
 def _filtre():
@@ -135,10 +146,8 @@ def derle(kok, bicim="aralik", yedek=False, nolar=None, kuru=False):
 
 
 def main(argv):
-    if any(a in argv for a in ADIM12):
-        print("Bu kip TASARIM §9 adım 12'de (PR-8 görsel hattı) gelir: --gorsel/--kart/--kapak/--bitis henüz yok. "
-              "Şimdilik yalnız --hareket.", flush=True)
-        return po.ORTAM
+    if any(a in argv for a in ADIM12):                       # görsel hattı (adım 12): gorsel_istem, kart, kapak, bitiş
+        return _alt_modul("istem_derle_gorsel").main(list(argv))
     if "--hareket" not in argv or "--film" not in argv: print(__doc__); return 4
     kok = po.film_kok(po.arg_al(argv, "--film"))
     bicim = po.arg_al(argv, "--zaman-bicimi", "aralik")

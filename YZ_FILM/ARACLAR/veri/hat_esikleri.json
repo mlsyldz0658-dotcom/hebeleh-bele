@@ -247,5 +247,19 @@
   "aciklama": "Tek bekleme adımının en uzun süresi (dk)",
   "kaynak": "tahmin",
   "etiket": "[SON] K-4, O-3, O-4"
+ },
+ "bildirim_tekrar_dk": {
+  "deger": 30,
+  "aciklama": "Aynı olay (+ anahtar) bu süre (dk) içinde yeniden bildirilmez (ACİL olaylar da uyar)",
+  "kaynak": "belge",
+  "etiket": "TASARIM §6.1 bildirim.py satırı; §8.3–8.4",
+  "yon": "taban"
+ },
+ "bildirim_saat_max": {
+  "deger": 12,
+  "aciklama": "Bir saatte en çok bildirim mesajı; ACİL olaylar (Flow uyarısı, doğrulama, bütçe, kapı tükendi) bu tavanı aşabilir, susturulmaz",
+  "kaynak": "belge",
+  "etiket": "TASARIM §6.1 bildirim.py satırı; §8.3–8.4",
+  "yon": "tavan"
  }
 }

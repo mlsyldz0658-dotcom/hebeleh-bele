@@ -28,6 +28,8 @@
   "bakis":                    {"alan": "yonetmen", "sahip": "yonetmen", "aciklama": "bakış yönü/hedefi tutarsız"},
   "ekran_yonu":               {"alan": "yonetmen", "sahip": "yonetmen", "aciklama": "ekran yönü (hareket yönü) tutarsız"},
   "hikaye_adimi_ekranda_yok": {"alan": "yonetmen", "sahip": "yonetmen", "aciklama": "olgu hikâyede var ama planlarda tasidigi/ekranda_bilgi karşılığı yok"},
+  "eylem_zinciri":            {"alan": "yonetmen", "sahip": "yonetmen", "aciklama": "planın eylem zinciri kurala aykırı: adım sayısı/süresi, yasak sonuç fiili, eksik fiil parametresi, konuşurken fiziksel eylem, bitiş tutması (Z0 Y01–Y08)"},
+  "diyalog_suresi":           {"alan": "yonetmen", "sahip": "yonetmen", "aciklama": "konuşma adımına ayrılan süre ya da replik uzunluğu klibe sığmıyor (Z0 Y30/Y31, replik bölünmesi Y59)"},
 
   "nesne_zipladi":            {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "nesne el ya da yer değiştirdi"},
   "karakter_kayboldu":        {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "kadrajda olması gereken karakter yok"},
@@ -43,6 +45,8 @@
   "stil":                     {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "stil kayması (çizim/foto)"},
   "morf":                     {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "klip içinde biçim değişimi"},
   "kesme_ici":                {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "klip içinde istenmeyen kesme"},
+  "teknik_kusur":             {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "V1 teknik kusur: siyah kare, donma, kesik görüntü, istenmeyen kesme, bulanıklık/titreme"},
+  "gorsel_teknik":            {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "başlangıç karesinde teknik kusur (çözünürlük, en-boy, keskinlik, bozuk dosya); stil kayması değil"},
   "zincir_dikis":             {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "zincir karesinde (G1Z) dikiş"},
   "plaka_oge":                {"alan": "sureklilik", "sahip": "sureklilik-denetcisi", "aciklama": "mekân plakasında kişi/yüz ya da fazla öğe"},
 
@@ -63,6 +67,7 @@
   "muzik_motifsiz":           {"alan": "ses", "sahip": "ses-tasarimcisi", "aciklama": "müzikte leitmotif dönüşü yok"},
   "vokal_sizdi":              {"alan": "ses", "sahip": "ses-tasarimcisi", "aciklama": "müzik ya da efektte vokal sızıntısı"},
   "lisans_belirsiz":          {"alan": "ses", "sahip": "ses-tasarimcisi", "aciklama": "ses/müzik kaynağının lisansı belirsiz (LISANSLAR.json, KAYNAK_KAYDI.json)"},
+  "replik_sigmiyor":          {"alan": "ses", "sahip": "yonetmen", "aciklama": "ölçülen replik süresi (TTS/Veo) plan penceresine sığmıyor (S2a); yonetmen·onarim pencereyi ya da planı değiştirir"},
 
   "bilgi_eksik":              {"alan": "hikaye", "sahip": "hikaye-yazari", "aciklama": "olgu HIKAYE.json'da yok"},
   "bilgi_ekranda_yok":        {"alan": "hikaye", "sahip": "hikaye-yazari", "aciklama": "bilgi ekranda verilmiyor; köprü replik isteği (kopru_replik_iste)"},

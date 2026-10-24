@@ -1,169 +1,30 @@
-!! EMEKLİ YOLLAR: MEMMET_BASLAT, MEMMET_SADECE_*, CAPCUT_PROJESI_OLUSTUR, FILM_HATTI ve YENI_FILM .bat'ları kapıları atladığı için
-!! _ESKI\ klasörüne taşındı (silinmedi). Aşağıda onları anlatan bölümler eskidir. Yeni giriş: FILM_SETI.bat (hazırlanıyor).
-!! Memmet artık Flow uyarısında her kipte durur; varsayılan kip 'elle': istemi Memmet hazırlar, GÖNDER'e sen basarsın.
+YZ FİLM SETİ — ŞU AN NE DURUMDA? (24.10.2026)
+=============================================
 
-YZ_FILM — YAPAY ZEKÂ SİNEMA KANALI ÜRETİM STÜDYOSU
-==================================================
-Bu paket, YouTube için 30-45 dakikalık YZ sinema filmleri üretme sistemidir. İngilizce konuşulur, yüz ve kendi ses gerekmez.
+Kısaca: Yeni film seti hazırlanıyor ve bitirilmek üzere. Henüz film çekmeye hazır değil.
+Şimdilik senin yapman gereken bir şey YOK.
 
-  Claude       → hikâyeyi ve sahne listesini (SAHNELER.json) yazar
-  Memmet Auto  → Google Flow'da görselleri ve videoları kendi kendine üretir ve indirir
-  KONTROL      → her şeyin doğru sahnede olduğunu denetler, rapor çıkarır
-  Seslendirme  → karakter repliklerini sabit seslerle (ElevenLabs v4) üretip dudaklara oturtur
-  CapCut köprüsü → hepsini kanal kanal CapCut projesine dizer (render yapmaz; sen izler, düzeltir, dışa aktarırsın)
+1) YENİ SET HAZIRLANIYOR
+   Konudan bitmiş filme kadar kendi kendine yürüyen yeni sistem yazıldı ve denendi.
+   Ama denemeler yalnız "sahte" çalışmalarla yapıldı: gerçek Flow, gerçek ses ve gerçek
+   yapay zekâ henüz senin bilgisayarında denenmedi. Bu yüzden henüz film başlatma.
 
-Bu dosyayı baştan sona bir kez oku. Her adımın sonunda ne görmen gerektiği yazıyor.
+2) ESKİ .BAT'LAR EMEKLİ
+   Eski MEMMET_BASLAT, MEMMET_SADECE_..., CAPCUT_PROJESI_OLUSTUR, FILM_HATTI ve YENI_FILM
+   .bat'ları artık kullanılmıyor. Silinmedi: bu klasördekiler _ESKI klasörüne taşındı;
+   Masaüstündeki YZ_FILM klasöründe kalanlar da ilk kurulumda aynı şekilde _ESKI'ye taşınacak.
+   Lütfen onları çalıştırma.
+   Eski anlatım da kaybolmadı: _ESKI\BASLA_BURADAN_eski_anlatim.txt (artık geçerli değil).
 
+3) SIRADAKİ ADIM: İLK KURULUM (zamanı sana haber verilecek)
+   Hazır olunca sana haber verilecek. O gün yapacağın şey kısa olacak:
+   Claude masaüstü uygulamasında Code sekmesini bu klasörde açıp yalnız şunu yazacaksın:
+       ilk kurulum
+   Gerisini Claude yapar; senden yalnız ekranda yazan fiziksel işler istenir.
+   Haber gelmeden bu adımı yapma.
 
-──────────────────────────────────────────────────
-1) GEREKENLER
-──────────────────────────────────────────────────
-BİLGİSAYAR
-  - Windows 10 veya 11 (64 bit)
-  - En az 16 GB RAM önerilir
-  - Diskte en az 20 GB boş yer (film başına +5-8 GB)
-  - NVIDIA ekran kartı şart değil (varsa bazı işler hızlanır)
-
-HESAPLAR VE ABONELİKLER
-  a) Google AI Pro veya Ultra → Google Flow (görsel + video)
-     Görsel 0 kredi · Video 8 sn 360p = 6 kredi (720p = 12)
-     Bir film ≈ 250-300 video ≈ 1.500-1.800 kredi
-  b) AI84.pro hesabı → ElevenLabs v4 seslendirme (API anahtarı lazım)
-  c) CapCut masaüstü (ücretsiz) → capcut.com
-  d) Google Chrome
-  e) Telegram (isteğe bağlı) → telefona "bitti / sorun var" bildirimi
-  f) Claude (Claude masaüstü uygulaması, "Code" sekmesi) → senaryo ve bakım
-
-
-──────────────────────────────────────────────────
-2) KURULUM (bir kez, 10-40 dakika)
-──────────────────────────────────────────────────
-  1. Zip'i ayrı bir klasöre çıkar. Önerilen yer: Masaüstü\YZ_FILM
-     (Klasör adında Türkçe karakter ve boşluk olmasa daha iyi.)
-  2. Python 3.10 veya 3.11 kurulu değilse kur:
-       python.org/downloads/release/python-31011/  → "Windows installer (64-bit)"
-       Kurarken en alttaki "Add python.exe to PATH" kutusunu MUTLAKA işaretle.
-  3. YZ_FILM klasöründeki KURULUM.bat'a çift tıkla.
-     Python kütüphanelerini, PyTorch'u, ffmpeg'i ve yapay zekâ modellerini kurar; sonunda bir özet tablo gösterir.
-     ✅ = tamam · ⚠️ = senin yapacağın bir şey var · ❌ = sorun var
-  4. ❌ varsa, yazanı düzelt ve KURULUM.bat'ı tekrar çalıştır. Tekrar çalıştırmak güvenlidir.
-  5. CapCut'ı kur, bir kez aç, boş bir proje oluştur ve kapat. Bu, CapCut'ın proje klasörünü oluşturur.
-
-
-──────────────────────────────────────────────────
-3) ANAHTARLAR VE GİRİŞ (bir kez)
-──────────────────────────────────────────────────
-Bütün gizli bilgiler YZ_FILM\AYARLAR klasöründe durur. BU KLASÖRÜ KİMSEYLE PAYLAŞMA.
-
-  a) AI84 anahtarı (seslendirme):
-     ai84.pro'ya gir → API Document bölümündeki anahtarını kopyala →
-     AYARLAR\ai84_anahtar.txt dosyasının İLK SATIRINA yapıştır, kaydet.
-
-  b) Telegram bildirimi (isteğe bağlı):
-     1. Telegram'da @BotFather'ı aç (mavi onaylı) → /newbot → ad: Memmet Auto → kullanıcı adı: sonu "bot" ile bitsin
-     2. Verdiği uzun anahtarı AYARLAR\telegram_bot.txt dosyasının İLK SATIRINA yapıştır, kaydet
-     3. Telegram'da KENDİ botunu ara, BAŞLAT'a bas, "merhaba" yaz
-     4. ARACLAR klasöründe adres çubuğuna cmd yazıp Enter'a bas, şunu çalıştır:
-           python memmet.py --telegram-test
-        Telefona "Memmet Auto bağlandı" gelirse tamam.
-
-  c) Memmet'in Google girişi:
-     FILMLER\ORNEK_3_SAHNE\MEMMET_GIRIS.bat → yeni bir Chrome penceresi açılır →
-     "Google Flow ile oluştur" → Flow hesabınla giriş yap.
-     Bu, Memmet'e ait ayrı bir Chrome profilidir (AYARLAR\memmet_profil). Senin normal Chrome'una dokunmaz.
-     "Chrome'da da oturum açılsın mı?" penceresi çıkarsa "Hayır" de.
-
-
-──────────────────────────────────────────────────
-4) İLK KULLANIM — 3 SAHNELİK DENEME (≈5 dakika, ≈18 kredi)
-──────────────────────────────────────────────────
-  1. FILMLER\ORNEK_3_SAHNE\MEMMET_BASLAT.bat
-     Memmet şunları kendisi yapar: Flow'da proje açar → referansları yükler → 3 görsel → 3 video →
-     seslendirme → CapCut projesi. Çalışırken Memmet'in Chrome penceresine dokunma (küçültme de).
-  2. Bitince SIRALI_GORSEL ve SIRALI_VIDEO klasörlerinde 001-003 dosyaları olur, RAPOR.html hazırdır.
-  3. CapCut'ı aç → listede en üstte "YZ ORNEK_3_SAHNE ..." projesi.
-  Bunlar olduysa sistem çalışıyor demektir.
-
-
-──────────────────────────────────────────────────
-5) YENİ FİLM ÜRETMEK
-──────────────────────────────────────────────────
-  1. YENI_FILM.bat → film adını yaz (örn. EMBERFALL). FILMLER\EMBERFALL klasörü oluşur.
-  2. Claude'u bu klasörde aç ve şöyle de:
-       "BILGI\CLAUDE_ICIN.md ve BILGI\KARARLAR.md'yi oku. FILMLER\EMBERFALL için
-        [hikâye fikri] üzerine 35-40 dakikalık filmin SAHNELER.json'unu yaz."
-     Claude önce hikâye özetini sunar; onaylarsın; sonra sahne sahne yazar.
-  3. Karakter referansları: Flow'da her karakter için tam boy, düz gri fonlu bir görsel üret
-     (istemleri Claude verir), beğendiğini 01_KARAKTERLER\karakteradi.jpg olarak kaydet.
-  4. MEMMET_BASLAT.bat → bütün partiler: görsel → video → seslendirme → CapCut projesi.
-     2-3 partide bir 5-15 dk rastgele mola verir (insan temposu). Gece bırakılabilir.
-     Telegram'dan "Parti N bitti", "BİTTİ", "CapCut projesi hazır" mesajları gelir.
-  5. RAPOR.html'e bak:
-     - Sarı satır "emin değilim" demek, bir göz at.
-     - Kırmızı satır eksik demek. Flow reddettiyse Claude yeni istem yazar; tekrar MEMMET_BASLAT.bat.
-     - Yanlış yerleşen varsa DUZELT.txt'ye yaz (örn. "5 10" → 5 ile 10 yer değiştirir), KONTROL.bat'a bas.
-  6. CapCut'ta izle. Sarı NOTLAR kanalı her sahnenin amacını ve duygusunu gösterir.
-     Beğenmediğin yere CapCut'ta yazı ekleyip notunu yaz, CapCut'ı kapat,
-     Claude'a "notlar hazır" de (ya da NOTLARI_OKU.bat). Claude o sahneleri düzeltir.
-  7. Bitince: NOTLAR kanalını SİL → CapCut'tan dışa aktar (1080p) → YouTube'a yükle.
-     İngilizce altyazı dosyası: KURGU\altyazi_en.srt (YouTube'a da yüklenebilir).
-
-
-──────────────────────────────────────────────────
-6) KLASÖR HARİTASI
-──────────────────────────────────────────────────
-  BASLA_BURADAN.txt   bu dosya
-  KURULUM.bat         kurulum ve kontrol
-  YENI_FILM.bat       yeni film klasörü
-  00_BENI_OKU.txt     film klasörü içindeki dosyaların kısa açıklaması
-  AYARLAR\            GİZLİ: anahtarlar, Memmet Chrome profili, Memmet tempo ayarları (MEMMET_AYAR.json)
-  ARACLAR\            programlar (dokunma)
-     memmet.py        Flow otomasyonu
-     kontrol.py       eşleştirme, rapor, DUZELT
-     seslendir.py     sabit karakter sesleri
-     capcut_film.py   CapCut projesi
-     notlari_oku.py   CapCut'taki notlarını okur
-     ai84.py          ses servisi bağlantısı
-     kurgu_koprusu\   eski Kurgu Köprüsü V5 (yardımcı parçaları kullanılıyor)
-  BILGI\              kararlar, araştırma, Flow keşif notları, Claude için talimat
-  FILMLER\<FILM>\     her film (SAHNELER.json, görseller, videolar, sesler, raporlar)
-
-
-──────────────────────────────────────────────────
-7) SORUN ÇÖZME
-──────────────────────────────────────────────────
-  "python tanınmıyor"          → Python'ı "Add to PATH" işaretli tekrar kur.
-  pip SSL / sertifika hatası   → KURULUM kendisi Windows sertifika deposuyla tekrar dener; antivirüs araya giriyorsa normal.
-  Memmet "giriş yapılmamış"    → MEMMET_GIRIS.bat ile tekrar giriş yap.
-  Telegram'a "Doğrulama istendi" geldi
-                               → Memmet Chrome penceresinde reCAPTCHA'yı SEN çöz (uzaktaysan
-                                 telefondan Chrome Uzaktan Masaüstü ile). Memmet kendisi devam eder.
-  "Ayar seçeneği bulunamadı" / "Flow arayüzü değişmiş olabilir"
-                               → Google Flow'u güncellemiş. _MEMMET_HATALAR klasöründeki ekran
-                                 görüntüleriyle Claude'a söyle; memmet.py'yi günceller.
-  Flow bir sahneyi reddetti    → Memmet 2 kez dener, sonra yedek istemi dener. Hâlâ olmazsa
-                                 RAPOR'da kırmızı görünür; Claude'dan yeni istem iste.
-  CapCut'ta proje görünmüyor   → CapCut'ı tamamen kapatıp yeniden aç.
-  Bir sahneyi baştan yaptırmak → SIRALI_GORSEL\NNN.jpg (ve/veya SIRALI_VIDEO\NNN.mp4) sil, MEMMET_BASLAT.bat.
-  Memmet'i durdurmak           → Memmet'in siyah penceresinde Ctrl+C ya da pencereyi kapat. Sonra kaldığı yerden devam eder.
-
-
-──────────────────────────────────────────────────
-8) GÜVENLİK
-──────────────────────────────────────────────────
-  - AYARLAR klasörü şifre gibidir: AI84 anahtarı, Telegram anahtarı ve Google oturumu içinde.
-    Bu klasörü paylaşma, zip'leme, kimseye gönderme.
-  - Bu paket AYARLAR'ın İÇERİĞİ OLMADAN hazırlandı. Yeni bilgisayarda anahtarları kendin girersin.
-  - Memmet reCAPTCHA'yı asla kendisi çözmez; doğrulama her zaman insan tarafından yapılır.
-
-
-──────────────────────────────────────────────────
-YENİ: FİLM HATTI (film.py) — tek düğmeyle aşama aşama
-──────────────────────────────────────────────────
-  Her film klasöründe iki yeni dosya var:
-    FILM_DENEME_SAHTE.bat → kredi harcamadan hattı dener (sahte görsel/video/ses). Önce bunu çalıştır.
-    FILM_HATTI.bat        → gerçek üretim. Sıra: senaryo → istem denetimi → görsel → video → ses → müzik → kurgu
-  - Kredi harcayan her aşamadan önce "Devam edilsin mi? (e/h)" diye sorar.
-  - Yarıda kalırsa tekrar çalıştır: biten aşamaları atlar, kaldığı yerden devam eder (FILM_DURUM.json).
-  - İstem denetimi HATA bulursa kredi harcamadan durur: _RAPOR\ISTEM_DENETIM.txt'ye bak.
-  - Flow uyarı verirse Memmet durur; hat da durur ve sebebini yazar (FILM_KAYIT.txt).
+DEĞİŞMEYEN KURALLAR
+   - Flow "olağan dışı etkinlik" ya da doğrulama (reCAPTCHA) uyarısı verirse sistem her zaman durur
+     ve sana haber verir. Başka hesaba geçilmez.
+   - AYARLAR klasöründeki anahtar dosyalarını kimseyle paylaşma.
+   - Hiçbir şey kalıcı silinmez; eskiler _ESKI klasörüne taşınır.

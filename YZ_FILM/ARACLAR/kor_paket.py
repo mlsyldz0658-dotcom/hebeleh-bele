@@ -5,7 +5,9 @@ Kullanım (film.py calis çağırır: "<arac> <args> --film <film>"; tur YZ_FILM
   python kor_paket.py --kip plan   [--tur N] --film <film>               (SAHNELER.json v2 + HIKAYE.json)
   python kor_paket.py --kip ilk2dk [--tur N] [--kaynak <senaryo.json>] --film <film>
   python kor_paket.py --denetle <paket klasörü> --film <film>          sızıntı denetimi (0 temiz · 1 sızıntı)
-  python kor_paket.py --kip animatik|kurgu|kesit|kesici|kapak ...       izleme kipleri: HENÜZ YOK (§9 adım 14, PR-10) → 4
+  python kor_paket.py --kip animatik|kurgu|kesit|kesici [--tur N] --film <film>   izleme kipleri → kor_paket_izleme.py (adım 14)
+  python kor_paket.py --kip kapak [--tur N] --film <film>              kapak kör paketi → kapak.kor_paketi (adım 12; A11 kare-tarifcisi
+                                                                       ·kapak 1/ ve habersiz-seyirci·kapak SEYIRCI/ klasörleri)
 Çıktı (kâğıt kipleri):
   <film>/_KOR_PAKET/<kip>_t<tur>/<A|B|C>/<P0..P3>/EKRAN.md   aşamalı bölümler (film.py asama-ilerlet GIRDI/<bolum>/'e kopyalar)
   <film>/_KOR_PAKET/<kip>_ilk2dk_t<tur>/ILK2DK_<A|B|C>.md      başlık + kapak tarifi + ilk 120 sn
@@ -18,10 +20,10 @@ yazılmaz. Karakter adı ve hitapları (maske.takma_adlar) ekranda ilk kez sözl
 etiketiyle anılır (tek maskeleme kodu: Maske). Bölümler: P0 = 0–120 sn, sonra hikâye partileri P1, P2, P3. Persona satırı: kâğıt ve
 plan kiplerinde 3 × A (D-18). Paket yazıldıktan sonra kendi sızıntı denetiminden geçer; sızıntı varsa yayımlanmaz (çıkış 1).
 Eski paket silinmez: _KOR_PAKET/_ESKI/'ye taşınır.
-Çıkış kodları: 0 BİTTİ · 1 HATA (girdi yok/bozuk, sızıntı) · 4 ORTAM (kip henüz yok ya da v1 dosyası).
+Çıkış kodları: 0 BİTTİ · 1 HATA (girdi yok/bozuk, sızıntı; kapakta aday yok) · 4 ORTAM (v1 dosyası; izleme kipinin girdisi yok).
 """
 import os, sys, re, json, time, shutil, hashlib, argparse
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -383,7 +385,9 @@ def paket_kur(film, kip, tur, kaynak=None, gorev=None):
     ortak.atomik_yaz(os.path.join(gecici, "ESLESTIRICI", "ANAHTAR.json"), anahtar(h, mk))
     yasak = yasak_degerler(h, v2)
     hatalar = denetle_klasor(gecici, yasak, mk_adlari)
-    ik_adlar = {"ILK2DK_%s.md" % k: mk.kurulmamis_adlar(set()) for k in KLASORLER}
+    # İlk 2 dk dosyası P0'ın planlarını taşır: ekranda sözle söylenen ya da yazılan ad kurulmuştur, sızıntı değildir (bölüm
+    # dosyalarıyla aynı kural; boş küme hitabı "Sera," ve sonraki "SERA:" konuşan etiketini sızıntı sayıyordu).
+    ik_adlar = {"ILK2DK_%s.md" % k: mk.kurulmamis_adlar(kurulan_once.get("P0", set())) for k in KLASORLER}
     hatalar += denetle_klasor(gecici_ik, yasak, ik_adlar)
     manifest = {"_surum": 1, "_uretim": {"asama": os.environ.get("YZ_FILM_ASAMA") or ("A06" if ana_kip == "kagit" else "A07e"),
                                          "gorev": gorev, "girdi_imza": _imza(*kaynak_dosyalar), "arac_surum": SURUM, "esik_surum": None,
@@ -419,11 +423,41 @@ class OrtamHatasi(Exception):
     pass
 
 
+def _alt_modul(ad):
+    """Alt aracı yükler; alt araç içe aktarılırken stdout'u yeniden yapılandırıyorsa (StringIO altında) gerçek stdout'la yükler."""
+    import importlib
+    if ad in sys.modules: return sys.modules[ad]
+    o = sys.stdout
+    try:
+        if not hasattr(o, "reconfigure"): sys.stdout = sys.__stdout__
+        return importlib.import_module(ad)
+    finally: sys.stdout = o
+
+
+def _kip_al(a):
+    return a[a.index("--kip") + 1] if "--kip" in a and a.index("--kip") + 1 < len(a) else None
+
+
+def kapak_paketi(a):
+    """--kip kapak → kapak.kor_paketi(film, tur). 0 hazır · 1 aday yok / film yok."""
+    film = a[a.index("--film") + 1] if "--film" in a and a.index("--film") + 1 < len(a) else os.environ.get("YZ_FILM_FILM")
+    if not film or not os.path.isdir(film): print("!! --film <film klasörü> gerekli."); return 1
+    tur = tur_bul(a[a.index("--tur") + 1] if "--tur" in a and a.index("--tur") + 1 < len(a) else None)
+    kod = _alt_modul("kapak").kor_paketi(os.path.abspath(film), tur)
+    if kod:
+        print("!! Kapak kör paketi kurulamadı: kapak adayı yok (A11 kapak görselleri)."); return 1
+    print("Kör paket hazır: _KOR_PAKET/kapak_t%d" % tur); return 0
+
+
 def main(argv=None):
+    a = sys.argv[1:] if argv is None else list(argv)
+    kip = _kip_al(a)
+    if kip == "kapak": return kapak_paketi(a)
+    if kip in IZLEME_KIPLERI: return _alt_modul("kor_paket_izleme").main(a)
     ap = argparse.ArgumentParser(description="Kör paket (kâğıt kipleri).")
     ap.add_argument("--kip"); ap.add_argument("--tur", type=int); ap.add_argument("--kaynak"); ap.add_argument("--film")
     ap.add_argument("--denetle"); ap.add_argument("--saglayici"); ap.add_argument("--json", action="store_true")
-    o = ap.parse_args(argv)
+    o = ap.parse_args(a)
     film = o.film or os.environ.get("YZ_FILM_FILM")
     if not film or not os.path.isdir(film):
         print("!! --film <film klasörü> gerekli."); return 1
@@ -431,9 +465,6 @@ def main(argv=None):
         h = ortak.json_oku(os.path.join(film, "HIKAYE.json"), {}) or {}
         hatalar = denetle_klasor(o.denetle, yasak_degerler(h, ortak.json_oku(os.path.join(film, "SAHNELER.json"), {})), {})
         print(json.dumps({"sizinti": len(hatalar), "hatalar": hatalar[:20]}, ensure_ascii=False)); return 1 if hatalar else 0
-    if o.kip in IZLEME_KIPLERI:
-        print("Kör paketin izleme kipi '%s' henüz yok (TASARIM §9 adım 14, PR-10: kor_paket izleme kipleri). "
-              "Bu aşama bu kurulumda yürüyemez." % o.kip); return 4
     if o.kip not in KAGIT_KIPLERI:
         print("!! Bilinmeyen kip: %s (kâğıt: %s; izleme: %s)" % (o.kip, ", ".join(KAGIT_KIPLERI), ", ".join(IZLEME_KIPLERI))); return 1
     gorev = os.path.basename(os.environ.get("YZ_FILM_GOREV") or "") or None

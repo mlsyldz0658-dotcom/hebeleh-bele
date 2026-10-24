@@ -18,34 +18,61 @@ Konudan bitmiş filme (kurgu + ses + müzik + altyazı + kapak + YouTube paketi)
 bir üretim hattı. Kullanıcıya yalnız konu sorulur; diğer kararları ekip verir (KK1). Üretim yalnız kullanıcının Windows bilgisayarında
 yürür; bulut oturumları geliştirme ve `sahte`/`kaset` testleri içindir (TASARIM D-12, D-45).
 
-## Şu anki durum (23.10.2026)
-- **PR-0 tamam** (commit `5878540`, TASARIM §9 adım 0, D-02 a–g): `memmet.py` Flow "olağan dışı etkinlik" uyarısında **her kipte**
-  (`elle`, `gece`) anında durur, sayfada başka işlem yapmaz, `HESAP/FLOW_KILIDI.json` yazar ve **7** ile çıkar (kilit varken Memmet
-  açılmaz); reCAPTCHA/doğrulama/oturum düşmesinde beklemez, **2** ile çıkar; varsayılan kip `elle` (GÖNDER'e kullanıcı basar; gece
-  yalnız `izinler.gece_flow` ile); 17.10 temposu kodda (ayar dosyası yalnız yavaşlatır), `FLOW_TEMPO.json` molayı kalıcı tutar;
-  `_surum ≥ 2` → 4; varsayılan 720p. `saglayicilar/flow.py` çıkış kodunu `Kisitlandi(kod)`'a eşler; `film.py` uyarı, doğrulama ve
-  bilinmeyen kodda başka sağlayıcıya geçmez. `veri_emniyet.py` + `kurulum.py --veri-emniyet` veri kökündeki eski Memmet ve `.bat`'ları
-  `_ESKI/`'ye taşır (silmez). Eski `.bat`'lar depoda `_ESKI/`'de. Testler: `test_memmet_korkuluk` (T10 elle/gece/doğrulama), `test_veri_emniyet`.
-- **PR-1 tamam** (§9 adım 1): `ortak.yollar()` + `YOLLAR.json` (tek yol kaynağı; `kurulum.py --yollar`), yol göçü, `ai84.py` tembel
-  anahtar, `puan_oku.py` medyan, `izleme_paketi.py` ad maskeleme, `esitle_gelistirme.py`, `esikler.py` + `veri/hat_esikleri.json` + RE
-  `kaynak`/`etiket`, `veri/ADLAR.json` + `test_adlar`, `veri/LISANSLAR.json`, `veri/kok_neden.json`, §2.5 belge düzeltmeleri.
-- **PR-2 tamam** (§9 adım 3): `film.py` v2 görev defteri (`yeni, sonraki, basla, calis, bitir, kurtar, asama-ilerlet, bekle, karar/ders
-  ekle, goster, ozet, surus, notlar, asamalar, esitle --gelistirme`; v1 SAHNELER için eski hat), `hat/asamalar.py` (A00–A18a kaydı),
-  `.claude/bin/film.py`, `kapi.py`, `kuyruk.py`, `kredi.py`, `olcek.py`, `flow_yuk.py` (Memmet her gönderimden önce sorar), `ders_defteri.py`.
-  Testler: `test_gorev_defteri` (30 kesme senaryosu), `test_kuyruk`, `test_olcek`, `test_flow_yuk` …
-- Henüz yok (TASARIM'da tanımlı): kancalar (`kanca.py`, `settings.json`; PR-3), `film-yap`/`film-durum`/`film-not`/`film-gelistir`
-  becerilerinin `SKILL.md`'leri ve 21 ajan dosyası (PR-4), `olcum0/`, PR-5 sonrası araçlar. Var olmadıkça geliştirme oturumu bu dosyayı izler.
-- Açık iş: `hat.asamalar.YEREL_KAPILAR` adları ve görev defteri dosya adları (`FILM.kilit`, `_GOREV/DEFTER.jsonl`, `_KASET/` …)
-  `veri/ADLAR.json`'a eklenecek. Takvim: varsayılan `takvim_hedef_gun` 21 iken BUT0 ölçüm olmadan her zaman 1800 sn seçer (`olcek.py`).
-- Belgelerde anlatılan ama depoda olmayan eski araçlar (`plan_kurgu`, `dudak_denetim`, `diyalog_esitle`, `ses_katmani`, `gemini_paket`,
-  `gemini_al`, `gemini_muzik`, `renk_cila`, `taslak_fark`, `animatik`, `birlestir`, `jenerik`, `shorts_mp4`, `kalite_denetim`, `memmet_topla`)
-  TASARIM §6'daki adları ve PR adımlarıyla yeniden yazılır.
-- Bilinen sınırlar: gerçek müzik kaynağı yok (TASARIM D-25: zincir boşsa müziksiz + BAYRAK); kapak ve YouTube yükleme otomatik değil
-  (yükleme P2, onaylı); Flow kısıtı takvimi belirler (atlatma yok, D-02–D-04).
+## Şu anki durum (24.10.2026)
+TASARIM §9'un bulutta yapılabilen adımları **0, 1, 3, 4, 5, 6, 7, 8, 10, 12–17** uygulandı (her biri `sahte`/`kaset` testleriyle; gerçek
+model ve servis çağrısı yok). Adım başına ana araçlar:
+- **0 PR-0 güvenlik:** `memmet.py` Flow uyarısında **her kipte** durur (`FLOW_KILIDI.json`, çıkış 7; doğrulamada 2; `_surum ≥ 2` → 4; varsayılan
+  `elle`; 17.10 temposu kodda), `saglayicilar/flow.py` `Kisitlandi(kod)`, `veri_emniyet.py` + `kurulum.py --veri-emniyet` (eskiler `_ESKI/`'ye).
+  Testler `test_memmet_korkuluk` (T10), `test_veri_emniyet`.
+- **1 PR-1:** `ortak.yollar()` + `YOLLAR.json`, `esikler.py` + `veri/hat_esikleri.json`, `veri/ADLAR.json`, `veri/LISANSLAR.json`,
+  `veri/kok_neden.json`, `puan_oku.py` medyan, `esitle_gelistirme.py`.
+- **3 PR-2 görev defteri:** `film.py` v2 (`yeni, sonraki, basla, calis, bitir, kurtar, asama-ilerlet, bekle, karar/ders ekle, goster, ozet, surus …`),
+  `hat/asamalar.py` (A00–A18a), `.claude/bin/film.py`, `kapi.py`, `kuyruk.py`, `kredi.py`, `olcek.py`, `flow_yuk.py`, `ders_defteri.py`.
+- **4 PR-2b:** `kurulum.py` v2 KUR1 (`--kuru`, `--deneme`), `bat_yenile.py`, `bat_isleri.py`, depo kökü `KURULUM.bat`; `test_kurulum`.
+- **5 PR-3 Claude Code katmanı:** `.claude/settings.json`, `.claude/hooks/kanca.py` + `.claude/bin/kanca.sh`, `.claude/kurallar/erisim.json`,
+  `kor_paket.py` (kâğıt kipleri), `dilim.py`; `test_kancalar` (50 mesajlık set, nabız). Gizli kural yalnız gerçek erişimi engeller (okuma,
+  kopyalama, yazdırma, arşivleme, taşıma, kodda `open(...)`); adın komut metninde geçmesi serbest. SubagentStop `yonetmen·plan`'da
+  `plan_sema.py --dosya` + `plan_denetim.py --dosya` koşar.
+- **6 PR-4 ajanlar ve beceriler:** 21 ajan dosyası (`.claude/agents/`), 4 `SKILL.md` (`film-yap`, `film-durum`, `film-not`, `film-gelistir`),
+  `sablonlar/` (`{{esik:…}}` yer tutucuları), `semalar/`, `reference/`, `KURTARMA.md`, `beceri_denetim.py` (HATA 0; §4.8 senaryoları 1–7 GEÇ).
+- **7 PR-5 hikâye odası:** `hikaye_odasi.py`, `bulgu_yonlendir.py`, `puan_oku.py` v2, `istem_denetim.py` v2, `evren.py` (`--on-kayit`, `ozet`),
+  `kaset` sağlayıcısı; `test_hikaye` (A00–A06 kasetle).
+- **8 PR-6 yönetmen kâğıdı:** `plan_sema`, `kroki`, `plan_dili`, `plan_denetim`, `plan_birlestir`, `dunya_defteri`, `zaman_cizelgesi` T0,
+  `kamera_agaci`, `cekim_listesi`, `istem_derle --hareket`, `FILMLER/ORNEK_3_SAHNE_ZANAAT/`; `test_plan_dili`, `test_sureklilik`.
+- **10 PR-7 ses kâğıdı:** `ses_plani.py`, `muzik.py --kagit/--midi`, `istem_denetim_ses`, `veri/ses_esikleri.json`, `FILMLER/ORNEK_3_SAHNE_TAM/`;
+  `test_ses` (kâğıt), `test_uctan_uca_tam`.
+- **12 PR-8 görsel hattı:** `olcum/` (kimlik, görünüm, ışık, poz, teknik), `kor.py`, `kare_denetim` G1, `kart_denetim`, `duzeltme`,
+  `istem_derle_gorsel`, `gemini_paket`/`gemini_al`, `kapak`, `evren --kilitle`, `gemini_api` sağlayıcısı.
+- **13 PR-9 yerel ses hazırlığı:** `olcum/ses`, `ses_sec`, `ses_kiyas`, `seslendir --animatik`, `muzik_uret`, `ses_katmani` T1, `son_miks`,
+  ses sağlayıcıları.
+- **14 PR-10 animatik:** `zaman_cizelgesi_t1`, `kurgu_render --animatik/--bilgi-paketi`, `kor_paket_izleme`, `seyirci_topla`, `animatik_imza`
+  (onaysız animatikte video kredisi yok), `kurgu_uygula`, `kurgu_denetim --kesme-simule`, `bildirim`, `izleyici`/`dinleyici` sağlayıcıları.
+- **15 PR-11 video hattı:** `memmet.py` v2 (`--blok`, `--onizleme`; animatik ONAYLI değilse göndermez), `blok_plani`, `memmet_topla`, `yerel_is`,
+  `kalite_denetim --klip`, `video_denetim`, `kare_zinciri`, `ses_donustur --hizala`, `memmet_yama`.
+- **16 PR-12 video sonrası ses ve kurgu:** `ses_karar`, `diyalog_esitle`, `dudak_denetim`, `muzik_yerlestir`, `plan_kurgu`, `kirp_oner`,
+  `capcut_film` v2, `taslak_fark`, `capcut_yama`, `notlari_oku`, `renk_cila`, `buyut`, `arsivle.py`, `kurulum_kur3`.
+- **17 PR-13 yayın ve öğrenme:** `jenerik`, `shorts_mp4`, `yayin_paketi`, `yayin_analiz` (CSV), `kanal_teshis` (CSV), `ders_derle`,
+  `ders_yedekle`, `evren_film_sonu` (`--film-sonu`, `--yedekle`, `--yedek-dogrula`).
+
+**Bekleyen adımlar:**
+- **2 İlk yerel oturum** (aşağıda §İlk yerel oturum; kullanıcı `ilk kurulum` yazınca): veri kökü emniyeti, memmet3 aktarımı, Ö0-a.
+- **9 Ö0-1 yerel ölçümler** (b, c, d, e, g): `olcum0/` betikleri ve `film.py olcum0` **henüz depoda yok** (Ö0-a'nın `olcum0/kanca_deneme/`'si dahil).
+- **11 İlk filmin kâğıt aşaması** (gerçek ajanlarla A00–A09, yerel).
+- **12a Ö0-2 ölçümleri** (f, h, Ö0-b·V3).
+- **18 Kullanıcı yüzü ve CI:** kalan `.bat`'lar, `BASLA_BURADAN.txt` sözleşme kartı, `paketle.py` künye, CI (`windows-latest` + `ubuntu-latest`).
+- **19 İlk filmin yerel üretimi** (A10–A18).
+
+**Bilinen açık riskler:**
+- Flow kapasitesi ölçülmedi (Ö0-b yok): `olcek.py`/BUT0 ölçüm olmadan her zaman **1800 sn** seçer; takvim tahminidir.
+- Gerçek model ve servis çağrıları (Claude ajanları, Flow/Veo, Gemini, ai84, yerel ses/müzik modelleri) doğrulanmadı; bütün testler `sahte`/`kaset`.
+- `veri/LISANSLAR.json` girdileri bellekten yazıldı (`bellekten`); doğrulanmadı (ACE-Step ağırlıkları, MuseTalk modeli, Real-ESRGAN ağırlıkları,
+  OpenVoice'un dolaylı bağımlılıkları dahil).
+- Bilinen sınırlar: gerçek müzik kaynağı yoksa müziksiz + BAYRAK (D-25); kapak ve YouTube yükleme otomatik değil (P2); Flow kısıtı takvimi
+  belirler (atlatma yok, D-02–D-04).
 
 ## Uygulama sırası
 **TASARIM §9'daki tablo geçerlidir** (her adım küçük bir PR; kabul şartı otomatik test; bir adım bitmeden ona bağlı adım birleşmez).
-Kısaca: 0 PR-0 güvenlik (tamam) → 1 PR-1 hızlı düzeltmeler ve temel veri → 2 ilk yerel oturum (aşağıda) → 3 PR-2 görev defteri çekirdeği →
+Kısaca: 0 PR-0 güvenlik → 1 PR-1 hızlı düzeltmeler ve temel veri → 2 ilk yerel oturum (aşağıda) → 3 PR-2 görev defteri çekirdeği →
 4 PR-2b KUR1 ve ilk `.bat`'lar → 5 PR-3 Claude Code katmanı → 6 PR-4 ajanlar ve beceriler → 7–8 hikâye odası, yönetmen kâğıdı → 9 Ö0-1 yerel
 ölçümler → 10 ses kâğıdı → … → 18 kullanıcı yüzü ve CI → 19 ilk filmin yerel üretimi → 20 P2.
 

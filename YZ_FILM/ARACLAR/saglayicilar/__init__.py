@@ -18,13 +18,41 @@ import ortak
 
 
 def ayarlar_klasoru(): return ortak.yollar()["ayarlar"]     # <veri>/AYARLAR; YOLLAR.json yoksa ortak.YolYok
-TURLER = ("gorsel", "video", "ses", "muzik")
-# ad → modül.Sınıf. Yeni sağlayıcı (Veo/Kling/kie.ai API, müzik servisi) buraya bir satırla eklenir.
+# v1 hattının işleri (gorsel, video, ses, muzik) + v2 dilimlerinin türleri (ADLAR saglayici_turleri adlarıyla).
+TURLER = ("gorsel", "video", "ses", "muzik", "tts", "asr", "ses_donustur", "ayristirma", "dudak", "buyutme", "izleyici", "dinleyici")
+# ad → modül.Sınıf. Yeni sağlayıcı (Veo/Vertex API, müzik servisi) buraya bir satırla eklenir. ADLAR saglayici_dislanan'daki
+# servisler ve modeller (ör. Wav2Lip, Seed-VC) YAZILMAZ. Test sağlayıcıları (sahte*, kaset) gerçek zincirde atlanır (D-41).
 KAYIT = {
+    # test / sahte
     "sahte": "saglayicilar.sahte.Sahte",
-    "flow": "saglayicilar.flow.Flow",
-    "ai84": "saglayicilar.ai84_ses.AI84Ses",
     "kaset": "saglayicilar.kaset.Kaset",
+    "ses_sahte": "saglayicilar.ses_sahte.SesSahte",
+    "sahte_kurgu": "saglayicilar.sahte_kurgu.SahteKurgu",
+    "sahte_izleyici": "saglayicilar.izleyici.SahteIzleyici",
+    "sahte_dinleyici": "saglayicilar.dinleyici.SahteDinleyici",
+    # görsel / video
+    "flow": "saglayicilar.flow.Flow",
+    "gemini_api": "saglayicilar.gemini_api.GeminiAPI",
+    # izleme / dinleme (ikinci göz; yalnız BAYRAK)
+    "izleyici": "saglayicilar.izleyici.Izleyici",
+    "dinleyici": "saglayicilar.dinleyici.Dinleyici",
+    # ses: tts (v1 ses() de AI84Tts'te), asr, dönüştürme, ayrıştırma, dudak
+    "ai84": "saglayicilar.ai84_tts.AI84Tts",
+    "faster_whisper": "saglayicilar.asr_whisper.FasterWhisper",   # ana ortamda + stable-ts hizalaması (yerel_ses.FasterWhisper değil)
+    "openvoice": "saglayicilar.yerel_ses.OpenVoice",
+    "chatterbox": "saglayicilar.yerel_ses.Chatterbox",
+    "rvc": "saglayicilar.yerel_ses.RVC",
+    "roformer": "saglayicilar.yerel_ses.Roformer",
+    "demucs": "saglayicilar.yerel_ses.Demucs",
+    "musetalk": "saglayicilar.yerel_ses.MuseTalk",
+    # müzik
+    "acestep": "saglayicilar.acestep.AceStep",
+    "kutuphane": "saglayicilar.kutuphane.Kutuphane",
+    "gemini_muzik_paketi": "saglayicilar.gemini_muzik_paketi.GeminiMuzikPaketi",
+    "midi_ornek": "saglayicilar.midi_ornek.MidiOrnek",
+    # büyütme
+    "yz_buyutucu": "saglayicilar.buyutucu.YZBuyutucu",
+    "lanczos": "saglayicilar.buyutucu.Lanczos",
 }
 
 

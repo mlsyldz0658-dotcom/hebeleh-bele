@@ -455,8 +455,6 @@ ARAMA = {"grep", "rg", "egrep", "fgrep", "findstr", "select-string", "sls", "ag"
 BOT = re.compile(r"pyautogui|pynput|send-?keys|sendinput|keybd_event|mouse_event|xdotool|autohotkey|\.ahk\b|wscript\.shell|"
                  r"undetected[_-]chromedriver|selenium[_-]stealth|puppeteer-extra-plugin-stealth|playwright[_-]stealth|"
                  r"2captcha|anti-?captcha|capsolver|captcha[_-]?solver|kie\.ai", re.I)
-GIZLI_AD = re.compile(r"[\w.\-]*_anahtar\.txt|telegram_bot\.txt|(?<![\w.])\.env\b|memmet_profil|MEMMET_AYAR\.json", re.I)
-AYARLAR_YOL = re.compile(r"[^\s\"'`|;&<>]*AYARLAR(?:[\\/][^\s\"'`|;&<>]*)?", re.I)
 ISTISNA_AD = re.compile(r"(\.ornek\.json|OKU_BENI\.txt)$", re.I)
 MAKINE_AD = re.compile(r"FILM_DURUM\.json|GOREV\.json|DEFTER\.jsonl|BAGLAR\.json|KANCA_NABZI\.json|SAHNELER\.json|"
                        r"DUNYA_DEFTERI\.json|KARAR_DEFTERI\.md|KURGU_PLANI[\w.]*\.json|[\\/]_RAPOR[\\/]|[\\/]KUYRUK[\\/]|[\\/]kararlar[\\/]", re.I)
@@ -509,29 +507,189 @@ def silme_kontrol(seg, t):
     return None
 
 
-def _gizli_ref(s):
-    refs = [m.group(0) for m in AYARLAR_YOL.finditer(s)] + [m.group(0) for m in GIZLI_AD.finditer(s)]
-    return [r for r in refs if not ISTISNA_AD.search(r)]
+# Gizli kural yalnız GERÇEK erişimi engeller (okuma/kopyalama/yazdırma/arşivleme/taşıma, yorumlayıcı kodunda open(...) vb.).
+# Adın metinde geçmesi (sed ifadesi, git commit -m/-F, not yazan heredoc, kodda grep) serbesttir.
+GIZLI_PARCA = re.compile(r"[\w.\-*?]*_anahtar\.txt|telegram_bot\.txt|[\w*?\-]*\.env|memmet_profil|MEMMET_AYAR\.json", re.I)
+YOL_GIBI = re.compile(r"[\w:.\\/\-~$%{}*?@+, ]+")
+METIN_PROG = {"echo", "printf", "write-host", "write-output", "true", ":", "exit", "return", "set", "export", "unset", "local"}
+KOPYA_ARSIV = {"cp", "copy", "xcopy", "robocopy", "copy-item", "cpi", "scp", "rsync", "tar", "zip", "7z", "7za", "rar",
+               "compress-archive", "gzip", "bzip2", "xz", "zstd", "mv", "move", "move-item", "mi", "ren", "rename-item"}
+BETIK_PROG = {"sed", "awk", "gawk"}
+YORUMLAYICI = re.compile(r"^(?:python[\d.]*|py|pythonw|node|ruby|php|perl)$")
+KABUK_PROG = {"bash", "sh", "zsh", "dash", "cmd", "powershell", "pwsh"}
+KOD_OKUMA = re.compile(r"\bopen\s*\(|read_text|read_bytes|\.read(?:lines)?\s*\(|shutil\.|copyfile|copytree|make_archive|zipfile|"
+                       r"tarfile|get-content|readall(?:text|bytes|lines)|base64|subprocess|os\.system|popen|\bload\s*\(|"
+                       r"readfilesync|createreadstream|io\.open", re.I)
+KOD_SIR_YOL = re.compile(r"[\"'][^\"'\n]*(?:AYARLAR[\\/]|_anahtar\.txt|telegram_bot\.txt|\.env\b|memmet_profil|MEMMET_AYAR\.json)"
+                         r"[^\"'\n]*", re.I)
+KOD_SIR_BIRLESIM = re.compile(r"(?:join|Path|open|\bload)\s*\([^;\n]{0,300}?ayarlar", re.I)
+YONLENDIRME = re.compile(r"^(?:\d*|&)(?:>>?|<)&?")
 
 
-def gizli_komut(segler, cwd):
-    """Gizli dosyaya dokunan segment var mı. Listeleme (ls/dir/Test-Path) serbest; grep'te ilk argüman desendir, yol sayılmaz;
-    yolsuz özyinelemeli arama veri kökündeki AYARLAR'ı kapsıyorsa ret."""
-    for seg in segler:
-        t = kelimeler(seg); p = program(t)
-        if p in ARAMA or (p == "git" and len(t) > 1 and t[1] == "grep"):
-            arg = [x for x in t[1:] if not x.startswith("-")]
-            if p == "git": arg = arg[1:]
-            arg = arg[1:]                                                  # ilk argüman desendir (-e ile de)
-            if any(_gizli_ref(x) for x in arg): return True
-            if not arg and gizli_klasor_icerir(norm(cwd)): return True
-            if any(gizli_klasor_icerir(norm(x, cwd)) for x in arg): return True
-            continue
-        if not _gizli_ref(seg): continue
-        if p in LISTE and not re.search(r"-exec|-delete", seg): continue
-        if p == "git" and re.match(r"\s*git\s+(status|check-ignore|ls-files|log|diff --stat)\b", seg): continue
-        return True
+class AcikGovde(str):
+    """Tırnaksız ayraçlı heredoc gövdesi (<<EOF): kabuk içindeki $( … ) ve `…` ikamelerini açar."""
+
+
+def parcala(cmd):
+    """Komut → [(segment, [heredoc gövdeleri])]. Tırnak içindeki ayraçlar (&&, ||, ;, |, satır sonu) bölmez; heredoc gövdesi
+    (<<EOF … EOF) ayrı tutulur: veri olarak yazılan not gövdesi komut sayılmaz, yorumlayıcıya giden gövde kod olarak denetlenir."""
+    segler, cur, govde = [], [], []
+    bekleyen = []
+    i, n, q = 0, len(cmd), None
+
+    def bitir():
+        s = "".join(cur).strip()
+        if s or govde: segler.append((s, list(govde)))
+        del cur[:]; del govde[:]
+    while i < n:
+        c = cmd[i]
+        if q:
+            cur.append(c)
+            if c == "\\" and q == '"' and i + 1 < n: cur.append(cmd[i + 1]); i += 2; continue
+            if c == q: q = None
+            i += 1; continue
+        if c in "'\"": q = c; cur.append(c); i += 1; continue
+        if c == "\\" and i + 1 < n:                                            # kaçış (\; \|) ve satır devamı
+            if cmd[i + 1] != "\n": cur.append(cmd[i:i + 2])
+            i += 2; continue
+        if cmd.startswith("<<", i) and not cmd.startswith("<<<", i):
+            m = re.match(r"<<(-?)\s*([\"']?)([\w.\-]+)\2", cmd[i:])
+            if m: bekleyen.append((m.group(3), m.group(1) == "-", not m.group(2))); cur.append(m.group(0)); i += m.end(); continue
+        if c in "\r\n":
+            if cmd.startswith("\r\n", i): i += 1
+            i += 1
+            for son, girinti, acik in bekleyen:                                     # heredoc gövdeleri satır satır
+                satirlar = []
+                while i < n:
+                    j = cmd.find("\n", i); j = n if j < 0 else j
+                    sat = cmd[i:j].rstrip("\r"); i = j + 1
+                    if (sat.lstrip("\t") if girinti else sat) == son: break
+                    satirlar.append(sat)
+                govde.append((AcikGovde if acik else str)("\n".join(satirlar)))
+            bekleyen = []
+            bitir(); continue
+        if cmd.startswith("&&", i) or cmd.startswith("||", i): bitir(); i += 2; continue
+        if c in ";|": bitir(); i += 1; continue
+        if c == "&" and not (cur and cur[-1] in "<>") and not cmd.startswith("&>", i): bitir(); i += 1; continue
+        cur.append(c); i += 1
+    bitir()
+    return segler
+
+
+def sir_yol_mu(tok):
+    """Belirteç gizli bir YOL mu (AYARLAR klasör bileşeni ya da anahtar dosya adı)? Boşluklu/parantezli metin yol sayılmaz."""
+    t = (tok or "").strip().strip("\"'`")
+    t = YONLENDIRME.sub("", t)
+    if "=" in t: t = t.rsplit("=", 1)[1]
+    t = t.lstrip("@").strip("\"'")
+    if not t or not YOL_GIBI.fullmatch(t) or ISTISNA_AD.search(t): return False
+    for p in re.split(r"[\\/]+", t):
+        if p.lower() == "ayarlar" or (p and GIZLI_PARCA.fullmatch(p)): return True
     return False
+
+
+def kod_sirri_okur(kod):
+    """Yorumlayıcı kodu (python -c, heredoc gövdesi …) gizli bir yolu okuyor/kopyalıyor mu."""
+    if not kod or not KOD_OKUMA.search(kod): return False
+    if any(not ISTISNA_AD.search(m.group(0).strip("\"'")) for m in KOD_SIR_YOL.finditer(kod)): return True
+    return bool(KOD_SIR_BIRLESIM.search(kod))
+
+
+def _yonlendirme_hedefleri(t):
+    h = []
+    for i, x in enumerate(t):
+        if re.fullmatch(r"(?:\d*|&)(?:>>?|<)&?", x):
+            if i + 1 < len(t): h.append(t[i + 1])
+        elif YONLENDIRME.match(x) and not x.startswith("<<"): h.append(x)
+    return h
+
+
+def _sec_arg(t, deger_alan=()):
+    """Seçenek olmayan argümanlar (t[1:]); deger_alan'daki seçeneklerin değeri atlanır."""
+    out, i = [], 1
+    while i < len(t):
+        x = t[i]
+        if x in deger_alan: i += 2; continue
+        if not x.startswith("-") or x == "-": out.append(x)
+        i += 1
+    return out
+
+
+def gizli_segment(seg, govdeler, cwd, derinlik=0):
+    t = kelimeler(seg); p = program(t)
+    if derinlik > 3: return True
+    if any(sir_yol_mu(x) for x in _yonlendirme_hedefleri(t)): return True        # < AYARLAR/x  ya da  > AYARLAR/x
+    if p in ARAMA or (p == "git" and len(t) > 1 and t[1] == "grep"):
+        arg = [x for x in t[1:] if not x.startswith("-")]
+        if p == "git": arg = arg[1:]
+        arg = [x for x in arg[1:] if not YONLENDIRME.match(x)]               # ilk argüman desendir (-e ile de)
+        if any(sir_yol_mu(x) for x in arg): return True
+        if not arg and gizli_klasor_icerir(norm(cwd)): return True
+        return any(gizli_klasor_icerir(norm(x, cwd)) for x in arg if YOL_GIBI.fullmatch(x))
+    if p in KABUK_PROG:
+        for i, x in enumerate(t[1:], 1):
+            if x.lower() in ("-c", "/c", "/k", "-command"):
+                return any(gizli_segment(s, g, cwd, derinlik + 1) for s, g in parcala(" ".join(t[i + 1:])))
+        if govdeler and not [x for x in _sec_arg(t) if not x.startswith("<<")]:
+            return any(gizli_segment(s, g, cwd, derinlik + 1) for gv in govdeler for s, g in parcala(gv))
+    if YORUMLAYICI.match(p):
+        kod = [t[i + 1] for i, x in enumerate(t[:-1]) if x in ("-c", "-e", "-E", "-r")]
+        if any(kod_sirri_okur(k) for k in kod + list(govdeler)): return True
+        return any(sir_yol_mu(x) for x in _sec_arg(t, ("-c", "-e", "-E", "-r", "-m")))   # betiğe verilen gizli yol argümanı
+    if not any(sir_yol_mu(x) for x in t[1:]):
+        return p in KOPYA_ARSIV and any(gizli_klasor_icerir(norm(x, cwd)) for x in t[1:]
+                                        if YOL_GIBI.fullmatch(x) and not x.startswith("-"))   # AYARLAR'ı içeren klasörü kopyalama
+    if p in METIN_PROG: return False                                        # metin yazdırır; yönlendirme yukarıda denetlendi
+    if p in LISTE and not re.search(r"-exec|-delete|-ok\b", seg): return False
+    if p == "git":
+        alt = t[1] if len(t) > 1 else ""
+        if alt in ("status", "check-ignore", "ls-files", "log", "branch", "fetch", "pull", "push", "remote", "rev-parse",
+                   "config", "tag", "switch", "merge", "rebase", "cherry-pick", "restore", "worktree"):
+            return False
+        if alt == "diff" and "--stat" in t: return False
+        if alt == "commit":                                                 # mesaj metni serbest; -F dosyası ve yol argümanı denetlenir
+            f = [t[i + 1] for i, x in enumerate(t[:-1]) if x in ("-F", "--file")]
+            return any(sir_yol_mu(x) for x in f + _sec_arg(t, ("-m", "--message", "-F", "--file", "-C", "-c", "--author",
+                                                               "--date", "--fixup", "--squash", "-t", "--template"))[1:])
+        return True
+    if p in BETIK_PROG:                                                     # ilk argüman (ya da -e değerleri) betiktir; dosyalar denetlenir
+        e = [i for i, x in enumerate(t) if x in ("-e", "--expression", "-f", "--file")]
+        dosya = [t[i + 1] for i in e if i + 1 < len(t) and t[i] in ("-f", "--file")]
+        arg = _sec_arg(t, ("-e", "--expression", "-f", "--file", "-F", "-v"))
+        if not e: arg = arg[1:]
+        return any(sir_yol_mu(x) for x in arg + dosya)
+    return True                                                             # okuyucu/kopyalayıcı/arşivleyici/dizin/bilinmeyen program
+
+
+def gizli_komut(cmd, cwd):
+    """Gizli dosyaya GERÇEKTEN dokunan segment var mı (okuma, kopyalama, yazdırma, arşivleme, taşıma, kodda open(...)).
+    Listeleme (ls/dir/Test-Path) serbest; grep'te ilk argüman desendir; yolsuz özyinelemeli arama veri kökündeki AYARLAR'ı
+    kapsıyorsa ret. Adın yalnız metinde geçmesi (sed ifadesi, commit mesajı, heredoc notu) serbest."""
+    return any(gizli_segment(s, g, cwd) or any(gizli_komut(x, cwd) for x in ikameler(s) + [y for b in g if isinstance(b, AcikGovde) for y in ikameler(b)])
+               for s, g in parcala(cmd))
+
+
+def ikameler(s):
+    """Komut ikameleri: $( … ), <( … ), >( … ) ve `…` içindeki komutlar (tek tırnak içi açılmaz)."""
+    out, i, n, q = [], 0, len(s), None
+    while i < n:
+        c = s[i]
+        if q == "'":
+            if c == "'": q = None
+            i += 1; continue
+        if c == "'" and q is None: q = "'"; i += 1; continue
+        if c == '"': q = None if q == '"' else '"'; i += 1; continue
+        if c == "\\": i += 2; continue
+        if c in "$<>" and s.startswith("(", i + 1):
+            d, j = 1, i + 2
+            while j < n and d:
+                d += {"(": 1, ")": -1}.get(s[j], 0); j += 1
+            out.append(s[i + 2:j - 1]); i = j; continue
+        if c == "`":
+            j = s.find("`", i + 1); j = n if j < 0 else j
+            out.append(s[i + 1:j]); i = j + 1; continue
+        i += 1
+    return out
 
 
 def git_push(t):
@@ -554,7 +712,7 @@ def k_komut(g, kaynak="ayar"):
     def ret(kural, neden):
         kayit(film, olay="ret", kural=kural, arac=arac)
         return reddet("komut", neden)
-    if gizli_komut(segler, g.get("cwd") or os.getcwd()):
+    if gizli_komut(cmd, g.get("cwd") or os.getcwd()):
         return ret("gizli", "AYARLAR ve anahtar dosyaları okunmaz, kopyalanmaz, yazdırılmaz (yalnız varlığı denetlenir: ls/dir).")
     if re.search(r"\brobocopy\b[^\n|;&]*\s/(mir|purge)\b", cmd, re.I):
         return ret("robocopy_mir", "robocopy /MIR ve /PURGE yasak (kalıcı silme). Eskiler _ESKI/'ye taşınır.")
@@ -757,14 +915,31 @@ DEVAM_SOZ = re.compile(r"(?:^|\s)(devam\w*|kaldığın yerden|continue|go on|tam
                        r"koydum|gönderdim|yükledim|aktardım|dışa aktardım|kapattım|açıldı|takıldı|taktım)(?=$|[\s?.,!])")
 
 
+KONU_DOLGU = {
+    "film", "filmi", "filme", "filmler", "yap", "yapın", "yapin", "yapalım", "yapalim", "yapar", "yaparsın", "yapsana", "yapmak",
+    "yapabilir", "çek", "çekelim", "çekmek", "hazırla", "hazırlayalım", "üret", "üretelim", "oluştur", "oluşturalım", "başla",
+    "başlayalım", "başlat", "bir", "bi", "yeni", "tane", "hadi", "haydi", "lütfen", "bana", "bize", "için", "istiyorum", "isterim",
+    "ister", "olsun", "mı", "mi", "mu", "mü", "mısın", "misin", "musun", "müsün", "şimdi", "artık", "de", "da", "ve", "konu",
+    "konusu", "kısa", "güzel", "ben", "biz", "make", "a", "an", "new", "movie", "let's", "lets", "please", "me", "us", "the", "start"}
+
+
+def konusuz_film_istegi(m):
+    """'film yap', 'yeni film', 'film yapalım' … : film isteniyor ama konu yok (yalnız KONU_SOZ + dolgu sözcükleri). 'sen seç' konudur."""
+    if not KONU_SOZ.search(m) or re.search(r"sen se[çc]", m): return False
+    kalan = [w for w in re.split(r"[\s,.!?:;'’\"]+", m) if w and w not in KONU_DOLGU]
+    return not kalan
+
+
 def sinifla(mesaj, onceki_konu_sorusu=False):
-    """Kullanıcı mesajı → {sinif: soru|not|konu|diger, alt: dur|devam|ilk_kurulum|rica|None}. 50 mesajlık sette sınanır."""
+    """Kullanıcı mesajı → {sinif: soru|not|konu|diger, alt: dur|devam|ilk_kurulum|rica|konusuz|None}. 50 mesajlık sette sınanır.
+    Konusuz film isteği ('film yap', 'yeni film') konu DEĞİLDİR: {sinif: diger, alt: konusuz} → tek soru (yerel) / bulut cümlesi."""
     m = _kucuk(mesaj)
     if not m: return {"sinif": "diger", "alt": None}
     kelime = m.split()
     if DUR.search(m) and (len(kelime) <= 4 or re.match(r"^(dur|durdur|bekle|stop)\b", m)):
         return {"sinif": "diger", "alt": "dur"}
     if re.search(r"\bilk kurulum\b", m): return {"sinif": "diger", "alt": "ilk_kurulum"}
+    if konusuz_film_istegi(m): return {"sinif": "diger", "alt": "konusuz"}
     rica = bool(RICA.search(m))
     soru = (m.rstrip().endswith("?") or bool(SORU_EKI.search(m)) or bool(SORU_SOZ.search(m))) and not rica
     if soru:
@@ -821,6 +996,11 @@ def k_istem(g):
                 sat.append("BULUT (D-45): konu sorulmaz, film başlatılmaz. Yalnız şunu söyle: \"%s\"" % BULUT_CUMLESI)
             else:
                 sat.append("Konu verildi: soru sormadan film-yap ile başla (konu kullanıcının cümlesi; belirsizlikte varsayım).")
+        elif s["alt"] == "konusuz":
+            if orm == "bulut":
+                sat.append("BULUT (D-45): film başlatılmaz, konu sorulmaz. Yalnız şunu söyle: \"%s\"" % BULUT_CUMLESI)
+            else:
+                sat.append("Film istendi ama konu yok: film başlatma. YALNIZ şunu sor (başka cümle eklenmez): '%s'" % TEK_SORU)
         return baglam("UserPromptSubmit", "\n".join(sat), ISTEM_BAGLAM_MAX)
     st = film_durum(film); sur = st.get("otomatik_surus") or {}
     if not sur.get("acik", True) and sur.get("neden") in ("soru", "kullanici") and s["sinif"] != "soru" and \
@@ -919,6 +1099,9 @@ def k_ajan_bitti(g):
     eksik = cikti_eksik(gdir, gv)
     if eksik:
         return duzeltme(film, agent_id, bag, "son", tavan, "Çıktı eksik: %s. Yalnız CIKTI/'ye yaz, sonra dur." % ", ".join(eksik))
+    hata = plan_kapisi(film, gdir, gv)
+    if hata:
+        return duzeltme(film, agent_id, bag, "plan", tavan, "Plan denetimi HATA verdi; CIKTI/plan.json'u düzelt, sonra dur:\n" + hata)
     kul = kullanim_oku(g.get("agent_transcript_path"))
     arg = ["bitir", gid, "--film", film, "--json"] + (["--kullanim", json.dumps(kul)] if kul else [])
     kod, r = film_py(*arg, zaman_asimi=90)
@@ -928,6 +1111,39 @@ def k_ajan_bitti(g):
     bag_guncelle(film, agent_id, bitti=True, sonuc=(r or {}).get("durum", "bitti"))
     kayit(film, olay="ajan_bitti", gorev=gid, durum=(r or {}).get("durum"))
     return 0
+
+
+PLAN_DENETIM_SN = 40
+PLAN_HATA_MAX = 1500
+
+
+def arac_kos(ad, *arg, zaman_asimi=PLAN_DENETIM_SN):
+    """ARACLAR/<ad> alt süreci → (kod, çıktı metni). Başlatılamazsa (None, '')."""
+    import subprocess
+    try:
+        r = subprocess.run([sys.executable, os.path.join(ARACLAR, ad)] + list(arg), capture_output=True, timeout=zaman_asimi,
+                           env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    except Exception:
+        return None, ""
+    return r.returncode, r.stdout.decode("utf-8", "replace")
+
+
+def plan_kapisi(film, gdir, gv):
+    """yonetmen·plan görevinin SubagentStop kapısı: plan_sema.py --dosya CIKTI/plan.json ve plan_denetim.py --dosya … --film <film>.
+    Yalnız HATA (çıkış 1) düzeltme ister → HATA satırları; araç çökerse/yoksa kanca engellemez (film.py bitir doğrular)."""
+    if gv.get("ajan") != "yonetmen" or gv.get("kip") != "plan": return None
+    plan = os.path.join(gdir, "CIKTI", "plan.json")
+    if not os.path.isfile(plan): return None
+    satir = []
+    for ad, arg in (("plan_sema.py", ("--dosya", plan)), ("plan_denetim.py", ("--dosya", plan, "--film", film))):
+        kod, out = arac_kos(ad, *arg)
+        if kod == 1:
+            h = [s.strip() for s in out.splitlines() if s.strip().startswith("HATA ")]
+            satir += ["%s: %s" % (ad, s) for s in (h or [out.strip()[-300:] or "HATA"])]
+    if not satir: return None
+    kayit(film, olay="plan_kapisi", gorev=gv.get("id"), hata=len(satir))
+    m = "\n".join(satir)
+    return m if len(m) <= PLAN_HATA_MAX else m[:PLAN_HATA_MAX - 20] + "\n… (kısaltıldı)"
 
 
 def duzeltme(film, agent_id, bag, anahtar, tavan, neden):

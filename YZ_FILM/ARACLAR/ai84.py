@@ -98,9 +98,14 @@ def _download(url, out):
     return out
 
 
-def tts(text, voice_id, out, model_id="eleven_v4", settings=None, lang="en"):
+def tts(text, voice_id, out, model_id="eleven_v4", settings=None, lang="en", seed=None, previous_text=None, next_text=None):
+    """seed: aynı tohum + aynı metin → tekrarlanabilir ses. previous_text/next_text: komşu replikler (tonlama sürekliliği;
+    ücretlendirilmez, yalnız bağlam). Boş verilenler gövdeye girmez."""
     body = {"text": text, "voice_id": voice_id, "model_id": model_id, "language_code": lang}
     if settings: body["voice_settings"] = settings
+    if seed is not None: body["seed"] = int(seed)
+    if previous_text: body["previous_text"] = previous_text
+    if next_text: body["next_text"] = next_text
     j = _req("POST", "/v2/text-to-speech/async", body)
     job = _poll(f"/v2/text-to-speech/async/{j['job_id']}")
     _download(job["audioUrl"], out)

@@ -3,7 +3,7 @@
 
 Kodda:
   import ses_ortak as so
-  so.esik("s1_wer_max") → değer (eşik dosyalarında varsa o; yoksa aşağıdaki kaynaklı varsayılan; ses_esikleri.json'a taşınacak)
+  so.esik("s1_wer_max") → değer (esikler.yukle(): veri/ses_esikleri.json, RE, hat/hikaye/sureklilik; anahtar yoksa KeyError)
   so.film_coz(ad_ya_da_yol) · so.sahte_mi(film, saglayici=None) · so.gorev(asama=None) → {id, tur_no, asama, rapor}
   so.rapor(film, "S1", "FILM", olcumler, asama="A10c", birimler=[...], ek={...}) → (yol, rapor)   (kapi.py zarfı; görev raporu yolu)
   so.zincir("tts"|"asr"|"muzik"|"ses_donustur"|"dinleyici", film, kip=None, saglayici=None) → [sağlayıcı nesnesi]
@@ -22,56 +22,21 @@ SR = 48000
 BITTI, HATA, KULLANICI, ORTAM, BUTCE, KISIT, BEKLE = 0, 1, 2, 4, 5, 7, 8
 KISIT_KOD = {"olagandisi": KISIT, "dogrulama": KISIT, "giris": KISIT, "kilitli": KISIT}
 
-# Eşik dosyalarında henüz olmayan ses hazırlığı eşikleri ([SM2] §4.7.2–4.7.8). Değerler ve kaynakları buradadır; veri/ses_esikleri.json'a
-# aynı adla taşınınca dosyadaki değer kullanılır (paylaşılan istek). Hepsi "tahmin" etiketlidir (kalibrasyon §4.7.9).
-ESIK = {
-    "s1_notice_min_gun": (30, "tahmin", "[SM2] S1.1; [D-EL] min_notice_period_days"),
-    "s1_wer_max": (0.05, "tahmin", "[SM2] S1.3"),
-    "s1_kararlilik_min": (0.80, "tahmin", "[SM2] S1.4"),
-    "s1_kadro_benzerlik_max": (0.60, "tahmin", "[SM2] S1.5"),
-    "s1_kadro_f0_fark_min_yt": (2.0, "tahmin", "[SM2] S1.5"),
-    "s1_perde_bant_hz": ({"erkek": [100, 140], "kadin": [165, 225]}, "tahmin", "[SM2] S1.6; genel fonetik (bellekten)"),
-    "s1_secim_fark_min": (0.03, "tahmin", "[SM2] S1.8; TASARIM A10c"),
-    "s1_agirliklar": ({"profil": 0.25, "ayirt": 0.20, "kalite": 0.20, "kararlilik": 0.15, "duygu": 0.10, "bildirim": 0.10},
-                      "tahmin", "[SM2] S1.8"),
-    "s1_aday_oku_max": (4, "tahmin", "[SM2] SB2 adım 3"),
-    "s1_etiket_ortak_benzerlik": (0.60, "tahmin", "[SM2] SB2 adım 6; İ-9"),
-    "s1_veo_ham_benzerlik_max": (0.60, "tahmin", "[SM2] S1.10"),
-    "telaffuz_replik_sayisi": (3, "belge", "[SM2] SB1"),
-    "motor_kiyas_ozel_min": (4, "tahmin", "TASARIM Ö0-c (fısıltı ve bağırma her biri ≥ 4)"),
-    "ses_dogallik_mos_min": (3.5, "tahmin", "TASARIM §7.2 S (ses_dogallik_mos_min B; değer tahmin)"),
-    "tts_esneme_max": (0.08, "tahmin", "[SM2] S2.12"),
-    "ornek_tepe_max_dbfs": (-0.1, "tahmin", "[SM2] S2.14"),
-    "ambiyans_bosluk_dbfs": (-60.0, "tahmin", "[SM2] S5.2"),
-    "yumusatma_ms": ([10, 20], "tahmin", "[SM2] S5.10"),
-    "efekt_varsayilan_db": (-6.0, "tahmin", "[SM2] S5.6 bandının ortası"),
-    "muzik_aday_sayisi": (3, "belge", "[SM2] SB5; TASARIM §4.8.4"),
-    "muzik_kroma_min": (0.6, "tahmin", "[SM2] S6.7"),
-    "muzik_bpm_tolerans": (0.03, "tahmin", "[SM2] S6.10"),
-    "muzik_kelime_guven_min": (0.5, "tahmin", "[SM2] S6.1/S5.9"),
-    "miks_sessizlik_sn": (0.3, "tahmin", "[SM2] S7.4 d=0,3"),
-    "miks_tepe_hedef_dbtp": (-1.5, "tahmin", "[SM2] S7.2 kodlama öncesi pay"),
-    "miks_lra_max": (14.0, "tahmin", "[SM2] S7.3"),
-    "miks_mono_fark_max_lu": (3.0, "tahmin", "[SM2] S7.5"),
-    "miks_wer_bant": ([0.15, 0.30], "tahmin", "[SM2] S7.6"),
-    "miks_ayni_stem_lufs_fark_max": (0.1, "tahmin", "[SM2] B15 (tek miks kodu)"),
-}
+# Ses hazırlığı eşikleri ([SM2] §4.7.2–4.7.8) veri/ses_esikleri.json'dadır (deger/aciklama/kaynak/etiket; kalibrasyon §4.7.9).
+# Koddaki eski ESIK sözlüğü oraya taşındı; eşik dosyası bozuksa esikler.EsikHatasi yükselir (sessiz varsayılan yok).
 _E = None
 
 
 def esikler_():
     global _E
     if _E is None:
-        try:
-            import esikler; _E = esikler.yukle()
-        except Exception: _E = {}
+        import esikler; _E = esikler.yukle()
     return _E
 
 
 def esik(ad):
-    v = esikler_().get(ad) if hasattr(esikler_(), "get") else None
+    v = esikler_().get(ad)
     if v is not None: return v
-    if ad in ESIK: return ESIK[ad][0]
     raise KeyError(f"eşik yok: {ad}")
 
 

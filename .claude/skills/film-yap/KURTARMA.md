@@ -15,6 +15,12 @@ Python bulunamadı, `CLAUDE_CODE_FORK_SUBAGENT=0` değil ya da Claude depo klas�
 4. Geliştirme oturumundaysan (film-gelistir): `bash .claude/bin/kanca.sh komut < girdi.json` ile kancayı elle sına; `.claude/bin/python_yolu.txt`
    ve `.claude/settings.json` env satırına bak. Nabız sahte yazılmaz.
 
+Kanca bir aracı reddetti (`[film seti kuralı] …`): neden cümlesi kuralı söyler; kuralı atlatacak başka bir yol deneme (komutu bölme,
+başka programla okuma). Gizli kural yalnız gerçek erişimi engeller (anahtar dosyasını ya da `AYARLAR/`'ı okuma, kopyalama, yazdırma,
+arşivleme, taşıma; kodda `open(...)`); adın metinde geçmesi serbesttir. `[film seti kancası] … doğrulanamadı … engellendi` ise kancanın
+kendisi hata verdi (kapalı başarısızlık, D-11): film sürüşünde turu bitir ve kullanıcıya FILM_SETI.bat ile yeniden açmasını söyle;
+geliştirme oturumunda `python .claude/hooks/kanca.py komut < girdi.json` ile hatayı bul, `test_kancalar`'ı koş.
+
 ## §Kilit — "FILM.kilit bayat" ya da "başka bir film.py çalışıyor"
 1. `film.py kurtar` (bayat kilidi kendisi tanır: sahibi süreç yoksa ya da süre aşıldıysa kaldırır, kaydını tutar).
 2. Hâlâ kilitliyse başka bir `film.py` gerçekten çalışıyordur (arka plan `bekle` dahil): turu bitir; bitince kendiliğinden sürer.

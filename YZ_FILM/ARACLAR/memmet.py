@@ -36,7 +36,7 @@ GÜVENLİK (bot tespiti atlatılmaz; 03_DERSLER.md):
 Son çıkışın nedeni film klasöründe _memmet_cikis.json'a yazılır. Her şey MEMMET_KAYIT.txt'ye, durum MEMMET_DURUM.json'a yazılır.
 """
 import os, sys, re, json, time, datetime, random, shutil, socket, subprocess, urllib.request, urllib.parse, traceback, ctypes, hashlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
@@ -52,6 +52,7 @@ FILM_AYAR = os.path.join(AYARLAR, "FILM_AYAR.json")
 HESAP = _Y["hesap"]                          # hesap düzeyindeki durum: tempo ve kilit (filmden bağımsız)
 import flow_yuk                              # hesap düzeyi yük: FLOW_YUK.jsonl, FLOW_TEMPO, kilit, günlük tavanlar
 import blok_plani, kredi                     # v2: uygunluk, imza, blok işaretleri · bütçe noktası ve kredi defteri
+import kare_denetim                          # v2: her video gönderiminden önce video_hazir (G1 GEÇ + SHA1)
 
 
 def chrome_bul():
@@ -794,6 +795,9 @@ class Memmet:
         uygun, neden = blok_plani.uygun_mu(self.root, p, self.planlar, tur=tur, blok_nolar=self.blok_nolar, isler=self.D["isler"],
                                            yeniden=bool(ayr.get("madde")))
         if not uygun: return self.atla(no, neden)
+        if tur == "video":
+            hazir, neden = self.video_hazir(no, p)
+            if not hazir: return self.atla(no, neden)
         alan = "gorsel_istem" if tur == "gorsel" else "hareket_istem"
         ana = ayr.get("istem") or p.get(alan); yd = p.get(alan + "_yedek")
         istem = yd if yedek else ana
@@ -809,6 +813,23 @@ class Memmet:
         return {"plan": no, "tur": tur, "istem": istem, "yedek": bool(yedek), "yedek_var": bool(yd) and not yedek, "dosyalar": dosyalar,
                 "deneme": deneme, "is": kim, "madde": ayr.get("madde") or kim, "dilim": ayr.get("dilim") or "ana",
                 "kredi": self.kredi_birim(tur), "model": model, "cozunurluk": coz}
+
+    def video_hazir(self, no, p):
+        """Her video gönderiminden önce ikinci denetim: kare_denetim.video_hazir (G1 GEÇ + SIRALI_GORSEL SHA1'i kayıtla aynı; D-15,
+        §1.5 kural 6). Zincir (son_kare) planında başlangıç karesi önceki klipten çıkarılır; onun G1Z + SHA1'i blok_plani.uygun_mu'da
+        denetlendi, burada yalnız kare_denetim de GEÇ derse ya da zincir kaydı tutarsa geçer. Denetlenemezse gönderilmez (kapalı başarısız)."""
+        try: ok, neden = kare_denetim.video_hazir(self.root, no)
+        except Exception as e:
+            return False, f"video_hazir denetlenemedi ({str(e)[:80]}): gönderilmedi"
+        if ok: return True, ""
+        if str(neden).startswith("SHA1"):        # kısa sha1 kaydı (≥ 8 hane, blok_plani sözleşmesi): aynı kare mi, öneki karşılaştır
+            import blok_plani
+            s, sha = blok_plani._g1(p)
+            if s == "GEC" and blok_plani._sha_tutar(os.path.join(self.root, "SIRALI_GORSEL", "%03d.jpg" % int(no)), sha): return True, ""
+        z = (p.get("uretim") or {}).get("zincir") or {}
+        if (z.get("yontem") or "bagimsiz") == "son_kare" and (z.get("g1z") or {}).get("sonuc") == "GEC":
+            return True, ""
+        return False, f"kare videoya hazır değil: {neden}"
 
     def kredi_once(self, j):
         """Bütçe noktası (BUTK) + kredi defterine gönderim satırı: GÖNDERİMDEN ÖNCE. Onay yoksa 5 (yeni gönderim yok)."""

@@ -98,5 +98,84 @@ class Esikler(unittest.TestCase):
         self.assertEqual(hat["flow_cozunurluk_min"]["deger"], memmet.VARSAYILAN["video_cozunurluk"])
 
 
+class BirlestirmeAnahtarlari(unittest.TestCase):
+    """Birleştirme turu: koddaki sabitler eşik dosyalarına taşındı; araçlar dosyadan okur."""
+    @classmethod
+    def setUpClass(cls):
+        cls.E = esikler.yukle()
+
+    def test_anahtarlar_dogru_dosyada(self):
+        beklenen = {
+            "hat_esikleri.json": ["bildirim_tekrar_dk", "bildirim_saat_max", "uyari_gecti_tempo_carpan"],
+            "sureklilik_esikleri.json": ["v1_sure_min_sn", "v1_bulaniklik_max", "v1_titreme_mae_max", "v1_scdet_esik", "v1_kesme_kenar_sn",
+                                         "v2_kare_aralik_sn", "v2_kimlik_dusus_max", "v2_kimlik_hata", "v2_dino_sicrama_max",
+                                         "v2_ilk_kare_sadakat_min", "v3_son_tutma_sn", "v3_son_tutma_oran_max", "k1_parlaklik_max",
+                                         "k1_lab_de_max", "k1_dino_min", "enerji_fps", "g1z_keskinlik_oran_min", "g1z_dino_min", "zincir_son_pay_sn"],
+            "ritim_esikleri.json": ["anlasilmayan_konusma_wer", "kanal_gosterim_min", "kanal_to_min", "kanal_izlenme_min", "tutma_dusus_min_puan",
+                                    "politika_belgesi_gun_max", "plan_zincir_zaman_sapma_max_sn", "zincir_derinlik_max"],
+        }
+        for dosya, adlar in beklenen.items():
+            for a in adlar:
+                self.assertIn(a, self.E.kayit, a)
+                self.assertEqual(self.E.kayit[a]["_dosya"], dosya, a)
+        self.assertEqual((self.E["bildirim_tekrar_dk"], self.E["bildirim_saat_max"], self.E["anlasilmayan_konusma_wer"]), (30, 12, 0.30))
+        self.assertTrue(self.E.kayit["v2_kimlik_hata"].get("gevsetilemez"))
+        self.assertEqual(self.E["v2_kimlik_hata"], self.E["g1_kimlik_hata"])
+
+    def test_arac_varsayilanlari_dosyayla_ayni(self):
+        """kalite_denetim / video_denetim / kare_zinciri VARSAYILAN'ı (yalnız eşik dosyası okunamazsa) dosyadaki değerle aynıdır."""
+        import ast
+        for arac in ("kalite_denetim.py", "video_denetim.py", "kare_zinciri.py"):
+            with open(os.path.join(os.path.dirname(HERE), arac), encoding="utf-8") as f: agac = ast.parse(f.read())
+            d = next(ast.literal_eval(n.value) for n in agac.body if isinstance(n, ast.Assign)
+                     and any(isinstance(h, ast.Name) and h.id == "VARSAYILAN" for h in n.targets))
+            for a, v in d.items():
+                self.assertIn(a, self.E, "%s: %s eşik dosyasında yok" % (arac, a))
+                self.assertEqual(self.E[a], v, "%s: %s" % (arac, a))
+
+    def test_ses_ortak_dosyadan_okur(self):
+        import ast, ses_ortak as so
+        self.assertFalse(hasattr(so, "ESIK"), "koddaki ESIK sözlüğü kalktı; değerler ses_esikleri.json'da")
+        self.assertEqual(self.E.kayit["s1_wer_max"]["_dosya"], "ses_esikleri.json")
+        self.assertEqual(so.esik("s1_agirliklar"), self.E["s1_agirliklar"])
+        self.assertAlmostEqual(sum(so.esik("s1_agirliklar").values()), 1.0)
+        with self.assertRaises(KeyError): so.esik("boyle_bir_esik_yok")
+        aracl = os.path.dirname(HERE); adlar = set()
+        for f in os.listdir(aracl):
+            if not f.endswith(".py"): continue
+            with open(os.path.join(aracl, f), encoding="utf-8-sig") as fh: agac = ast.parse(fh.read())
+            for n in ast.walk(agac):
+                if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "esik"
+                        and isinstance(n.func.value, ast.Name) and n.func.value.id in ("so", "ses_ortak")
+                        and n.args and isinstance(n.args[0], ast.Constant)):
+                    adlar.add(n.args[0].value)
+        self.assertGreater(len(adlar), 30)
+        self.assertEqual(sorted(a for a in adlar if a not in self.E), [])
+
+    def test_bildirim_esikten(self):
+        import bildirim, time
+        self.assertEqual(bildirim.sinirlar(), (30 * 60, 12))
+        t = time.time()
+        gecmis = [{"olay": "hata", "anahtar": "x", "t": t - 20 * 60, "gonderildi": True}]
+        self.assertTrue(bildirim.bastir_mi(gecmis, "hata", "x", simdi=t)[0])
+        eski = esikler.yukle
+        def sahte(*a, **k):
+            E = eski(*a, **k); E["bildirim_tekrar_dk"] = 10; E["bildirim_saat_max"] = 1; return E
+        esikler.yukle = sahte
+        try:
+            self.assertEqual(bildirim.sinirlar(), (600, 1))
+            acil = [{"olay": "kisit_olagandisi", "anahtar": "x", "t": t - 20 * 60, "gonderildi": True}]
+            self.assertFalse(bildirim.bastir_mi(acil, "kisit_olagandisi", "x", simdi=t)[0])   # 20 dk > 10 dk tekrar süresi
+            self.assertTrue(bildirim.bastir_mi(acil, "kisit_olagandisi", "x", simdi=t - 15 * 60)[0])
+            b, neden = bildirim.bastir_mi(gecmis, "hata", "y", simdi=t)
+            self.assertTrue(b); self.assertIn("saatlik tavan (1)", neden)
+            self.assertFalse(bildirim.bastir_mi(gecmis, "kisit_olagandisi", "y", simdi=t)[0])   # ACİL tavana takılmaz
+            def bozuk(*a, **k): raise esikler.EsikHatasi(["bozuk"])
+            esikler.yukle = bozuk
+            self.assertEqual(bildirim.sinirlar(), (bildirim.TEKRAR_SN, bildirim.SAAT_MAX))   # eşik hatası bildirimi susturmaz
+        finally:
+            esikler.yukle = eski
+
+
 if __name__ == "__main__":
     unittest.main()

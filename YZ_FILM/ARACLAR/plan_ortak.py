@@ -109,12 +109,13 @@ def koy(d, yol, v):
 
 
 # Kâğıt kurallarının ayrıntılı kök nedeni → veri/kok_neden.json'daki ad (kuyruk yalnız oradakileri kabul eder; ayrıntı maddede kalır).
-KOK_ESLEME = {"cift_konusan": "konusan_belirsiz", "diyalog_suresi": "diyalog_kopuk", "replik_uzun": "diyalog_kopuk", "replik": "diyalog_kopuk",
-              "filtre": "filtre_kelimesi", "ekranda_bilgi": "bilgi_ekranda_yok", "ilk_eylem": "gec_giris", "kurulum": "kurulum_yok",
-              "merak": "bilgi_eksik", "risk": "risk_belirsiz", "yogunluk": "ritim_tekduze", "sure": "uzun_plan", "plan_suresi": "uzun_plan",
-              "sahne_suresi": "uzun_plan", "zincir": "zincir_dikis", "yon": "ekran_yonu", "referans": "fazla_kisi", "ad": "ad_gec",
-              "adim_sayisi": "hikaye_adimi_ekranda_yok", "adim_suresi": "hikaye_adimi_ekranda_yok", "eksik_parametre": "hikaye_adimi_ekranda_yok",
-              "yasak_fiil": "hikaye_adimi_ekranda_yok", "konusurken_eylem": "hikaye_adimi_ekranda_yok", "bitis_tutmasi": "hikaye_adimi_ekranda_yok"}
+# Yönetmen kökleri eylem_zinciri (Y01–Y08) ve diyalog_suresi (Y30/Y31/Y59) sözlükte olduğundan eylem/diyalog ayrıntıları onlara gider.
+_EYLEM = ("adim_sayisi", "adim_suresi", "eksik_parametre", "yasak_fiil", "konusurken_eylem", "bitis_tutmasi")
+KOK_ESLEME = dict({"cift_konusan": "konusan_belirsiz", "replik_uzun": "diyalog_suresi", "replik": "diyalog_suresi",
+                   "filtre": "filtre_kelimesi", "ekranda_bilgi": "bilgi_ekranda_yok", "ilk_eylem": "gec_giris", "kurulum": "kurulum_yok",
+                   "merak": "bilgi_eksik", "risk": "risk_belirsiz", "yogunluk": "ritim_tekduze", "sure": "uzun_plan", "plan_suresi": "uzun_plan",
+                   "sahne_suresi": "uzun_plan", "zincir": "zincir_dikis", "yon": "ekran_yonu", "referans": "fazla_kisi", "ad": "ad_gec"},
+                  **{k: "eylem_zinciri" for k in _EYLEM})
 
 
 def kok_normal(kn, vars="hikaye_adimi_ekranda_yok"):

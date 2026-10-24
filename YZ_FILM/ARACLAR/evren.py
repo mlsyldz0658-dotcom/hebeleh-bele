@@ -17,12 +17,15 @@ Yol: ortak.yollar()["evren_kok"] (YOLLAR.json; varsayılan <veri>/EVREN). Seri a
         kilitlenir (SHA1, kimlik bankası); HATA'lı aday ve adı içeren kimlik_en reddedilir (ayrıntı: evren_kilit.py)
   python evren.py --kilit-dogrula [--seri SERI | --film <film>]   kilitli dosyaların SHA1'i (değişmişse 1: hat durur)
   python evren.py --surum-ac --karakter <id> [--seri SERI | --film <film>]   kilitli karakterde yeni sürüm
-Henüz yok (TASARIM §6.3, sonraki PR'lar): --kur, --bagla, --spec-dogrula, --film-sonu, --disa-aktar, --ice-al,
-  hikaye-kaydet --dogrula, izleyici-ozeti, --yedekle, --yedek-dogrula. Çağrılırsa 4 (ORTAM) ile "henüz yok" der.
+  python evren.py --film-sonu --film <film> · --yedekle (--film <film> | --seri SERI) · --yedek-dogrula (...)   A18/A00 (ayrıntı:
+        evren_film_sonu.py; yedek yalnız KOPYA, AYARLAR girmez, /MIR ve /MOVE yok)
+  Kodda: evren.ses_kaydet(film, karakter, kayit) → <evren>/<SERI>/karakterler/<id>/ses.json (sürümlü; eski hâli ses_v<n>.json)
+Henüz yok (TASARIM §6.3, sonraki PR'lar): --kur, --bagla, --spec-dogrula, --disa-aktar, --ice-al, hikaye-kaydet --dogrula,
+  izleyici-ozeti. Çağrılırsa 4 (ORTAM) ile "henüz yok" der.
 Çıkış kodları: 0 tamam · 1 HATA (kimlik çakışması, HIKAYE.json yok ya da bozuk) · 4 ORTAM (yol yok, komut henüz yok).
 """
 import os, sys, re, json, glob, datetime
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
@@ -31,8 +34,8 @@ SURUM = "evren 1.0"
 BITTI, HATA, ORTAM = 0, 1, 4
 SERI_DESEN = re.compile(r"[A-Z0-9][A-Z0-9_]{1,40}")
 KIMLIK_DESEN = re.compile(r"[a-z0-9][a-z0-9_]{0,40}")
-SONRAKI = ("--kur", "--bagla", "--spec-dogrula", "--film-sonu", "--disa-aktar", "--ice-al",
-           "hikaye-kaydet", "izleyici-ozeti", "--yedekle", "--yedek-dogrula")
+SONRAKI = ("--kur", "--bagla", "--spec-dogrula", "--disa-aktar", "--ice-al", "hikaye-kaydet", "izleyici-ozeti")
+FILM_SONU = ("--film-sonu", "--yedekle", "--yedek-dogrula")      # A18/A00: evren_film_sonu.py'ye yönlendirilir
 
 
 def simdi(): return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
@@ -244,6 +247,23 @@ def on_kayit(film, seri=None):
 
 
 # --- komut satırı ------------------------------------------------------------------------------------------------
+# --- ses (A08/S1: ses_sec çağırır) --------------------------------------------------------------------------------
+def ses_kaydet(film, karakter, kayit, seri=None):
+    """Karakterin ses kaydını (voice_id, ayarlar, etiket …; anahtar yok) <evren>/<SERI>/karakterler/<id>/ses.json'a yazar.
+    Sürümlü: içerik değişirse eski hâli ses_v<n>.json olarak kalır (silme yok) ve surum bir artar; aynı kayıt bir şey değiştirmez.
+    Seri bulunamazsa ya da kimlik geçersizse ValueError (çağıran BAYRAK yazar). Dönüş: (yol, değişti_mi)."""
+    seri = seri_normal(seri) or film_serisi(film)
+    if not seri: raise ValueError("filmin evren serisi yok (HIKAYE.json evren / HAZIRLIK seri)")
+    if not (isinstance(karakter, str) and KIMLIK_DESEN.fullmatch(karakter)): raise ValueError(f"karakter kimliği geçersiz: {karakter!r}")
+    if not isinstance(kayit, dict): raise ValueError("ses kaydı sözlük olmalı")
+    p = seri_yolu(seri, "karakterler", karakter, "ses.json"); eski = _oku(p) or {}
+    govde = {k: v for k, v in kayit.items() if k not in ("surum", "zaman", "film", "id", "seri")}
+    if {k: v for k, v in eski.items() if k not in ("surum", "zaman", "film", "id", "seri")} == govde: return p, False
+    yeni = dict(govde, id=karakter, seri=seri, film=os.path.basename(os.path.normpath(film)), surum=int(eski.get("surum") or 0) + 1,
+                zaman=simdi())
+    return p, _surumlu_yaz(p, yeni)
+
+
 def _arg(a, ad, v=None):
     return a[a.index(ad) + 1] if ad in a and a.index(ad) + 1 < len(a) else v
 
@@ -260,6 +280,9 @@ def main(a):
         if any(x in ("--kilitle", "--kilit-dogrula", "--surum-ac") for x in a):      # kart kilidi (PR-8): evren_kilit.py
             import evren_kilit
             return evren_kilit.ana(a)
+        if any(x in FILM_SONU for x in a):
+            import evren_film_sonu
+            return evren_film_sonu.main(a)
         if a[0] in SONRAKI or any(x in SONRAKI for x in a if x.startswith("--")):
             print(f"!! {next(x for x in a if x in SONRAKI)} henüz yok (TASARIM §6.3; sonraki PR). İşlem yapılmadı."); return ORTAM
         jm = "--json" in a; film = _film_yolu(_arg(a, "--film")); seri = seri_normal(_arg(a, "--seri"))

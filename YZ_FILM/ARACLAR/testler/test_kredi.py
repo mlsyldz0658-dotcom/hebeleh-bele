@@ -36,6 +36,18 @@ class But0(Temel):
         dosya = oku(os.path.join(self.film, "_RAPOR", "BUT0_FILM.json"))
         self.assertEqual(dosya["kapi"], "BUT0"); self.assertEqual(dosya["_uretim"]["asama"], "A01")
 
+    def test_gorev_ve_tur_goreV_json_dan(self):
+        """film.py görevi altında _uretim.gorev = GOREV.json id, tur = tur_no (kapi_oku 'rapor_bu_goreve_ait_degil' demesin)."""
+        r, _ = kredi.but0(olcum={}, ayar={}, film=self.film)
+        self.assertIsNone(r["_uretim"]["gorev"]); self.assertIsNone(r["tur"])
+        gd = os.path.join(self.film, "_GOREV", "A01-B0-s1-t2")
+        os.makedirs(gd); json.dump({"id": "A01-B0-s1-t2", "tur_no": 2, "asama": "A01"}, open(os.path.join(gd, "GOREV.json"), "w"))
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"YZ_FILM_GOREV": gd}):
+            r, _ = kredi.but0(olcum={}, ayar={}, film=self.film)
+        d = oku(os.path.join(self.film, "_RAPOR", "BUT0_FILM.json"))
+        self.assertEqual((d["_uretim"]["gorev"], d["tur"], d["_uretim"]["asama"]), ("A01-B0-s1-t2", 2, "A01"))
+
     def test_olculemedi_ve_dusuk_kapasite_1800(self):
         for o in ({"O0b": {"olculen_gunluk_kapasite": None, "olculemedi": True}}, {"O0b": {"olculen_gunluk_kapasite": 15}}):
             r, _ = kredi.but0(olcum=o, ayar={"butce": {"takvim_hedef_gun": 365}})

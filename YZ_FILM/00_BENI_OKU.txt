@@ -1,66 +1,13 @@
-YZ_FILM — YZ SİNEMA KANALI STÜDYOSU
-===================================
+YZ FİLM SETİ
+===========
+
+Önce BASLA_BURADAN.txt'yi oku: setin şu anki durumu ve sıradaki adım orada.
+
+Yeni set hazırlanıyor; eski .bat'lar emekli (kullanma). Eski anlatım: _ESKI\00_BENI_OKU_eski_anlatim.txt (artık geçerli değil).
 
 KLASÖRLER
   ARACLAR\    programlar (dokunma)
-  BILGI\      kararlar ve önemli notlar (KARARLAR.md)
-  FILMLER\    her film ayrı klasör (ör. FILMLER\EMBERFALL_PILOT)
-
-BİR FİLM KLASÖRÜNDE NE VAR
-  SAHNELER.json     filmin bütün sahneleri (Claude hazırlar; sen dokunma)
-  01_KARAKTERLER\   karakter referans görselleri (mara.jpg, ember.jpg ...)
-  GELENLER\         Flow'dan indirdiğin HER ŞEYİ buraya at (zip, rar veya tek tek dosya)
-  KONTROL.bat       çift tıkla: GELENLER'i işler, sıralar, rapor çıkarır
-  SIRALI_GORSEL\    sahne görselleri 001.jpg, 002.jpg ... (Foto→Video'ya bunları ver)
-  SIRALI_VIDEO\     sahne videoları 001.mp4, 002.mp4 ...
-  ALTERNATIFLER\    aynı sahne için fazladan gelen görsel/videolar (007_alt1.jpg ...)
-  RAPOR.html        küçük resimlerle durum (çift tıkla, tarayıcıda açılır)
-  EKSIKLER.txt      eksik sahnelerin istemleri, kopyalayıp Flow'a yapıştırmaya hazır
-  _HAM, _ELENENLER, _RAPOR, DURUM.json   programın kendi dosyaları (dokunma)
-
-MEMMET AUTO (Flow'u kendi kendine kullanır)
-  İlk sefer: MEMMET_GIRIS.bat → açılan Memmet Chrome'unda Google'a giriş yap (bir kere).
-  Sonra: MEMMET_BASLAT.bat → her partide önce görseller, sonra videolar; SIRALI_GORSEL\NNN.jpg ve SIRALI_VIDEO\NNN.mp4'e kaydeder.
-  Çalışırken Memmet Chrome penceresine dokunma (küçültme de; başka pencerelerin arkasında kalabilir).
-  Doğrulama (reCAPTCHA) çıkarsa durur, uyarı verir; sen çözünce kendisi devam eder.
-  Ne yaptığı: MEMMET_KAYIT.txt · hata ekran görüntüleri: _MEMMET_HATALAR\
-  Ayarlar (bekleme, mola, çözünürlük): ARACLAR\MEMMET_AYAR.json
-
-İŞ AKIŞI ELLE (Memmet kullanılmazsa, her parti için)
-  1. Claude'un verdiği parti istemleriyle görselleri üret (referans gruplarına göre).
-  2. Flow'da projeyi zip olarak indir → GELENLER'e at → KONTROL.bat.
-  3. RAPOR.html'e bak. Sarı satırlar "emin değilim" demek; gözle kontrol et.
-     Kırmızı satırlar eksik; EKSIKLER.txt'deki istemlerle tamamla, zip'i tekrar at, KONTROL.bat.
-  4. SIRALI_GORSEL'deki görselleri EKSIKLER.txt'deki sırayla Foto→Video'ya ver.
-  5. Zip'i tekrar indir → GELENLER → KONTROL.bat. Videolar da sıraya girer.
-
-CAPCUT PROJESİ
-  Bütün videolar yerleşince CAPCUT_PROJESI_OLUSTUR.bat'a çift tıkla (önce CapCut'ı kapat).
-  1. Replikler karakterlerin sabit sesleriyle üretilir, Flow'un konuştuğu yere oturtulur.
-  2. CapCut'ta yeni proje oluşur. Kanallar: Klipler, Bantlar, Baslik, Altyazi, Diyalog, Ortam, Muzik.
-  Render yapılmaz; CapCut'ta izle, düzelt, dışa aktarmayı sen yap.
-  Altyazı dosyaları KURGU\altyazi_en.srt / altyazi_tr.srt (YouTube'a da yüklenebilir).
-
-YÖNETMEN NOTLARI VE SENİN NOTLARIN
-  CapCut projesinde sarı "NOTLAR" kanalı: her sahnenin amacı ve duygusu. RENDER'DAN ÖNCE BU KANALI SİL.
-  Beğenmediğin yere CapCut'ta yazı ekle (Metin > yazı ekle), içine notunu yaz. Bitince CapCut'ı kapat,
-  Claude'a "notlar hazır" de. Claude notları saniyesi ve sahnesiyle birlikte okur (KURGU\NOTLARIM.txt).
-
-YANLIŞ VARSA: DUZELT.txt
-  Film klasöründeki DUZELT.txt'ye yaz, kaydet, KONTROL.bat'a bas:
-    5 10        -> 5 ile 10'u yer değiştir (görsel + video birlikte)
-    7 alt1      -> 7'nin ana görseli yerine ALTERNATIFLER\007_alt1 gelsin
-    7 valt1     -> 7'nin videosu yerine ALTERNATIFLER\007_alt1.mp4 gelsin
-    13 sil      -> 13'ü boşalt (yeniden üretilecek)
-    onay 17 20  -> baktım, doğru (sarı satır yeşile döner)
-  Uygulanınca dosya kendiliğinden boşalır. İstersen bunu Claude'a sohbette de söyleyebilirsin.
-
-İPUÇLARI
-  - Aynı Flow projesinden biriken zip'leri tekrar tekrar atabilirsin; daha önce işlenenler atlanır.
-  - İşlenen zip silinir (içeriği _HAM'da saklı; Flow'da da duruyor).
-  - Bir sahneyi beğenmedin mi? SIRALI_GORSEL\NNN.jpg dosyasını sil, yenisini üret, zip at, KONTROL.bat.
-  - Her film için Flow'da AYRI proje aç.
-  - İstem dosyalarında her istem arasında bir boş satır vardır; ViralDNA bunu doğru böler.
-
-DİSK
-  Çalışırken her şey C'de (hızlı SSD). Film yüklenince D'ye (harici USB disk) arşivlenecek.
+  BILGI\      kararlar ve önemli notlar
+  FILMLER\    her film ayrı klasör
+  AYARLAR\    gizli anahtarlar (kimseyle paylaşma)
+  _ESKI\      emekliye ayrılan eski dosyalar (silinmedi)

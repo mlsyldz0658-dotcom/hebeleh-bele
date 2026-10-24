@@ -48,7 +48,7 @@ cevap vermeyen replik (diyalog kopukluğu; ORTA).
 - **KÜÇÜK:** ton ve sözcük cilası.
 
 ## Çıktı sözleşmesi
-`CIKTI/rapor.json` (betik `_HIKAYE_ODASI/oyuncu/<i>.json`'a taşır; TASARIM adı `OYUNCU_<karakter>.json`):
+`CIKTI/rapor.json` (GOREV.json `cikti.zorunlu` ne diyorsa o ad; betik taşır):
 ```json
 {"karakter": "sera", "kapsam": "tam", "incelenen": 23,
  "maddeler": [{"replik": "R0042", "seviye": "KRITIK", "soru": "nereden_biliyor",

@@ -11,7 +11,11 @@ Kullanım:
 Kodda: kurgu_uygula.denetle(islemler, plan, sahneler, cizelge) → (hatalar, bayraklar) · uygula(plan, islemler, sahneler) ·
   duzen_uygula(plan, islemler, sahneler) (zaman_cizelgesi_t1 çağırır).
 İşlemler ([KU2] §4.5.6): kirp, uzat, sira, jl, ekran_disi, kopru_replik_iste, ortu, alternatif, bol, ayna, kadraj, hiz, kart, efekt_iste,
-  kes, kes_sahne_iste, yer_tutucu, yeniden_cek, yeni_plan_iste.
+  kes, kes_sahne_iste, yer_tutucu, yeniden_cek, yeni_plan_iste, diyalog_kaydir {replik, sn} (dudak_denetim S3.1 → KURGU/S3_ONERI_v<N>.json;
+  |sn| ≤ diyalog_kaydir_max_sn, plan_ofset'e eklenir: `--kararlar KURGU/S3_ONERI_v<N>.json`).
+SES İSTEKLERİ (T2/T3): KURGU/SES_ISTEKLERI.json'daki yapılmamış ekran_disi istekleri (ses_karar, ekran_disi_tts) işlem listesine eklenir;
+  kurgucu aynı repliğe karar verdiyse onunki geçer, yoksa B9'dan geçen en yakın plan seçilir (bulunamazsa BAYRAK). Uygulanan istek
+  yapildi: true işaretlenir. Karar dosyası yoksa yalnız bu istekler uygulanır.
 Denetim (her işlem): bilinen op · kok_neden veri/kok_neden.json'da · bulgu dolu · plan/replik var · `kullanim_kaynak: kullanici` ya da
   kilitli plana dokunulmaz · sira: yalnız etkisiz planlar yer değiştirir (dondurulmuş durum zıplamasın, Y58) ve yeni sıra aynı sahne
   grubunun permütasyonudur · jl taşması RE l_kesme_aralik_sn / j_kesme_aralik_sn içinde, üstüne binilen plan ≥ taşma + RE
@@ -22,20 +26,20 @@ Denetim (her işlem): bilinen op · kok_neden veri/kok_neden.json'da · bulgu do
 Çıkış kodları: 0 tamam · 1 HATA (hiçbir şey yazılmadı) · 2 girdi yok · 4 kullanım.
 """
 import os, sys, re, json, glob, math, argparse, copy
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak
 
 SURUM = "kurgu_uygula 1.0"
 OPLAR = ("kirp", "uzat", "sira", "jl", "ekran_disi", "kopru_replik_iste", "ortu", "alternatif", "bol", "ayna", "kadraj", "hiz", "kart",
-         "efekt_iste", "kes", "kes_sahne_iste", "yer_tutucu", "yeniden_cek", "yeni_plan_iste")
+         "efekt_iste", "kes", "kes_sahne_iste", "yer_tutucu", "yeniden_cek", "yeni_plan_iste", "diyalog_kaydir")
 ISTE = ("kopru_replik_iste", "efekt_iste", "kes_sahne_iste", "yeni_plan_iste")
 YALNIZ_VIDEO = ("alternatif", "bol")
 KART_TURLERI = ("yer_zaman", "baslik", "bolum", "kopru", "jenerik", "seri_kancasi")
 VARS = {"l_kesme_aralik_sn": [0.3, 2.5], "j_kesme_aralik_sn": [0.3, 0.8], "l_kesme_alici_plan_ek_sn": 0.5,
         "hiz_aralik_diyalogsuz": [0.9, 1.15], "yeniden_kadraj_max": 0.1, "kesme_turu_oneri": {"plan": 10, "sahne": 2, "uygulama_orani_min": 0.5},
-        "kullanim_bas_min_sn": 0.3}
+        "kullanim_bas_min_sn": 0.3, "diyalog_kaydir_max_sn": 0.5}
 
 
 class KurguHatasi(Exception):
@@ -131,6 +135,12 @@ def denetle(islemler, plan, sahneler=None, cizelge="T1", film=None):
             agiz = [k.get("id") for k in (hs.get("zanaat") or {}).get("kadrajdakiler") or [] if isinstance(k, dict)
                     and k.get("id") != konusan and (k.get("konusur") or dd.get("dinleyen_agiz") == "acik")]
             if agiz or (hs.get("replik") or {}).get("id"): h(i, op, f"plan {hedef['plan']}: üstünde başka birinin ağzı oynuyor (B9)")
+        elif op == "diyalog_kaydir":
+            d = rep.get(x.get("replik")); sn = x.get("sn"); mx = float(E("diyalog_kaydir_max_sn") or 0.5)
+            if d is None: h(i, op, f"replik yok: {x.get('replik')!r}"); continue
+            if not isinstance(sn, (int, float)) or sn == 0 or abs(sn) > mx + 1e-9: h(i, op, f"kaydırma {sn} sn geçersiz (0 < |sn| ≤ {mx})")
+            dp = pl.get(d.get("plan"))
+            if dp is not None and _kilitli(dp) and p is None: h(i, op, f"plan {dp['plan']}: kullanıcının kilitli kararı değiştirilemez")
         elif op == "hiz":
             v = x.get("hiz"); ar = E("hiz_aralik_diyalogsuz")
             if not isinstance(v, (int, float)) or not (ar[0] <= v <= ar[1]): h(i, op, f"hız {v} aralık dışında {ar}")
@@ -175,6 +185,14 @@ def denetle(islemler, plan, sahneler=None, cizelge="T1", film=None):
     return H, B
 
 
+def _ofset_sabitle(plan):
+    """T2 diyaloğu (plan_kurgu) plan_ofset taşımaz; yeniden_zamanla repliği planın başına çekmesin diye planın başına göre ofset yazılır."""
+    bas = {q.get("plan"): q.get("cizelge_bas") for q in plan.get("planlar") or []}
+    for d in plan.get("diyalog") or []:
+        if d.get("plan_ofset") is None and d.get("cizelge_bas") is not None and bas.get(d.get("plan")) is not None:
+            d["plan_ofset"] = round(float(d["cizelge_bas"]) - float(bas[d["plan"]]), 4)
+
+
 def _durum_degisir(p):
     d = p.get("durum_ozet") or {}
     return bool(d) and d.get("bas") != d.get("bit")
@@ -204,6 +222,13 @@ def uygula(plan, islemler, sahneler=None):
             for d in plan.get("diyalog") or []:
                 if d.get("replik") == x["replik"]:
                     d.update(plan=x["uzerine_plan"], ekran_disi=True, gorunen_konusan=False, plan_ofset=float(x.get("ofset") or 0))
+        elif op == "diyalog_kaydir":
+            for d in plan.get("diyalog") or []:
+                if d.get("replik") == x["replik"]:
+                    d["plan_ofset"] = round(float(d.get("plan_ofset") or 0) + float(x["sn"]), 4)
+                    d["kaydirma_sn"] = round(float(d.get("kaydirma_sn") or 0) + float(x["sn"]), 4)
+                    if d.get("cizelge_bas") is not None: d["cizelge_bas"] = round(float(d["cizelge_bas"]) + float(x["sn"]), 4)
+                    if d.get("plan") is not None: degisen.add(d["plan"])
         elif op == "hiz" and p:
             p["goruntu"]["hiz"] = float(x["hiz"]); p["sure"] = round(float(p["sure"]) / float(x["hiz"]), 4); degisen.add(p["plan"])
         elif op == "ayna" and p: p["goruntu"]["ayna"] = True; degisen.add(p["plan"])
@@ -316,20 +341,77 @@ def _yeniden_cek(film, cizelge, tur, ops):
     return kuyruk.ekle(film, m, kapi_tur=tur)
 
 
+SES_ISTEKLERI = os.path.join("KURGU", "SES_ISTEKLERI.json")
+
+
+def _ses_istekleri_oku(film):
+    v = ortak.json_oku(os.path.join(film, SES_ISTEKLERI), {}) or {}
+    return v, [m for m in v.get("islemler") or [] if isinstance(m, dict) and not m.get("yapildi")]
+
+
+def ses_istekleri(film, plan, sahneler, islemler):
+    """ses_karar'ın ekran_disi istekleri (KURGU/SES_ISTEKLERI.json, ses_karar ekran_disi_tts basamağı) → ekran_disi işlemleri.
+    Kurgucu aynı replik için kendisi karar verdiyse istek onun kararıyla karşılanır. Hedef plan verilmemişse konuşanın planından sonraki,
+    sonra önceki planlar (aynı sahne grubu önce) sırayla denenir; B9'dan (başka ağız) geçen ilk plan seçilir. → (işlemler, maddeler, bayraklar)"""
+    _, bekleyen = _ses_istekleri_oku(film)
+    if not bekleyen: return [], [], []
+    kurgucu = {x.get("replik") for x in islemler if isinstance(x, dict) and x.get("op") == "ekran_disi"}
+    rep = {d.get("replik"): d for d in plan.get("diyalog") or []}
+    sira = [q.get("plan") for q in plan.get("planlar") or []]
+    sg = {q.get("plan"): q.get("sahne_grubu") for q in plan.get("planlar") or []}
+    ops, maddeler, bay = [], [], []
+    for m in bekleyen:
+        rid = m.get("replik"); d = rep.get(rid)
+        if rid in kurgucu: maddeler.append((m, "kurgucu")); continue
+        if d is None: bay.append({"i": None, "op": "ekran_disi", "neden": f"SES_ISTEKLERI: replik çizelgede yok: {rid!r}"}); continue
+        kaynak = d.get("plan") if d.get("plan") is not None else m.get("plan")
+        if m.get("uzerine_plan") is not None: adaylar = [m["uzerine_plan"]]
+        else:
+            k = sira.index(kaynak) if kaynak in sira else -1
+            yakin = sorted((j for j in range(len(sira)) if j != k), key=lambda j: (abs(j - k), j < k)) if k >= 0 else range(len(sira))
+            adaylar = [sira[j] for j in yakin if sg.get(sira[j]) == sg.get(kaynak)] + [sira[j] for j in yakin if sg.get(sira[j]) != sg.get(kaynak)]
+        secilen = None
+        for a in adaylar:
+            op = {"op": "ekran_disi", "replik": rid, "uzerine_plan": a, "kok_neden": m.get("kok_neden") or "dudak_kayma",
+                  "bulgu": f"SES_ISTEKLERI#{rid}", "_kaynak": SES_ISTEKLERI}
+            if not denetle([op], plan, sahneler, plan.get("cizelge", "T2"))[0]: secilen = op; break
+        if secilen: ops.append(secilen); maddeler.append((m, secilen["uzerine_plan"]))
+        else: bay.append({"i": None, "op": "ekran_disi", "neden": f"SES_ISTEKLERI {rid}: ağzı başka kimsenin oynamadığı plan bulunamadı (B9)"})
+    return ops, maddeler, bay
+
+
+def _ses_istekleri_isaretle(film, maddeler, surum):
+    if not maddeler: return
+    v, _ = _ses_istekleri_oku(film)
+    for m, hedef in maddeler:
+        for x in v.get("islemler") or []:
+            if x.get("replik") == m.get("replik") and not x.get("yapildi"):
+                x.update(yapildi=True, uygulandi={"uzerine_plan": None if hedef == "kurgucu" else hedef, "karar": "kurgucu" if hedef == "kurgucu"
+                                                   else "kurgu_uygula", "surum": surum})
+                break
+    ortak.atomik_yaz(os.path.join(film, SES_ISTEKLERI), v)
+
+
 def calistir(film, cizelge="T1", tur=1, kararlar=None, kuru=False, asama=None):
     film = os.path.abspath(film)
     import zaman_cizelgesi_t1 as t1
     yol = kararlar or kararlar_bul(film, cizelge, tur, asama)
-    if not yol or not os.path.isfile(yol): raise FileNotFoundError("kurgu karar dosyası yok")
-    islemler, ust = islemleri_oku(yol)
+    if yol and os.path.isfile(yol): islemler, ust = islemleri_oku(yol)
+    elif cizelge != "T1" and _ses_istekleri_oku(film)[1]: islemler, ust, yol = [], {}, os.path.join(film, SES_ISTEKLERI)
+    else: raise FileNotFoundError("kurgu karar dosyası yok")
     cizelge = ust.get("asama") if ust.get("asama") in ("T1", "T2", "T3") else cizelge
     plan, pyol, n = t1.plan_oku(film, cizelge)
     if plan is None: raise FileNotFoundError(f"KURGU_PLANI_{cizelge} yok")
     sahneler = ortak.json_oku(os.path.join(film, "SAHNELER.json"), {}) or {}
+    ses_ops, ses_maddeler, ses_bay = ses_istekleri(film, plan, sahneler, islemler) if cizelge != "T1" else ([], [], [])
+    islemler = list(islemler) + ses_ops
     H, B = denetle(islemler, plan, sahneler, cizelge, film)
-    sonuc = {"karar_dosyasi": os.path.relpath(yol, film), "cizelge": cizelge, "temel_surum": n, "hatalar": H, "bayraklar": B}
+    B = B + ses_bay
+    sonuc = {"karar_dosyasi": os.path.relpath(yol, film), "cizelge": cizelge, "temel_surum": n, "hatalar": H, "bayraklar": B,
+             "ses_istekleri": [{"replik": m.get("replik"), "uzerine_plan": h} for m, h in ses_maddeler]}
     if kuru or H: return (1 if H else 0), sonuc
     yeni = copy.deepcopy(plan)
+    _ofset_sabitle(yeni)
     degisen = uygula(yeni, islemler, sahneler)
     t1.yeniden_zamanla(yeni)
     if cizelge == "T1": t1.olcumler(yeni)
@@ -351,6 +433,7 @@ def calistir(film, cizelge="T1", tur=1, kararlar=None, kuru=False, asama=None):
     sim = ortak.json_oku(sim_yol)
     if isinstance(sim, dict) and any(x.get("op") in ("kes", "kes_sahne_iste") for x in islemler):
         sim["uygulandi"] = os.path.relpath(yol, film); ortak.atomik_yaz(sim_yol, sim)
+    _ses_istekleri_isaretle(film, ses_maddeler, os.path.relpath(hedef, film).replace("\\", "/"))
     sonuc.update(yeni_surum=os.path.relpath(hedef, film), degisen=degisen)
     ortak.atomik_yaz(os.path.join(film, "_RAPOR", f"KURGU_UYGULA_{cizelge}_t{tur}.json"),
                      {"_surum": 1, "_uretim": {"asama": asama, "arac_surum": SURUM, "zaman": t1.simdi(), "sonuc": "GEC", "ortam": t1.ortam(),

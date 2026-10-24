@@ -26,7 +26,7 @@ Kurallar:
 Çıkış kodları: 0 tamam · 1 program hatası ya da bozuk kuyruk dosyası · 2 girdi/film klasörü yok · 3 en az bir madde reddedildi · 4 kullanım.
 """
 import os, sys, re, json, shutil, hashlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")   # StringIO stdout'ta yok
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
 import ortak, kapi
@@ -36,14 +36,14 @@ URET, YAZ = "YENIDEN_URET", "YENIDEN_YAZ"
 KREDILI = ("yeniden_cek", "bitis_sabit", "yeni_plan", "yeni_sahne")      # D-31
 COZUMLER = KREDILI + ("kirp",)
 COZUM_ESDEGER = {"z2_bitis": "bitis_sabit"}                              # [KU2] §4.5.5 adı
-TURLER = ("gorsel", "video", "ses")
+TURLER = ("gorsel", "video", "ses", "kart")      # kart: karakter/mekân kartı düzeltmesi (A10d KART_DUZELTME); plan yerine kart_id
 SEVIYE_PUANI = {"KRITIK": 3, "HATA": 3, "ORTA": 2, "BAYRAK": 2}
 SEVIYE_ESDEGER = {"KRİTİK": "KRITIK", "H": "HATA", "B": "BAYRAK", "KÜÇÜK": "KUCUK", "KUCUK": "KUCUK"}
 SOY_MAX = 3                     # §1.5 "Plan soyu başına üretim denemesi 3"; D-31 "toplam deneme ≤ 3" (eşik dosyasında anahtar yok)
 DURUMLAR = ("bekliyor", "gonderildi", "tamam", "iptal")
 ACIK = ("bekliyor",)
 YAZ_DURUMLAR = ("bekliyor", "tamam", "iptal")
-DILIM = {"G1": "goruntu", "G1Z": "goruntu", "V1": "goruntu", "V2": "goruntu", "V3": "goruntu", "K1": "goruntu", "KESIT": "goruntu",
+DILIM = {"G1": "goruntu", "G1Z": "goruntu", "V1": "goruntu", "V2": "goruntu", "V3": "goruntu", "K1": "goruntu", "KESIT": "goruntu", "KART": "goruntu",
          "S2": "ses", "S2m": "ses", "S3": "ses", "Z3": "kurgu", "AI": "kurgu", "KI": "kurgu", "NOT": "kurgu"}
 DILIMLER = ("goruntu", "ses", "kurgu")
 ILK_SN = 120                    # konum ağırlığı: ilk 120 sn ([KU2] §4.5.5)
@@ -170,7 +170,10 @@ def madde_denetle(m):
     if not isinstance(m, dict): return ["madde sözlük değil"]
     h = []
     p = m.get("plan")
-    if not (isinstance(p, int) and not isinstance(p, bool) and p > 0): h.append(f"plan pozitif tamsayı olmalı: {p!r}")
+    if m.get("tur") == "kart":
+        if not (isinstance(m.get("kart_id"), str) and m["kart_id"].strip()): h.append(f"kart maddesinde kart_id gerekli: {m.get('kart_id')!r}")
+        if p is not None and not (isinstance(p, int) and not isinstance(p, bool) and p > 0): h.append(f"plan pozitif tamsayı olmalı: {p!r}")
+    elif not (isinstance(p, int) and not isinstance(p, bool) and p > 0): h.append(f"plan pozitif tamsayı olmalı: {p!r}")
     s = m.get("soy")
     if s is not None and not (isinstance(s, int) and not isinstance(s, bool) and s > 0): h.append(f"soy pozitif tamsayı olmalı: {s!r}")
     if m.get("tur") not in TURLER: h.append(f"tur geçersiz: {m.get('tur')!r} ({'|'.join(TURLER)})")
@@ -222,7 +225,10 @@ def zincir_etkisi(plan_no, sahneler):
     return out
 
 
-def _sayac_kovasi(tur): return "gorsel" if tur == "gorsel" else "video"
+def _sayac_kovasi(tur): return tur if tur in ("gorsel", "kart") else "video"     # kart soyu ayrı sayılır
+
+
+def _birim(m): return ("kart", m.get("kart_id")) if m.get("tur") == "kart" else ("plan", m.get("plan"))
 
 
 def _yeni_id(q, kaynak_kapi, kapi_tur):
@@ -248,18 +254,18 @@ def _ekle_bir(q, m, sonuc, kaynak_kapi, kaynak_rapor, kapi_tur, sahneler, E):
     m["kok_neden"] = kok_neden_normal(m["kok_neden"]); m["seviye"] = seviye_normal(m["seviye"])
     if m["cozum"] == "kirp":                                    # kuyruğa girmez (D-31)
         sonuc["kirp"].append(m); return
-    m.setdefault("soy", m["plan"])
+    m.setdefault("soy", m["kart_id"] if m["tur"] == "kart" else m["plan"])
     m.setdefault("seyirci_sayisi", 1); m.setdefault("dogrulanmis", False)
     m["konum_agirligi"] = konum_agirligi(m, E)
     m["dilim"] = m.get("dilim") or DILIM.get(m["kaynak_kapi"], "kurgu")
     m.setdefault("plan_metni_sahibi", "yonetmen")
     zin = set(m.get("zincir_etkisi") or [])
-    if sahneler: zin |= set(zincir_etkisi(m["plan"], sahneler))
+    if sahneler and m["tur"] != "kart": zin |= set(zincir_etkisi(m["plan"], sahneler))
     m["zincir_etkisi"] = sorted(zin)
     k = esik(E)
     # tekrar: aynı tur + plan + kok_neden açık madde
     for e in q["maddeler"]:
-        if e.get("durum") in ACIK and e.get("tur") == m["tur"] and e.get("plan") == m["plan"] and e.get("kok_neden") == m["kok_neden"]:
+        if e.get("durum") in ACIK and e.get("tur") == m["tur"] and _birim(e) == _birim(m) and e.get("kok_neden") == m["kok_neden"]:
             if SEVIYE_PUANI[m["seviye"]] > SEVIYE_PUANI.get(e.get("seviye"), 0): e["seviye"] = m["seviye"]
             e["seyirci_sayisi"] = max(e.get("seyirci_sayisi") or 1, m["seyirci_sayisi"])
             e["dogrulanmis"] = bool(e.get("dogrulanmis")) or m["dogrulanmis"]
@@ -286,7 +292,7 @@ def _ekle_bir(q, m, sonuc, kaynak_kapi, kaynak_rapor, kapi_tur, sahneler, E):
     if deneme > k["soy_max"]:
         basamak = MERDIVEN_ONARIM if rec.get("merdiven") is None else MERDIVEN_DURDU
         rec["merdiven"] = basamak
-        is_ = {"soy": m["soy"], "tur": kova, "plan": m["plan"], "basamak": basamak, "deneme_yapilan": rec["deneme"],
+        is_ = {"soy": m["soy"], "tur": kova, "plan": m.get("plan"), "basamak": basamak, "deneme_yapilan": rec["deneme"],
                "gorev": "yonetmen·onarim" if basamak == MERDIVEN_ONARIM else "kurgucu·sifir_kredi", "kok_neden": m["kok_neden"]}
         red = {"madde": m, "neden": [f"soy tavanı: soy {m['soy']} ({kova}) {rec['deneme']}/{k['soy_max']} deneme kullandı"],
                "merdiven": basamak, "zaman": kapi.simdi()}
@@ -339,6 +345,7 @@ def topla(film_kok, rapor_klasoru=None, sahneler=None, E=None, asama=None):
 # --- durum ve eski klip ------------------------------------------------------------------------------------------
 def eski_klip_tasi(film_kok, madde):
     """Yeniden üretilecek planın eski çıktısını <film>/_ESKI/<klasör>/NNN_d<deneme-1>.<uzantı>'ya taşır (silmez). Yol ya da None."""
+    if madde.get("tur") == "kart": return None              # kart sürümlerini kart_denetim/_KARTLAR tutar; taşınacak klip yok
     klasor, uzantilar = ("SIRALI_GORSEL", (".jpg", ".png", ".jpeg")) if madde.get("tur") == "gorsel" else ("SIRALI_VIDEO", (".mp4",))
     for uz in uzantilar:
         kaynak = os.path.join(film_kok, klasor, f"{int(madde['plan']):03d}{uz}")
@@ -479,7 +486,7 @@ def merdiven_md(film_kok, cikti=None):
     for m in acik:
         denenen = (m.get("sifir_kredi") or {}).get("basamaklar") or []
         kalan = [b for b in basamaklar(m.get("kok_neden")) if b not in denenen]
-        s.append(f"- **{m['id']}** · plan {m['plan']} · {m.get('tur')} · {m.get('seviye')} · `{m.get('kok_neden')}` · öncelik {m.get('oncelik')} · "
+        s.append(f"- **{m['id']}** · {' '.join(map(str, _birim(m)))} · {m.get('tur')} · {m.get('seviye')} · `{m.get('kok_neden')}` · öncelik {m.get('oncelik')} · "
                  f"deneme {m.get('deneme')}/{m.get('deneme_max')} · çözüm {m.get('cozum')}")
         s.append(f"  - önerilen basamaklar: {', '.join(map(str, basamaklar(m.get('kok_neden'))))}; denenen: "
                  f"{', '.join(map(str, denenen)) or '—'}; denenmemiş: {', '.join(map(str, kalan)) or '—'}")
@@ -560,7 +567,7 @@ def main(argv):
             return _yazdir(yaz_ekle(film, _maddeler_oku(a["--yaz-ekle"]), a["--asama"]))
         if bayrak["--listele"]:
             for m in acik_maddeler(film):
-                print(f"{m['id']} · plan {m['plan']} · {m['tur']} · {m['seviye']} · {m['kok_neden']} · öncelik {m['oncelik']} · "
+                print(f"{m['id']} · {' '.join(map(str, _birim(m)))} · {m['tur']} · {m['seviye']} · {m['kok_neden']} · öncelik {m['oncelik']} · "
                       f"kredi {m.get('kredi_tahmini')} · deneme {m['deneme']}/{m['deneme_max']}")
             for m in acik_maddeler(film, YAZ): print(f"{m['id']} · {m['konum']} · {m['kapi']}:{m['madde']} → {m['yazar']}")
             print(ozet_md(film)); return 0

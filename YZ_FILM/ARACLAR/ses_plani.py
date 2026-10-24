@@ -298,8 +298,10 @@ def profil_denetle(o):
     prof = ids.profiller_oku(film)
     ev = {k: evren_json(h, "karakterler", k, "ses.json") for k in karakterler(h)}
     olc, konusan = profil_olcumleri(h, prof, evren_sesleri=ev)
-    rapor_yaz(film, g, "PROFIL", olc, "_RAPOR/S0_PROFIL_t{tur}.json", birimler=konusan,
-              ek={"konusan": konusan, "profil_sayisi": len(prof)})
+    _, r = rapor_yaz(film, g, "PROFIL", olc, "_RAPOR/S0_PROFIL_t{tur}.json", birimler=konusan,
+                     ek={"konusan": konusan, "profil_sayisi": len(prof)})
+    if prof and not os.path.isfile(os.path.join(film, SES, "SES_KADROSU.md")):
+        metin_yaz(os.path.join(film, SES, "SES_KADROSU.md"), kadro_ozeti(h, prof, r))
     return BITTI
 
 
@@ -726,10 +728,55 @@ def denetle(o):
     ek["sahneler_yazildi"] = bool(not S_tek and not hata)
     _, r = rapor_yaz(film, g, kapsam, olc, varsayilan, birimler=birimler, ek=ek)
     if ek["sahneler_yazildi"]:
-        ortak.atomik_yaz(os.path.join(film, "SAHNELER.json"), derlenir_doldur(p, ipuclari))
+        doc = derlenir_doldur(p, ipuclari)
+        ortak.atomik_yaz(os.path.join(film, "SAHNELER.json"), doc)
+        imza_tazele(film, doc)
+        metin_yaz(os.path.join(film, SES, "SES_TASARIMI.md"), tasarim_ozeti(doc, r))
     elif hata and not S_tek:
         yeniden_yaz(film, r["hatalar"], plan)
     return BITTI
+
+
+def imza_tazele(film, doc):
+    """_derlenir'e kod yazdı: plan_sema'nın elle yazım denetimi için imzalar tazelenir (istem_derle ile aynı yol)."""
+    if not os.path.isdir(os.path.join(film, "_YONETMEN")): return
+    try:
+        import plan_birlestir
+        plan_birlestir.imza_yaz(film, doc)
+    except Exception as ex:
+        print(f"!! _derlenir imzası tazelenemedi ({ex.__class__.__name__}); plan_birlestir yeniden koşunca düzelir")
+
+
+def metin_yaz(yol, metin):
+    os.makedirs(os.path.dirname(yol), exist_ok=True)
+    with open(yol + ".tmp", "w", encoding="utf-8") as f: f.write(metin)
+    os.replace(yol + ".tmp", yol)
+
+
+def tasarim_ozeti(doc, r):
+    """_SES/SES_TASARIMI.md: insan için özet (bilgi; kaynak SAHNELER.json + S0 raporu)."""
+    yol = {}; satir = ["# Ses tasarımı (özet)", "", f"S0: {r['sonuc']} · HATA {len(r['hatalar'])} · BAYRAK {len(r['bayraklar'])}", ""]
+    for s in plan_listesi(doc):
+        y = (ses_of(s).get("diyalog") or {}).get("yol")
+        if y: yol[y] = yol.get(y, 0) + 1
+    satir.append("Diyalog yolları: " + (", ".join(f"{k} {v}" for k, v in sorted(yol.items())) or "yok"))
+    satir.append("")
+    for S, ps in gruplar(doc).items():
+        if S == "_grupsuz": continue
+        gs = ((doc.get("sahne_gruplari") or {}).get(S) or {}).get("ses") or {}; y = gs.get("yatak") or {}
+        ef = sum(len([x for x in ses_of(s).get("efektler") or [] if not x.get("sessiz_adim")]) for s in ps)
+        ss = [s.get("no") for s in ps if ses_of(s).get("sessizlik")]
+        satir.append(f"- {S}: yatak {y.get('etiket') or y.get('dosya')} ({len(y.get('katmanlar') or [])} katman) · efekt {ef}"
+                     + (f" · sessizlik: plan {ss}" if ss else ""))
+    return "\n".join(satir) + "\n"
+
+
+def kadro_ozeti(h, prof, r):
+    satir = ["# Ses kadrosu (özet)", "", f"Profil denetimi: {r['sonuc']} · HATA {len(r['hatalar'])} · BAYRAK {len(r['bayraklar'])}", ""]
+    for k, p in sorted(prof.items()):
+        satir.append(f"- {(karakterler(h).get(k) or {}).get('ad') or k}: {p.get('veo_ses_tarifi') or p.get('yol') or p.get('tur') or '—'}"
+                     + (f" · {p.get('ses_etiketi_tr')}" if p.get("ses_etiketi_tr") else ""))
+    return "\n".join(satir) + "\n"
 
 
 KOMUTLAR = {"--profil-denetle": profil_denetle, "--taslak": taslak, "--denetle": denetle}

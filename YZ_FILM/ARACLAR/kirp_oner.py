@@ -6,7 +6,7 @@ Kullanım:
 Kodda: kirp_oner.oner(kok, plan, klip, kelimeler=None, kusurlar=None, zincir=False, kilit=None) → sözlük
 Algoritma (eşikler RE'den: kirp_hareket_mad_k, kirp_hareket_sure_sn, kullanim_*, olu_sure_max_sn, diyalog_giris_payi_sn, kirp_guven_min):
   1. Hareket enerjisi: 24 fps, 160×90 gri; E(t) = ort|f(t) − f(t−1)|, 5 karelik medyanla düzleştirilir; taban ilk 0,5 sn'nin medyanı;
-     hareket = E > taban + k·MAD (MAD tabanı 0,3 gri düzey) en az 0,2 sn. Kamera hareketliyse özne kutusu gerekir (yoksa güven düşer, BAYRAK).
+     hareket = E > taban + k·MAD (MAD tabanı 0,1 gri düzey) en az 0,2 sn. Kamera hareketliyse özne kutusu gerekir (yoksa güven düşer, BAYRAK).
   2. Güvenli pencere [0,5 ; klip_sn − 0,5] ∩ ilk V1/V2/V3 kusurundan 0,1 sn öncesi.
   3. Adım eşleme: planlanan fiziksel/mikro adımlar ölçülen hareket bölütlerine sırayı koruyarak eşlenir; bölüt adımdan azsa BAYRAK (Veo adım atladı).
   4. Kırpma önceliği (kurgu.kirpma_onceligi ya da plan_tipi'nden): replik · eylem · tepki_tepesi · durgun (kurallar [KU2] §4.6.2).
@@ -23,7 +23,7 @@ import numpy as np
 import ortak, kurgu_ortak as ko
 
 SURUM = "kirp_oner 1.0"
-MAD_TABAN = 0.3
+MAD_TABAN = 0.1
 
 
 def enerji(kareler):

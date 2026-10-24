@@ -191,7 +191,7 @@ def main(argv=None):
     except ImportError:
         print("Z3 kurgu kapısı (kurgu_denetim --hepsi / varsayılan) bu sürümde yok (TASARIM §9 adım 16, PR-12). Bu aşama bu kurulumda yürüyemez.")
         return 4
-    return kurgu_denetim_tam.main(argv)
+    return kurgu_denetim_tam.main(sys.argv[1:] if argv is None else list(argv))
 
 
 if __name__ == "__main__":

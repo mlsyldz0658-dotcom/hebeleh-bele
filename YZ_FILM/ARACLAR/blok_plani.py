@@ -28,7 +28,7 @@ import os, sys, json, glob, time, hashlib, shutil
 if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path: sys.path.insert(0, HERE)
-import ortak, kapi
+import ortak, kapi, kredi, flow_yuk, kuyruk
 
 SURUM = "blok_plani 1.0"
 BLOK_MAX = 20                       # UM2 §4.2.4 (blok ≤ 20 plan)
@@ -134,7 +134,6 @@ def bitti_isaretle(film, blok, ozet=None):
 
 # ---------------------------------------------------------------- gönderim geçmişi (kredi defteri + Memmet işleri)
 def _defter(film):
-    import kredi
     return kredi.defter_oku(film)[0]
 
 
@@ -254,7 +253,6 @@ def gonderim_gorselleri(film, p, doc, tur, ayr=None):
 
 # ---------------------------------------------------------------- FLOW raporu (Memmet blok sonu)
 def flow_raporu(film, blok, o, planlar, gorev=None):
-    import kapi
     olc = [{"madde": "indirildi", "plan": int(n), "seviye": "GEC"} for n in o.get("indirilen") or []]
     for r in o.get("reddedilen") or []:
         olc.append({"madde": "filtre_red", "plan": int(r["plan"]), "seviye": "HATA", "yedek_denendi": r.get("yedek_denendi"),
@@ -284,7 +282,6 @@ def _ayar():
 
 def vertex_izni(ayar=None):
     """(izin, neden). Flow kilitliyken Vertex yalnız iki şartla: izinler.flow_kilitliyken_vertex VE usd_tavan_film > 0 (D-03)."""
-    import kredi
     ayar = _ayar() if ayar is None else ayar
     izin = bool((ayar.get("izinler") or {}).get("flow_kilitliyken_vertex"))
     usd = kredi.tavanlar(ayar)[0]["usd_tavan_film"]
@@ -295,7 +292,6 @@ def vertex_izni(ayar=None):
 
 def _kuyruk_videolari(film):
     try:
-        import kuyruk
         return [m for m in kuyruk.acik_maddeler(film) if m.get("tur") == "video" and isinstance(m.get("plan"), int)]
     except Exception: return []
 
@@ -366,7 +362,6 @@ def kesit_sec(doc):
 
 def plan_kur(film, kesit=False, ayar=None, simdi=None, hesap_kok=None):
     """BLOK_PLANI.json'u kurar ve yazar. (BLOK_PLANI, çıkış kodu)."""
-    import flow_yuk
     doc = sahneler(film); planlar = planlar_sozluk(doc)
     imza = onizleme_imza(film)
     if not imza: raise Hata("kesin bütçe yok (URETIM_ONIZLEME.json taslak): önce kredi.py but2 (sıra kuralı 1)")
@@ -432,7 +427,6 @@ PILOT_VARSAYILAN = {"istem_bicimi": "aralik", "bitis_bekleme": "holds still", "t
 
 
 def pilot_karar(film, gorev=None):
-    import kapi
     BP = _j(film, "BLOK_PLANI.json") or {}; kes = (BP.get("kesit") or {}).get("planlar") or []
     olc = []
     for n in kes:

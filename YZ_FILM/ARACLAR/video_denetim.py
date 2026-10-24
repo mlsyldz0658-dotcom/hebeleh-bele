@@ -169,11 +169,15 @@ def v3_olc(no, p, e, sure):
     def m(madde, seviye, **k): olc.append(dict({"madde": madde, "plan": no, "seviye": seviye}, **k))
     if not e: m("V3_enerji", "OLCULEMEDI", neden="enerji eğrisi yok"); return olc
     sapma_max = esik("plan_zincir_zaman_sapma_max_sn")
+    hareketli = [x for _, x in e if x > 1e-3]; ref = statistics.median(hareketli) if hareketli else 0.0
     for a in adimlar(p):
         w0, w1 = float(a["bas"]) - 2 * sapma_max, float(a["bit"]) + 2 * sapma_max      # tepe aramasının penceresi
         icinde = [(t, x) for t, x in e if w0 <= t <= w1]
         if not icinde: m("adim_tepe", "OLCULEMEDI", adim=a.get("id"), neden="pencerede kare yok"); continue
-        tepe = max(icinde, key=lambda z: z[1])[0]
+        tepe, tepe_e = max(icinde, key=lambda z: z[1])
+        if tepe_e <= 0.25 * ref:
+            m("adim_tepe", "BAYRAK", adim=a.get("id"), olcu={"tepe_enerji": round(tepe_e, 3)}, esik=round(0.25 * ref, 3),
+              neden="adım penceresinde hareket yok"); continue
         sap = 0.0 if a["bas"] <= tepe <= a["bit"] else round(min(abs(tepe - a["bas"]), abs(tepe - a["bit"])), 3)
         m("adim_tepe", "GEC" if sap <= sapma_max else "BAYRAK", adim=a.get("id"), olcu={"tepe_sn": tepe, "sapma_sn": sap}, esik=sapma_max)
     kes = kesme_ani(p, sure); son = esik("v3_son_tutma_sn")

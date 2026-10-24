@@ -2,7 +2,12 @@ __pycache__/
 *.pyc
 AYARLAR/memmet_profil/
 AYARLAR/MEMMET_AYAR.json
-YZ_FILM/AYARLAR/YOLLAR.json
+# Gizli ayar klasörü: yalnız açıklama dosyası izlenir; anahtar dosyaları, profil ve ayarlar asla git'e girmez
+/YZ_FILM/AYARLAR/*
+!/YZ_FILM/AYARLAR/OKU_BENI.txt
+**/AYARLAR/memmet_profil/
+**/*_anahtar.txt
+**/telegram_bot.txt
 # bat_yenile.py üretir (makineye özgü mutlak yollar); izlenirse GUNCELLE yerel değişiklik görür
 /FILM_SETI.bat
 /GUNCELLE.bat

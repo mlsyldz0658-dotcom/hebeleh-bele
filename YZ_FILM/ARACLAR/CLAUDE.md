@@ -101,7 +101,8 @@ yerine `FILM_AYAR.json`'da tek `mod` alanı (D-34); testler `sahte` + `kaset` il
 - Kullanıcının dosya yollarını bozma (veri `C:\Users\Soysal\Desktop\YZ_FILM`, depo `C:\Users\Soysal\Desktop\YZ_FILM_SET`); yollar
   `ortak.yollar()` ile `YOLLAR.json`'dan okunur, araç kendi konumuna göre aramaz.
 - Kalıcı silme yok (eskiler `_ESKI/`'ye taşınır); `robocopy /MIR` yok; `OpenMontage` klasörüne dokunulmaz.
-- Testler: `python -m unittest discover -s YZ_FILM/ARACLAR/testler` (ağ ve kredi yok).
+- Testler: `python -m unittest discover -s YZ_FILM/ARACLAR/testler` (ağ ve kredi yok; tek süreç) ya da aynı testleri paralel koşan
+  `python YZ_FILM/ARACLAR/testler/kos.py` (CI bunu koşar; yeni test modülü kendiliğinden girer, uzun modül `kos.BOL`'a eklenebilir).
 - Küçük, anlamlı commit'ler; yalnız görevde belirtilen dala. PR yalnız istenirse. **Yerelde açılan oturumda** commit ana dala yapılmaz:
   dosyalar `<veri>/GELISTIRME/`'de hazırlanır ve `esitle_gelistirme.py` ile ayrı `yerel/<ad>-<tarih>` dalına gider; birleştirme bulutta PR ile.
 

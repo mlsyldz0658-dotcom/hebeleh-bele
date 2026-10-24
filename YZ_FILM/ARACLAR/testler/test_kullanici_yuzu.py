@@ -66,7 +66,7 @@ class BatTakimi(unittest.TestCase):
         for ad, m in list(self.d.items()) + list(self.f.items()):
             self.assertEqual(bat_yenile.denetle(m), [], ad); m.encode("ascii")
             self.assertTrue(m.endswith("\r\n")); self.assertNotIn("memmet", m.lower(), ad); self.assertNotIn("film.py", m, ad)
-            self.assertIn('"/usr/bin/python3" "' + os.path.join("/x/ARACLAR", ""), m, ad)       # Python ve betik mutlak yolla
+            self.assertIn(f'"{os.path.abspath("/usr/bin/python3")}" "' + os.path.join(os.path.abspath("/x/ARACLAR"), ""), m, ad)   # mutlak yol
         bek = {"TELEGRAM_TEST.bat": "bat_isleri.py\" telegram-test", "YOUTUBE_BAGLA.bat": "bat_isleri.py\" youtube-bagla"}
         for ad, b in bek.items(): self.assertIn(b, self.d[ad])
         bek = {"DURUM.bat": "bat_isleri.py\" durum", "VIDEO_GECE.bat": "bat_isleri.py\" video-gece",

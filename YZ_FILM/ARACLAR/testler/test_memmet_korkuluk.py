@@ -1432,3 +1432,43 @@ class Yama(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FlowAsbIndirme(unittest.TestCase):
+    """Ö0-b gün 1 (25.10.2026, yerel): Flow video adresleri flow.google.com/asb/… oldu; oturumsuz istek HTML giriş sayfası döner.
+    İndirme: önce doğrudan, HTML gelirse tarayıcı oturumuyla (context.request, sayfaya dokunmaz); MP4 olmayan dosya kabul edilmez."""
+    MP4 = b"\x00\x00\x00\x18ftypmp42" + b"\x00" * 20000
+    HTML = b"<!DOCTYPE html><html><body>Sign in</body></html>" + b" " * 20000
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(); self.hedef = os.path.join(self.tmp, "001.mp4")
+        self.m = memmet.Memmet.__new__(memmet.Memmet); self.m.log = lambda *a: None; self.m.olagandisi_denetle = lambda *a: None
+
+    def tearDown(self): shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _urlopen(self, govde):
+        class Y(io.BytesIO):
+            def __enter__(s): return s
+            def __exit__(s, *a): return False
+        return lambda *a, **k: Y(govde)
+
+    def _istek(self, govde, ok=True):
+        yanit = mock.Mock(ok=ok); yanit.body.return_value = govde
+        sayfa = mock.Mock(); sayfa.context.request.get.return_value = yanit
+        self.m.page = sayfa; return sayfa
+
+    def test_html_gelirse_tarayici_oturumuyla_alinir(self):
+        s = self._istek(self.MP4)
+        with mock.patch.object(memmet.urllib.request, "urlopen", self._urlopen(self.HTML)):
+            self.m.indir("https://flow.google.com/asb/abc", self.hedef)
+        self.assertEqual(open(self.hedef, "rb").read()[4:8], b"ftyp"); s.context.request.get.assert_called_once()
+
+    def test_mp4_olmayan_kabul_edilmez(self):
+        self._istek(b"x" * 20000)
+        with mock.patch.object(memmet.urllib.request, "urlopen", self._urlopen(b"y" * 20000)), self.assertRaises(RuntimeError):
+            self.m.indir("https://flow.google.com/asb/abc", self.hedef)
+        self.assertFalse(os.path.exists(self.hedef))
+
+    def test_kart_js_asb_adresini_tanir(self):
+        self.assertIn("flow\\\\.google\\\\.com\\\\/asb", memmet.Memmet.kutu_bul.__code__.co_consts.__repr__() + open(
+            os.path.join(ARACLAR, "memmet.py"), encoding="utf-8").read())

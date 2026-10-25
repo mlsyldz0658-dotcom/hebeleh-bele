@@ -793,7 +793,9 @@ class Memmet:
                 if (!t || !(hedef.startsWith(t.slice(0, 60)) || t.startsWith(hedef.slice(0, 60)))) continue;
                 const img = b.querySelector('img[data-media-id]');
                 const imgs = [...b.querySelectorAll('img[data-media-id]')].map(i => ({id: i.getAttribute('data-media-id'), url: i.currentSrc || i.src}));
-                const vid = [...b.querySelectorAll('video')].map(v => v.currentSrc || v.src).find(s => /flow-content\\.google\\/video\\//.test(s));
+                // video adresi: eski biçim flow-content.google/video/<id>; 25.10.2026'dan beri flow.google.com/asb/<belirteç> (aynı kartın <video>'su)
+                const vid = [...b.querySelectorAll('video')].map(v => v.currentSrc || v.src)
+                    .find(s => /flow-content\\.google\\/video\\/|^https:\\/\\/flow\\.google\\.com\\/asb\\//.test(s));
                 const yuzde = [...b.querySelectorAll('*')].some(e => e.childElementCount === 0 && /^%\\d+$/.test(e.textContent.trim()));
                 // hata metni: istem ögesinin DIŞINDAKİ yazılar (istemdeki "failed/policy" kelimeleri kartı reddedilmiş saydırmaz)
                 const w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); const dis = [];
@@ -824,9 +826,11 @@ class Memmet:
 
     def video_adresi(self, metin):
         """Video kutusunun üstüne gelip <video> adresini yükletir (kaydırma, üstüne gelme ve fare dokun() ile)."""
-        idx = self.kutu_bul(metin).get("sira")
-        if idx is None: return None
-        tile = self.page.locator("div.batch-container").nth(idx).locator("flow-video-tile").first
+        if not self.kutu_bul(metin).get("var"): return None
+        # kart sıra numarasıyla DEĞİL istem metniyle bulunur: sanal liste kaydırınca kartların sırası değişir ve nth(i) başka planın
+        # kartına gider (25.10.2026, Ö0-b). Yanlış kartın videosu yine de alınmaz: KART_JS yalnız eşleşen kartın <video>'sunu okur.
+        bas = re.sub(r"\s+", " ", metin or "").strip()[:60]
+        tile = self.page.locator("div.batch-container").filter(has_text=bas).locator("flow-video-tile").first
         try: self.dokun(tile.scroll_into_view_if_needed, timeout=5000); self.dokun(tile.hover, timeout=5000)
         except Exception: return None                # Durdur BaseException'dır: burada yutulmaz
         for _ in range(10):
@@ -841,14 +845,28 @@ class Memmet:
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": FLOW})
             with urllib.request.urlopen(req, timeout=120) as r, open(tmp, "wb") as f: shutil.copyfileobj(r, f)
-        except Exception as e:   # yedek yol: dosyayı sayfanın içinden al (salt okuma: fetch)
-            self.log("doğrudan indirme olmadı, sayfa içinden alınıyor:", str(e)[:60])
-            import base64
+            with open(tmp, "rb") as f: bas = f.read(64).lstrip().lower()
+            if bas.startswith((b"<!doctype", b"<html", b"<head", b"<?xml")):   # oturumsuz istek giriş sayfası döndürdü (asb adresleri)
+                raise RuntimeError("medya yerine HTML geldi")
+        except Exception as e:   # yedek yol 1: tarayıcının oturum çerezleriyle dosya isteği (sayfaya dokunmaz; asb adresleri bunu ister)
+            self.log("doğrudan indirme olmadı, tarayıcı oturumuyla alınıyor:", str(e)[:60])
             self.olagandisi_denetle()
-            b64 = self.oku("""async (u) => { const r = await fetch(u); const b = await r.blob();
-                return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(',')[1]); fr.readAsDataURL(b); }); }""", url)
-            open(tmp, "wb").write(base64.b64decode(b64))
+            govde = None
+            try:
+                yanit = self.page.context.request.get(url, headers={"Referer": FLOW}, timeout=120_000)
+                if yanit.ok: govde = yanit.body()
+            except Exception as e2: self.log("tarayıcı oturumuyla da olmadı, sayfa içinden alınıyor:", str(e2)[:60])
+            if govde and not govde[:64].lstrip().lower().startswith((b"<!doctype", b"<html", b"<head", b"<?xml")):
+                open(tmp, "wb").write(govde)
+            else:                # yedek yol 2: dosyayı sayfanın içinden al (salt okuma: fetch)
+                import base64
+                b64 = self.oku("""async (u) => { const r = await fetch(u); const b = await r.blob();
+                    return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(',')[1]); fr.readAsDataURL(b); }); }""", url)
+                open(tmp, "wb").write(base64.b64decode(b64))
         if os.path.getsize(tmp) < 10_000: os.remove(tmp); raise RuntimeError("indirilen dosya çok küçük")
+        if hedef.lower().endswith(".mp4"):
+            with open(tmp, "rb") as f: kafa = f.read(12)
+            if kafa[4:8] != b"ftyp": os.remove(tmp); raise RuntimeError("indirilen dosya MP4 değil")
         os.replace(tmp, hedef)
 
     # ------------------------------------------------------------------ KONTROL ile köprü

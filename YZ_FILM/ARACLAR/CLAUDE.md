@@ -85,7 +85,10 @@ model ve servis çağrısı yok). Adım başına ana araçlar:
   %80'i tavanıyla) bağlanır. CI'nın ilk gerçek Windows koşusu da henüz görülmedi (iş akışı bulutta yazıldı, yerelde 3.10 + 3.13 yeşil).
 
 **Bilinen açık riskler:**
-- Flow kapasitesi ölçülmedi (Ö0-b yok): `olcek.py`/BUT0 ölçüm olmadan her zaman **1800 sn** seçer; takvim tahminidir.
+- Flow kapasitesi: **kullanıcı kararı (25.10)** — Ö0-b merdiveni gün 1'den (10 video, uyarısız) sonra bırakılır; kapasite kullanıcının
+  beyanından: `python olcum0/flow_deneme.py kapat --beyan 100` (yerelde, bir kez; `kapasite_kaynagi: kullanici_beyani`, ölçüm değil).
+  Asıl sınır kredi. Flow uyarısında her kipte durma, 17.10 temposu ve kilit kuralları değişmez; uyarı kayıtlıysa beyan reddedilir.
+  Beyan yokken `olcek.py`/BUT0 ölçüm olmadan **1800 sn** seçer.
 - Gerçek model ve servis çağrıları (Claude ajanları, Flow/Veo, Gemini, ai84, yerel ses/müzik modelleri) doğrulanmadı; bütün testler `sahte`/`kaset`.
 - `veri/LISANSLAR.json` girdileri bellekten yazıldı (`bellekten`); doğrulanmadı (ACE-Step ağırlıkları, MuseTalk modeli, Real-ESRGAN ağırlıkları,
   OpenVoice'un dolaylı bağımlılıkları dahil).

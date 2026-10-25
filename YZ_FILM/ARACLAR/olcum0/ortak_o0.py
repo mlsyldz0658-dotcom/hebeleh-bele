@@ -30,7 +30,7 @@ BITMIS = ("bitti", "kapandi")
 # OLCUM0.json bölümüne kopyalanan karar anahtarları (okuyan araçların beklediği adlar; yenisi eklenebilir, ad değişmez)
 OZET_ANAHTAR = {
     "b": ("durum", "olculen_gunluk_kapasite", "olculemedi", "uretim_sn_720p", "politika_reddi_kredi", "on_kararlar", "klip_sayisi",
-          "kapanis_nedeni", "olcum_yasak_bitis"),
+          "kapanis_nedeni", "olcum_yasak_bitis", "kapasite_kaynagi"),
     "d": ("durum", "klon", "sifreli", "okuma", "segment_tasima", "yayin_kaynagi", "not_yolu"),
     "e": ("durum", "gemini_katman", "video_girisi", "ses_girisi", "gorsel_uygun", "gemini_api_paket", "uc_aday_teslim",
           "gorsel_kota_gozlenen"),

@@ -21,7 +21,9 @@ Kullanım (film.py olcum0 calis b … ile ya da doğrudan):
   python flow_deneme.py gun [--bakiye N] [--kuru]             bugünün merdiven basamağını açar ve Memmet'le (elle) gönderir; uzun sürer
         (GÖNDER'leri kullanıcı basar). --kuru: hiçbir şey göndermeden bugünün planını yazar. Bakiye verilmezse Memmet salt okur (--bakiye).
   python flow_deneme.py kare-olc                               zincir karesi kalitesi (keskinlik oranı) indirilen kliplerde
-  python flow_deneme.py kapat [--neden <metin>]                Ö0-b'yi elle kapatır (sonuç o ana kadarki uyarısız günlerden)
+  python flow_deneme.py kapat [--neden <metin>] [--beyan <N>]  Ö0-b'yi elle kapatır (sonuç o ana kadarki uyarısız günlerden).
+        --beyan N: KULLANICI KARARI — merdiven bırakılır, günlük kapasite kullanıcının beyanından (N video/gün) alınır
+        (ölçüm değil; kapasite_kaynagi "kullanici_beyani"). Uyarı kayıtlıysa beyan alınmaz. Flow uyarısında durma kuralı değişmez.
   python flow_deneme.py rapor                                  O0b.json özetini ve OLCUM0.json'u yeniden yazar
   python flow_deneme.py memmet-blok <film> --blok <id> --onizleme <imza> --mod elle    (iç: Memmet'in Ö0-b sarmalayıcısı)
 Çıkış kodları: 0 tamam · 1 HATA · 2 KULLANICI (fiziksel iş / ön koşul) · 4 ORTAM (bulut, şablon fikstür) · 5 BÜTÇE ·
@@ -508,12 +510,19 @@ def _ozet(d):
             if k in d}
 
 
-def kapat(d, neden, uyari=None, simdi=None):
-    """Ö0-b'yi kapatır (geri açılmaz). (kod, rapor). Uyarıyla kapandıysa 7 (KISIT)."""
+def kapat(d, neden, uyari=None, simdi=None, beyan=None):
+    """Ö0-b'yi kapatır (geri açılmaz). (kod, rapor). Uyarıyla kapandıysa 7 (KISIT).
+    beyan: kullanıcının kararıyla merdiven bırakıldı; kapasite = beyan (video/gün). Uyarıyla ya da uyarı kayıtlıyken beyan alınmaz."""
     s = _simdi(simdi)
+    if beyan is not None and (uyari or d.get("uyari") or any(g.get("uyarisiz") is False for g in d.get("gunler") or [])):
+        raise Dur("Flow uyarısı kayıtlı: kapasite beyanı alınmaz (ölçüm sonucu geçerli).", KISIT)
     for g in d.get("gunler") or []:
         if g.get("durum") != "bitti": g.update(durum="bitti", uyarisiz=uyari is None and g.get("uyarisiz") is not False, tam=False)
     kap, olm = kapasite(d)
+    if beyan is not None:
+        if int(beyan) < 1: raise Dur("--beyan en az 1 olmalı.", HATA)
+        kap, olm = int(beyan), False
+        d.update(kapasite_kaynagi="kullanici_beyani", olculen_alt_sinir=kapasite(d)[0])
     sureler = [v["uretim_sn"] for v in d["istemler"].values() if isinstance(v.get("uretim_sn"), int)]
     d.update(durum="kapandi", kapanis=o0.zaman(s), kapanis_nedeni=neden, uyari=uyari, olculen_gunluk_kapasite=kap, olculemedi=olm,
              uretim_sn_720p=int(statistics.median(sureler)) if sureler else None,
@@ -525,8 +534,8 @@ def kapat(d, neden, uyari=None, simdi=None):
         d["olcum_yasak_bitis"] = _tarih(z + ara_gun() * 86400)
     o0.yaz("b", d, arac=SURUM)
     o0.deneme("b", "kapasite", {"olculen_gunluk_kapasite": kap, "uyarisiz_gun": len(uyarisiz_gunler(d))},
-              "olculemedi" if olm else f"{kap}/gün (alt sınır)",
-              f"{neden}; " + ("uyarısız gün yok → ilk film 1800 sn (D-05)" if olm else
+              "olculemedi" if olm else (f"{kap}/gün (kullanıcı beyanı)" if beyan is not None else f"{kap}/gün (alt sınır)"),
+              f"{neden}; " + ("kullanıcı kararı: merdiven bırakıldı, kapasite beyandan" if beyan is not None else "uyarısız gün yok → ilk film 1800 sn (D-05)" if olm else
                               ("alt sınır < 20 → ilk film 1800 sn (D-05)" if kap < max(d.get("tavanlar") or [20]) else "merdivenin tepesi uyarısız")))
     o0.deneme("b", "uretim_sn_720p", {"medyan": d["uretim_sn_720p"], "n": len(sureler)}, d["uretim_sn_720p"] or "olculemedi",
               "gönderimden indirmeye (Memmet kaydı)")
@@ -537,7 +546,8 @@ def kapat(d, neden, uyari=None, simdi=None):
                f"Ölçülen uyarısız kapasite: {kap if not olm else 'ölçülemedi'}. {d['olcum_yasak_bitis']} tarihine kadar Flow ölçümü yok.")
         print(msg, flush=True)
         return KISIT, {"kullaniciya": msg, "sonuc": _ozet(d)}
-    msg = f"Ö0-b bitti ({neden}). Günlük uyarısız kapasite (alt sınır): {kap if not olm else 'ölçülemedi'}."
+    msg = (f"Ö0-b bitti ({neden}). Günlük kapasite kullanıcı beyanından: {kap} video/gün (ölçüm değil; Flow uyarısında yine durulur)."
+           if beyan is not None else f"Ö0-b bitti ({neden}). Günlük uyarısız kapasite (alt sınır): {kap if not olm else 'ölçülemedi'}.")
     print(msg, flush=True)
     return BITTI, {"kullaniciya": msg, "sonuc": _ozet(d)}
 
@@ -649,7 +659,9 @@ def main(argv=None):
         if k == "kapat":
             d = durum_oku()
             if not d or d.get("durum") == "kapandi": print("Kapatılacak süren Ö0-b yok."); return 0
-            kod, r = kapat(d, _arg(argv, "--neden", "elle kapatıldı")); return kod
+            b = _arg(argv, "--beyan")
+            kod, r = kapat(d, _arg(argv, "--neden", "kullanıcı kararı" if b else "elle kapatıldı"),
+                           beyan=int(b) if b is not None else None); return kod
         if k == "rapor":
             kod, r = rapor(); print(json.dumps(r, ensure_ascii=False)); return kod
     except Dur as e:

@@ -256,6 +256,25 @@ class TestFlowDeneme(Taban):
         n = len(self.k.cagri); kod, r = self.gun(T0 + 3 * GUN)
         self.assertEqual(len(self.k.cagri), n); self.assertIn("kapandı", r["kullaniciya"])
 
+    def test_kullanici_beyani_merdiveni_kapatir(self):
+        self.hazirla()
+        kod, r = self.gun(T0); self.assertEqual(kod, 0, r)                                # gün 1: 10 video, uyarısız
+        with contextlib.redirect_stdout(io.StringIO()): kod, r = fdn.kapat(fdn.durum_oku(), "kullanıcı kararı", beyan=100, simdi=T0 + 3600)
+        self.assertEqual(kod, 0)
+        d = fdn.durum_oku()
+        self.assertEqual((d["durum"], d["olculen_gunluk_kapasite"], d["olculemedi"]), ("kapandi", 100, False))
+        self.assertEqual((d["kapasite_kaynagi"], d["olculen_alt_sinir"]), ("kullanici_beyani", 10))
+        oz = o0.ozet_oku(); self.assertEqual(oz["O0b"]["kapasite_kaynagi"], "kullanici_beyani")
+        kap, olculdu, var, _ = olcek.kapasite({"o0b_gun_tavanlari": [10, 15, 20]}, oz)
+        self.assertEqual((kap, olculdu, var), (100, True, True))
+        kod, r = self.gun(T0 + GUN); self.assertEqual(kod, fdn.BITTI)                     # kapandı: merdiven yeniden açılmaz
+
+    def test_uyari_kayitliyken_beyan_alinmaz(self):
+        self.hazirla()
+        d = fdn.durum_oku(); d["gunler"] = [{"basamak": 1, "durum": "bitti", "uyarisiz": False, "gonderilen": 4}]
+        with self.assertRaises(fdn.Dur) as c: fdn.kapat(d, "kullanıcı kararı", beyan=100, simdi=T0)
+        self.assertEqual(c.exception.kod, fdn.KISIT)
+
     def test_ikinci_gunde_uyari_kapanir_kapasite_10(self):
         self.hazirla()
         self.assertEqual(self.gun(T0)[0], 0)
